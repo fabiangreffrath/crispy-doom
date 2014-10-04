@@ -1309,20 +1309,22 @@ static char *M_SelectEndMessage(void)
 
     // [crispy] enable the original "rude" quit messages (if not
     // playing Chex Quest which is supposed to be a children's game)
-    if (gamemission != pack_chex && gamemission != pack_hacx)
-	rude = gametic % (2 * NUM_QUITMESSAGES) >= NUM_QUITMESSAGES;
+    // if (gamemission != pack_chex && gamemission != pack_hacx)
+	// rude = gametic % (2 * NUM_QUITMESSAGES) >= NUM_QUITMESSAGES;
 
     if (logical_gamemission == doom)
     {
         // Doom 1
 
-        endmsg = rude ? rude_endmsg + 1 : doom1_endmsg;
+        // endmsg = rude ? rude_endmsg + 1 : doom1_endmsg;
+	endmsg = doom1_endmsg;
     }
     else
     {
         // Doom 2
         
-        endmsg = rude ? rude_endmsg + 1 : doom2_endmsg;
+        // endmsg = rude ? rude_endmsg + 1 : doom2_endmsg;
+	endmsg = doom2_endmsg;
     }
 
     return endmsg[gametic % NUM_QUITMESSAGES];
