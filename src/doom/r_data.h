@@ -51,4 +51,5 @@ int R_FlatNumForName (char* name);
 int R_TextureNumForName (char *name);
 int R_CheckTextureNumForName (char *name);
 
+void R_InitColormaps (int pal);
 #endif

@@ -61,7 +61,7 @@ int		viewheight;
 int		scaledviewheight;
 int		viewwindowx;
 int		viewwindowy; 
-byte*		ylookup[MAXHEIGHT]; 
+pixel_t*		ylookup[MAXHEIGHT];
 int		columnofs[MAXWIDTH]; 
 static const int	linesize = SCREENWIDTH;
 
@@ -74,7 +74,7 @@ byte		translations[3][256];
 // Backing buffer containing the bezel drawn around the screen and 
 // surrounding background.
 
-static byte *background_buffer = NULL;
+static pixel_t *background_buffer = NULL;
 
 
 //
@@ -139,7 +139,7 @@ int			dccount;
 void R_DrawColumn (void) 
 { 
   int              count;
-  register byte    *dest;            // killough
+  register pixel_t *dest;            // killough
   register fixed_t frac;            // killough
   fixed_t          fracstep;
 
@@ -282,10 +282,10 @@ void R_DrawColumn (void)
 void R_DrawColumnLow (void) 
 { 
     int			count; 
-    byte*		dest; 
-    byte*		dest2;
-    byte*		dest3;
-    byte*		dest4;
+    pixel_t*		dest;
+    pixel_t*		dest2;
+    pixel_t*		dest3;
+    pixel_t*		dest4;
     fixed_t		frac;
     fixed_t		fracstep;	 
     int                 x;
@@ -321,11 +321,13 @@ void R_DrawColumnLow (void)
     {
 	// Hack. Does not work corretly.
 	*dest2 = *dest = dc_colormap[dc_source[(frac>>FRACBITS)&127]];
+
 	dest += SCREENWIDTH << hires;
 	dest2 += SCREENWIDTH << hires;
 	if (hires)
 	{
 	    *dest4 = *dest3 = dc_colormap[dc_source[(frac>>FRACBITS)&127]];
+
 	    dest3 += SCREENWIDTH << hires;
 	    dest4 += SCREENWIDTH << hires;
 	}
@@ -368,7 +370,7 @@ int	fuzzpos = 0;
 void R_DrawFuzzColumn (void) 
 { 
     int			count; 
-    byte*		dest; 
+    pixel_t*		dest;
     fixed_t		frac;
     fixed_t		fracstep;	 
 
@@ -410,7 +412,8 @@ void R_DrawFuzzColumn (void)
 	//  a pixel that is either one column
 	//  left or right of the current one.
 	// Add index from colormap to index.
-	*dest = colormaps[6*256+dest[fuzzoffset[fuzzpos]]]; 
+
+	*dest = I_DarkBlend(dest[fuzzoffset[fuzzpos]], 0xff >> 2);
 
 	// Clamp table lookup index.
 	if (++fuzzpos == FUZZTABLE) 
@@ -427,10 +430,10 @@ void R_DrawFuzzColumn (void)
 void R_DrawFuzzColumnLow (void) 
 { 
     int			count; 
-    byte*		dest; 
-    byte*		dest2; 
-    byte*		dest3;
-    byte*		dest4;
+    pixel_t*		dest;
+    pixel_t*		dest2;
+    pixel_t*		dest3;
+    pixel_t*		dest4;
     fixed_t		frac;
     fixed_t		fracstep;	 
     int x;
@@ -480,12 +483,12 @@ void R_DrawFuzzColumnLow (void)
 	//  a pixel that is either one column
 	//  left or right of the current one.
 	// Add index from colormap to index.
-	*dest = colormaps[6*256+dest[fuzzoffset[fuzzpos]]]; 
-	*dest2 = colormaps[6*256+dest2[fuzzoffset[fuzzpos]]]; 
+	*dest = I_DarkBlend(dest[fuzzoffset[fuzzpos]], 0xff >> 2);
+	*dest2 = I_DarkBlend(dest2[fuzzoffset[fuzzpos]], 0xff >> 2);
 	if (hires)
 	{
-	    *dest3 = colormaps[6*256+dest[fuzzoffset[fuzzpos]]];
-	    *dest4 = colormaps[6*256+dest2[fuzzoffset[fuzzpos]]];
+	    *dest3 = I_DarkBlend(dest[fuzzoffset[fuzzpos]], 0xff >> 2);
+	    *dest4 = I_DarkBlend(dest2[fuzzoffset[fuzzpos]], 0xff >> 2);
 	    dest3 += SCREENWIDTH << hires;
 	    dest4 += SCREENWIDTH << hires;
 	}
@@ -520,7 +523,7 @@ byte*	translationtables;
 void R_DrawTranslatedColumn (void) 
 { 
     int			count; 
-    byte*		dest; 
+    pixel_t*		dest;
     fixed_t		frac;
     fixed_t		fracstep;	 
  
@@ -554,7 +557,7 @@ void R_DrawTranslatedColumn (void)
 	//  used with PLAY sprites.
 	// Thus the "green" ramp of the player 0 sprite
 	//  is mapped to gray, red, black/indigo. 
-	*dest = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
+	*dest = colormaps[dc_translation[dc_source[frac>>FRACBITS]]];
 	dest += SCREENWIDTH;
 	
 	frac += fracstep; 
@@ -564,10 +567,10 @@ void R_DrawTranslatedColumn (void)
 void R_DrawTranslatedColumnLow (void) 
 { 
     int			count; 
-    byte*		dest; 
-    byte*		dest2; 
-    byte*		dest3;
-    byte*		dest4;
+    pixel_t*		dest;
+    pixel_t*		dest2;
+    pixel_t*		dest3;
+    pixel_t*		dest4;
     fixed_t		frac;
     fixed_t		fracstep;	 
     int                 x;
@@ -608,14 +611,14 @@ void R_DrawTranslatedColumnLow (void)
 	//  used with PLAY sprites.
 	// Thus the "green" ramp of the player 0 sprite
 	//  is mapped to gray, red, black/indigo. 
-	*dest = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
-	*dest2 = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
+	*dest = colormaps[dc_translation[dc_source[frac>>FRACBITS]]];
+	*dest2 = colormaps[dc_translation[dc_source[frac>>FRACBITS]]];
 	dest += SCREENWIDTH << hires;
 	dest2 += SCREENWIDTH << hires;
 	if (hires)
 	{
-	    *dest3 = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
-	    *dest4 = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
+	    *dest3 = colormaps[dc_translation[dc_source[frac>>FRACBITS]]];
+	    *dest4 = colormaps[dc_translation[dc_source[frac>>FRACBITS]]];
 	    dest3 += SCREENWIDTH << hires;
 	    dest4 += SCREENWIDTH << hires;
 	}
@@ -624,13 +627,13 @@ void R_DrawTranslatedColumnLow (void)
     } while (count--); 
 } 
 
-// [crispy] draw translucent column
-extern byte *tranmap;
+extern lighttable_t dc_translucency;
 
 void R_DrawTLColumn (void)
 {
     int			count;
-    byte*		dest;
+    pixel_t*		dest;
+    pixel_t		destrgb;
     fixed_t		frac;
     fixed_t		fracstep;
 
@@ -655,8 +658,8 @@ void R_DrawTLColumn (void)
 
     do
     {
-        // actual translucency map lookup taken from boom202s/R_DRAW.C:255
-        *dest = tranmap[(*dest<<8)+dc_colormap[dc_source[frac>>FRACBITS]]];
+	destrgb = dc_colormap[dc_source[frac>>FRACBITS]];
+	*dest = I_AlphaBlend(*dest, (destrgb & dc_translucency));
 	dest += SCREENWIDTH;
 
 	frac += fracstep;
@@ -667,10 +670,11 @@ void R_DrawTLColumn (void)
 void R_DrawTLColumnLow (void)
 {
     int			count;
-    byte*		dest;
-    byte*		dest2;
-    byte*		dest3;
-    byte*		dest4;
+    pixel_t*		dest;
+    pixel_t*		dest2;
+    pixel_t*		dest3;
+    pixel_t*		dest4;
+    pixel_t		destrgb;
     fixed_t		frac;
     fixed_t		fracstep;
     int                 x;
@@ -701,14 +705,16 @@ void R_DrawTLColumnLow (void)
 
     do
     {
-	*dest = tranmap[(*dest<<8)+dc_colormap[dc_source[frac>>FRACBITS]]];
-	*dest2 = tranmap[(*dest<<8)+dc_colormap[dc_source[frac>>FRACBITS]]];
+	destrgb = dc_colormap[dc_source[frac>>FRACBITS]];
+	*dest = I_AlphaBlend(*dest, (destrgb & dc_translucency));
+	*dest2 = I_AlphaBlend(*dest, (destrgb & dc_translucency));
 	dest += SCREENWIDTH << hires;
 	dest2 += SCREENWIDTH << hires;
 	if (hires)
 	{
-	    *dest3 = tranmap[(*dest<<8)+dc_colormap[dc_source[frac>>FRACBITS]]];
-	    *dest4 = tranmap[(*dest<<8)+dc_colormap[dc_source[frac>>FRACBITS]]];
+	    destrgb = dc_colormap[dc_source[frac>>FRACBITS]];
+	    *dest3 = I_AlphaBlend(*dest, (destrgb & dc_translucency));
+	    *dest4 = I_AlphaBlend(*dest, (destrgb & dc_translucency));
 	    dest3 += SCREENWIDTH << hires;
 	    dest4 += SCREENWIDTH << hires;
 	}
@@ -787,7 +793,7 @@ int			dscount;
 void R_DrawSpan (void) 
 { 
     //unsigned int position, step;
-    byte *dest;
+    pixel_t *dest;
     int count;
     int spot;
     unsigned int xtemp, ytemp;
@@ -922,7 +928,7 @@ void R_DrawSpanLow (void)
 {
     unsigned int position, step;
     unsigned int xtemp, ytemp;
-    byte *dest, *dest2;
+    pixel_t *dest, *dest2;
     int count;
     int spot;
 
@@ -1020,7 +1026,7 @@ R_InitBuffer
 void R_FillBackScreen (void) 
 { 
     byte*	src;
-    byte*	dest; 
+    pixel_t*	dest; 
     int		x;
     int		y; 
     patch_t*	patch;
@@ -1051,7 +1057,7 @@ void R_FillBackScreen (void)
 	
     if (background_buffer == NULL)
     {
-        background_buffer = Z_Malloc(SCREENWIDTH * (SCREENHEIGHT - SBARHEIGHT),
+        background_buffer = Z_Malloc(SCREENWIDTH * (SCREENHEIGHT - SBARHEIGHT) * sizeof(pixel_t),
                                      PU_STATIC, NULL);
     }
 
@@ -1065,6 +1071,11 @@ void R_FillBackScreen (void)
 	 
     for (y=0 ; y<SCREENHEIGHT-SBARHEIGHT ; y++) 
     { 
+	for (x=0 ; x<SCREENWIDTH ; x++)
+	{
+	    *dest++ = colormaps[src[((y&63)<<6) + (x&63)]];
+	}
+/*
 	for (x=0 ; x<SCREENWIDTH/64 ; x++) 
 	{ 
 	    memcpy (dest, src+((y&63)<<6), 64); 
@@ -1076,6 +1087,7 @@ void R_FillBackScreen (void)
 	    memcpy (dest, src+((y&63)<<6), SCREENWIDTH&63); 
 	    dest += (SCREENWIDTH&63); 
 	} 
+*/
     } 
      
     // Draw screen and bezel; this is done to a separate screen buffer.
@@ -1136,7 +1148,7 @@ R_VideoErase
 
     if (background_buffer != NULL)
     {
-        memcpy(I_VideoBuffer + ofs, background_buffer + ofs, count); 
+        memcpy(I_VideoBuffer + ofs, background_buffer + ofs, count * sizeof(pixel_t)); 
     }
 } 
 

@@ -112,7 +112,7 @@ int I_GetPaletteIndex(int r, int g, int b);
 void I_UpdateNoBlit (void);
 void I_FinishUpdate (void);
 
-void I_ReadScreen (byte* scr);
+void I_ReadScreen (pixel_t* scr);
 
 void I_BeginRead (void);
 void I_EndRead (void);
@@ -142,6 +142,10 @@ void I_StartTic (void);
 
 void I_EnableLoadingDisk(void);
 
+pixel_t I_AlphaBlend (pixel_t a, pixel_t b);
+pixel_t I_DarkBlend (pixel_t a, int b);
+void I_ApplyColorMod (int palette);
+
 extern char *video_driver;
 extern boolean screenvisible;
 
@@ -153,11 +157,10 @@ extern int mouse_y_invert;
 extern int vanilla_keyboard_mapping;
 extern boolean screensaver_mode;
 extern int usegamma;
-extern byte *I_VideoBuffer;
+extern pixel_t *I_VideoBuffer;
 
 extern int screen_width;
 extern int screen_height;
-extern int screen_bpp;
 extern int fullscreen;
 extern int aspect_ratio_correct;
 extern int novert;

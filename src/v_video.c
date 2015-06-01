@@ -52,13 +52,16 @@ byte *tinttable = NULL;
 byte *tranmap = NULL;
 byte *dp_translation = NULL;
 boolean dp_translucent = false;
+const lighttable_t dc_translucency = 0xa8ffffff;
 
 // villsa [STRIFE] Blending table used for Strife
 byte *xlatab = NULL;
 
 // The screen buffer that the v_video.c code draws to.
 
-static byte *dest_screen = NULL;
+static pixel_t *dest_screen = NULL;
+
+extern lighttable_t *colormaps;
 
 int dirtybox[4]; 
 
@@ -85,12 +88,12 @@ void V_MarkRect(int x, int y, int width, int height)
 //
 // V_CopyRect 
 // 
-void V_CopyRect(int srcx, int srcy, byte *source,
+void V_CopyRect(int srcx, int srcy, pixel_t *source,
                 int width, int height,
                 int destx, int desty)
 { 
-    byte *src;
-    byte *dest; 
+    pixel_t *src;
+    pixel_t *dest;
  
     srcx <<= hires;
     srcy <<= hires;
@@ -126,7 +129,7 @@ void V_CopyRect(int srcx, int srcy, byte *source,
 
     for ( ; height>0 ; height--) 
     { 
-        memcpy(dest, src, width); 
+        memcpy(dest, src, width * sizeof(pixel_t));
         src += SCREENWIDTH; 
         dest += SCREENWIDTH; 
     } 
@@ -151,6 +154,7 @@ void V_SetPatchClipCallback(vpatchclipfunc_t func)
 // V_DrawPatch
 // Masks a column based masked pic to the screen. 
 //
+extern pixel_t I_Desaturate(pixel_t a);
 
 // [crispy] prevent framebuffer overflow
 #define dest_in_framebuffer (safe || ((dest-dest_screen) < SCREENHEIGHT*SCREENWIDTH))
@@ -160,9 +164,10 @@ void V_DrawPatch(int x, int y, patch_t *patch)
     int count;
     int col;
     column_t *column;
-    byte *desttop;
-    byte *dest;
+    pixel_t *desttop;
+    pixel_t *dest;
     byte *source;
+    pixel_t sourcergb;
     int w, f;
     // [crispy] prevent framebuffer overflow
     const boolean safe = !(y + SHORT(patch->height) > ORIGHEIGHT);
@@ -190,7 +195,7 @@ void V_DrawPatch(int x, int y, patch_t *patch)
     V_MarkRect(x, y, SHORT(patch->width), SHORT(patch->height));
 
     col = 0;
-    desttop = dest_screen + (y << hires) * SCREENWIDTH + x;
+    desttop = dest_screen + (y << hires) * SCREENWIDTH + x ;
 
     w = SHORT(patch->width);
 
@@ -220,10 +225,10 @@ void V_DrawPatch(int x, int y, patch_t *patch)
             {
                 if (hires)
                 {
-                    *dest = *source;
+                    *dest = colormaps[*source];
                     dest += SCREENWIDTH;
                 }
-                *dest = *source++;
+                *dest = colormaps[*source++];
                 dest += SCREENWIDTH;
             }
           }
@@ -251,10 +256,10 @@ void V_DrawPatch(int x, int y, patch_t *patch)
             {
                 if (hires)
                 {
-                    *dest = dp_translation[*source];
+                    *dest = colormaps[dp_translation[*source]];
                     dest += SCREENWIDTH;
                 }
-                *dest = dp_translation[*source++];
+                *dest = colormaps[dp_translation[*source++]];
                 dest += SCREENWIDTH;
             }
           }
@@ -282,10 +287,12 @@ void V_DrawPatch(int x, int y, patch_t *patch)
             {
                 if (hires)
                 {
-                    *dest = tranmap[(*dest<<8)+*source];
+                    sourcergb = colormaps[*source];
+                    *dest = I_AlphaBlend(*dest, (sourcergb & dc_translucency));
                     dest += SCREENWIDTH;
                 }
-                *dest = tranmap[(*dest<<8)+*source++];
+                sourcergb = colormaps[*source++];
+                *dest = I_AlphaBlend(*dest, (sourcergb & dc_translucency));
                 dest += SCREENWIDTH;
             }
           }
@@ -311,13 +318,17 @@ void V_DrawPatch(int x, int y, patch_t *patch)
             // [crispy] prevent framebuffer overflow
             while (count-- && dest_in_framebuffer)
             {
+            {
                 if (hires)
                 {
-                    *dest = tranmap[(*dest<<8)+dp_translation[*source]];
+                    sourcergb = colormaps[dp_translation[*source]];
+                    *dest = I_AlphaBlend(*dest, (sourcergb & dc_translucency));
                     dest += SCREENWIDTH;
                 }
-                *dest = tranmap[(*dest<<8)+dp_translation[*source++]];
+                sourcergb = colormaps[dp_translation[*source++]];
+                *dest = I_AlphaBlend(*dest, (sourcergb & dc_translucency));
                 dest += SCREENWIDTH;
+            }
             }
           }
             column = (column_t *)((byte *)column + column->length + 4);
@@ -336,8 +347,8 @@ void V_DrawPatchFlipped(int x, int y, patch_t *patch)
     int count;
     int col; 
     column_t *column; 
-    byte *desttop;
-    byte *dest;
+    pixel_t *desttop;
+    pixel_t *dest;
     byte *source; 
     int w, f;
     // [crispy] prevent framebuffer overflow
@@ -392,10 +403,10 @@ void V_DrawPatchFlipped(int x, int y, patch_t *patch)
             {
                 if (hires)
                 {
-                    *dest = *source;
+                    *dest = colormaps[*source];
                     dest += SCREENWIDTH;
                 }
-                *dest = *source++;
+                *dest = colormaps[*source++];
                 dest += SCREENWIDTH;
             }
           }
@@ -680,9 +691,9 @@ void V_LoadXlaTable(void)
 // Draw a linear block of pixels into the view buffer.
 //
 
-void V_DrawBlock(int x, int y, int width, int height, byte *src) 
+void V_DrawBlock(int x, int y, int width, int height, pixel_t *src) 
 { 
-    byte *dest; 
+    pixel_t *dest; 
  
 #ifdef RANGECHECK 
     if (x < 0
@@ -700,15 +711,15 @@ void V_DrawBlock(int x, int y, int width, int height, byte *src)
 
     while (height--) 
     { 
-	memcpy (dest, src, width); 
+	memcpy (dest, src, width * sizeof(pixel_t)); 
 	src += width; 
 	dest += SCREENWIDTH; 
     } 
 } 
 
-void V_DrawScaledBlock(int x, int y, int width, int height, byte *src)
+void V_DrawScaledBlock(int x, int y, int width, int height, pixel_t *src)
 {
-    byte *dest;
+    pixel_t *dest;
     int i, j;
 
 #ifdef RANGECHECK
@@ -736,7 +747,7 @@ void V_DrawScaledBlock(int x, int y, int width, int height, byte *src)
 
 void V_DrawFilledBox(int x, int y, int w, int h, int c)
 {
-    uint8_t *buf, *buf1;
+    pixel_t *buf, *buf1;
     int x1, y1;
 
     buf = I_VideoBuffer + SCREENWIDTH * y + x;
@@ -756,7 +767,7 @@ void V_DrawFilledBox(int x, int y, int w, int h, int c)
 
 void V_DrawHorizLine(int x, int y, int w, int c)
 {
-    uint8_t *buf;
+    pixel_t *buf;
     int x1;
 
     buf = I_VideoBuffer + SCREENWIDTH * y + x;
@@ -834,7 +845,7 @@ void V_Init (void)
 
 // Set the buffer that the code draws to.
 
-void V_UseBuffer(byte *buffer)
+void V_UseBuffer(pixel_t *buffer)
 {
     dest_screen = buffer;
 }
@@ -950,12 +961,10 @@ static void warning_fn(png_structp p, png_const_charp s)
 }
 
 void WritePNGfile(char *filename, byte *data,
-                  int width, int height,
-                  byte *palette)
+                  int width, int height)
 {
     png_structp ppng;
     png_infop pinfo;
-    png_colorp pcolor;
     FILE *handle;
     int i;
 
@@ -982,31 +991,16 @@ void WritePNGfile(char *filename, byte *data,
     png_init_io(ppng, handle);
 
     png_set_IHDR(ppng, pinfo, width, height,
-                 8, PNG_COLOR_TYPE_PALETTE, PNG_INTERLACE_NONE,
+                 8, PNG_COLOR_TYPE_RGB_ALPHA, PNG_INTERLACE_NONE,
                  PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
 
-    pcolor = malloc(sizeof(*pcolor) * 256);
-    if (!pcolor)
-    {
-        png_destroy_write_struct(&ppng, &pinfo);
-        return;
-    }
-
-    for (i = 0; i < 256; i++)
-    {
-        pcolor[i].red   = *(palette + 3 * i);
-        pcolor[i].green = *(palette + 3 * i + 1);
-        pcolor[i].blue  = *(palette + 3 * i + 2);
-    }
-
-    png_set_PLTE(ppng, pinfo, pcolor, 256);
-    free(pcolor);
+    png_set_bgr(ppng);
 
     png_write_info(ppng, pinfo);
 
     for (i = 0; i < SCREENHEIGHT; i++)
     {
-        png_write_row(ppng, data + i*SCREENWIDTH);
+        png_write_row(ppng, data + i*SCREENWIDTH*sizeof(pixel_t));
     }
 
     png_write_end(ppng, pinfo);
@@ -1058,8 +1052,7 @@ void V_ScreenShot(char *format)
     if (png_screenshots)
     {
     WritePNGfile(lbmname, I_VideoBuffer,
-                 SCREENWIDTH, SCREENHEIGHT,
-                 W_CacheLumpName (DEH_String("PLAYPAL"), PU_CACHE));
+                 SCREENWIDTH, SCREENHEIGHT);
     }
     else
 #endif

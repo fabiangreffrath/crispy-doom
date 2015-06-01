@@ -74,7 +74,7 @@ extern fixed_t		ds_ystep;
 extern byte*		ds_source;		
 
 extern byte*		translationtables;
-extern byte*		dc_translation;
+extern byte*	dc_translation;
 
 
 // Span blitting for rows, floor/ceiling.

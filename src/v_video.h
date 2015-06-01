@@ -40,6 +40,9 @@ extern byte *tinttable;
 extern byte *dp_translation;
 extern boolean dp_translucent;
 
+#define CB_DARK25      0x40000000
+#define CB_DARK50      0x80000000
+
 // haleyjd 08/28/10: implemented for Strife support
 // haleyjd 08/28/10: Patch clipping callback, implemented to support Choco
 // Strife.
@@ -52,7 +55,7 @@ void V_Init (void);
 
 // Draw a block from the specified source screen to the screen.
 
-void V_CopyRect(int srcx, int srcy, byte *source,
+void V_CopyRect(int srcx, int srcy, pixel_t *source,
                 int width, int height,
                 int destx, int desty);
 
@@ -66,8 +69,8 @@ void V_DrawPatchDirect(int x, int y, patch_t *patch);
 
 // Draw a linear block of pixels into the view buffer.
 
-void V_DrawBlock(int x, int y, int width, int height, byte *src);
-void V_DrawScaledBlock(int x, int y, int width, int height, byte *src);
+void V_DrawBlock(int x, int y, int width, int height, pixel_t *src);
+void V_DrawScaledBlock(int x, int y, int width, int height, pixel_t *src);
 
 void V_MarkRect(int x, int y, int width, int height);
 
@@ -83,7 +86,7 @@ void V_DrawRawScreen(byte *raw);
 
 // Temporarily switch to using a different buffer to draw graphics, etc.
 
-void V_UseBuffer(byte *buffer);
+void V_UseBuffer(pixel_t *buffer);
 
 // Return to using the normal screen buffer to draw graphics.
 

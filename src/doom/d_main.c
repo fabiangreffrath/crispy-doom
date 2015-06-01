@@ -157,6 +157,7 @@ boolean         crispy_havee1m10 = false;
 boolean         crispy_havemap33 = false;
 boolean         crispy_havessg = false;
 boolean         crispy_nwtmerge = false;
+boolean         crispy_redrawall = false;
 
 void D_ConnectNetGame(void);
 void D_CheckNetGame(void);
@@ -291,7 +292,7 @@ void D_Display (void)
     
     // clean up border stuff
     if (gamestate != oldgamestate && gamestate != GS_LEVEL)
-	I_SetPalette (W_CacheLumpName (DEH_String("PLAYPAL"),PU_CACHE));
+	R_InitColormaps (0);
 
     // see if the border needs to be initially drawn
     if (gamestate == GS_LEVEL && oldgamestate != GS_LEVEL)
@@ -332,9 +333,7 @@ void D_Display (void)
 	AM_Drawer ();
 	HU_Drawer ();
 
-	// [crispy] force redraw of status bar and border
-	viewactivestate = false;
-	inhelpscreensstate = true;
+	crispy_redrawall = true;
     }
 
     // [crispy] shade background when a menu is active or the game is paused
@@ -343,7 +342,7 @@ void D_Display (void)
 	static int firsttic;
 
 	for (y = 0; y < SCREENWIDTH * SCREENHEIGHT; y++)
-	    I_VideoBuffer[y] = colormaps[menushade * 256 + I_VideoBuffer[y]];
+	    I_VideoBuffer[y] = I_DarkBlend(I_VideoBuffer[y], menushade << 3);
 
 	if (menushade < 16 && gametic != firsttic)
 	{
@@ -351,13 +350,20 @@ void D_Display (void)
 	    firsttic = gametic;
 	}
 
-	// [crispy] force redraw of status bar and border
-	viewactivestate = false;
-	inhelpscreensstate = true;
+	crispy_redrawall = true;
     }
     else
     if (menushade)
 	menushade = 0;
+
+    // [crispy] force redraw of status bar and border
+    if (crispy_redrawall)
+    {
+	viewactivestate = false;
+	inhelpscreensstate = true;
+
+	crispy_redrawall = false;
+    }
 
     // draw pause pic
     if (paused)

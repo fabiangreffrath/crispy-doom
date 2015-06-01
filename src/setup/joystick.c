@@ -415,7 +415,7 @@ static const known_joystick_t *GetJoystickType(int index)
     int i;
 
     joystick = all_joysticks[index];
-    name = SDL_JoystickName(index);
+    name = SDL_JoystickName(joystick);
     axes = SDL_JoystickNumAxes(joystick);
     buttons = SDL_JoystickNumButtons(joystick);
     hats = SDL_JoystickNumHats(joystick);
@@ -542,7 +542,7 @@ static void SetJoystickButtonLabel(void)
     if (joystick_initted
      && joystick_index >= 0 && joystick_index < SDL_NumJoysticks())
     {
-        name = (char *) SDL_JoystickName(joystick_index);
+        name = (char *) SDL_JoystickNameForIndex(joystick_index);
     }
 
     TXT_SetButtonLabel(joystick_button, name);

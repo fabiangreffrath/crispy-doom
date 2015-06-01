@@ -30,11 +30,11 @@
 
 // Should be I_VideoBuffer
 
-static byte *src_buffer;
+static pixel_t *src_buffer;
 
 // Destination buffer, ie. screen->pixels.
 
-static byte *dest_buffer;
+static pixel_t *dest_buffer;
 
 // Pitch of destination buffer, ie. screen->pitch.
 
@@ -58,7 +58,7 @@ static byte *half_stretch_table = NULL;
 // Called to set the source and destination buffers before doing the
 // scale.
 
-void I_InitScale(byte *_src_buffer, byte *_dest_buffer, int _dest_pitch)
+void I_InitScale(pixel_t *_src_buffer, pixel_t *_dest_buffer, int _dest_pitch)
 {
     src_buffer = _src_buffer;
     dest_buffer = _dest_buffer;
@@ -74,14 +74,14 @@ void I_InitScale(byte *_src_buffer, byte *_dest_buffer, int _dest_pitch)
 
 static boolean I_Scale1x(int x1, int y1, int x2, int y2)
 {
-    byte *bufp, *screenp;
+    pixel_t *bufp, *screenp;
     int y;
     int w = x2 - x1;
     
     // Need to byte-copy from buffer into the screen buffer
 
     bufp = src_buffer + y1 * SCREENWIDTH + x1;
-    screenp = (byte *) dest_buffer + y1 * dest_pitch + x1;
+    screenp = (pixel_t *) dest_buffer + y1 * dest_pitch + x1;
 
     for (y=y1; y<y2; ++y)
     {
@@ -104,18 +104,18 @@ screen_mode_t mode_scale_1x = {
 
 static boolean I_Scale2x(int x1, int y1, int x2, int y2)
 {
-    byte *bufp, *screenp, *screenp2;
+    pixel_t *bufp, *screenp, *screenp2;
     int x, y;
     int multi_pitch;
 
     multi_pitch = dest_pitch * 2;
     bufp = src_buffer + y1 * SCREENWIDTH + x1;
-    screenp = (byte *) dest_buffer + (y1 * dest_pitch + x1) * 2;
+    screenp = dest_buffer + (y1 * dest_pitch + x1) * 2;
     screenp2 = screenp + dest_pitch;
 
     for (y=y1; y<y2; ++y)
     {
-        byte *sp, *sp2, *bp;
+        pixel_t *sp, *sp2, *bp;
         sp = screenp;
         sp2 = screenp2;
         bp = bufp;
@@ -145,7 +145,7 @@ screen_mode_t mode_scale_2x = {
 
 static boolean I_Scale3x(int x1, int y1, int x2, int y2)
 {
-    byte *bufp, *screenp, *screenp2, *screenp3;
+    pixel_t *bufp, *screenp, *screenp2, *screenp3;
     int x, y;
     int multi_pitch;
 

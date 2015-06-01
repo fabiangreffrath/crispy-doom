@@ -773,10 +773,10 @@ void R_InitTextures (void)
     if (I_ConsoleStdout())
     {
         printf("[");
-        for (i = 0; i < temp3 + 9 + 1; i++) // [crispy] one more for R_InitTranMap()
+        for (i = 0; i < temp3 + 9; i++)
             printf(" ");
         printf("]");
-        for (i = 0; i < temp3 + 10 + 1; i++) // [crispy] one more for R_InitTranMap()
+        for (i = 0; i < temp3 + 10; i++)
             printf("\b");
     }
 	
@@ -924,131 +924,60 @@ void R_InitSpriteLumps (void)
     }
 }
 
-// [crispy] initialize translucency filter map
-// based in parts on the implementation from boom202s/R_DATA.C:676-787
-
-enum {
-    r, g, b
-} rgb_t;
-
-int tran_filter_pct = 66;
-
-void R_InitTranMap()
-{
-    int lump = W_CheckNumForName("TRANMAP");
-
-    // If a tranlucency filter map lump is present, use it
-    if (lump != -1)
-    {
-	// Set a pointer to the translucency filter maps.
-	tranmap = W_CacheLumpNum(lump, PU_STATIC);
-	printf(":"); // [crispy] loaded from a lump
-    }
-    else
-    {
-	// Compose a default transparent filter map based on PLAYPAL.
-	unsigned char *playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
-	char *fname = NULL;
-	extern char *configdir;
-
-	struct {
-	    unsigned char pct;
-	    unsigned char playpal[256*3]; // [crispy] a palette has 768 bytes!
-	} cache;
-
-	FILE *cachefp = fopen(fname = M_StringJoin(configdir,
-	                      "tranmap.dat", NULL), "r+b"); // [crispy] open file readable
-
-	tranmap = Z_Malloc(256*256, PU_STATIC, 0);
-
-	// Use cached translucency filter if it's available
-	if (!cachefp ? cachefp = fopen(fname,"wb") , 1 : // [crispy] if file not readable, open writable, continue
-	    fread(&cache, 1, sizeof cache, cachefp) != sizeof cache || // [crispy] could not read struct cache from file
-	    cache.pct != tran_filter_pct || // [crispy] filter percents differ
-	    memcmp(cache.playpal, playpal, sizeof cache.playpal) || // [crispy] base palettes differ
-	    fread(tranmap, 256, 256, cachefp) != 256 ) // [crispy] could not read entire translucency map
-	{
-	byte *fg, *bg, blend[3], *tp = tranmap;
-	int i, j, btmp;
-	extern int FindNearestColor(byte *palette, int r, int g, int b);
-
-	// [crispy] background color
-	for (i = 0; i < 256; i++)
-	{
-	    // [crispy] foreground color
-	    for (j = 0; j < 256; j++)
-	    {
-		// [crispy] shortcut: identical foreground and background
-		if (i == j)
-		{
-		    *tp++ = i;
-		    continue;
-		}
-
-		bg = playpal + 3*i;
-		fg = playpal + 3*j;
-
-		// [crispy] blended color - emphasize blues
-		// Colour matching in RGB space doesn't work very well with the blues
-		// in Doom's palette. Rather than do any colour conversions, just
-		// emphasize the blues when building the translucency table.
-		btmp = fg[b] * 1.666 < (fg[r] + fg[g]) ? 0 : 50;
-		blend[r] = (tran_filter_pct * fg[r] + (100 - tran_filter_pct) * bg[r]) / (100 + btmp);
-		blend[g] = (tran_filter_pct * fg[g] + (100 - tran_filter_pct) * bg[g]) / (100 + btmp);
-		blend[b] = (tran_filter_pct * fg[b] + (100 - tran_filter_pct) * bg[b]) / 100;
-
-		*tp++ = FindNearestColor(playpal, blend[r], blend[g], blend[b]);
-	    }
-	}
-
-	// write out the cached translucency map
-	if (cachefp)
-	{
-	    cache.pct = tran_filter_pct; // [crispy] set filter percents
-	    memcpy(cache.playpal, playpal, sizeof cache.playpal); // [crispy] set base palette
-	    fseek(cachefp, 0, SEEK_SET); // [crispy] go to start of file
-	    fwrite(&cache, 1, sizeof cache, cachefp); // [crispy] write struct cache
-	    fwrite(tranmap, 256, 256, cachefp); // [crispy] write translucency map
-	    printf("!"); // [crispy] generated and saved
-	}
-	else
-	    printf("?"); // [crispy] generated, but not saved
-	}
-	else
-	    printf("."); // [crispy] loaded from a file
-
-	if (cachefp)
-	    fclose(cachefp);
-
-	free(fname);
-
-	Z_ChangeTag(playpal, PU_CACHE);
-    }
-}
-
 //
 // R_InitColormaps
 //
-void R_InitColormaps (void)
+void R_InitColormaps (int pal)
 {
-    int	lump;
+    byte *doompalette, *playpal;
+    int c, i, j;
+    byte r, g, b;
+    float scale;
 
-    // Load in the light tables, 
-    //  256 byte align tables.
-    lump = W_GetNumForName(DEH_String("COLORMAP"));
-    colormaps = W_CacheLumpNum(lump, PU_STATIC);
-
-    // [crispy] initialize color translation and color strings tables
+    if (!colormaps)
     {
-	byte *playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
-	char c[3];
-	int i, j;
+	colormaps = (lighttable_t*) Z_Malloc((NUMCOLORMAPS + 1) * 256 * sizeof(lighttable_t), PU_STATIC, 0);
+    }
+
+    doompalette = W_CacheLumpName("PLAYPAL", PU_STATIC);
+    playpal = doompalette + 256 * 3 * pal;
+
+    for (c = j = 0; c < NUMCOLORMAPS; c++)
+    {
+	scale = 1. - 1. * c / (NUMCOLORMAPS - 1);
+
+	for (i = 0; i < 256; i++)
+	{
+	    r = gammatable[usegamma][playpal[3 * i + 0]] * scale + gammatable[usegamma][0] * (1. - scale);
+	    g = gammatable[usegamma][playpal[3 * i + 1]] * scale + gammatable[usegamma][0] * (1. - scale);
+	    b = gammatable[usegamma][playpal[3 * i + 2]] * scale + gammatable[usegamma][0] * (1. - scale);
+
+	    colormaps[j++] = 0xff000000 + (r << 16) + (g << 8) + b;
+	}
+    }
+
+    // [crispy] Invulnerability (c == COLORMAPS)
+    for (i = 0; i < 256; i++)
+    {
+	r = g = b = 
+/*
+	255 - (0.299 * gammatable[4 - usegamma][playpal[3 * i + 0]] +
+	       0.587 * gammatable[4 - usegamma][playpal[3 * i + 1]] +
+	       0.144 * gammatable[4 - usegamma][playpal[3 * i + 2]]);
+*/
+	255 - (gammatable[4 - usegamma][playpal[3 * i + 0]] +
+	       gammatable[4 - usegamma][playpal[3 * i + 1]] +
+	       gammatable[4 - usegamma][playpal[3 * i + 2]])/3;
+
+	colormaps[j++] = 0xff000000 + (r << 16) + (g << 8) + b;
+    }
+
+    // [crispy] initialize color translation tables
+    {
 	boolean keepgray = false;
+
 	extern char *iwadfile;
 	extern byte V_Colorize (byte *playpal, int cr, byte source, boolean keepgray109);
-
-	if (!crstr)
-	    crstr = malloc(CRMAX * sizeof(*crstr));
 
 	// [crispy] check for status bar graphics replacements
 	i = W_CheckNumForName(DEH_String("sttnum0")); // [crispy] Status Bar '0'
@@ -1060,13 +989,24 @@ void R_InitColormaps (void)
 	    {
 		cr[i][j] = V_Colorize(playpal, i, j, keepgray);
 	    }
+	}
+    }
 
+    // [crispy] initialize color strings tables
+    if (!crstr)
+    {
+	char c[3];
+
+	crstr = malloc(CRMAX * sizeof(*crstr));
+
+	for (i = 0; i < CRMAX; i++)
+	{
 	    M_snprintf(c, sizeof(c), "\x1b%c", '0' + i);
 	    crstr[i] = M_StringDuplicate(c);
 	}
-
-	Z_ChangeTag(playpal, PU_CACHE);
     }
+
+    Z_ChangeTag(doompalette, PU_CACHE);
 }
 
 
@@ -1085,8 +1025,7 @@ void R_InitData (void)
     printf (".");
     R_InitSpriteLumps ();
     printf (".");
-    R_InitTranMap(); // [crispy] prints a mark itself
-    R_InitColormaps ();
+    R_InitColormaps (0);
 }
 
 

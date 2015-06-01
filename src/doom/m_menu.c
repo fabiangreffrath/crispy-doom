@@ -1295,26 +1295,26 @@ static void M_DrawMouse(void)
 // [crispy] crispness menu
 static void M_DrawCrispnessBackground(void)
 {
-    byte *src, *dest;
-    static byte *sdest;
+    byte *src;
+    static pixel_t *dest, *sdest;
     int x, y;
 
     if (!sdest)
     {
 	src = W_CacheLumpName("FLOOR4_6" , PU_CACHE);
-	dest = (unsigned char *) Z_Malloc (SCREENWIDTH * SCREENHEIGHT, PU_STATIC, NULL);
+	dest = (pixel_t *) Z_Malloc (SCREENWIDTH * SCREENHEIGHT * sizeof(pixel_t), PU_STATIC, NULL);
 	sdest = dest;
 
 	for (y = 0; y < SCREENHEIGHT; y++)
 	{
 	    for (x = 0; x < SCREENWIDTH; x++)
 	    {
-		*dest++ = src[(y & 63) * 64 + (x & 63)];
+		*dest++ = colormaps[src[(y & 63) * 64 + (x & 63)]];
 	    }
 	}
     }
 
-    memcpy(I_VideoBuffer, sdest, SCREENWIDTH * SCREENHEIGHT);
+    memcpy(I_VideoBuffer, sdest, SCREENWIDTH * SCREENHEIGHT * sizeof(pixel_t));
 }
 
 static void M_DrawCrispnessHeader(char *item)
@@ -2530,7 +2530,13 @@ boolean M_Responder (event_t* ev)
 	    if (usegamma > 4)
 		usegamma = 0;
 	    players[consoleplayer].message = DEH_String(gammamsg[usegamma]);
-            I_SetPalette (W_CacheLumpName (DEH_String("PLAYPAL"),PU_CACHE));
+
+	    R_InitColormaps(0);
+	    I_ApplyColorMod(0); // [crispy] gamma correction resets palette
+	    R_FillBackScreen ();
+
+	    crispy_redrawall = true;
+
 	    return true;
 	}
         // [crispy] those two can be considered as shortcuts for the IDCLEV cheat

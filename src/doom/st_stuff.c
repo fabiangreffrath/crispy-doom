@@ -264,7 +264,7 @@ extern int screenblocks; // [crispy] for the Crispy HUD
 #define ST_MAPHEIGHT		1
 
 // graphics are drawn to a backing screen and blitted to the real screen
-byte                   *st_backing_screen;
+pixel_t                   *st_backing_screen;
 	    
 // main player in game
 static player_t*	plyr; 
@@ -1261,7 +1261,6 @@ void ST_doPaletteStuff(void)
 {
 
     int		palette;
-    byte*	pal;
     int		cnt;
     int		bzc;
 
@@ -1320,8 +1319,7 @@ void ST_doPaletteStuff(void)
     if (palette != st_palette)
     {
 	st_palette = palette;
-	pal = (byte *) W_CacheLumpNum (lu_palette, PU_CACHE)+palette*768;
-	I_SetPalette (pal);
+	I_ApplyColorMod(palette);
     }
 
 }
@@ -1868,8 +1866,9 @@ void ST_Stop (void)
     if (st_stopped)
 	return;
 
-    I_SetPalette (W_CacheLumpNum (lu_palette, PU_CACHE));
-
+//    R_InitColormaps(0);
+    I_ApplyColorMod(0);
+    
     st_stopped = true;
 }
 
@@ -1891,6 +1890,6 @@ void ST_Init (void)
     }
 
     ST_loadData();
-    st_backing_screen = (byte *) Z_Malloc((ST_WIDTH << hires) * (ST_HEIGHT << hires), PU_STATIC, 0);
+    st_backing_screen = (pixel_t *) Z_Malloc((ST_WIDTH << hires) * (ST_HEIGHT << hires) * sizeof(pixel_t), PU_STATIC, 0);
 }
 
