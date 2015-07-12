@@ -24,12 +24,16 @@
 #include "r_defs.h"
 #include "r_state.h"
 
+#define LOOKDIRMIN	110 // [crispy] -110, actually
+#define LOOKDIRMAX	90
+#define LOOKDIRS	(LOOKDIRMIN+1+LOOKDIRMAX) // [crispy] lookdir range: -110..0..90
 
 // Retrieve column data for span blitting.
 byte*
 R_GetColumn
 ( int		tex,
-  int		col );
+  int		col,
+  boolean	opaque );
 
 
 // I/O, setting up the stuff.

@@ -46,7 +46,7 @@
 // Distance tp origin when sounds should be maxed out.
 // This should relate to movement clipping resolution
 // (see BLOCKMAP handling).
-// In the source code release: (160*FRACUNIT).  Changed back to the 
+// In the source code release: (160*FRACUNIT).  Changed back to the
 // Vanilla value of 200 (why was this changed?)
 
 #define S_CLOSE_DIST (200 * FRACUNIT)
@@ -59,7 +59,6 @@
 
 #define S_STEREO_SWING (96 * FRACUNIT)
 
-#define NORM_PITCH 128
 #define NORM_PRIORITY 64
 #define NORM_SEP 128
 
@@ -73,7 +72,9 @@ typedef struct
 
     // handle of the sound being played
     int handle;
-    
+
+    int pitch;
+
 } channel_t;
 
 // The set of channels available
@@ -85,7 +86,7 @@ static channel_t *channels;
 
 int sfxVolume = 8;
 
-// Maximum volume of music. 
+// Maximum volume of music.
 
 int musicVolume = 8;
 
@@ -95,7 +96,7 @@ static int snd_SfxVolume;
 
 // Whether songs are mus_paused
 
-static boolean mus_paused;        
+static boolean mus_paused;
 
 // Music currently being played
 
@@ -112,7 +113,7 @@ int snd_channels = 8;
 //
 
 void S_Init(int sfxVolume, int musicVolume)
-{  
+{
     int i;
 
     I_SetOPLDriverVer(opl_v_new);
@@ -139,6 +140,12 @@ void S_Init(int sfxVolume, int musicVolume)
     for (i=1 ; i<NUMSFX ; i++)
     {
         S_sfx[i].lumpnum = S_sfx[i].usefulness = -1;
+    }
+
+    // Doom defaults to pitch-shifting off.
+    if (snd_pitchshift == -1)
+    {
+        snd_pitchshift = 0;
     }
 
     I_AtExit(S_Shutdown, true);
@@ -208,6 +215,25 @@ void S_Start(void)
     // start new music for the level
     mus_paused = 0;
 
+    if (gamemode == commercial &&
+        (gameepisode == 2 || gamemission == pack_nerve))
+    {
+        int nmus[]=
+        {
+            mus_messag,
+            mus_ddtblu,
+            mus_doom,
+            mus_shawn,
+            mus_in_cit,
+            mus_the_da,
+            mus_in_cit,
+            mus_shawn2,
+            mus_ddtbl2,
+        };
+
+        mnum = nmus[gamemap-1];
+    }
+    else
     if (gamemode == commercial)
     {
         mnum = mus_runnin + gamemap - 1;
@@ -237,10 +263,10 @@ void S_Start(void)
         {
             mnum = spmus[gamemap-1];
         }
-    }        
+    }
 
     S_ChangeMusic(mnum, true);
-}        
+}
 
 void S_StopSound(mobj_t *origin)
 {
@@ -265,7 +291,7 @@ static int S_GetChannel(mobj_t *origin, sfxinfo_t *sfxinfo)
 {
     // channel number to use
     int                cnum;
-    
+
     channel_t*        c;
 
     // Find an open channel
@@ -296,7 +322,7 @@ static int S_GetChannel(mobj_t *origin, sfxinfo_t *sfxinfo)
 
         if (cnum == snd_channels)
         {
-            // FUCK!  No lower priority.  Sorry, Charlie.    
+            // FUCK!  No lower priority.  Sorry, Charlie.
             return -1;
         }
         else
@@ -337,12 +363,12 @@ static int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
 
     // From _GG1_ p.428. Appox. eucledian distance fast.
     approx_dist = adx + ady - ((adx < ady ? adx : ady)>>1);
-    
+
     if (gamemap != 8 && approx_dist > S_CLIPPING_DIST)
     {
         return 0;
     }
-    
+
     // angle of source to listener
     angle = R_PointToAngle2(listener->x,
                             listener->y,
@@ -384,10 +410,25 @@ static int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
         // distance effect
         *vol = (snd_SfxVolume
                 * ((S_CLIPPING_DIST - approx_dist)>>FRACBITS))
-            / S_ATTENUATOR; 
+            / S_ATTENUATOR;
     }
-    
+
     return (*vol > 0);
+}
+
+// clamp supplied integer to the range 0 <= x <= 255.
+
+static int Clamp(int x)
+{
+    if (x < 0)
+    {
+        return 0;
+    }
+    else if (x > 255)
+    {
+        return 255;
+    }
+    return x;
 }
 
 void S_StartSound(void *origin_p, int sfx_id)
@@ -396,8 +437,13 @@ void S_StartSound(void *origin_p, int sfx_id)
     mobj_t *origin;
     int rc;
     int sep;
+    int pitch;
     int cnum;
     int volume;
+
+    // [crispy] play no sounds
+    if (crispy_demowarp)
+	return;
 
     origin = (mobj_t *) origin_p;
     volume = snd_SfxVolume;
@@ -411,9 +457,11 @@ void S_StartSound(void *origin_p, int sfx_id)
     sfx = &S_sfx[sfx_id];
 
     // Initialize sound parameters
+    pitch = NORM_PITCH;
     if (sfx->link)
     {
         volume += sfx->volume;
+        pitch = sfx->pitch;
 
         if (volume < 1)
         {
@@ -438,7 +486,7 @@ void S_StartSound(void *origin_p, int sfx_id)
 
         if (origin->x == players[consoleplayer].mo->x
          && origin->y == players[consoleplayer].mo->y)
-        {        
+        {
             sep = NORM_SEP;
         }
 
@@ -446,11 +494,22 @@ void S_StartSound(void *origin_p, int sfx_id)
         {
             return;
         }
-    }        
+    }
     else
     {
         sep = NORM_SEP;
     }
+
+    // hacks to vary the sfx pitches
+    if (sfx_id >= sfx_sawup && sfx_id <= sfx_sawhit)
+    {
+        pitch += 8 - (M_Random()&15);
+    }
+    else if (sfx_id != sfx_itemup && sfx_id != sfx_tink)
+    {
+        pitch += 16 - (M_Random()&31);
+    }
+    pitch = Clamp(pitch);
 
     // kill old sound
     S_StopSound(origin);
@@ -474,8 +533,9 @@ void S_StartSound(void *origin_p, int sfx_id)
         sfx->lumpnum = I_GetSfxLumpNum(sfx);
     }
 
-    channels[cnum].handle = I_StartSound(sfx, cnum, volume, sep);
-}        
+    channels[cnum].pitch = pitch;
+    channels[cnum].handle = I_StartSound(sfx, cnum, volume, sep, channels[cnum].pitch);
+}
 
 //
 // Stop and resume music, during game PAUSE.
@@ -549,7 +609,7 @@ void S_UpdateSounds(mobj_t *listener)
                                                   c->origin,
                                                   &volume,
                                                   &sep);
-                    
+
                     if (!audible)
                     {
                         S_StopChannel(cnum);
@@ -576,7 +636,7 @@ void S_SetMusicVolume(int volume)
     {
         I_Error("Attempt to set music volume at %d",
                 volume);
-    }    
+    }
 
     I_SetMusicVolume(volume);
 }
@@ -605,6 +665,10 @@ void S_ChangeMusic(int musicnum, int looping)
     musicinfo_t *music = NULL;
     char namebuf[9];
     void *handle;
+
+    // [crispy] play no music if this is not the right map
+    if (crispy_demowarp && (gamestate != GS_LEVEL || crispy_demowarp != gamemap))
+	return;
 
     // The Doom IWAD file has two versions of the intro music: d_intro
     // and d_introa.  The latter is used for OPL playback.
