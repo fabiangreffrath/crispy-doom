@@ -64,6 +64,9 @@ set(SOURCE_FILES
 
 set(FEATURE_DEHACKED_SOURCE_FILES
     deh_ammo.c
+    deh_bexincl.c
+    deh_bexpars.c
+    deh_bexptr.c
     deh_bexstr.c
     deh_cheat.c
     deh_doom.c

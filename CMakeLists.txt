@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.2)
-project("Chocolate Doom" VERSION 2.2.0)
+project("Crispy Doom" VERSION 2.2.0)
 
-set(PROGRAM_PREFIX "chocolate-")
-set(PROJECT_BUGREPORT "fraggle@gmail.com")
+set(PROGRAM_PREFIX "crispy-")
+set(PROJECT_BUGREPORT "Fabian Greffrath")
 set(PROJECT_COPYRIGHT "Copyright (C) 1993-2015")
 set(PROJECT_LICENSE "GNU General Public License, version 2")
-set(WINDOWS_RC_VERSION "2,2,0,0")
+set(WINDOWS_RC_VERSION "2,3,0,0")
 
 include(TestBigEndian)
 test_big_endian(WORDS_BIGENDIAN)
