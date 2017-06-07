@@ -744,9 +744,12 @@ ST_Responder (event_t* ev)
 	{
 	  musnum = mus_runnin + (buf[0]-'0')*10 + buf[1]-'0' - 1;
 	  
-	  // [crispy] prevent crash with IDMUS00
-	  if ((((buf[0]-'0')*10 + buf[1]-'0') > 35 || musnum < mus_runnin)
+	  /*
+	  if (((buf[0]-'0')*10 + buf[1]-'0') > 35
        && gameversion >= exe_doom_1_8)
+	  */
+	  // [crispy] prevent crash with IDMUS00
+	  if (musnum < mus_runnin || musnum >= NUMMUSIC)
 	    plyr->message = DEH_String(STSTR_NOMUS);
 	  else
 	    S_ChangeMusic(musnum, 1);
@@ -755,12 +758,20 @@ ST_Responder (event_t* ev)
 	{
 	  musnum = mus_e1m1 + (buf[0]-'1')*9 + (buf[1]-'1');
 	  
+	  /*
+	  if (((buf[0]-'1')*9 + buf[1]-'1') > 31)
+	  */
 	  // [crispy] prevent crash with IDMUS0x or IDMUSx0
-	  if (((buf[0]-'1')*9 + buf[1]-'1') > 31 || buf[0] < '1' || buf[1] < '1')
+	  if (musnum < mus_e1m1 || musnum >= mus_runnin ||
+	      // [crispy] support dedicated music tracks for the 4th episode
+	      S_music[musnum].lumpnum == -1)
 	    plyr->message = DEH_String(STSTR_NOMUS);
 	  else
 	    S_ChangeMusic(musnum, 1);
 	}
+
+      // [crispy] eat key press, i.e. don't change weapon upon music change
+      return true;
       }
       // [crispy] allow both idspispopd and idclip cheats in all gamemissions
       else if ( ( /* logical_gamemission == doom
@@ -1079,6 +1090,8 @@ void ST_updateFaceWidget(void)
     // [crispy] fix status bar face hysteresis
     int		painoffset;
     static int	faceindex;
+    // [crispy] no evil grin or rampage face in god mode
+    const boolean invul = (plyr->cheats & CF_GODMODE) || plyr->powers[pw_invulnerability];
 
     painoffset = ST_calcPainOffset();
 
@@ -1110,7 +1123,8 @@ void ST_updateFaceWidget(void)
 		    oldweaponsowned[i] = plyr->weaponowned[i];
 		}
 	    }
-	    if (doevilgrin) 
+	    // [crispy] no evil grin in god mode
+	    if (doevilgrin && !invul)
 	    {
 		// evil grin if just picked up weapon
 		priority = 8;
@@ -1208,7 +1222,8 @@ void ST_updateFaceWidget(void)
 	{
 	    if (lastattackdown==-1)
 		lastattackdown = ST_RAMPAGEDELAY;
-	    else if (!--lastattackdown)
+	    // [crispy] no rampage face in god mode
+	    else if (!--lastattackdown && !invul)
 	    {
 		priority = 5;
 		faceindex = ST_RAMPAGEOFFSET;
@@ -1224,8 +1239,7 @@ void ST_updateFaceWidget(void)
     if (priority < 5)
     {
 	// invulnerability
-	if ((plyr->cheats & CF_GODMODE)
-	    || plyr->powers[pw_invulnerability])
+	if (invul)
 	{
 	    priority = 4;
 
@@ -1422,13 +1436,12 @@ static byte* ST_WidgetColor(int i)
             {
                 int ammo =  plyr->ammo[weaponinfo[plyr->readyweapon].ammo];
                 int fullammo = maxammo[weaponinfo[plyr->readyweapon].ammo];
-                int ammopct = 100 * ammo / fullammo;
 
-                if (ammopct < 25)
+                if (ammo < fullammo/4)
                     return cr[CR_RED];
-                else if (ammopct < 50)
+                else if (ammo < fullammo/2)
                     return cr[CR_GOLD];
-                else if (ammopct <= 100)
+                else if (ammo <= fullammo)
                     return cr[CR_GREEN];
                 else
                     return cr[CR_BLUE];
@@ -1503,6 +1516,7 @@ static byte* ST_WidgetColor(int i)
 void ST_drawWidgets(boolean refresh)
 {
     int		i;
+    boolean gibbed = false;
 
     // used by w_arms[] widgets
     st_armson = st_statusbaron && !deathmatch;
@@ -1514,28 +1528,62 @@ void ST_drawWidgets(boolean refresh)
     STlib_updateNum(&w_ready, refresh);
     V_ClearDPTranslation();
 
-    // [crispy] draw berserk pack instead of no ammo if appropriate
-    if (screenblocks >= CRISPY_HUD && (!automapactive || crispy_automapoverlay) &&
-        plyr->readyweapon == wp_fist && plyr->powers[pw_strength])
+    // [crispy] draw "special widgets" in the Crispy HUD
+    if (screenblocks >= CRISPY_HUD && (!automapactive || crispy_automapoverlay))
     {
-	static patch_t *patch;
-	static short x, y;
-
-	if (!patch && !x && !y)
+	// [crispy] draw berserk pack instead of no ammo if appropriate
+	if (plyr->readyweapon == wp_fist && plyr->powers[pw_strength])
 	{
-	    if (W_CheckNumForName(DEH_String("PSTRA0")) >= 0)
-	    {
-		patch = W_CacheLumpName(DEH_String("PSTRA0"), PU_STATIC);
-		// [crispy] (23,179) is the center of the Ammo widget
-		x = 23 - SHORT(patch->width)/2 + SHORT(patch->leftoffset);
-		y = 179 - SHORT(patch->height)/2 + SHORT(patch->topoffset);
-	    }
-	    else
-		x = y = SHRT_MAX;
+		static patch_t *patch;
+
+		if (!patch)
+		{
+			const int lump = W_CheckNumForName(DEH_String("PSTRA0"));
+
+			if (lump >= 0)
+			{
+				patch = W_CacheLumpNum(lump, PU_STATIC);
+			}
+			// [crispy] should you ever play with the IDBEHOLDS cheat and the Shareware version...
+			else
+			{
+				patch = W_CacheLumpName("MEDIA0", PU_STATIC);
+			}
+		}
+
+		if (patch)
+		{
+			// [crispy] (23,179) is the center of the Ammo widget
+			V_DrawPatch(23 - SHORT(patch->width)/2 + SHORT(patch->leftoffset),
+			            179 - SHORT(patch->height)/2 + SHORT(patch->topoffset),
+			            patch);
+		}
 	}
 
-	if (patch)
-	    V_DrawPatch(x, y, patch);
+	// [crispy] draw the gibbed death state frames in the Health widget
+	// in sync with the actual player sprite
+	if (plyr->health <= 0 && plyr->mo->state - states >= mobjinfo[plyr->mo->type].xdeathstate)
+	{
+		state_t const *state = plyr->mo->state;
+		spritedef_t *sprdef;
+		spriteframe_t *sprframe;
+		patch_t *patch;
+
+		sprdef = &sprites[state->sprite];
+		sprframe = &sprdef->spriteframes[state->frame & FF_FRAMEMASK];
+		patch = W_CacheLumpNum(sprframe->lump[0] + firstspritelump, PU_CACHE);
+
+		if (plyr->mo->flags & MF_TRANSLATION)
+		{
+			dp_translation = translationtables - 256 +
+			                 ((plyr->mo->flags & MF_TRANSLATION) >> (MF_TRANSSHIFT - 8));
+		}
+
+		V_DrawPatch(73, 186, patch);
+		V_ClearDPTranslation();
+
+		gibbed = true;
+	}
    }
 
     for (i=0;i<4;i++)
@@ -1544,8 +1592,11 @@ void ST_drawWidgets(boolean refresh)
 	STlib_updateNum(&w_maxammo[i], refresh);
     }
 
+    if (!gibbed)
+    {
     dp_translation = ST_WidgetColor(hudcolor_health);
     STlib_updatePercent(&w_health, refresh || screenblocks >= CRISPY_HUD);
+    }
     dp_translation = ST_WidgetColor(hudcolor_armor);
     STlib_updatePercent(&w_armor, refresh || screenblocks >= CRISPY_HUD);
     V_ClearDPTranslation();

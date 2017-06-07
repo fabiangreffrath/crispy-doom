@@ -206,7 +206,6 @@ void D_Display (void)
     static  boolean		fullscreen = false;
     static  gamestate_t		oldgamestate = -1;
     static  int			borderdrawcount;
-    static  char		menushade; // [crispy] shade menu background
     int				nowtime;
     int				tics;
     int				wipestart;
@@ -353,33 +352,6 @@ void D_Display (void)
 	return;
     }
 
-    // [crispy] shade background when a menu is active or the game is paused
-    if (paused || menuactive)
-    {
-	static int firsttic;
-
-	if (!automapactive || crispy_automapoverlay)
-	{
-	    for (y = 0; y < SCREENWIDTH * SCREENHEIGHT; y++)
-	    {
-		I_VideoBuffer[y] = colormaps[menushade * 256 + I_VideoBuffer[y]];
-	    }
-	}
-
-	if (menushade < 16 && gametic != firsttic)
-	{
-	    menushade += ticdup;
-	    firsttic = gametic;
-	}
-
-	// [crispy] force redraw of status bar and border
-	viewactivestate = false;
-	inhelpscreensstate = true;
-    }
-    else
-    if (menushade)
-	menushade = 0;
-
     // draw pause pic
     if (paused)
     {
@@ -387,7 +359,7 @@ void D_Display (void)
 	    y = 4;
 	else
 	    y = (viewwindowy >> hires)+4;
-	V_DrawPatchDirect((viewwindowx >> hires) + ((scaledviewwidth >> hires) - 68) / 2, y,
+	V_DrawPatchShadow2((viewwindowx >> hires) + ((scaledviewwidth >> hires) - 68) / 2, y,
                           W_CacheLumpName (DEH_String("M_PAUSE"), PU_CACHE));
     }
 
@@ -1560,6 +1532,17 @@ void D_DoomMain (void)
     if (M_CheckParm ("-altdeath"))
 	deathmatch = 2;
 
+    //!
+    // @category net
+    // @vanilla
+    //
+    // Start a deathmatch 3.0 game.  Weapons stay in place and
+    // all items respawn after 30 seconds.
+    //
+
+    if (M_CheckParm ("-dm3"))
+	deathmatch = 3;
+
     if (devparm)
 	DEH_printf(D_DEVSTR);
     
@@ -1990,11 +1973,11 @@ void D_DoomMain (void)
     (
         gamemode == commercial ||
         (
-            W_CheckNumForName("sht2a0")   != -1 && // [crispy] wielding/firing sprite sequence
-            W_CheckNumForName("dsdshtgn") != -1 && // [crispy] firing sound
-            W_CheckNumForName("dsdbopn")  != -1 && // [crispy] opening sound
-            W_CheckNumForName("dsdbload") != -1 && // [crispy] reloading sound
-            W_CheckNumForName("dsdbcls")  != -1    // [crispy] closing sound
+            W_CheckNumForName("sht2a0")         != -1 && // [crispy] wielding/firing sprite sequence
+            I_GetSfxLumpNum(&S_sfx[sfx_dshtgn]) != -1 && // [crispy] firing sound
+            I_GetSfxLumpNum(&S_sfx[sfx_dbopn])  != -1 && // [crispy] opening sound
+            I_GetSfxLumpNum(&S_sfx[sfx_dbload]) != -1 && // [crispy] reloading sound
+            I_GetSfxLumpNum(&S_sfx[sfx_dbcls])  != -1    // [crispy] closing sound
         )
     );
 

@@ -77,19 +77,10 @@ typedef struct
 
 } channel_t;
 
-// [crispy] "sound objects" hold the coordinates of removed map objects
-typedef struct
-{
-    thinker_t dummy;
-    fixed_t x;
-    fixed_t y;
-    fixed_t z;
-} sobj_t;
-
 // The set of channels available
 
 static channel_t *channels;
-static sobj_t *sobjs;
+static degenmobj_t *sobjs;
 
 // Maximum volume of a sound effect.
 // Internal default is max out of 0-15.
@@ -151,7 +142,7 @@ void S_Init(int sfxVolume, int musicVolume)
     // (the maximum numer of sounds rendered
     // simultaneously) within zone memory.
     channels = Z_Malloc(snd_channels*sizeof(channel_t), PU_STATIC, 0);
-    sobjs = Z_Malloc(snd_channels*sizeof(sobj_t), PU_STATIC, 0);
+    sobjs = Z_Malloc(snd_channels*sizeof(degenmobj_t), PU_STATIC, 0);
 
     // Free all channels for use
     for (i=0 ; i<snd_channels ; i++)
@@ -175,6 +166,16 @@ void S_Init(int sfxVolume, int musicVolume)
     }
 
     I_AtExit(S_Shutdown, true);
+
+    // [crispy] initialize dedicated music tracks for the 4th episode
+    for (i = mus_e4m1; i <= mus_e4m9; i++)
+    {
+        musicinfo_t *const music = &S_music[i];
+        char namebuf[9];
+
+        M_snprintf(namebuf, sizeof(namebuf), "d_%s", DEH_String(music->name));
+        music->lumpnum = W_CheckNumForName(namebuf);
+    }
 }
 
 void S_Shutdown(void)
@@ -289,6 +290,16 @@ void S_Start(void)
         else
         {
             mnum = spmus[gamemap-1];
+
+            // [crispy] support dedicated music tracks for the 4th episode
+            {
+                const int sp_mnum = mus_e1m1 + 3 * 9 + gamemap - 1;
+
+                if (S_music[sp_mnum].lumpnum > 0)
+                {
+                    mnum = sp_mnum;
+                }
+            }
         }
     }
 
@@ -334,7 +345,7 @@ void S_UnlinkSound(mobj_t *origin)
     {
         if (channels[cnum].sfxinfo && channels[cnum].origin == origin)
         {
-            sobj_t *const sobj = &sobjs[cnum];
+            degenmobj_t *const sobj = &sobjs[cnum];
             sobj->x = origin->x;
             sobj->y = origin->y;
             sobj->z = origin->z;
@@ -481,7 +492,8 @@ static int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
     {
         *vol = snd_SfxVolume;
     }
-    else if (gamemap == 8)
+    // [crispy] proper sound clipping in non-Doom1 MAP08
+    else if (gamemap == 8 && gamemode != commercial)
     {
         if (approx_dist > S_CLIPPING_DIST)
         {
@@ -500,7 +512,8 @@ static int S_AdjustSoundParams(mobj_t *listener, mobj_t *source,
             / S_ATTENUATOR;
     }
 
-    return (*vol > 0);
+    // [JN] Zero SFX volume means there must not be *any* sounds at all.
+    return (*vol > 0 && snd_SfxVolume);
 }
 
 // clamp supplied integer to the range 0 <= x <= 255.
@@ -569,7 +582,7 @@ void S_StartSound(void *origin_p, int sfx_id)
 
     // Check to see if it is audible,
     //  and if not, modify the params
-    if (origin && origin != players[consoleplayer].mo)
+    if (origin && origin != players[consoleplayer].mo && origin != players[consoleplayer].so) // [crispy] weapon sound source
     {
         rc = S_AdjustSoundParams(players[consoleplayer].mo,
                                  origin,
@@ -695,7 +708,7 @@ void S_UpdateSounds(mobj_t *listener)
 
                 // check non-local sounds for distance clipping
                 //  or modify their params
-                if (c->origin && listener != c->origin)
+                if (c->origin && listener != c->origin && c->origin != players[consoleplayer].so) // [crispy] weapon sound source
                 {
                     audible = S_AdjustSoundParams(listener,
                                                   c->origin,

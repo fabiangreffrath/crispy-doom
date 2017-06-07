@@ -46,11 +46,11 @@
 static const int recoil_values[][2] = {
   {10,   0}, // wp_fist
   {10,   4}, // wp_pistol
-  {30,  12}, // wp_shotgun
+  {30,   8}, // wp_shotgun
   {10,   4}, // wp_chaingun
   {100, 16}, // wp_missile
-  {20,   8}, // wp_plasma
-  {100, 16}, // wp_bfg
+  {20,   4}, // wp_plasma
+  {100, 20}, // wp_bfg
   {0,   -2}, // wp_chainsaw
   {80,  16}, // wp_supershotgun
 };
@@ -60,11 +60,19 @@ static const int recoil_values[][2] = {
 extern void P_Thrust (player_t* player, angle_t angle, fixed_t move);
 void A_Recoil (player_t* player)
 {
-    if (singleplayer && crispy_recoil && !(player->mo->flags & MF_NOCLIP))
-	P_Thrust(player, ANG180 + player->mo->angle, 2048 * recoil_values[player->readyweapon][0]);
+	if (player)
+	{
 
-    if (crispy_pitch)
-	player->recoilpitch = recoil_values[player->readyweapon][1]<<FRACBITS;
+		if (singleplayer && crispy_recoil && !(player->mo->flags & MF_NOCLIP))
+		{
+			P_Thrust(player, ANG180 + player->mo->angle, 2048 * recoil_values[player->readyweapon][0]);
+		}
+
+		if (crispy_pitch)
+		{
+			player->recoilpitch = recoil_values[player->readyweapon][1];
+		}
+	}
 }
 
 
@@ -159,7 +167,7 @@ void P_BringUpWeapon (player_t* player)
 	player->pendingweapon = player->readyweapon;
 		
     if (player->pendingweapon == wp_chainsaw)
-	S_StartSound (player->mo, sfx_sawup);
+	S_StartSound (player->mo, sfx_sawup); // [crispy] intentionally not weapon sound source
 		
     // [crispy] play "power up" sound when selecting berserk fist...
     if (player->pendingweapon == wp_fist && player->powers[pw_strength])
@@ -325,11 +333,9 @@ A_WeaponReady
     }
     
     if (player->readyweapon == wp_chainsaw
-	&& psp->state == &states[S_SAW]
-	// [crispy] play the "saw up" sound to finish
-	&& (!crispy_fullsounds || !S_SoundIsPlaying(player->mo, sfx_sawup)))
+	&& psp->state == &states[S_SAW])
     {
-	S_StartSound (player->mo, sfx_sawidl);
+	S_StartSound (player->so, sfx_sawidl); // [crispy] weapon sound source
     }
     
     // check for change
@@ -519,7 +525,7 @@ A_Punch
     // turn to face target
     if (linetarget)
     {
-	S_StartSound (player->mo, sfx_punch);
+	S_StartSound (player->so, sfx_punch); // [crispy] weapon sound source
 	player->mo->angle = R_PointToAngle2 (player->mo->x,
 					     player->mo->y,
 					     linetarget->x,
@@ -552,10 +558,10 @@ A_Saw
 
     if (!linetarget)
     {
-	S_StartSound (player->mo, sfx_sawful);
+	S_StartSound (player->so, sfx_sawful); // [crispy] weapon sound source
 	return;
     }
-    S_StartSound (player->mo, sfx_sawhit);
+    S_StartSound (player->so, sfx_sawhit); // [crispy] weapon sound source
 	
     // turn to face target
     angle = R_PointToAngle2 (player->mo->x, player->mo->y,
@@ -712,7 +718,7 @@ A_FirePistol
 ( player_t*	player,
   pspdef_t*	psp ) 
 {
-    S_StartSound (player->mo, sfx_pistol);
+    S_StartSound (player->so, sfx_pistol); // [crispy] weapon sound source
 
     P_SetMobjState (player->mo, S_PLAY_ATK2);
     DecreaseAmmo(player, weaponinfo[player->readyweapon].ammo, 1);
@@ -738,7 +744,7 @@ A_FireShotgun
 {
     int		i;
 	
-    S_StartSound (player->mo, sfx_shotgn);
+    S_StartSound (player->so, sfx_shotgn); // [crispy] weapon sound source
     P_SetMobjState (player->mo, S_PLAY_ATK2);
 
     DecreaseAmmo(player, weaponinfo[player->readyweapon].ammo, 1);
@@ -770,7 +776,7 @@ A_FireShotgun2
     int		damage;
 		
 	
-    S_StartSound (player->mo, sfx_dshtgn);
+    S_StartSound (player->so, sfx_dshtgn); // [crispy] weapon sound source
     P_SetMobjState (player->mo, S_PLAY_ATK2);
 
     DecreaseAmmo(player, weaponinfo[player->readyweapon].ammo, 2);
@@ -804,7 +810,7 @@ A_FireCGun
 ( player_t*	player,
   pspdef_t*	psp ) 
 {
-    S_StartSound (player->mo, sfx_pistol);
+    S_StartSound (player->so, sfx_pistol); // [crispy] weapon sound source
 
     if (!player->ammo[weaponinfo[player->readyweapon].ammo])
 	return;
@@ -891,7 +897,7 @@ A_BFGsound
 ( player_t*	player,
   pspdef_t*	psp )
 {
-    S_StartSound (player->mo, sfx_bfg);
+    S_StartSound (player->mo, sfx_bfg); // [crispy] intentionally not weapon sound source
 }
 
 

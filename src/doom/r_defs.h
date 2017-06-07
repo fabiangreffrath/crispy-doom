@@ -428,7 +428,7 @@ typedef struct
     // If false use 0 for any position.
     // Note: as eight entries are available,
     //  we might as well insert the same name eight times.
-    boolean	rotate;
+    int	rotate; // [crispy] we use a value of 2 for 16 sprite rotations
 
     // Lump to use for view angles 0-7.
     short	lump[16]; // [crispy] support 16 sprite rotations
@@ -488,7 +488,8 @@ typedef struct
 typedef struct
 {
 	char c;
-	int l;
+	char a[9];
+	int l, w, h;
 } laserpatch_t;
 extern laserpatch_t *laserpatch;
 

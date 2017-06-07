@@ -727,7 +727,8 @@ void P_RespawnSpecials (void)
     int			i;
 
     // only respawn items in deathmatch
-    if (deathmatch != 2)
+    // AX: deathmatch 3 is a Crispy-specific change
+    if (deathmatch != 2 && deathmatch != 3)
 	return;	// 
 
     // nothing left to respawn?
@@ -771,6 +772,8 @@ void P_RespawnSpecials (void)
 
 
 
+// [crispy] weapon sound sources
+degenmobj_t muzzles[MAXPLAYERS];
 
 //
 // P_SpawnPlayer
@@ -825,6 +828,9 @@ void P_SpawnPlayer (mapthing_t* mthing)
     p->extralight = 0;
     p->fixedcolormap = 0;
     p->viewheight = VIEWHEIGHT;
+
+    // [crispy] weapon sound source
+    p->so = crispy_fullsounds ? (mobj_t *) &muzzles[mthing->type-1] : p->mo;
 
     // setup gun psprite
     P_SetupPsprites (p);

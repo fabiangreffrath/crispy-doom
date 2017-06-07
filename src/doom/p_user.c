@@ -191,7 +191,7 @@ void P_MovePlayer (player_t* player)
             cmd->lookdir = MLOOKUNIT * 5 * look;
         }
     }
-    if (!menuactive)
+    if (!menuactive && !demoplayback)
     {
 	player->lookdir = BETWEEN(-LOOKDIRMIN * MLOOKUNIT,
 	                          LOOKDIRMAX * MLOOKUNIT,
@@ -280,6 +280,12 @@ void P_PlayerThink (player_t* player)
     player->oldlookdir = player->lookdir;
     player->oldrecoilpitch = player->recoilpitch;
 
+    // [crispy] update weapon sound source coordinates
+    if (player->so != player->mo)
+    {
+	memcpy(player->so, player->mo, sizeof(degenmobj_t));
+    }
+
     // fixme: do this in the cheat code
     if (player->cheats & CF_NOCLIP)
 	player->mo->flags |= MF_NOCLIP;
@@ -317,15 +323,16 @@ void P_PlayerThink (player_t* player)
     }
 
     // [crispy] weapon recoil pitch
-    // adapted from strife-ve-src/src/strife/p_user.c:677-688
     if (player->recoilpitch)
     {
-	fixed_t recoil = (player->recoilpitch >> 3);
-
-	if(player->recoilpitch - recoil > 0)
-	    player->recoilpitch -= recoil;
-	else
-	    player->recoilpitch = 0;
+        if (player->recoilpitch > 0)
+        {
+            player->recoilpitch -= 1;
+        }
+        else if (player->recoilpitch < 0)
+        {
+            player->recoilpitch += 1;
+        }
     }
 
     if (player->playerstate == PST_DEAD)
