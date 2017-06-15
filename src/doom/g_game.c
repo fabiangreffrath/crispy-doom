@@ -130,6 +130,7 @@ int             levelstarttic;          // gametic at level start
 int             totalkills, totalitems, totalsecret;    // for intermission 
 int             extrakills;             // [crispy] count spawned monsters
 int             totalleveltimes;        // [crispy] CPhipps - total time for all completed levels
+int             demostarttic;           // [crispy] fix revenant internal demo bug
  
 char           *demoname;
 boolean         demorecording; 
@@ -786,6 +787,8 @@ void G_DoLoadLevel (void)
 
         skytexture = R_TextureNumForName(skytexturename);
     }
+    // [crispy] sky texture scales
+    R_InitSkyMap();
 
     levelstarttic = gametic;        // for time calculation
     
@@ -1844,7 +1847,10 @@ void G_DoLoadGame (void)
     // [crispy] loaded game must always be single player.
     // Needed for ability to use a further game loading, as well as
     // cheat codes and other single player only specifics.
-    netgame = false;
+    if (startloadgame == -1)
+    {
+	netgame = false;
+    }
     gameaction = ga_nothing; 
 	 
     save_stream = fopen(savename, "rb");
@@ -2213,6 +2219,7 @@ G_InitNew
 
     // [crispy] CPhipps - total time for all completed levels
     totalleveltimes = 0;
+    demostarttic = 0; // [crispy] fix revenant internal demo bug
 
     viewactive = true;
 
@@ -2636,6 +2643,7 @@ void G_DoPlayDemo (void)
     }
     precache = true; 
     starttime = I_GetTime (); 
+    demostarttic = gametic; // [crispy] fix revenant internal demo bug
 
     usergame = false; 
     demoplayback = true; 
