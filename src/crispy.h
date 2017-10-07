@@ -39,13 +39,11 @@
 #define singleplayer (!demorecording && !demoplayback && !netgame)
 
 extern boolean crispy_automapoverlay;
-extern boolean crispy_cleanscreenshot;
 extern boolean crispy_flashinghom;
 extern boolean crispy_fliplevels;
 extern boolean crispy_havee1m10;
 extern boolean crispy_havemap33;
 extern boolean crispy_havessg;
-extern boolean crispy_showfps;
 extern boolean crispy_stretchsky;
 
 extern int crispy_automapstats;
@@ -69,6 +67,8 @@ extern int crispy_secretmessage;
 extern int crispy_translucency;
 extern int crispy_uncapped;
 
+extern int crispy_screenshotmsg;
+extern int crispy_cleanscreenshot;
 extern int crispy_demowarp;
 
 enum
@@ -157,7 +157,5 @@ enum
     UNCAPPED_70FPS,
     NUM_UNCAPPED
 };
-
-void *crispy_realloc (void *ptr, size_t size);
 
 #endif

@@ -133,7 +133,8 @@ char	endstring[160];
 
 static boolean opldev;
 
-boolean crispy_cleanscreenshot = false;
+int crispy_screenshotmsg = 0;
+int crispy_cleanscreenshot = 0;
 extern boolean speedkeydown (void);
 
 //
@@ -2166,7 +2167,7 @@ M_WriteText
 	w = SHORT (hu_font[c]->width);
 	if (cx+w > ORIGWIDTH)
 	    break;
-	if (currentMenu == &LoadDef || currentMenu == &SaveDef)
+	if (!messageToPrint && (currentMenu == &LoadDef || currentMenu == &SaveDef))
 	{
 	V_DrawPatchDirect(cx, cy, hu_font[c]);
 	}
@@ -2560,7 +2561,7 @@ boolean M_Responder (event_t* ev)
     // [crispy] take screen shot without weapons and HUD
     if (key != 0 && key == key_menu_cleanscreenshot)
     {
-	crispy_cleanscreenshot = true;
+	crispy_cleanscreenshot = (screenblocks > 10) ? 2 : 1;
 	key = key_menu_screenshot;
     }
 
@@ -3164,6 +3165,39 @@ void M_Init (void)
 		LoadDef_y = vstep + captionheight - SHORT(patchl->height) + SHORT(patchl->topoffset);
 		SaveDef_y = vstep + captionheight - SHORT(patchs->height) + SHORT(patchs->topoffset);
 		LoadDef.y = SaveDef.y = vstep + captionheight + vstep + SHORT(patchm->topoffset) - 7; // [crispy] see M_DrawSaveLoadBorder()
+	}
+    }
+
+    // [crispy] remove DOS reference from the game quit confirmation dialogs
+    if (!M_ParmExists("-nodeh"))
+    {
+	char *string, *replace;
+
+	// [crispy] "i wouldn't leave if i were you.\ndos is much worse."
+	string = doom1_endmsg[3];
+	if (!strcmp(string, DEH_String(string)))
+	{
+		replace = M_StringReplace(string, "dos", "your desktop");
+		DEH_AddStringReplacement(string, replace);
+		free(replace);
+	}
+
+	// [crispy] "you're trying to say you like dos\nbetter than me, right?"
+	string = doom1_endmsg[4];
+	if (!strcmp(string, DEH_String(string)))
+	{
+		replace = M_StringReplace(string, "dos\n", "your\ndesktop ");
+		DEH_AddStringReplacement(string, replace);
+		free(replace);
+	}
+
+	// [crispy] "don't go now, there's a \ndimensional shambler waiting\nat the dos prompt!"
+	string = doom2_endmsg[2];
+	if (!strcmp(string, DEH_String(string)))
+	{
+		replace = M_StringReplace(string, "dos", "command");
+		DEH_AddStringReplacement(string, replace);
+		free(replace);
 	}
     }
 

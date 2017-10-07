@@ -211,7 +211,7 @@ static int grabmouse = true;
 
 // The screen buffer; this is modified to draw things to the screen
 
-byte *I_VideoBuffer = NULL;
+pixel_t *I_VideoBuffer = NULL;
 
 // If true, game is running as a screensaver
 
@@ -935,7 +935,6 @@ static boolean BlitArea(int x1, int y1, int x2, int y2)
 
 // [crispy]
 int crispy_fps = 0;
-boolean crispy_showfps = false;
 extern boolean singletics;
 
 //
@@ -1000,7 +999,6 @@ void I_FinishUpdate (void)
     }
 
 	// [crispy] [AM] Real FPS counter
-	if (crispy_showfps)
 	{
 		static int lastmili;
 		static int fpscount;
@@ -1066,7 +1064,7 @@ void I_FinishUpdate (void)
 //
 // I_ReadScreen
 //
-void I_ReadScreen (byte* scr)
+void I_ReadScreen (pixel_t* scr)
 {
     memcpy(scr, I_VideoBuffer, SCREENWIDTH*SCREENHEIGHT*sizeof(*scr));
 }

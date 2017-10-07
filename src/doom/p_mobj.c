@@ -75,8 +75,8 @@ P_SetMobjState
 
 	// Modified handling.
 	// Call action functions when the state is set
-	if (st->action.acp1)		
-	    st->action.acp1(mobj);	
+	if (st->action.acp3)
+	    st->action.acp3(mobj, NULL, NULL); // [crispy] let pspr action pointers get called from mobj states
 	
 	state = st->nextstate;
 
@@ -512,6 +512,12 @@ P_NightmareRespawn (mobj_t* mobj)
 //
 void P_MobjThinker (mobj_t* mobj)
 {
+    // [crispy] suppress interpolation of player missiles for the first tic
+    if (mobj->interp == -1)
+    {
+        mobj->interp = false;
+    }
+    else
     // [AM] Handle interpolation unless we're an active player.
     if (!(mobj->player != NULL && mobj == mobj->player->mo))
     {
@@ -1219,6 +1225,8 @@ P_SpawnPlayerMissile
     th->momy = FixedMul( th->info->speed,
 			 finesine[an>>ANGLETOFINESHIFT]);
     th->momz = FixedMul( th->info->speed, slope);
+    // [crispy] suppress interpolation of player missiles for the first tic
+    th->interp = -1;
 
     P_CheckMissileSpawn (th);
 

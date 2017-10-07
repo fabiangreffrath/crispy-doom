@@ -154,6 +154,12 @@ byte *I_ZoneBase (int *size)
         min_ram = MIN_RAM;
     }
 
+    // [crispy] do not allocate new zones ad infinitum
+    if (i > 8)
+    {
+        min_ram = default_ram + 1;
+    }
+
     zonemem = AutoAllocMemory(size, default_ram * i, min_ram * i);
 
     // [crispy] if called again, allocate another zone twice as big
@@ -453,6 +459,24 @@ void I_Error (char *error, ...)
     SDL_Quit();
 
     exit(-1);
+}
+
+//
+// I_Realloc
+//
+
+void *I_Realloc(void *ptr, size_t size)
+{
+    void *new_ptr;
+
+    new_ptr = realloc(ptr, size);
+
+    if (size != 0 && new_ptr == NULL)
+    {
+        I_Error ("I_Realloc: failed on reallocation of %i bytes", size);
+    }
+
+    return new_ptr;
 }
 
 //

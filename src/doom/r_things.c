@@ -365,7 +365,7 @@ vissprite_t* R_NewVisSprite (void)
 	return &overflowsprite;
 
 	numvissprites = numvissprites ? 2 * numvissprites : MAXVISSPRITES;
-	vissprites = crispy_realloc(vissprites, numvissprites * sizeof(*vissprites));
+	vissprites = I_Realloc(vissprites, numvissprites * sizeof(*vissprites));
 	memset(vissprites + numvissprites_old, 0, (numvissprites - numvissprites_old) * sizeof(*vissprites));
 
 	vissprite_p = vissprites + numvissprites_old;
@@ -622,11 +622,17 @@ void R_ProjectSprite (mobj_t* thing)
     {
 	// choose a different rotation based on player view
 	ang = R_PointToAngle (interpx, interpy);
+	// [crispy] now made non-fatal
+	if (sprframe->rotate == -1)
+	{
+	    return;
+	}
+	else
 	// [crispy] support 16 sprite rotations
 	if (sprframe->rotate == 2)
 	{
-	rot = (ang-interpangle+(unsigned)(ANG45/4)*17);
-	rot = (rot>>29) + ((rot>>25)&8);
+	    const unsigned rot2 = (ang-interpangle+(unsigned)(ANG45/4)*17);
+	    rot = (rot2>>29) + ((rot2>>25)&8);
 	}
 	else
 	{
@@ -1298,7 +1304,7 @@ void R_DrawMasked (void)
 	if (ds->maskedtexturecol)
 	    R_RenderMaskedSegRange (ds, ds->x1, ds->x2);
     
-    if (crispy_cleanscreenshot)
+    if (crispy_cleanscreenshot == 2)
         return;
 
     // draw the psprites on top of everything

@@ -121,9 +121,6 @@ static int		message_counter;
 static hu_stext_t	w_secret;
 static int		secret_counter;
 
-static boolean		coord_on;
-static int		coord_counter;
-
 extern int		showMessages;
 
 static boolean		headsupactive = false;
@@ -547,7 +544,6 @@ void HU_Start(void)
     message_nottobefuckedwith = false;
     secret_on = false;
     chat_on = false;
-    coord_on = false;
 
     // create the message widget
     HUlib_initSText(&w_message,
@@ -763,6 +759,9 @@ void HU_Drawer(void)
     HUlib_drawSText(&w_secret);
 
     V_ClearDPTranslation();
+    if (crispy_screenshotmsg == 4)
+	HUlib_eraseSText(&w_message);
+    else
     HUlib_drawSText(&w_message);
     HUlib_drawIText(&w_chat);
 
@@ -793,10 +792,10 @@ void HU_Drawer(void)
 	// [crispy] count spawned monsters
 	if (extrakills)
 	    M_snprintf(str, sizeof(str), "%s%s%s%d/%d+%d", cr_stat, kills, crstr[CR_GRAY],
-	            players[consoleplayer].killcount, totalkills, extrakills);
+	            plr->killcount, totalkills, extrakills);
 	else
 	    M_snprintf(str, sizeof(str), "%s%s%s%d/%d", cr_stat, kills, crstr[CR_GRAY],
-	            players[consoleplayer].killcount, totalkills);
+	            plr->killcount, totalkills);
 	HUlib_clearTextLine(&w_kills);
 	s = str;
 	while (*s)
@@ -804,7 +803,7 @@ void HU_Drawer(void)
 	HUlib_drawTextLine(&w_kills, false);
 
 	M_snprintf(str, sizeof(str), "%sItems: %s%d/%d", cr_stat, crstr[CR_GRAY],
-	        players[consoleplayer].itemcount, totalitems);
+	        plr->itemcount, totalitems);
 	HUlib_clearTextLine(&w_items);
 	s = str;
 	while (*s)
@@ -812,7 +811,7 @@ void HU_Drawer(void)
 	HUlib_drawTextLine(&w_items, false);
 
 	M_snprintf(str, sizeof(str), "%sSecret: %s%d/%d", cr_stat, crstr[CR_GRAY],
-	        players[consoleplayer].secretcount, totalsecret);
+	        plr->secretcount, totalsecret);
 	HUlib_clearTextLine(&w_scrts);
 	s = str;
 	while (*s)
@@ -830,10 +829,10 @@ void HU_Drawer(void)
 
     // [crispy] show map coordinates in upper right corner
     // if either automap stats or IDMYPOS cheat are enabled
-    if ((automapactive && crispy_automapstats) || coord_on)
+    if ((automapactive && crispy_automapstats) || plr->powers[pw_mapcoords])
     {
 	M_snprintf(str, sizeof(str), "%sX: %s%-5d", crstr[CR_GREEN], crstr[CR_GRAY],
-	        (players[consoleplayer].mo->x)>>FRACBITS);
+	        (plr->mo->x)>>FRACBITS);
 	HUlib_clearTextLine(&w_coordx);
 	s = str;
 	while (*s)
@@ -841,7 +840,7 @@ void HU_Drawer(void)
 	HUlib_drawTextLine(&w_coordx, false);
 
 	M_snprintf(str, sizeof(str), "%sY: %s%-5d", crstr[CR_GREEN], crstr[CR_GRAY],
-	        (players[consoleplayer].mo->y)>>FRACBITS);
+	        (plr->mo->y)>>FRACBITS);
 	HUlib_clearTextLine(&w_coordy);
 	s = str;
 	while (*s)
@@ -849,7 +848,7 @@ void HU_Drawer(void)
 	HUlib_drawTextLine(&w_coordy, false);
 
 	M_snprintf(str, sizeof(str), "%sA: %s%-5d", crstr[CR_GREEN], crstr[CR_GRAY],
-	        (players[consoleplayer].mo->angle)/ANG1);
+	        (plr->mo->angle)/ANG1);
 	HUlib_clearTextLine(&w_coorda);
 	s = str;
 	while (*s)
@@ -857,7 +856,7 @@ void HU_Drawer(void)
 	HUlib_drawTextLine(&w_coorda, false);
     }
 
-    if (crispy_showfps)
+    if (plr->powers[pw_showfps])
     {
 	extern int crispy_fps;
 
@@ -907,16 +906,12 @@ void HU_Ticker(void)
     {
 	message_on = false;
 	message_nottobefuckedwith = false;
+	crispy_screenshotmsg >>= 1;
     }
 
     if (secret_counter && !--secret_counter)
     {
 	secret_on = false;
-    }
-
-    if (coord_counter && !--coord_counter)
-    {
-	coord_on = false;
     }
 
     if (showMessages || message_dontfuckwithme)
@@ -931,14 +926,6 @@ void HU_Ticker(void)
 	    secret_counter = HU_MSGTIMEOUT >> 1;
 	}
 
-	// [crispy] display map coordinates
-	if (plr->mapcoords)
-	{
-	    plr->mapcoords = 0;
-	    coord_on = true;
-	    coord_counter = HU_MSGTIMEOUT << 1;
-	}
-
 	// display message if necessary
 	if ((plr->message && !message_nottobefuckedwith)
 	    || (plr->message && message_dontfuckwithme))
@@ -949,6 +936,7 @@ void HU_Ticker(void)
 	    message_counter = HU_MSGTIMEOUT;
 	    message_nottobefuckedwith = message_dontfuckwithme;
 	    message_dontfuckwithme = 0;
+	    crispy_screenshotmsg >>= 1;
 	}
 
     } // else message_on = false;

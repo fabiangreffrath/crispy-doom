@@ -266,7 +266,7 @@ extern int screenblocks; // [crispy] for the Crispy HUD
 #define ST_MAPHEIGHT		1
 
 // graphics are drawn to a backing screen and blitted to the real screen
-byte                   *st_backing_screen;
+pixel_t			*st_backing_screen;
 	    
 // main player in game
 static player_t*	plyr; 
@@ -416,12 +416,16 @@ cheatseq_t cheat_mypos = CHEAT("idmypos", 0);
 
 // [crispy] new cheats
 cheatseq_t cheat_weapon = CHEAT("tntweap", 1);
-cheatseq_t cheat_massacre = CHEAT("tntem", 0);
+cheatseq_t cheat_massacre = CHEAT("tntem", 0); // [crispy] PrBoom+
+cheatseq_t cheat_massacre2 = CHEAT("killem", 0); // [crispy] MBF
+cheatseq_t cheat_massacre3 = CHEAT("fhhall", 0); // [crispy] Doom95
 cheatseq_t cheat_hom = CHEAT("tnthom", 0);
-cheatseq_t cheat_notarget = CHEAT("notarget", 0);
+cheatseq_t cheat_notarget = CHEAT("notarget", 0); // [crispy] PrBoom+
+cheatseq_t cheat_notarget2 = CHEAT("fhshh", 0); // [crispy] Doom95
 cheatseq_t cheat_spechits = CHEAT("spechits", 0);
 cheatseq_t cheat_nomomentum = CHEAT("nomomentum", 0);
 cheatseq_t cheat_showfps = CHEAT("showfps", 0);
+cheatseq_t cheat_showfps2 = CHEAT("idrate", 0); // [crispy] PrBoom+
 cheatseq_t cheat_goobers = CHEAT("goobers", 0);
 static char msg[ST_MSGWIDTH];
 
@@ -666,6 +670,9 @@ ST_Responder (event_t* ev)
 	for (i=0;i<NUMAMMO;i++)
 	  plyr->ammo[i] = plyr->maxammo[i];
 	
+	// [crispy] trigger evil grin now
+	plyr->bonuscount += 2;
+
 	plyr->message = DEH_String(STSTR_FAADDED);
       }
       // 'kfa' cheat for key full ammo
@@ -691,10 +698,15 @@ ST_Responder (event_t* ev)
 	for (i=0;i<NUMCARDS;i++)
 	  plyr->cards[i] = true;
 	
+	// [crispy] trigger evil grin now
+	plyr->bonuscount += 2;
+
 	plyr->message = DEH_String(STSTR_KFAADDED);
       }
       // [crispy] implement Boom's "tntem" cheat
-      else if (cht_CheckCheat(&cheat_massacre, ev->data2))
+      else if (cht_CheckCheat(&cheat_massacre, ev->data2) ||
+               cht_CheckCheat(&cheat_massacre2, ev->data2) ||
+               cht_CheckCheat(&cheat_massacre3, ev->data2))
       {
 	int killcount = ST_cheat_massacre();
 	const char *const monster = (gameversion == exe_chex) ? "Flemoid" : "Monster";
@@ -791,7 +803,8 @@ ST_Responder (event_t* ev)
 	  plyr->message = DEH_String(STSTR_NCOFF);
       }
       // [crispy] implement PrBoom+'s "notarget" cheat
-      else if (cht_CheckCheat(&cheat_notarget, ev->data2))
+      else if (cht_CheckCheat(&cheat_notarget, ev->data2) ||
+               cht_CheckCheat(&cheat_notarget2, ev->data2))
       {
 	thinker_t *currentthinker=&thinkercap;
 
@@ -824,9 +837,10 @@ ST_Responder (event_t* ev)
 	plyr->message = msg;
       }
       // [crispy] implement Crispy Doom's "showfps" cheat, ne debug aid
-      else if (cht_CheckCheat(&cheat_showfps, ev->data2))
+      else if (cht_CheckCheat(&cheat_showfps, ev->data2) ||
+               cht_CheckCheat(&cheat_showfps2, ev->data2))
       {
-	crispy_showfps ^= 1;
+	plyr->powers[pw_showfps] ^= 1;
       }
       // [crispy] implement Crispy Doom's "goobers" cheat, ne easter egg
       else if (cht_CheckCheat(&cheat_goobers, ev->data2))
@@ -887,22 +901,33 @@ ST_Responder (event_t* ev)
 	if (w == wp_fist)
 	{
 	    if (!plyr->powers[pw_strength])
+	    {
 		P_GivePower(plyr, pw_strength);
+		S_StartSound(NULL, sfx_getpow);
+	    }
 	    else
+	    {
 		plyr->powers[pw_strength] = 0;
+	    }
+
 	    M_snprintf(msg, sizeof(msg), DEH_String(STSTR_BEHOLDX));
 	}
 	else
 	{
-	    if ((plyr->weaponowned[w] = !plyr->weaponowned[w]))
-		M_snprintf(msg, sizeof(msg), "Weapon %s%d%s Added",
-		           crstr[CR_GOLD],
-		           w + 1, crstr[CR_NONE]);
+	    if (!plyr->weaponowned[w])
+	    {
+		extern boolean P_GiveWeapon (player_t* player, weapontype_t weapon, boolean dropped);
+
+		P_GiveWeapon(plyr, w, false);
+		S_StartSound(NULL, sfx_wpnup);
+
+		// [crispy] trigger evil grin now
+		plyr->bonuscount += 2;
+	    }
 	    else
 	    {
-		M_snprintf(msg, sizeof(msg), "Weapon %s%d%s Removed",
-		           crstr[CR_GOLD],
-		           w + 1, crstr[CR_NONE]);
+		// [crispy] no reason for evil grin
+		oldweaponsowned[w] = plyr->weaponowned[w] = false;
 
 		// [crispy] removed current weapon, select another one
 		if (w == plyr->readyweapon)
@@ -912,6 +937,10 @@ ST_Responder (event_t* ev)
 		    P_CheckAmmo(plyr);
 		}
 	    }
+
+	    M_snprintf(msg, sizeof(msg), "Weapon %s%d%s %s",
+	               crstr[CR_GOLD], w + 1, crstr[CR_NONE],
+	               plyr->weaponowned[w] ? "added" : "removed");
 	}
 	plyr->message = msg;
       }
@@ -935,7 +964,7 @@ ST_Responder (event_t* ev)
                    players[consoleplayer].mo->y);
         plyr->message = buf;
 */
-        plyr->mapcoords ^= 1;
+        plyr->powers[pw_mapcoords] ^= 1;
       }
     }
     
@@ -1660,7 +1689,7 @@ void ST_Drawer (boolean fullscreen, boolean refresh)
     st_statusbaron = (!fullscreen) || (automapactive && !crispy_automapoverlay) || screenblocks >= CRISPY_HUD;
     st_firsttime = st_firsttime || refresh;
 
-    if (crispy_cleanscreenshot && screenblocks >= CRISPY_HUD)
+    if (crispy_cleanscreenshot == 2)
         return;
 
     // Do red-/gold-shifts from damage/items
@@ -2048,6 +2077,6 @@ void ST_Init (void)
     }
 
     ST_loadData();
-    st_backing_screen = (byte *) Z_Malloc((ST_WIDTH << hires) * (ST_HEIGHT << hires) * sizeof(*st_backing_screen), PU_STATIC, 0);
+    st_backing_screen = (pixel_t *) Z_Malloc((ST_WIDTH << hires) * (ST_HEIGHT << hires) * sizeof(*st_backing_screen), PU_STATIC, 0);
 }
 
