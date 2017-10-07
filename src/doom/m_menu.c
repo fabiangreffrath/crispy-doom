@@ -835,7 +835,8 @@ void M_LoadGame (int choice)
 	return;
     }
 
-    if (netgame)
+    // [crispy] allow loading game while multiplayer demo playback
+    if (netgame && !demoplayback)
     {
 	M_StartMessage(DEH_String(LOADNET),NULL,false);
 	return;
@@ -982,7 +983,8 @@ void M_QuickLoad(void)
 {
     char *savegamestring;
 
-    if (netgame)
+    // [crispy] allow quickloading game while multiplayer demo playback
+    if (netgame && !demoplayback)
     {
 	M_StartMessage(DEH_String(QLOADNET),NULL,false);
 	return;
@@ -3001,7 +3003,7 @@ void M_Drawer (void)
 	    // [crispy] shade unavailable menu items
 	    if ((currentMenu == &MainDef && i == savegame && (!usergame || gamestate != GS_LEVEL)) ||
 	        (currentMenu == &OptionsDef && i == endgame && (!usergame || netgame)) ||
-	        (currentMenu == &MainDef && i == loadgame && (netgame || demorecording)) ||
+	        (currentMenu == &MainDef && i == loadgame && ((netgame && !demoplayback) || demorecording)) ||
 	        (currentMenu == &MainDef && i == newgame && (demorecording || (netgame && !demoplayback))))
 	        dp_translation = cr[CR_DARK];
 
