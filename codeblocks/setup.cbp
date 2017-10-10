@@ -44,7 +44,7 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-D_WIN32" />
-			<Add option='-DPROGRAM_PREFIX=&quot;\&quot;chocolate-\&quot;&quot;' />
+			<Add option='-DPROGRAM_PREFIX=&quot;\&quot;crispy-\&quot;&quot;' />
 			<Add directory="." />
 			<Add directory="../src" />
 			<Add directory="../src/doom" />
@@ -54,7 +54,7 @@
 			<Add directory="../src/setup" />
 		</ResourceCompiler>
 		<Linker>
-			<Add option="-lmingw32 -lSDLmain -lSDL -lSDL_net -mwindows" />
+			<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_net -mwindows" />
 			<Add directory="../lib" />
 		</Linker>
 		<Unit filename="../src/d_iwad.c">
@@ -186,8 +186,6 @@
 		<Unit filename="../src/z_zone.h" />
 		<Unit filename="setup-res.rc">
 			<Option compilerVar="WINDRES" />
-			<Option compile="0" />
-			<Option link="0" />
 		</Unit>
 		<Extensions>
 			<code_completion />

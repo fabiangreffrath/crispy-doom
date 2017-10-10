@@ -41,7 +41,7 @@
 			<Add alias="All" targets="Debug;Release;" />
 		</VirtualTargets>
 		<Compiler>
-			<Add option='-DPROGRAM_PREFIX=&quot;\&quot;chocolate-\&quot;&quot;' />
+			<Add option='-DPROGRAM_PREFIX=&quot;\&quot;crispy-\&quot;&quot;' />
 			<Add option='-DD_CDROM=&quot;\&quot;CD-ROM Version: default.cfg from c:\\doomdata\n\&quot;&quot;' />
 			<Add directory="." />
 			<Add directory="../src" />
@@ -51,7 +51,7 @@
 			<Add directory="../opl" />
 		</Compiler>
 		<Linker>
-			<Add option="-lmingw32 -lSDLmain -lSDL -lSDL_mixer -lSDL_net -mwindows" />
+			<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_mixer -lSDL2_net -mwindows" />
 			<Add directory="../lib" />
 		</Linker>
 		<Unit filename="../src/d_event.c">
@@ -107,6 +107,7 @@
 		<Unit filename="../src/doom/d_net.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/doom/d_net.h" />
 		<Unit filename="../src/doom/d_player.h" />
 		<Unit filename="../src/doom/d_textur.h" />
 		<Unit filename="../src/doom/d_think.h" />
@@ -341,6 +342,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/i_endoom.h" />
+		<Unit filename="../src/i_input.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/i_input.h" />
 		<Unit filename="../src/i_joystick.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -348,16 +353,16 @@
 		<Unit filename="../src/i_main.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../src/i_midipipe.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../src/i_midipipe.h" />
 		<Unit filename="../src/i_oplmusic.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../src/i_pcsound.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="../src/i_scale.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="../src/i_scale.h" />
 		<Unit filename="../src/i_sdlmusic.c">
 			<Option compilerVar="CC" />
 		</Unit>
