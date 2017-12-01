@@ -2151,6 +2151,16 @@ void D_DoomMain (void)
 
     PrintGameVersion();
 
+    p = M_CheckParmWithArgs("-playmusic", 1);
+    if (p)
+    {
+        DEH_printf("Now playing %s\n", myargv[p+1]);
+        S_PlayMusicLump(myargv[p+1]);
+        while (I_MusicIsPlaying());
+        DEH_printf("Music done playing\n");
+        return;
+    }
+
     DEH_printf("HU_Init: Setting up heads up display.\n");
     HU_Init ();
 

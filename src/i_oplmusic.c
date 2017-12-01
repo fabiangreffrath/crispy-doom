@@ -1358,6 +1358,8 @@ static void ProcessEvent(opl_track_data_t *track, midi_event_t *event)
 static void ScheduleTrack(opl_track_data_t *track);
 static void InitChannel(opl_channel_data_t *channel);
 
+static void FinishSong(void *unused);
+
 // Restart a song from the beginning.
 
 static void RestartSong(void *unused)
@@ -1413,7 +1415,19 @@ static void TrackTimerCallback(void *arg)
 
         if (running_tracks <= 0 && song_looping)
         {
-            OPL_SetCallback(5000, RestartSong, NULL);
+            if (song_looping > 2)
+            {
+                --song_looping;
+            }
+
+            if (song_looping == 2)
+            {
+                OPL_SetCallback(3000000, FinishSong, NULL);
+            }
+            else
+            {
+                OPL_SetCallback(5000, RestartSong, NULL);
+            }
         }
 
         return;
@@ -1891,3 +1905,7 @@ void I_OPL_DevMessages(char *result, size_t result_len)
     } while (lines < 25 && i != last_perc_count);
 }
 
+static void FinishSong(void *unused)
+{
+    I_OPL_StopSong();
+}

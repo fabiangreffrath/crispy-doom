@@ -764,6 +764,20 @@ void S_StartMusic(int m_id)
     S_ChangeMusic(m_id, false);
 }
 
+void S_PlayMusicLump(char *lumpname)
+{
+    musicinfo_t *music = NULL;
+    void *handle;
+
+    music = &S_music[0];
+    music->lumpnum = W_GetNumForName(lumpname);
+    music->data = W_CacheLumpNum(music->lumpnum, PU_STATIC);
+
+    handle = I_RegisterSong(music->data, W_LumpLength(music->lumpnum));
+    music->handle = handle;
+    I_PlaySong(handle, 4);
+}
+
 void S_ChangeMusic(int musicnum, int looping)
 {
     musicinfo_t *music = NULL;
