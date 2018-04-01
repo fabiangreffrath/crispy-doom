@@ -1593,8 +1593,7 @@ static void StreamIn_acs_t(acs_t *str)
     }
 
     // int *ip;
-    i = SV_ReadLong();
-    str->ip = (int *) (ActionCodeBase + i);
+    str->ip = SV_ReadLong();
 }
 
 static void StreamOut_acs_t(acs_t *str)
@@ -1645,7 +1644,7 @@ static void StreamOut_acs_t(acs_t *str)
     }
 
     // int *ip;
-    SV_WriteLong((byte *) str->ip - ActionCodeBase);
+    SV_WriteLong(str->ip);
 }
 
 
@@ -3239,6 +3238,10 @@ static void CopySaveSlot(int sourceSlot, int destSlot)
                    "%shex%d.hxs", SavePath, destSlot);
         CopyFile(sourceName, destName);
     }
+    else
+    {
+        I_Error("Could not load savegame %s", sourceName);
+    }
 }
 
 //==========================================================================
@@ -3344,6 +3347,12 @@ static boolean ExistingFile(char *name)
 static void SV_OpenRead(char *fileName)
 {
     SavingFP = fopen(fileName, "rb");
+
+    // Should never happen, only if hex6.hxs cannot ever be created.
+    if (SavingFP == NULL)
+    {
+        I_Error("Could not load savegame %s", fileName);
+    }
 }
 
 static void SV_OpenWrite(char *fileName)
@@ -3373,7 +3382,12 @@ static void SV_Close(void)
 
 static void SV_Read(void *buffer, int size)
 {
-    fread(buffer, size, 1, SavingFP);
+    int retval = fread(buffer, 1, size, SavingFP);
+    if (retval != size)
+    {
+        I_Error("Incomplete read in SV_Read: Expected %d, got %d bytes",
+            size, retval);
+    }
 }
 
 static byte SV_ReadByte(void)

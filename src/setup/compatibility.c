@@ -58,11 +58,16 @@ void BindCompatibilityVariables(void)
     if (gamemission == doom)
     {
         M_BindIntVariable("crispy_automapstats",    &crispy->automapstats);
+        M_BindIntVariable("crispy_brightmaps",      &crispy->brightmaps);
         M_BindIntVariable("crispy_centerweapon",    &crispy->centerweapon);
         M_BindIntVariable("crispy_coloredblood",    &crispy->coloredblood);
         M_BindIntVariable("crispy_coloredhud",      &crispy->coloredhud);
         M_BindIntVariable("crispy_crosshair",       &crispy->crosshair);
         M_BindIntVariable("crispy_crosshairtype",   &crispy->crosshairtype);
+        M_BindIntVariable("crispy_demobar",         &crispy->demobar);
+        M_BindIntVariable("crispy_demotimer",       &crispy->demotimer);
+        M_BindIntVariable("crispy_demotimerdir",    &crispy->demotimerdir);
+        M_BindIntVariable("crispy_extautomap",      &crispy->extautomap);
         M_BindIntVariable("crispy_extsaveg",        &crispy->extsaveg);
         M_BindIntVariable("crispy_flipcorpses",     &crispy->flipcorpses);
         M_BindIntVariable("crispy_freeaim",         &crispy->freeaim);
@@ -74,6 +79,7 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("crispy_pitch",           &crispy->pitch);
         M_BindIntVariable("crispy_recoil",          &crispy->recoil);
         M_BindIntVariable("crispy_secretmessage",   &crispy->secretmessage);
+        M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
         M_BindIntVariable("crispy_soundfix",        &crispy->soundfix);
         M_BindIntVariable("crispy_soundfull",       &crispy->soundfull);
         M_BindIntVariable("crispy_translucency",    &crispy->translucency);

@@ -80,7 +80,7 @@ static pixel_t *background_buffer = NULL;
 // R_DrawColumn
 // Source is the top of the column to scale.
 //
-lighttable_t*		dc_colormap; 
+lighttable_t*		dc_colormap[2]; // [crispy] brightmaps
 int			dc_x; 
 int			dc_yl; 
 int			dc_yh; 
@@ -153,7 +153,9 @@ void R_DrawColumn (void)
 
     do
     {
-	*dest = dc_colormap[dc_source[frac>>FRACBITS]];
+	// [crispy] brightmaps
+	const byte source = dc_source[frac>>FRACBITS];
+	*dest = dc_colormap[dc_brightmap[source]][source];
 
 	dest += SCREENWIDTH;
 	if ((frac += fracstep) >= heightmask)
@@ -166,7 +168,9 @@ void R_DrawColumn (void)
     {
 	// Re-map color indices from wall texture column
 	//  using a lighting/special effects LUT.
-	*dest = dc_colormap[dc_source[(frac>>FRACBITS)&heightmask]];
+	// [crispy] brightmaps
+	const byte source = dc_source[(frac>>FRACBITS)&heightmask];
+	*dest = dc_colormap[dc_brightmap[source]][source];
 	
 	dest += SCREENWIDTH; 
 	frac += fracstep;
@@ -289,13 +293,15 @@ void R_DrawColumnLow (void)
 
     do
     {
-	*dest2 = *dest = dc_colormap[dc_source[frac>>FRACBITS]];
+	// [crispy] brightmaps
+	const byte source = dc_source[frac>>FRACBITS];
+	*dest2 = *dest = dc_colormap[dc_brightmap[source]][source];
 
 	dest += SCREENWIDTH << hires;
 	dest2 += SCREENWIDTH << hires;
 	if (hires)
 	{
-	    *dest4 = *dest3 = dc_colormap[dc_source[frac>>FRACBITS]];
+	    *dest4 = *dest3 = dc_colormap[dc_brightmap[source]][source];
 	    dest3 += SCREENWIDTH << hires;
 	    dest4 += SCREENWIDTH << hires;
 	}
@@ -308,12 +314,14 @@ void R_DrawColumnLow (void)
     do 
     {
 	// Hack. Does not work corretly.
-	*dest2 = *dest = dc_colormap[dc_source[(frac>>FRACBITS)&heightmask]];
+	// [crispy] brightmaps
+	const byte source = dc_source[(frac>>FRACBITS)&heightmask];
+	*dest2 = *dest = dc_colormap[dc_brightmap[source]][source];
 	dest += SCREENWIDTH << hires;
 	dest2 += SCREENWIDTH << hires;
 	if (hires)
 	{
-	    *dest4 = *dest3 = dc_colormap[dc_source[(frac>>FRACBITS)&heightmask]];
+	    *dest4 = *dest3 = dc_colormap[dc_brightmap[source]][source];
 	    dest3 += SCREENWIDTH << hires;
 	    dest4 += SCREENWIDTH << hires;
 	}
@@ -571,7 +579,7 @@ void R_DrawTranslatedColumn (void)
 	//  used with PLAY sprites.
 	// Thus the "green" ramp of the player 0 sprite
 	//  is mapped to gray, red, black/indigo. 
-	*dest = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
+	*dest = dc_colormap[0][dc_translation[dc_source[frac>>FRACBITS]]];
 	dest += SCREENWIDTH;
 	
 	frac += fracstep; 
@@ -625,14 +633,14 @@ void R_DrawTranslatedColumnLow (void)
 	//  used with PLAY sprites.
 	// Thus the "green" ramp of the player 0 sprite
 	//  is mapped to gray, red, black/indigo. 
-	*dest = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
-	*dest2 = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
+	*dest = dc_colormap[0][dc_translation[dc_source[frac>>FRACBITS]]];
+	*dest2 = dc_colormap[0][dc_translation[dc_source[frac>>FRACBITS]]];
 	dest += SCREENWIDTH << hires;
 	dest2 += SCREENWIDTH << hires;
 	if (hires)
 	{
-	    *dest3 = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
-	    *dest4 = dc_colormap[dc_translation[dc_source[frac>>FRACBITS]]];
+	    *dest3 = dc_colormap[0][dc_translation[dc_source[frac>>FRACBITS]]];
+	    *dest4 = dc_colormap[0][dc_translation[dc_source[frac>>FRACBITS]]];
 	    dest3 += SCREENWIDTH << hires;
 	    dest4 += SCREENWIDTH << hires;
 	}
@@ -673,7 +681,7 @@ void R_DrawTLColumn (void)
     do
     {
         // actual translucency map lookup taken from boom202s/R_DRAW.C:255
-        *dest = tranmap[(*dest<<8)+dc_colormap[dc_source[frac>>FRACBITS]]];
+        *dest = tranmap[(*dest<<8)+dc_colormap[0][dc_source[frac>>FRACBITS]]];
 	dest += SCREENWIDTH;
 
 	frac += fracstep;
@@ -718,14 +726,14 @@ void R_DrawTLColumnLow (void)
 
     do
     {
-	*dest = tranmap[(*dest<<8)+dc_colormap[dc_source[frac>>FRACBITS]]];
-	*dest2 = tranmap[(*dest2<<8)+dc_colormap[dc_source[frac>>FRACBITS]]];
+	*dest = tranmap[(*dest<<8)+dc_colormap[0][dc_source[frac>>FRACBITS]]];
+	*dest2 = tranmap[(*dest2<<8)+dc_colormap[0][dc_source[frac>>FRACBITS]]];
 	dest += SCREENWIDTH << hires;
 	dest2 += SCREENWIDTH << hires;
 	if (hires)
 	{
-	    *dest3 = tranmap[(*dest3<<8)+dc_colormap[dc_source[frac>>FRACBITS]]];
-	    *dest4 = tranmap[(*dest4<<8)+dc_colormap[dc_source[frac>>FRACBITS]]];
+	    *dest3 = tranmap[(*dest3<<8)+dc_colormap[0][dc_source[frac>>FRACBITS]]];
+	    *dest4 = tranmap[(*dest4<<8)+dc_colormap[0][dc_source[frac>>FRACBITS]]];
 	    dest3 += SCREENWIDTH << hires;
 	    dest4 += SCREENWIDTH << hires;
 	}
@@ -785,7 +793,8 @@ int			ds_y;
 int			ds_x1; 
 int			ds_x2;
 
-lighttable_t*		ds_colormap; 
+lighttable_t*		ds_colormap[2];
+byte*			ds_brightmap;
 
 fixed_t			ds_xfrac; 
 fixed_t			ds_yfrac; 
@@ -840,6 +849,7 @@ void R_DrawSpan (void)
 
     do
     {
+	byte source;
 	// Calculate current texture index in u,v.
         // [crispy] fix flats getting more distorted the closer they are to the right
         ytemp = (ds_yfrac >> 10) & 0x0fc0;
@@ -848,7 +858,8 @@ void R_DrawSpan (void)
 
 	// Lookup pixel from flat texture tile,
 	//  re-index using light/colormap.
-	*dest++ = ds_colormap[ds_source[spot]];
+	source = ds_source[spot];
+	*dest++ = ds_colormap[ds_brightmap[source]][source];
 
 //      position += step;
         ds_xfrac += ds_xstep;
@@ -973,6 +984,7 @@ void R_DrawSpanLow (void)
 
     do
     {
+	byte source;
 	// Calculate current texture index in u,v.
         // [crispy] fix flats getting more distorted the closer they are to the right
         ytemp = (ds_yfrac >> 10) & 0x0fc0;
@@ -981,12 +993,13 @@ void R_DrawSpanLow (void)
 
 	// Lowres/blocky mode does it twice,
 	//  while scale is adjusted appropriately.
-	*dest++ = ds_colormap[ds_source[spot]];
-	*dest++ = ds_colormap[ds_source[spot]];
+	source = ds_source[spot];
+	*dest++ = ds_colormap[ds_brightmap[source]][source];
+	*dest++ = ds_colormap[ds_brightmap[source]][source];
 	if (hires)
 	{
-	    *dest2++ = ds_colormap[ds_source[spot]];
-	    *dest2++ = ds_colormap[ds_source[spot]];
+	    *dest2++ = ds_colormap[ds_brightmap[source]][source];
+	    *dest2++ = ds_colormap[ds_brightmap[source]][source];
 	}
 
 //	position += step;

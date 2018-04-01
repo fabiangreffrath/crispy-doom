@@ -241,6 +241,14 @@ void D_Display (void)
 	D_PageDrawer ();
 	break;
     }
+
+    // [crispy] demo progress bar
+    if (demoplayback && crispy->demobar)
+    {
+	extern void HU_DemoProgressBar (void);
+
+	HU_DemoProgressBar();
+    }
     
     // draw buffered stuff to screen
     I_UpdateNoBlit ();
@@ -443,11 +451,16 @@ void D_BindVariables(void)
 
     // [crispy] bind "crispness" config variables
     M_BindIntVariable("crispy_automapstats",    &crispy->automapstats);
+    M_BindIntVariable("crispy_brightmaps",      &crispy->brightmaps);
     M_BindIntVariable("crispy_centerweapon",    &crispy->centerweapon);
     M_BindIntVariable("crispy_coloredblood",    &crispy->coloredblood);
     M_BindIntVariable("crispy_coloredhud",      &crispy->coloredhud);
     M_BindIntVariable("crispy_crosshair",       &crispy->crosshair);
     M_BindIntVariable("crispy_crosshairtype",   &crispy->crosshairtype);
+    M_BindIntVariable("crispy_demobar",         &crispy->demobar);
+    M_BindIntVariable("crispy_demotimer",       &crispy->demotimer);
+    M_BindIntVariable("crispy_demotimerdir",    &crispy->demotimerdir);
+    M_BindIntVariable("crispy_extautomap",      &crispy->extautomap);
     M_BindIntVariable("crispy_extsaveg",        &crispy->extsaveg);
     M_BindIntVariable("crispy_flipcorpses",     &crispy->flipcorpses);
     M_BindIntVariable("crispy_freeaim",         &crispy->freeaim);
@@ -459,6 +472,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_pitch",           &crispy->pitch);
     M_BindIntVariable("crispy_recoil",          &crispy->recoil);
     M_BindIntVariable("crispy_secretmessage",   &crispy->secretmessage);
+    M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
     M_BindIntVariable("crispy_soundfix",        &crispy->soundfix);
     M_BindIntVariable("crispy_soundfull",       &crispy->soundfull);
     M_BindIntVariable("crispy_translucency",    &crispy->translucency);
@@ -597,7 +611,7 @@ void D_DoAdvanceDemo (void)
     paused = false;
     gameaction = ga_nothing;
     // [crispy] update the "singleplayer" variable
-    CheckCrispySingleplayer
+    CheckCrispySingleplayer(!demorecording && !demoplayback && !netgame);
 
 
     // The Ultimate Doom executable changed the demo sequence to add
@@ -1451,6 +1465,7 @@ void D_DoomMain (void)
     }
 
     //!
+    // @category game
     // @vanilla
     //
     // Disable monsters.
@@ -1459,6 +1474,7 @@ void D_DoomMain (void)
     nomonsters = M_CheckParm ("-nomonsters");
 
     //!
+    // @category game
     // @vanilla
     //
     // Monsters respawn after being killed.
@@ -1467,6 +1483,7 @@ void D_DoomMain (void)
     respawnparm = M_CheckParm ("-respawn");
 
     //!
+    // @category game
     // @vanilla
     //
     // Monsters move faster.
@@ -1474,10 +1491,10 @@ void D_DoomMain (void)
 
     fastparm = M_CheckParm ("-fast");
 
-    //! 
+    //!
     // @vanilla
     //
-    // Developer mode.  F1 saves a screenshot in the current working
+    // Developer mode. F1 saves a screenshot in the current working
     // directory.
     //
 
@@ -1525,6 +1542,7 @@ void D_DoomMain (void)
 #ifdef _WIN32
 
     //!
+    // @category obscure
     // @platform windows
     // @vanilla
     //
@@ -1547,6 +1565,7 @@ void D_DoomMain (void)
     }
 
     //!
+    // @category game
     // @arg <x>
     // @vanilla
     //
@@ -1986,6 +2005,7 @@ void D_DoomMain (void)
     autostart = false;
 
     //!
+    // @category game
     // @arg <skill>
     // @vanilla
     //
@@ -2002,6 +2022,7 @@ void D_DoomMain (void)
     }
 
     //!
+    // @category game
     // @arg <n>
     // @vanilla
     //
@@ -2049,6 +2070,7 @@ void D_DoomMain (void)
     }
 
     //!
+    // @category game
     // @arg [<x> <y> | <xy>]
     // @vanilla
     //
@@ -2096,6 +2118,7 @@ void D_DoomMain (void)
     }
 
     // [crispy] port level flipping feature over from Strawberry Doom
+#ifdef ENABLE_APRIL_1ST_JOKE
     {
         time_t curtime = time(NULL);
         struct tm *curtm = localtime(&curtime);
@@ -2103,6 +2126,7 @@ void D_DoomMain (void)
         if (curtm && curtm->tm_mon == 3 && curtm->tm_mday == 1)
             crispy->fliplevels = true;
     }
+#endif
 
     p = M_CheckParm("-fliplevels");
 
@@ -2116,6 +2140,7 @@ void D_DoomMain (void)
     // can override it or send the load slot to other players.
 
     //!
+    // @category game
     // @arg <s>
     // @vanilla
     //

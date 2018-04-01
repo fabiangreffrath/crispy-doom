@@ -402,7 +402,9 @@ typedef struct vissprite_s
 
     // for color translation and shadow draw,
     //  maxbright frames as well
-    lighttable_t*	colormap;
+    // [crispy] brightmaps for select sprites
+    lighttable_t*	colormap[2];
+    byte		*brightmap;
    
     int			mobjflags;
     // [crispy] color translation table for blood colored by monster class
@@ -481,13 +483,6 @@ typedef struct
 
 } visplane_t;
 
-
-// [crispy] map-coordinates of the laser vision spot
-typedef struct
-{
-    fixed_t x, y, z;
-} laserspot_t;
-
 typedef struct
 {
 	char c;
@@ -495,5 +490,7 @@ typedef struct
 	int l, w, h;
 } laserpatch_t;
 extern laserpatch_t *laserpatch;
+
+
 
 #endif

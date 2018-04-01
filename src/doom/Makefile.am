@@ -36,6 +36,7 @@ hu_stuff.c         hu_stuff.h   \
 info.c             info.h       \
 m_menu.c           m_menu.h     \
 m_random.c         m_random.h   \
+p_bexptr.c                      \
 p_blockmap.c                    \
 p_ceilng.c                      \
 p_doors.c                       \
@@ -58,6 +59,7 @@ p_switch.c                      \
 p_telept.c                      \
 p_tick.c           p_tick.h     \
 p_user.c                        \
+r_bmaps.c          r_bmaps.h    \
 r_bsp.c            r_bsp.h      \
 r_data.c           r_data.h     \
                    r_defs.h     \
@@ -69,6 +71,7 @@ r_segs.c           r_segs.h     \
 r_sky.c            r_sky.h      \
                    r_state.h    \
 r_things.c         r_things.h   \
+s_musinfo.c        s_musinfo.h  \
 s_sound.c          s_sound.h    \
 sounds.c           sounds.h     \
 statdump.c         statdump.h   \

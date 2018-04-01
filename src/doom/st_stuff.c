@@ -463,6 +463,10 @@ void ST_refreshBackground(void)
 
 	V_DrawPatch(ST_X, 0, sbar);
 
+	// [crispy] back up arms widget background
+	if (!deathmatch)
+	    V_DrawPatch(ST_ARMSBGX, 0, armsbg);
+
 	if (netgame)
 	    V_DrawPatch(ST_FX, 0, faceback);
 
@@ -1438,6 +1442,7 @@ void ST_doPaletteStuff(void)
     byte*	pal;
     int		cnt;
     int		bzc;
+    extern	boolean inhelpscreens; // [crispy] prevent palette changes
 
     cnt = plyr->damagecount;
 
@@ -1489,6 +1494,12 @@ void ST_doPaletteStuff(void)
      && palette >= STARTREDPALS && palette < STARTREDPALS + NUMREDPALS)
     {
         palette = RADIATIONPAL;
+    }
+
+    // [crispy] prevent palette changes when in help screen or Crispness menu
+    if (inhelpscreens)
+    {
+	palette = 0;
     }
 
     if (palette != st_palette)
@@ -2154,5 +2165,38 @@ void ST_Init (void)
 
     ST_loadData();
     st_backing_screen = (pixel_t *) Z_Malloc((ST_WIDTH << hires) * (ST_HEIGHT << hires) * sizeof(*st_backing_screen), PU_STATIC, 0);
+}
+
+// [crispy] Demo Timer widget
+void ST_DrawDemoTimer (const int time)
+{
+	char buffer[16];
+	const int secs = time / TICRATE;
+	const int w = shortnum[0]->width;
+	int n, x;
+
+	n = M_snprintf(buffer, sizeof(buffer), "%02i %02i %02i",
+	               secs / 60, secs % 60, time % TICRATE);
+
+	x = (viewwindowx >> hires) + (scaledviewwidth >> hires);
+
+	// [crispy] draw the Demo Timer widget with gray numbers
+	dp_translation = cr[CR_GRAY];
+	dp_translucent = true;
+
+	while (n-- > 0)
+	{
+		const int c = buffer[n] - '0';
+
+		x -= w;
+
+		if (c >= 0 && c <= 9)
+		{
+			V_DrawPatch(x, viewwindowy >> hires, shortnum[c]);
+		}
+	}
+
+	dp_translation = NULL;
+	dp_translucent = false;
 }
 

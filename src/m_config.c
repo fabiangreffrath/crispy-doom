@@ -1953,6 +1953,46 @@ static default_t extra_defaults_list[] =
     //
 
     CONFIG_VARIABLE_INT(crispy_weaponsquat),
+
+    //!
+    // @game doom
+    //
+    // Extended Automap.
+    //
+
+    CONFIG_VARIABLE_INT(crispy_extautomap),
+
+    //!
+    // @game doom
+    //
+    // Apply brightmaps to select textures and sprites.
+    //
+
+    CONFIG_VARIABLE_INT(crispy_brightmaps),
+
+    //!
+    // @game doom
+    //
+    // Show a timer when recording or playing pack demos.
+    //
+
+    CONFIG_VARIABLE_INT(crispy_demotimer),
+
+    //!
+    // @game doom
+    //
+    // Timer direction whan playing back a demo.
+    //
+
+    CONFIG_VARIABLE_INT(crispy_demotimerdir),
+
+    //!
+    // @game doom
+    //
+    // Show a progress bar when playing back a demo.
+    //
+
+    CONFIG_VARIABLE_INT(crispy_demobar),
 };
 
 static default_collection_t extra_defaults =

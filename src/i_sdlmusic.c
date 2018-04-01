@@ -381,7 +381,7 @@ static void ReadLoopPoints(char *filename, file_metadata_t *metadata)
     metadata->start_time = 0;
     metadata->end_time = -1;
 
-    fs = fopen(filename, "r");
+    fs = fopen(filename, "rb");
 
     if (fs == NULL)
     {
@@ -632,25 +632,38 @@ static char *ParseSubstituteLine(char *filename, char *line)
 
 static boolean ReadSubstituteConfig(char *filename)
 {
-    char line[128];
-    FILE *fs;
-    char *error;
+    char *buffer;
+    char *line;
     int linenum = 1;
-//    int old_subst_music_len;
 
-    fs = fopen(filename, "r");
-
-    if (fs == NULL)
+    // This unnecessarily opens the file twice...
+    if (!M_FileExists(filename))
     {
         return false;
     }
 
-//    old_subst_music_len = subst_music_len;
+    M_ReadFile(filename, (byte **) &buffer);
 
-    while (!feof(fs))
+    line = buffer;
+
+    while (line != NULL)
     {
-        M_StringCopy(line, "", sizeof(line));
-        fgets(line, sizeof(line), fs);
+        char *error;
+        char *next;
+
+        // find end of line
+        char *eol = strchr(line, '\n');
+        if (eol != NULL)
+        {
+            // change the newline into NUL
+            *eol = '\0';
+            next = eol + 1;
+        }
+        else
+        {
+            // end of buffer
+            next = NULL;
+        }
 
         error = ParseSubstituteLine(filename, line);
 
@@ -660,9 +673,10 @@ static boolean ReadSubstituteConfig(char *filename)
         }
 
         ++linenum;
+        line = next;
     }
 
-    fclose(fs);
+    Z_Free(buffer);
 
     return true;
 }
@@ -914,6 +928,7 @@ static boolean I_SDL_InitMusic(void)
     int i;
 
     //!
+    // @category obscure
     // @arg <filename>
     //
     // Read all MIDI files from loaded WAD files, dump an example substitution

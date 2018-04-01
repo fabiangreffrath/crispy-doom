@@ -38,6 +38,7 @@
 #include "p_local.h"
 
 #include "s_sound.h"
+#include "s_musinfo.h" // [crispy] S_ParseMusInfo()
 
 #include "doomstat.h"
 
@@ -1833,7 +1834,7 @@ P_SetupLevel
 	
     if (nervewadfile && gamemission != pack_nerve && map <= 9)
     {
-        lumpnum = W_GetSecondNumForName (lumpname);
+        lumpnum = W_CheckNumForNameFromTo (lumpname, lumpnum - 1, 0);
     }
 
     // [crispy] pointer to the current map lump info struct
@@ -1922,6 +1923,11 @@ P_SetupLevel
 		G_DeathMatchSpawnPlayer (i);
 	    }
 			
+    }
+    // [crispy] support MUSINFO lump (dynamic music changing)
+    if (gamemode != shareware)
+    {
+	S_ParseMusInfo(lumpname);
     }
 
     // clear special respawning que

@@ -169,15 +169,17 @@ void P_BringUpWeapon (player_t* player)
     if (player->pendingweapon == wp_chainsaw)
 	S_StartSound (player->mo, sfx_sawup); // [crispy] intentionally not weapon sound source
 		
+#if 0
     // [crispy] play "power up" sound when selecting berserk fist...
     if (player->pendingweapon == wp_fist && player->powers[pw_strength])
     {
 	// [crispy] ...only if not playing already
-	if (player == &players[consoleplayer] && !S_SoundIsPlaying(NULL, sfx_getpow) && crispy->soundfix)
+	if (player == &players[consoleplayer])
 	{
-	    S_StartSound (NULL, sfx_getpow);
+	    S_StartSoundOnce (NULL, sfx_getpow);
 	}
     }
+#endif
 
     newstate = weaponinfo[player->pendingweapon].upstate;
 
@@ -690,7 +692,7 @@ void P_BulletSlope (mobj_t*	mo)
     
     if (critical->freeaim == FREEAIM_DIRECT)
     {
-	bulletslope = CRISPY_SLOPE(mo->player);
+	bulletslope = PLAYER_SLOPE(mo->player);
     }
     else
     {
@@ -708,7 +710,7 @@ void P_BulletSlope (mobj_t*	mo)
 	    bulletslope = P_AimLineAttack (mo, an, 16*64*FRACUNIT);
 	    if (!linetarget && critical->freeaim == FREEAIM_BOTH)
 	    {
-		bulletslope = CRISPY_SLOPE(mo->player);
+		bulletslope = PLAYER_SLOPE(mo->player);
 	    }
 	}
     }
@@ -994,70 +996,4 @@ void P_MovePsprites (player_t* player)
     player->psprites[ps_flash].sy = player->psprites[ps_weapon].sy;
 }
 
-// [crispy] additional BOOM and MBF states, sprites and code pointers
-
-//
-// A_FireOldBFG
-//
-// This function emulates Doom's Pre-Beta BFG
-// By Lee Killough 6/6/98, 7/11/98, 7/19/98, 8/20/98
-//
-// This code may not be used in other mods without appropriate credit given.
-// Code leeches will be telefragged.
-
-void A_FireOldBFG(mobj_t *mo, player_t *player, pspdef_t *psp)
-{
-  int type = MT_PLASMA1;
-  extern void P_CheckMissileSpawn (mobj_t* th);
-
-  if (!player) return; // [crispy] let pspr action pointers get called from mobj states
-  if (crispy->recoil && !(player->mo->flags & MF_NOCLIP))
-    P_Thrust(player, ANG180 + player->mo->angle,
-	     512*recoil_values[wp_plasma][0]);
-
-  player->ammo[weaponinfo[player->readyweapon].ammo]--;
-
-  player->extralight = 2;
-
-  do
-    {
-      mobj_t *th, *mo = player->mo;
-      angle_t an = mo->angle;
-      angle_t an1 = ((P_Random(/* pr_bfg */)&127) - 64) * (ANG90/768) + an;
-      angle_t an2 = ((P_Random(/* pr_bfg */)&127) - 64) * (ANG90/640) + ANG90;
-/*
-      extern int autoaim;
-
-      if (autoaim || !beta_emulation)
-	{
-	  // killough 8/2/98: make autoaiming prefer enemies
-	  int mask = MF_FRIEND;
-	  fixed_t slope;
-	  do
-	    {
-	      slope = P_AimLineAttack(mo, an, 16*64*FRACUNIT, mask);
-	      if (!linetarget)
-		slope = P_AimLineAttack(mo, an += 1<<26, 16*64*FRACUNIT, mask);
-	      if (!linetarget)
-		slope = P_AimLineAttack(mo, an -= 2<<26, 16*64*FRACUNIT, mask);
-	      if (!linetarget)
-		slope = 0, an = mo->angle;
-	    }
-	  while (mask && (mask=0, !linetarget));     // killough 8/2/98
-	  an1 += an - mo->angle;
-	  an2 += tantoangle[slope >> DBITS];
-	}
-*/
-      th = P_SpawnMobj(mo->x, mo->y,
-		       mo->z + 62*FRACUNIT - player->psprites[ps_weapon].sy,
-		       type);
-//    P_SetTarget(&th->target, mo);
-      th->angle = an1;
-      th->momx = finecosine[an1>>ANGLETOFINESHIFT] * 25;
-      th->momy = finesine[an1>>ANGLETOFINESHIFT] * 25;
-      th->momz = finetangent[an2>>ANGLETOFINESHIFT] * 25;
-      P_CheckMissileSpawn(th);
-    }
-  while ((type != MT_PLASMA2) && (type = MT_PLASMA2)); //killough: obfuscated!
-}
 

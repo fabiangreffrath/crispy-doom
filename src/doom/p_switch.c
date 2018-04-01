@@ -90,13 +90,17 @@ switchlist_t alphSwitchList_vanilla[] =
     {"SW1TEK",		"SW2TEK",	3},
     {"SW1MARB",	"SW2MARB",	3},
     {"SW1SKULL",	"SW2SKULL",	3},
+
+    // [crispy] SWITCHES lumps are supposed to end like this
+    {"\0",		"\0",		0}
 };
 
 // [crispy] remove MAXSWITCHES limit
 int		*switchlist;
 int		numswitches;
 static size_t	maxswitches;
-button_t        buttonlist[MAXBUTTONS];
+button_t        *buttonlist; // [crispy] remove MAXBUTTONS limit
+int		maxbuttons; // [crispy] remove MAXBUTTONS limit
 
 //
 // P_InitSwitchList
@@ -110,8 +114,7 @@ void P_InitSwitchList(void)
     switchlist_t *alphSwitchList;
     boolean from_lump;
 
-    from_lump = (W_CheckNumForName("SWITCHES") != -1);
-    if (from_lump)
+    if ((from_lump = (W_CheckNumForName("SWITCHES") != -1)))
     {
 	alphSwitchList = W_CacheLumpName("SWITCHES", PU_STATIC);
     }
@@ -139,17 +142,11 @@ void P_InitSwitchList(void)
 
     slindex = 0;
 
-    for (i = 0; /* i < arrlen(alphSwitchList) */; i++)
+    for (i = 0; alphSwitchList[i].episode; i++)
     {
 	const short alphSwitchList_episode = from_lump ?
 	    SHORT(alphSwitchList[i].episode) :
 	    alphSwitchList[i].episode;
-
-	// [crispy] add support for SWITCHES lumps
-	if (!alphSwitchList_episode || (!from_lump && i >= arrlen(alphSwitchList_vanilla)))
-	{
-	    break;
-	}
 
 	// [crispy] remove MAXSWITCHES limit
 	if (slindex + 1 >= maxswitches)
@@ -171,10 +168,15 @@ void P_InitSwitchList(void)
     numswitches = slindex / 2;
     switchlist[slindex] = -1;
 
+    // [crispy] add support for SWITCHES lumps
     if (from_lump)
     {
 	Z_ChangeTag(alphSwitchList, PU_CACHE);
     }
+
+    // [crispy] pre-allocate some memory for the buttonlist[] array
+    buttonlist = I_Realloc(NULL, sizeof(*buttonlist) * (maxbuttons = MAXBUTTONS));
+    memset(buttonlist, 0, sizeof(*buttonlist) * maxbuttons);
 }
 
 
@@ -191,19 +193,23 @@ P_StartButton
     int		i;
     
     // See if button is already pressed
-    for (i = 0;i < MAXBUTTONS;i++)
+    for (i = 0;i < maxbuttons;i++)
     {
 	if (buttonlist[i].btimer
 	    && buttonlist[i].line == line)
 	{
 	    
+	  // [crispy] register up to three buttons at once for lines with more than one switch texture
+	  if (buttonlist[i].where == w)
+	  {
 	    return;
+	  }
 	}
     }
     
 
     
-    for (i = 0;i < MAXBUTTONS;i++)
+    for (i = 0;i < maxbuttons;i++)
     {
 	if (!buttonlist[i].btimer)
 	{
@@ -216,6 +222,14 @@ P_StartButton
 	}
     }
     
+    // [crispy] remove MAXBUTTONS limit
+    {
+	maxbuttons = 2 * maxbuttons;
+	buttonlist = I_Realloc(buttonlist, sizeof(*buttonlist) * maxbuttons);
+	memset(buttonlist + maxbuttons/2, 0, sizeof(*buttonlist) * maxbuttons/2);
+	return P_StartButton(line, w, texture, time);
+    }
+
     I_Error("P_StartButton: no button slots left!");
 }
 
@@ -255,37 +269,39 @@ P_ChangeSwitchTexture
     {
 	if (switchlist[i] == texTop)
 	{
-	    S_StartSound(crispy->soundfix ? &line->soundorg : buttonlist->soundorg,sound); // [crispy] corrected sound source
+	    S_StartSoundOnce(crispy->soundfix ? &line->soundorg : buttonlist->soundorg,sound); // [crispy] corrected sound source
 	    sides[line->sidenum[0]].toptexture = switchlist[i^1];
 
 	    if (useAgain)
 		P_StartButton(line,top,switchlist[i],BUTTONTIME);
 
-	    return;
+//	    return;
 	}
-	else
+	// [crispy] register up to three buttons at once for lines with more than one switch texture
+//	else
 	{
 	    if (switchlist[i] == texMid)
 	    {
-		S_StartSound(crispy->soundfix ? &line->soundorg : buttonlist->soundorg,sound); // [crispy] corrected sound source
+		S_StartSoundOnce(crispy->soundfix ? &line->soundorg : buttonlist->soundorg,sound); // [crispy] corrected sound source
 		sides[line->sidenum[0]].midtexture = switchlist[i^1];
 
 		if (useAgain)
 		    P_StartButton(line, middle,switchlist[i],BUTTONTIME);
 
-		return;
+//		return;
 	    }
-	    else
+	    // [crispy] register up to three buttons at once for lines with more than one switch texture
+//	    else
 	    {
 		if (switchlist[i] == texBot)
 		{
-		    S_StartSound(crispy->soundfix ? &line->soundorg : buttonlist->soundorg,sound); // [crispy] corrected sound source
+		    S_StartSoundOnce(crispy->soundfix ? &line->soundorg : buttonlist->soundorg,sound); // [crispy] corrected sound source
 		    sides[line->sidenum[0]].bottomtexture = switchlist[i^1];
 
 		    if (useAgain)
 			P_StartButton(line, bottom,switchlist[i],BUTTONTIME);
 
-		    return;
+//		    return;
 		}
 	    }
 	}

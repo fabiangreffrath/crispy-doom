@@ -1,4 +1,4 @@
-AC_INIT(Crispy Doom, 5.0,
+AC_INIT(Crispy Doom, 5.1,
         fabian@greffrath.com, crispy-doom)
 
 PACKAGE_SHORTNAME=${PACKAGE_NAME% Doom}
@@ -7,6 +7,7 @@ PACKAGE_COPYRIGHT="Copyright (C) 1993-2017"
 PACKAGE_LICENSE="GNU General Public License, version 2"
 PACKAGE_MAINTAINER="Fabian Greffrath"
 PACKAGE_URL="http://fabiangreffrath.github.io/crispy-doom"
+PACKAGE_RDNS="io.github.fabiangreffrath"
 PACKAGE_ISSUES="https://github.com/fabiangreffrath/crispy-doom/issues"
 
 AC_CONFIG_AUX_DIR(autotools)
@@ -32,6 +33,24 @@ fi
 PKG_CHECK_MODULES(SDL, [sdl2 >= 2.0.1])
 PKG_CHECK_MODULES(SDLMIXER, [SDL2_mixer >= 2.0.0])
 PKG_CHECK_MODULES(SDLNET, [SDL2_net >= 2.0.0])
+
+# [Crispy] Check for zlib.
+AC_ARG_WITH([zlib],
+AS_HELP_STRING([--without-zlib],
+    [Build without zlib @<:@default=check@:>@]),
+[],
+[
+    [with_zlib=check]
+])
+AS_IF([test "x$with_zlib" != xno], [
+    PKG_CHECK_MODULES(LIBZ, zlib, [
+        AC_DEFINE([HAVE_LIBZ], [1], [zlib installed])
+    ], [
+        AS_IF([test "x$with_zlib" != xcheck], [AC_MSG_FAILURE(
+            [--with-zlib was given, but test for zlib failed])
+        ])
+    ])
+])
 
 # Check for libsamplerate.
 AC_ARG_WITH([libsamplerate],
@@ -71,8 +90,8 @@ AS_IF([test "x$with_libpng" != xno], [
 
 # TODO: We currently link everything against libraries that don't need it.
 # Use the specific library CFLAGS/LIBS variables instead of setting them here.
-CFLAGS="$CFLAGS $SDL_CFLAGS ${SAMPLERATE_CFLAGS:-} ${PNG_CFLAGS:-}"
-LDFLAGS="$LDFLAGS $SDL_LIBS ${SAMPLERATE_LIBS:-} ${PNG_LIBS:-}"
+CFLAGS="$CFLAGS $SDL_CFLAGS ${SAMPLERATE_CFLAGS:-} ${PNG_CFLAGS:-} ${LIBZ_CFLAGS:-}"
+LDFLAGS="$LDFLAGS $SDL_LIBS ${SAMPLERATE_LIBS:-} ${PNG_LIBS:-} ${LIBZ_LIBS:-}"
 AC_CHECK_LIB(m, log)
 
 # [crispy] use stdlib's qsort() function for sorting the vissprites[] array
@@ -106,6 +125,12 @@ esac
 
 AC_CHECK_TOOL(OBJDUMP, objdump, )
 AC_CHECK_TOOL(STRIP, strip, )
+
+AC_ARG_ENABLE([werror], AS_HELP_STRING([--enable-werror], [Treat warnings as errors]))
+
+AS_IF([test "x$enable_werror" = "xyes"], [
+        CFLAGS="$CFLAGS -Werror"
+])
 
 AM_CONDITIONAL(HAVE_WINDRES, test "$WINDRES" != "")
 AM_CONDITIONAL(HAVE_PYTHON, $HAVE_PYTHON)
@@ -146,6 +171,7 @@ AC_SUBST(PACKAGE_COPYRIGHT)
 AC_SUBST(PACKAGE_LICENSE)
 AC_SUBST(PACKAGE_MAINTAINER)
 AC_SUBST(PACKAGE_URL)
+AC_SUBST(PACKAGE_RDNS)
 AC_SUBST(PACKAGE_ISSUES)
 
 AC_SUBST(bashcompletiondir)

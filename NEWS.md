@@ -1,4 +1,37 @@
-## 3.0.0 (????-??-??)
+## HEAD
+
+### General
+  * The 0 and 5 keys on the number pad can now be bound independently
+    of any other keyboard key.  (thanks BlooD2ool)
+  * Man page generation has been reworked to use autoconf macro
+    substitution, making it eaiser for downstream forks to change the
+    project name.  (thanks Jon)
+  * Several functions have been hardened against incomplete reads and
+    error conditions, and made safer.  (thanks turol)
+  * We now print a meaningful error message when a savegame cannot be
+    loaded.  (thanks Zodomaniac, chungy)
+  * Fixed an exception thrown by the Windows kernel when debugging with
+    GDB.  (thanks AXDOOMER)
+  * With aspect ratio correction disabled, the game can scale to any
+    arbitrary size and remove all black borders in full screen mode.
+    (thanks chungy)
+
+### Build systems
+  * Microsoft Visual Studio files have been removed due to technical
+    limitations of the software preventing cross-version
+    compatibility, difficult dependency management, as well as being
+    unmaintained in general, resulting in a very difficult process to
+    get up to speed using this IDE and Chocolate Doom.
+
+### Doom
+  * Map33 intermission screen and map33-map35 automap names are
+    emulated. (thanks CapnClever)
+
+### Hexen
+  * ACS code has been hardened against potential security
+    vulnerabilities.
+
+## 3.0.0 (2017-12-30)
 
   Chocolate Doom 3.0 is a new major revision. The main change is that
   the codebase has been ported to SDL 2.0. This brings a number of
@@ -32,6 +65,9 @@
   * Keyboard input is improved and uses the new SDL input API; on
     systems with on-screen keyboards, this should activate the on-screen
     keyboard when it is appropriate.
+  * Menu navigation with the joystick is now much more practical, and
+    it’s possible to bind a joystick axis to look up/down in games which
+    support it (thanks Jon, Wintermute0110).
   * Several command line options were removed that were judged to be
     useless: `-grabmouse`, `-novert` and `-nonovert`. The mouse grabbing
     and novert settings can still be configured in the setup tool.
@@ -43,13 +79,27 @@
   * There is no longer a soft dependency on Zenity on Unix systems; the
     SDL API is now used to display error dialogs.
   * Joysticks are identified more precisely using GUID now.
-  * A new parameter -savedir allows users to specify a directory from
+  * A new parameter, `-savedir` allows users to specify a directory from
     which to load and save games. (thanks CapnClever)
+  * The midiproc code from Eternity Engine has been imported, improving
+    native MIDI playback on Windows and fixing a long-standing bug with
+    music volume adjustment (thanks AlexMax, Quasar).
+  * VGA “porch” emulation was added (thanks Jon).
+  * The codebase now compiles with OpenWatcom (thanks Stephen Finniss).
+
+### Doom
+  * The GOG install of Doom 3: BFG Edition is now detected (thanks chungy)
+  * A `-shorttics` command line parameter was added that simulates
+    recording a vanilla demo without actually recording a demo.
 
 ### Hexen
   * The CD audio option for music playback has been removed; the CD
     playback API has been removed from SDL 2.0. However, it is possible
     to use digital music packs as an alternative.
+
+### Strife
+  * `voices.wad` is now correctly loaded before PWADs (thanks
+    @Catoptromancy)
 
 ### libtextscreen
   * On OS X on machines with retina displays, text screens are rendered
@@ -61,6 +111,8 @@
   * Handling of code pages was cleaned up, so it is easier to change the
     code to work with a different code page now.
   * Lots of the UI code was changed to use UTF-8 strings.
+  * File extensions when using the Zenity file selector are now case
+    insensitive (thanks Jon).
 
 ## 2.3.0 (2016-12-29)
 
@@ -91,7 +143,7 @@
 
 ### Build systems
   * There is better compatibility with BSD Make (thanks R.Rebello)
-  * “./configure --with-PACKAGE” checks were repaired to behave
+  * `./configure --with-PACKAGE` checks were repaired to behave
     logically, rather than disabling the feature (thanks R.Rebello)
   * Games are now installed to ${bindir} by default, eg.
     /usr/local/bin, rather than /usr/local/games (thanks chungy)
@@ -104,7 +156,7 @@
 ### Doom
   * Chex Quest’s level warp cheat (LEESNYDER##) now behaves more like
     like the original EXE (thanks Nuke.YKT)
-  * It's now possible to start multiplayer Chex Quest games.
+  * It’s now possible to start multiplayer Chex Quest games.
   * Freedoom: Phase 1 <= 0.10.1 can now be loaded with mods, with
     -gameversion older than ultimate (thanks Fabian, chungy)
   * The IWAD order preference for GOG.com installs matches vanilla
@@ -120,9 +172,9 @@
   * Map names were added for Episode 6, fixing a crash after completing
     a level in this episode (thanks J.Benaim)
   * Support for unlimited demo/savegames was added (thanks CapnClever)
-  * Demo support is expanded: "-demoextend" allows demos to last longer
-    than a single level; "-shortticfix" adjusts low-resolution turning
-    to match Doom's handling, and there is now "-maxdemo" and "-longtics"
+  * Demo support is expanded: `-demoextend` allows demos to last longer
+    than a single level; `-shortticfix` adjusts low-resolution turning
+    to match Doom’s handling, and there is now `-maxdemo` and `-longtics`
     support (thanks CapnClever)
 
 ### Hexen
@@ -132,11 +184,11 @@
     Wraithverge in 64-bit builds (thanks J.Benaim)
   * Support for unlimited demo/savegames was added (thanks CapnClever)
   * Mouse buttons for strafe left/right and move backward were added,
-    as well as a "Double click acts as use" mouse option (thanks
+    as well as a “Double click acts as use” mouse option (thanks
     CapnClever)
-  * Demo support is expanded: "-demoextend" allows demos to last longer
-    than a single level; "-shortticfix" adjusts low-resolution turning
-    to match Doom's handling, and there is now "-maxdemo" and "-longtics"
+  * Demo support is expanded: `-demoextend` allows demos to last longer
+    than a single level; `-shortticfix` adjusts low-resolution turning
+    to match Doom’s handling, and there is now `-maxdemo` and `-longtics`
     support (thanks CapnClever)
 
 ### Strife
@@ -151,7 +203,7 @@
 
 ### libtextscreen
   * The API for creating and managing tables and columns was simplified.
-  * It's now possible to cycle through tables with the tab key.
+  * It’s now possible to cycle through tables with the tab key.
   * Windows can now have multiple columns.
 
 ## 2.2.1 (2015-09-10)

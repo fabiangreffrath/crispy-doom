@@ -2,25 +2,6 @@ AUX_DIST_GEN =                          \
         $(ac_aux_dir)/install-sh        \
         $(ac_aux_dir)/missing
 
-MSVC_FILES=                             \
-        msvc/chocolate.sln              \
-        msvc/config.h                   \
-        msvc/doom.vcproj                \
-        msvc/heretic.vcproj             \
-        msvc/hexen.vcproj               \
-        msvc/strife.vcproj              \
-        msvc/inttypes.h                 \
-        msvc/libopl.vcproj              \
-        msvc/libpcsound.vcproj          \
-        msvc/libtextscreen.vcproj       \
-        msvc/README                     \
-        msvc/server.vcproj              \
-        msvc/setup.vcproj               \
-        msvc/stdint.h                   \
-        msvc/win_opendir.c              \
-        msvc/win_opendir.h              \
-        msvc/win32.rc
-
 CODEBLOCKS_FILES=                              \
         codeblocks/chocolate.workspace         \
         codeblocks/config.h                    \
@@ -38,6 +19,7 @@ CODEBLOCKS_FILES=                              \
         codeblocks/setup-res.rc
 
 DOC_FILES=                              \
+        COPYING.md                      \
         README.md                       \
         README.Music.md                 \
         NEWS.md                         \
@@ -46,7 +28,6 @@ DOC_FILES=                              \
 
 EXTRA_DIST=                             \
         $(AUX_DIST_GEN)                 \
-        $(MSVC_FILES)                   \
         $(CODEBLOCKS_FILES)             \
         $(DOC_FILES)                    \
         NOT-BUGS.md                     \
@@ -78,6 +59,8 @@ if HAVE_PYTHON
 
 INSTALL : man/INSTALL.template man/simplecpp
 	./man/simplecpp -DDOOM -DHERETIC -DHEXEN -DSTRIFE \
+            -DLONG_GAME_NAME="@PACKAGE_SHORTNAME@ Doom" \
+            -DLONG_EXE_NAME="@PROGRAM_PREFIX@doom" \
 	                < man/INSTALL.template > $@
 
 endif

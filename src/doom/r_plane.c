@@ -31,6 +31,7 @@
 
 #include "r_local.h"
 #include "r_sky.h"
+#include "r_bmaps.h" // [crispy] R_BrightmapForTexName()
 
 
 
@@ -163,7 +164,7 @@ R_MapPlane
     ds_yfrac = -viewy - FixedMul(viewsin, distance) + dx * ds_ystep;
 
     if (fixedcolormap)
-	ds_colormap = fixedcolormap;
+	ds_colormap[0] = ds_colormap[1] = fixedcolormap;
     else
     {
 	index = distance >> LIGHTZSHIFT;
@@ -171,7 +172,8 @@ R_MapPlane
 	if (index >= MAXLIGHTZ )
 	    index = MAXLIGHTZ-1;
 
-	ds_colormap = planezlight[index];
+	ds_colormap[0] = planezlight[index];
+	ds_colormap[1] = zlight[LIGHTLEVELS-1][MAXLIGHTZ-1];
     }
 	
     ds_y = y;
@@ -455,17 +457,6 @@ static char *R_DistortedFlat (int flatnum)
     return distortedflat;
 }
 
-// [crispy] overflow guard for the flattranslation[] array
-static inline int R_FlatTranslation (unsigned int picnum)
-{
-	extern int numflats;
-
-	return (picnum < numflats) ? flattranslation[picnum] :
-	       (firstflat + picnum < numlumps) ? picnum :
-	       // [crispy] the most reasonable safe default,
-	       // it's already too late to return "skyflatnum" at this point
-	       0;
-}
 
 //
 // R_DrawPlanes
@@ -482,21 +473,21 @@ void R_DrawPlanes (void)
 				
 #ifdef RANGECHECK
     if (ds_p - drawsegs > numdrawsegs)
-	I_Error ("R_DrawPlanes: drawsegs overflow (%i)",
+	I_Error ("R_DrawPlanes: drawsegs overflow (%" PRIiPTR ")",
 		 ds_p - drawsegs);
     
     if (lastvisplane - visplanes > numvisplanes)
-	I_Error ("R_DrawPlanes: visplane overflow (%i)",
+	I_Error ("R_DrawPlanes: visplane overflow (%" PRIiPTR ")",
 		 lastvisplane - visplanes);
     
     if (lastopening - openings > MAXOPENINGS)
-	I_Error ("R_DrawPlanes: opening overflow (%i)",
+	I_Error ("R_DrawPlanes: opening overflow (%" PRIiPTR ")",
 		 lastopening - openings);
 #endif
 
     for (pl = visplanes ; pl < lastvisplane ; pl++)
     {
-	boolean swirling;
+	const boolean swirling = (flattranslation[pl->picnum] == -1);
 
 	if (pl->minx > pl->maxx)
 	    continue;
@@ -534,7 +525,8 @@ void R_DrawPlanes (void)
 	    //  i.e. colormaps[0] is used.
 	    // Because of this hack, sky is not affected
 	    //  by INVUL inverse mapping.
-	    dc_colormap = colormaps;
+	    // [crispy] no brightmaps for sky
+	    dc_colormap[0] = dc_colormap[1] = colormaps;
 //	    dc_texturemid = skytexturemid;
 	    dc_texheight = textureheight[texture]>>FRACBITS; // [crispy] Tutti-Frutti fix
 	    // [crispy] stretch sky
@@ -556,11 +548,11 @@ void R_DrawPlanes (void)
 	    continue;
 	}
 	
-	swirling = (R_FlatTranslation(pl->picnum) == -1);
 	// regular flat
-        lumpnum = firstflat + (swirling ? pl->picnum : R_FlatTranslation(pl->picnum));
+        lumpnum = firstflat + (swirling ? pl->picnum : flattranslation[pl->picnum]);
 	// [crispy] add support for SMMU swirling flats
 	ds_source = swirling ? R_DistortedFlat(lumpnum) : W_CacheLumpNum(lumpnum, PU_STATIC);
+	ds_brightmap = R_BrightmapForFlatNum(lumpnum-firstflat);
 	
 	planeheight = abs(pl->height-viewz);
 	light = (pl->lightlevel >> LIGHTSEGSHIFT)+extralight;

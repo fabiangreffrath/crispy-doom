@@ -33,18 +33,20 @@
 #define BETWEEN(l,u,x) (((l)>(x))?(l):((x)>(u))?(u):(x))
 #endif
 
-#define CRISPY_HUD 12
-#define CRISPY_SLOPE(a) ((((a)->lookdir / MLOOKUNIT) << FRACBITS) / 173)
-
 typedef struct
 {
 	// [crispy] "crispness" config variables
 	int automapstats;
+	int brightmaps;
 	int centerweapon;
 	int coloredblood;
 	int coloredhud;
 	int crosshair;
 	int crosshairtype;
+	int demotimer;
+	int demotimerdir;
+	int demobar;
+	int extautomap;
 	int extsaveg;
 	int flipcorpses;
 	int freeaim;
@@ -83,10 +85,18 @@ typedef struct
 } crispy_t;
 
 extern crispy_t *const crispy;
-extern crispy_t *const critical;
+extern const crispy_t *critical;
 
-extern void CheckCrispySingleplayerFn (int singleplayer);
-#define CheckCrispySingleplayer {CheckCrispySingleplayerFn(!demorecording && !demoplayback && !netgame);}
+extern void CheckCrispySingleplayer (boolean singleplayer);
+
+enum
+{
+    BRIGHTMAPS_OFF,
+    BRIGHTMAPS_TEXTURES,
+    BRIGHTMAPS_SPRITES,
+    BRIGHTMAPS_BOTH,
+    NUM_BRIGHTMAPS,
+};
 
 enum
 {
@@ -124,6 +134,15 @@ enum
     CROSSHAIR_PROJECTED,
     NUM_CROSSHAIRS,
     CROSSHAIR_INTERCEPT = 0x10
+};
+
+enum
+{
+    DEMOTIMER_OFF,
+    DEMOTIMER_RECORD,
+    DEMOTIMER_PLAYBACK,
+    DEMOTIMER_BOTH,
+    NUM_DEMOTIMERS
 };
 
 enum

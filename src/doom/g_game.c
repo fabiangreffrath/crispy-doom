@@ -808,7 +808,7 @@ void G_DoLoadLevel (void)
     } 
 		 
     // [crispy] update the "singleplayer" variable
-    CheckCrispySingleplayer
+    CheckCrispySingleplayer(!demorecording && !demoplayback && !netgame);
     P_SetupLevel (gameepisode, gamemap, 0, gameskill);    
     displayplayer = consoleplayer;		// view the guy you are playing    
     gameaction = ga_nothing; 
@@ -1074,6 +1074,7 @@ void G_Ticker (void)
 
 	        crispy->screenshotmsg = 4;
 	        D_Display();
+	        I_FinishUpdate();
 	        crispy->cleanscreenshot = 0;
 	    }
 	    V_ScreenShot("DOOM%04i.%s"); // [crispy] increase screenshot filename limit
@@ -1707,36 +1708,57 @@ void G_DoCompleted (void)
     wminfo.maxsecret = totalsecret; 
     wminfo.maxfrags = 0; 
 
-    // Set par time. Doom episode 4 doesn't have a par time, so this
-    // overflows into the cpars array. It's necessary to emulate this
-    // for statcheck regression testing.
     if (gamemap == 33 || (crispy->havee1m10 && gameepisode == 1 && gamemap == 10))
-	// [crispy] par time for inofficial maps sucks
-	wminfo.partime = INT_MAX;
+    {
+        // [crispy] par time for inofficial maps sucks
+        wminfo.partime = INT_MAX;
+    }
     else
     if (gamemission == pack_nerve && crispy->singleplayer)
-	wminfo.partime = TICRATE*npars[gamemap-1];
+    {
+        wminfo.partime = TICRATE*npars[gamemap-1];
+    }
     else
+    // Set par time. Exceptions are added for purposes of
+    // statcheck regression testing.
     if (gamemode == commercial)
     {
-	// [crispy] support [PARS] sections in BEX files
-	if (bex_cpars[gamemap-1])
-	    wminfo.partime = TICRATE*bex_cpars[gamemap-1];
-	else
-	wminfo.partime = TICRATE*cpars[gamemap-1];
+        // map33 has no official time: initialize to zero
+        if (gamemap == 33 && false) // [crispy] disable
+        {
+            wminfo.partime = 0;
+        }
+        else
+        // [crispy] support [PARS] sections in BEX files
+        if (bex_cpars[gamemap-1])
+        {
+            wminfo.partime = TICRATE*bex_cpars[gamemap-1];
+        }
+        else
+        {
+            wminfo.partime = TICRATE*cpars[gamemap-1];
+        }
     }
+    // Doom episode 4 doesn't have a par time, so this
+    // overflows into the cpars array.
     else if (gameepisode < 4)
     {
-	// [crispy] support [PARS] sections in BEX files
-	if (bex_pars[gameepisode][gamemap])
-	    wminfo.partime = TICRATE*bex_pars[gameepisode][gamemap];
-	else
-	wminfo.partime = TICRATE*pars[gameepisode][gamemap];
+        // [crispy] support [PARS] sections in BEX files
+        if (bex_pars[gameepisode][gamemap])
+        {
+            wminfo.partime = TICRATE*bex_pars[gameepisode][gamemap];
+        }
+        else
+        wminfo.partime = TICRATE*pars[gameepisode][gamemap];
     }
     else if (gameepisode == 4 && crispy->singleplayer)
-	wminfo.partime = TICRATE*e4pars[gamemap];
+    {
+        wminfo.partime = TICRATE*e4pars[gamemap];
+    }
     else
+    {
         wminfo.partime = TICRATE*cpars[gamemap];
+    }
 
     wminfo.pnum = consoleplayer; 
  
@@ -1864,7 +1886,7 @@ void G_DoLoadGame (void)
 
     if (save_stream == NULL)
     {
-        return;
+        I_Error("Could not load savegame %s", savename);
     }
 
     savegame_error = false;
@@ -2283,6 +2305,8 @@ G_InitNew
 // 
 #define DEMOMARKER		0x80
 
+// [crispy] demo progress bar and timer widget
+int defdemotics = 0, deftotaldemotics;
 
 void G_ReadDemoTiccmd (ticcmd_t* cmd) 
 { 
@@ -2314,6 +2338,11 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 	cmd->sidemove *= (const signed char) -1;
 	cmd->angleturn *= (const short) -1;
     }
+
+    // [crispy] increase demo tics counter
+    // applies to both recording and playback,
+    // because G_WriteDemoTiccmd() calls G_ReadDemoTiccmd() once
+    defdemotics++;
 } 
 
 // Increase the size of the demo buffer to allow unlimited demos
@@ -2514,7 +2543,6 @@ void G_BeginRecording (void)
 //
 
 char*	defdemoname; 
-int	defdemosize; // [crispy] demo progress bar
  
 void G_DeferedPlayDemo (char* name) 
 { 
@@ -2666,7 +2694,7 @@ void G_DoPlayDemo (void)
     usergame = false; 
     demoplayback = true; 
     // [crispy] update the "singleplayer" variable
-    CheckCrispySingleplayer
+    CheckCrispySingleplayer(!demorecording && !demoplayback && !netgame);
 
     // [crispy] demo progress bar
     {
@@ -2681,12 +2709,13 @@ void G_DoPlayDemo (void)
 	    }
 	}
 
+	deftotaldemotics = defdemotics = 0;
+
 	while (*demo_ptr != DEMOMARKER && (demo_ptr - demobuffer) < lumplength)
 	{
 	    demo_ptr += numplayersingame * (longtics ? 5 : 4);
+	    deftotaldemotics++;
 	}
-
-	defdemosize = demo_ptr - demo_p;
     }
 } 
 

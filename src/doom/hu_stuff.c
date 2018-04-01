@@ -55,8 +55,8 @@
 #define HU_TITLE2	(mapnames_commercial[gamemap-1])
 #define HU_TITLEP	(mapnames_commercial[gamemap-1 + 32])
 #define HU_TITLET	(mapnames_commercial[gamemap-1 + 64])
-#define HU_TITLEN	(mapnames_commercial[gamemap-1 + 96])
-#define HU_TITLEM	(mapnames_commercial[gamemap-1 + 105])
+#define HU_TITLEN	(mapnames_commercial[gamemap-1 + 96 + 3])
+#define HU_TITLEM	(mapnames_commercial[gamemap-1 + 105 + 3])
 #define HU_TITLE_CHEX   (mapnames_chex[(gameepisode-1)*9+gamemap-1])
 #define HU_TITLEHEIGHT	1
 #define HU_TITLEX	0
@@ -360,6 +360,12 @@ char *mapnames_commercial[] =
     THUSTR_31,
     THUSTR_32,
 
+    // Emulation: TNT maps 33-35 can be warped to and played if they exist
+    // so include blank names instead of spilling over
+    "",
+    "",
+    ""
+    ,
     NHUSTR_1,
     NHUSTR_2,
     NHUSTR_3,
@@ -392,6 +398,22 @@ char *mapnames_commercial[] =
     MHUSTR_20,
     MHUSTR_21
 };
+
+static void CrispyReplaceColor (char *str, const int cr, const char *col)
+{
+    char *str_replace, col_replace[16];
+
+    if (strcmp(str, DEH_String(str)))
+    {
+	return;
+    }
+
+    M_snprintf(col_replace, sizeof(col_replace),
+               "%s%s%s", crstr[cr], col, crstr[CR_NONE]);
+    str_replace = M_StringReplace(str, col, col_replace);
+    DEH_AddStringReplacement(str, str_replace);
+    free(str_replace);
+}
 
 void HU_Init(void)
 {
@@ -440,25 +462,28 @@ void HU_Init(void)
 	laserpatch[i].h += SHORT(patch->height)/2;
     }
 
-    // [crispy] colorize keycard and skull key messages
-    CrispyReplaceColor(GOTBLUECARD, CR_BLUE, " blue ");
-    CrispyReplaceColor(GOTBLUESKUL, CR_BLUE, " blue ");
-    CrispyReplaceColor(PD_BLUEO,    CR_BLUE, " blue ");
-    CrispyReplaceColor(PD_BLUEK,    CR_BLUE, " blue ");
-    CrispyReplaceColor(GOTREDCARD,  CR_RED,  " red ");
-    CrispyReplaceColor(GOTREDSKULL, CR_RED,  " red ");
-    CrispyReplaceColor(PD_REDO,     CR_RED,  " red ");
-    CrispyReplaceColor(PD_REDK,     CR_RED,  " red ");
-    CrispyReplaceColor(GOTYELWCARD, CR_GOLD, " yellow ");
-    CrispyReplaceColor(GOTYELWSKUL, CR_GOLD, " yellow ");
-    CrispyReplaceColor(PD_YELLOWO,  CR_GOLD, " yellow ");
-    CrispyReplaceColor(PD_YELLOWK,  CR_GOLD, " yellow ");
+    if (!M_ParmExists("-nodeh"))
+    {
+	// [crispy] colorize keycard and skull key messages
+	CrispyReplaceColor(GOTBLUECARD, CR_BLUE, " blue ");
+	CrispyReplaceColor(GOTBLUESKUL, CR_BLUE, " blue ");
+	CrispyReplaceColor(PD_BLUEO,    CR_BLUE, " blue ");
+	CrispyReplaceColor(PD_BLUEK,    CR_BLUE, " blue ");
+	CrispyReplaceColor(GOTREDCARD,  CR_RED,  " red ");
+	CrispyReplaceColor(GOTREDSKULL, CR_RED,  " red ");
+	CrispyReplaceColor(PD_REDO,     CR_RED,  " red ");
+	CrispyReplaceColor(PD_REDK,     CR_RED,  " red ");
+	CrispyReplaceColor(GOTYELWCARD, CR_GOLD, " yellow ");
+	CrispyReplaceColor(GOTYELWSKUL, CR_GOLD, " yellow ");
+	CrispyReplaceColor(PD_YELLOWO,  CR_GOLD, " yellow ");
+	CrispyReplaceColor(PD_YELLOWK,  CR_GOLD, " yellow ");
 
-    // [crispy] colorize multi-player messages
-    CrispyReplaceColor(HUSTR_PLRGREEN,  CR_GREEN, "Green: ");
-    CrispyReplaceColor(HUSTR_PLRINDIGO, CR_GRAY,  "Indigo: ");
-    CrispyReplaceColor(HUSTR_PLRBROWN,  CR_GOLD,  "Brown: ");
-    CrispyReplaceColor(HUSTR_PLRRED,    CR_RED,   "Red: ");
+	// [crispy] colorize multi-player messages
+	CrispyReplaceColor(HUSTR_PLRGREEN,  CR_GREEN, "Green: ");
+	CrispyReplaceColor(HUSTR_PLRINDIGO, CR_GRAY,  "Indigo: ");
+	CrispyReplaceColor(HUSTR_PLRBROWN,  CR_GOLD,  "Brown: ");
+	CrispyReplaceColor(HUSTR_PLRRED,    CR_RED,   "Red: ");
+    }
 }
 
 void HU_Stop(void)
@@ -618,6 +643,11 @@ void HU_Start(void)
 	break;
       case doom2:
 	 s = HU_TITLE2;
+         // Pre-Final Doom compatibility: map33-map35 names don't spill over
+         if (gameversion <= exe_doom_1_9 && gamemap >= 33 && false) // [crispy] disable
+         {
+             s = "";
+         }
 	 break;
       case pack_plut:
 	s = HU_TITLEP;
@@ -694,20 +724,16 @@ void HU_Start(void)
 }
 
 // [crispy] print a bar indicating demo progress at the bottom of the screen
-static void HU_DemoProgressBar (void)
+void HU_DemoProgressBar (void)
 {
-    int i;
-    extern char *demo_p, *demobuffer;
-    extern int defdemosize;
+    const int i = SCREENWIDTH * defdemotics / deftotaldemotics;
 
-    i = SCREENWIDTH * (demo_p - demobuffer) / defdemosize;
-
-    V_DrawHorizLine(0, SCREENHEIGHT - 3, i, 4); // [crispy] white
+//  V_DrawHorizLine(0, SCREENHEIGHT - 3, i, 4); // [crispy] white
     V_DrawHorizLine(0, SCREENHEIGHT - 2, i, 0); // [crispy] black
     V_DrawHorizLine(0, SCREENHEIGHT - 1, i, 4); // [crispy] white
 
-    V_DrawHorizLine(0, SCREENHEIGHT - 2, 1, 4); // [crispy] white start
-    V_DrawHorizLine(i - 1, SCREENHEIGHT - 2, 1, 4); // [crispy] white end
+//  V_DrawHorizLine(0, SCREENHEIGHT - 2, 1, 4); // [crispy] white start
+//  V_DrawHorizLine(i - 1, SCREENHEIGHT - 2, 1, 4); // [crispy] white end
 }
 
 // [crispy] static, non-projected crosshair
@@ -878,9 +904,16 @@ void HU_Drawer(void)
     if (dp_translucent)
 	dp_translucent = false;
 
-    // [crispy] demo progress bar
-    if (demoplayback)
-	HU_DemoProgressBar();
+    // [crispy] demo timer widget
+    if (demoplayback && (crispy->demotimer & DEMOTIMER_PLAYBACK))
+    {
+	ST_DrawDemoTimer(crispy->demotimerdir ? (deftotaldemotics - defdemotics) : defdemotics);
+    }
+    else
+    if (demorecording && (crispy->demotimer & DEMOTIMER_RECORD))
+    {
+	ST_DrawDemoTimer(defdemotics);
+    }
 }
 
 void HU_Erase(void)

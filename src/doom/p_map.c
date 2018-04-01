@@ -633,6 +633,18 @@ boolean P_ThingHeightClip (mobj_t* thing)
     {
 	// walking monsters rise and fall with the floor
 	thing->z = thing->floorz;
+	// [crispy] update player's viewz on sector move
+	if (thing->player)
+	{
+	    player_t *const player = thing->player;
+
+	    player->viewz = player->mo->z + player->viewheight;
+
+	    if (player->viewz > player->mo->ceilingz - 4*FRACUNIT)
+	    {
+		player->viewz = player->mo->ceilingz - 4*FRACUNIT;
+	    }
+	}
     }
     else
     {
@@ -897,7 +909,7 @@ fixed_t		aimslope;
 extern fixed_t	topslope;
 extern fixed_t	bottomslope;	
 
-extern laserspot_t *laserspot;
+extern degenmobj_t *laserspot;
 
 //
 // PTR_AimTraverse
@@ -1081,9 +1093,33 @@ boolean PTR_ShootTraverse (intercept_t* in)
 	    }
 	}
 
+	// [crispy] check if the pullet puff's z-coordinate is below of above
+	// its spawning sector's floor or ceiling, respectively, and move its
+	// coordinates to the point where the trajectory hits the plane
+	if (aimslope)
+	{
+		const int lineside = P_PointOnLineSide(x, y, li);
+		int side;
+
+		if ((side = li->sidenum[lineside]) != NO_INDEX)
+		{
+			const sector_t *const sector = sides[side].sector;
+
+			if (z < sector->floorheight ||
+			    (z > sector->ceilingheight && sector->ceilingpic != skyflatnum))
+			{
+				z = BETWEEN(sector->floorheight, sector->ceilingheight, z);
+				frac = FixedDiv(z - shootz, FixedMul(aimslope, attackrange));
+				x = trace.x + FixedMul (trace.dx, frac);
+				y = trace.y + FixedMul (trace.dy, frac);
+			}
+		}
+	}
+
 	// [crispy] update laser spot position and return
 	if (la_damage == INT_MIN)
 	{
+	    laserspot->thinker.function.acv = (actionf_v) (1);
 	    laserspot->x = x;
 	    laserspot->y = y;
 	    laserspot->z = z;
@@ -1133,6 +1169,7 @@ boolean PTR_ShootTraverse (intercept_t* in)
 	if (th->flags & MF_SHADOW)
 	    return true;
 
+	laserspot->thinker.function.acv = (actionf_v) (1);
 	laserspot->x = th->x;
 	laserspot->y = th->y;
 	laserspot->z = z;
@@ -1243,7 +1280,7 @@ P_LineLaser
 {
     fixed_t	lslope;
 
-    laserspot->x = laserspot->y = laserspot->z = 0;
+    laserspot->thinker.function.acv = (actionf_v) (0);
 
     if (critical->freeaim == FREEAIM_DIRECT)
     {

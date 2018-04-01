@@ -66,6 +66,11 @@ void SV_Open(char *fileName)
 void SV_OpenRead(char *filename)
 {
     SaveGameFP = fopen(filename, "rb");
+
+    if (SaveGameFP == NULL)
+    {
+        I_Error("Could not load savegame %s", filename);
+    }
 }
 
 //==========================================================================
@@ -131,7 +136,12 @@ void SV_WritePtr(void *ptr)
 
 void SV_Read(void *buffer, int size)
 {
-    fread(buffer, size, 1, SaveGameFP);
+    int retval = fread(buffer, 1, size, SaveGameFP);
+    if (retval != size)
+    {
+        I_Error("Incomplete read in SV_Read: Expected %d, got %d bytes",
+            size, retval);
+    }
 }
 
 byte SV_ReadByte(void)

@@ -19,11 +19,11 @@
 
 
 #include "crispy.h"
-#include <string.h>
 
 // [crispy] "regular" config variables
 static crispy_t crispy_s = {
 	0,
+	.extautomap = 1,
 	.extsaveg = 1,
 	.smoothscaling = 1,
 	.soundfix = 1,
@@ -31,18 +31,18 @@ static crispy_t crispy_s = {
 crispy_t *const crispy = &crispy_s;
 
 // [crispy] "critical" config variables
-static crispy_t critical_s = {0};
-crispy_t *const critical = &critical_s;
+static const crispy_t critical_s = {0};
+const crispy_t *critical = &critical_s;
 
 // [crispy] update the "singleplayer" variable and the "critical" struct
-void CheckCrispySingleplayerFn (int singleplayer)
+void CheckCrispySingleplayer (boolean singleplayer)
 {
 	if ((crispy->singleplayer = singleplayer))
 	{
-		memcpy(critical, crispy, sizeof(critical_s));
+		critical = &crispy_s;
 	}
 	else
 	{
-		memset(critical, 0, sizeof(critical_s));
+		critical = &critical_s;
 	}
 }
