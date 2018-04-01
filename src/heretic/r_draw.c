@@ -32,7 +32,6 @@ byte *viewimage;
 int viewwidth, scaledviewwidth, viewheight, viewwindowx, viewwindowy;
 byte *ylookup[MAXHEIGHT];
 int columnofs[MAXWIDTH];
-int linesize = SCREENWIDTH;
 byte translations[3][256];      // color tables for different players
 
 /*
@@ -59,11 +58,11 @@ int dccount;                    // just for profiling
 void R_DrawColumn(void)
 {
     int count;
-    register byte *dest;        // killough
-    register fixed_t frac;      // killough
-    fixed_t fracstep;
+    byte *dest;
+    fixed_t frac, fracstep;
+    int heightmask = dc_texheight - 1;
 
-    count = dc_yh - dc_yl + 1;
+    count = dc_yh - dc_yl;
     if (count < 0)
         return;
 
@@ -72,67 +71,40 @@ void R_DrawColumn(void)
         I_Error("R_DrawColumn: %i to %i at %i", dc_yl, dc_yh, dc_x);
 #endif
 
-    // Framebuffer destination address.
-    // Use ylookup LUT to avoid multiply with ScreenWidth.
-    // Use columnofs LUT for subwindows?
-
     dest = ylookup[dc_yl] + columnofs[dc_x];
-
-    // Determine scaling, which is the only mapping to be done.
 
     fracstep = dc_iscale;
     frac = dc_texturemid + (dc_yl - centery) * fracstep;
 
-    // Inner loop that does the actual texture mapping,
-    //  e.g. a DDA-lile scaling.
-    // This is as fast as it gets.       (Yeah, right!!! -- killough)
-    //
-    // killough 2/1/98: more performance tuning
+  if (dc_texheight & heightmask) // not a power of 2 -- killough
+  {
+    heightmask++;
+    heightmask <<= FRACBITS;
 
+    if (frac < 0)
+	while ((frac += heightmask) < 0);
+    else
+	while (frac >= heightmask)
+	    frac -= heightmask;
+
+    do
     {
-        register const byte *source = dc_source;
-        register const lighttable_t *colormap = dc_colormap;
-        register int heightmask = dc_texheight-1;
-        if (dc_texheight & heightmask)   // not a power of 2 -- killough
-        {
-            heightmask++;
-            heightmask <<= FRACBITS;
-
-            if (frac < 0)
-                while ((frac += heightmask) < 0);
-            else
-                while (frac >= heightmask)
-                frac -= heightmask;
-
-            do
-            {
-                // Re-map color indices from wall texture column
-                //  using a lighting/special effects LUT.
-
-                // heightmask is the Tutti-Frutti fix -- killough
-
-                *dest = colormap[source[frac>>FRACBITS]];
-                dest += linesize;                     // killough 11/98
-                if ((frac += fracstep) >= heightmask)
-                    frac -= heightmask;
-            }
-            while (--count);
-        }
-        else
-        {
-            while ((count-=2)>=0)   // texture height is a power of 2 -- killough
-            {
-                *dest = colormap[source[(frac>>FRACBITS) & heightmask]];
-                dest += linesize;   // killough 11/98
-                frac += fracstep;
-                *dest = colormap[source[(frac>>FRACBITS) & heightmask]];
-                dest += linesize;   // killough 11/98
-                frac += fracstep;
-            }
-            if (count & 1)
-                *dest = colormap[source[(frac>>FRACBITS) & heightmask]];
-        }
+	*dest = dc_colormap[dc_source[frac>>FRACBITS]];
+	dest += SCREENWIDTH;
+	if ((frac += fracstep) >= heightmask)
+	    frac -= heightmask;
+    } while (count--);
+  }
+  else // texture height is a power of 2 -- killough
+  {
+    do
+    {
+        *dest = dc_colormap[dc_source[(frac >> FRACBITS) & 127]];
+        dest += SCREENWIDTH;
+        frac += fracstep;
     }
+    while (count--);
+  }
 }
 
 void R_DrawColumnLow(void)
