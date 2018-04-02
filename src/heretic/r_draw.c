@@ -99,7 +99,7 @@ void R_DrawColumn(void)
   {
     do
     {
-        *dest = dc_colormap[dc_source[(frac >> FRACBITS) & 127]];
+        *dest = dc_colormap[dc_source[(frac >> FRACBITS) & heightmask]];
         dest += SCREENWIDTH;
         frac += fracstep;
     }
