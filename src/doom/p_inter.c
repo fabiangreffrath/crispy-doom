@@ -59,6 +59,7 @@ int	clipammo[NUMAMMO] = {10, 4, 20, 1};
 // P_GiveAmmo
 // Num is the number of clip loads,
 // not the individual count (0= 1/2 clip).
+// [NS] Negative values give half the absolute amount.
 // Returns false if the ammo can't be picked up at all
 //
 
@@ -66,10 +67,9 @@ boolean
 P_GiveAmmo
 ( player_t*	player,
   ammotype_t	ammo,
-  float		num )
+  int		num )
 {
     int		oldammo;
-    int		amount = 0;
 	
     if (ammo == am_noammo)
 	return false;
@@ -81,24 +81,31 @@ P_GiveAmmo
 	return false;
 		
     if (num)
-	amount = clipammo[ammo] * num;
+	{
+		if (num > 0)
+		num *= clipammo[ammo];
+		// [NS] Give half ammo for drops.
+		else
+		num *= -clipammo[ammo]/2;
+	}
     else
-	amount = clipammo[ammo]/2;
-
-    if (amount < 1)
-	amount = 1;
+	num = clipammo[ammo]/2;
+		
+	// [NS] Prevent 1-unit clips from going lower than 1.
+    if (num < 1)
+	num = 1;
     
     if (gameskill == sk_baby
 	|| gameskill == sk_nightmare)
     {
 	// give double ammo in trainer mode,
 	// you'll need in nightmare
-	amount <<= 1;
+	num <<= 1;
     }
     
 		
     oldammo = player->ammo[ammo];
-    player->ammo[ammo] += amount;
+    player->ammo[ammo] += num;
 
     if (player->ammo[ammo] > player->maxammo[ammo])
 	player->ammo[ammo] = player->maxammo[ammo];
@@ -550,7 +557,7 @@ P_TouchSpecialThing
       case SPR_CLIP:
 	if (special->flags & MF_DROPPED)
 	{
-	    if (!P_GiveAmmo (player,am_clip,0.5))
+	    if (!P_GiveAmmo (player,am_clip,-1))
 		return;
 	}
 	else
@@ -564,7 +571,7 @@ P_TouchSpecialThing
       case SPR_AMMO:
 	if (special->flags & MF_DROPPED)
 	{
-		if (!P_GiveAmmo (player, am_clip,2.5))
+		if (!P_GiveAmmo (player, am_clip,-5))
 			return;
 	}
 	else
@@ -578,7 +585,7 @@ P_TouchSpecialThing
       case SPR_ROCK:
 	if (special->flags & MF_DROPPED)
 	{
-		if (!P_GiveAmmo (player, am_misl,0.5))
+		if (!P_GiveAmmo (player, am_misl,-1))
 			return;
 	}
 	else
@@ -592,7 +599,7 @@ P_TouchSpecialThing
       case SPR_BROK:
 	if (special->flags & MF_DROPPED)
 	{
-		if (!P_GiveAmmo (player, am_misl,2.5))
+		if (!P_GiveAmmo (player, am_misl,-5))
 			return;
 	}
 	else
@@ -606,7 +613,7 @@ P_TouchSpecialThing
       case SPR_CELL:
 	if (special->flags & MF_DROPPED)
 	{
-		if (!P_GiveAmmo (player, am_cell,0.5))
+		if (!P_GiveAmmo (player, am_cell,-1))
 			return;
 	}
 	else
@@ -620,7 +627,7 @@ P_TouchSpecialThing
       case SPR_CELP:
 	if (special->flags & MF_DROPPED)
 	{
-		if (!P_GiveAmmo (player, am_cell,2.5))
+		if (!P_GiveAmmo (player, am_cell,-5))
 			return;
 	}
 	else
@@ -634,7 +641,7 @@ P_TouchSpecialThing
       case SPR_SHEL:
 	if (special->flags & MF_DROPPED)
 	{
-		if (!P_GiveAmmo (player, am_shell,0.5))
+		if (!P_GiveAmmo (player, am_shell,-1))
 			return;
 	}
 	else
@@ -648,7 +655,7 @@ P_TouchSpecialThing
       case SPR_SBOX:
 	if (special->flags & MF_DROPPED)
 	{
-		if (!P_GiveAmmo (player, am_shell,2.5))
+		if (!P_GiveAmmo (player, am_shell,-5))
 			return;
 	}
 	else
