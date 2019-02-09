@@ -66,10 +66,10 @@ boolean
 P_GiveAmmo
 ( player_t*	player,
   ammotype_t	ammo,
-  int		num,
-  boolean	dropped )
+  float		num )
 {
     int		oldammo;
+    int		amount = 0;
 	
     if (ammo == am_noammo)
 	return false;
@@ -80,24 +80,25 @@ P_GiveAmmo
     if ( player->ammo[ammo] == player->maxammo[ammo]  )
 	return false;
 		
-	num *= clipammo[ammo];
-	if (dropped)
-		num >>= 1;
-	if (num < 1)
-		num = 1;
+    if (num)
+	amount = clipammo[ammo] * num;
+    else
+	amount = clipammo[ammo]/2;
 
+    if (amount < 1)
+	amount = 1;
     
     if (gameskill == sk_baby
 	|| gameskill == sk_nightmare)
     {
 	// give double ammo in trainer mode,
 	// you'll need in nightmare
-	num <<= 1;
+	amount <<= 1;
     }
     
 		
     oldammo = player->ammo[ammo];
-    player->ammo[ammo] += num;
+    player->ammo[ammo] += amount;
 
     if (player->ammo[ammo] > player->maxammo[ammo])
 	player->ammo[ammo] = player->maxammo[ammo];
@@ -194,9 +195,9 @@ P_GiveWeapon
 	player->weaponowned[weapon] = true;
 
 	if (deathmatch)
-	    P_GiveAmmo (player, weaponinfo[weapon].ammo, 5, false);
+	    P_GiveAmmo (player, weaponinfo[weapon].ammo, 5);
 	else
-	    P_GiveAmmo (player, weaponinfo[weapon].ammo, 2, false);
+	    P_GiveAmmo (player, weaponinfo[weapon].ammo, 2);
 	player->pendingweapon = weapon;
 	// [crispy] show weapon pickup messages in multiplayer games
 	player->message = DEH_String(WeaponPickupMessages[weapon]);
@@ -210,7 +211,10 @@ P_GiveWeapon
     {
 	// give one clip with a dropped weapon,
 	// two clips with a found weapon
-		gaveammo = P_GiveAmmo (player, weaponinfo[weapon].ammo, 2, dropped);
+	if (dropped)
+	    gaveammo = P_GiveAmmo (player, weaponinfo[weapon].ammo, 1);
+	else
+	    gaveammo = P_GiveAmmo (player, weaponinfo[weapon].ammo, 2);
     }
     else
 	gaveammo = false;
@@ -544,58 +548,114 @@ P_TouchSpecialThing
 	
 	// ammo
       case SPR_CLIP:
-	if (!P_GiveAmmo (player,am_clip, 1,
-                          (special->flags & MF_DROPPED) != 0))
-	return;
+	if (special->flags & MF_DROPPED)
+	{
+	    if (!P_GiveAmmo (player,am_clip,0.5))
+		return;
+	}
+	else
+	{
+	    if (!P_GiveAmmo (player,am_clip,1))
+		return;
+	}
 	player->message = DEH_String(GOTCLIP);
 	break;
 	
       case SPR_AMMO:
-	if (!P_GiveAmmo (player, am_clip, 5,
-                          (special->flags & MF_DROPPED) != 0))
-	    return;
+	if (special->flags & MF_DROPPED)
+	{
+		if (!P_GiveAmmo (player, am_clip,2.5))
+			return;
+	}
+	else
+	{
+		if (!P_GiveAmmo (player, am_clip,5))
+			return;
+	}
 	player->message = DEH_String(GOTCLIPBOX);
 	break;
 	
       case SPR_ROCK:
-	if (!P_GiveAmmo (player, am_misl, 1,
-                          (special->flags & MF_DROPPED) != 0))
-	    return;
+	if (special->flags & MF_DROPPED)
+	{
+		if (!P_GiveAmmo (player, am_misl,0.5))
+			return;
+	}
+	else
+	{
+		if (!P_GiveAmmo (player, am_misl,1))
+			return;
+	}
 	player->message = DEH_String(GOTROCKET);
 	break;
 	
       case SPR_BROK:
-	if (!P_GiveAmmo (player, am_misl, 5,
-                          (special->flags & MF_DROPPED) != 0))
-	    return;
+	if (special->flags & MF_DROPPED)
+	{
+		if (!P_GiveAmmo (player, am_misl,2.5))
+			return;
+	}
+	else
+	{
+		if (!P_GiveAmmo (player, am_misl,5))
+			return;
+	}
 	player->message = DEH_String(GOTROCKBOX);
 	break;
 	
       case SPR_CELL:
-	if (!P_GiveAmmo (player, am_cell, 1,
-                          (special->flags & MF_DROPPED) != 0))
-	    return;
+	if (special->flags & MF_DROPPED)
+	{
+		if (!P_GiveAmmo (player, am_cell,0.5))
+			return;
+	}
+	else
+	{
+		if (!P_GiveAmmo (player, am_cell,1))
+			return;
+	}
 	player->message = DEH_String(GOTCELL);
 	break;
 	
       case SPR_CELP:
-	if (!P_GiveAmmo (player, am_cell, 5,
-                          (special->flags & MF_DROPPED) != 0))
-	    return;
+	if (special->flags & MF_DROPPED)
+	{
+		if (!P_GiveAmmo (player, am_cell,2.5))
+			return;
+	}
+	else
+	{
+		if (!P_GiveAmmo (player, am_cell,5))
+			return;
+	}
 	player->message = DEH_String(GOTCELLBOX);
 	break;
 	
       case SPR_SHEL:
-	if (!P_GiveAmmo (player, am_shell, 1,
-                          (special->flags & MF_DROPPED) != 0))
-	    return;
+	if (special->flags & MF_DROPPED)
+	{
+		if (!P_GiveAmmo (player, am_shell,0.5))
+			return;
+	}
+	else
+	{
+		if (!P_GiveAmmo (player, am_shell,1))
+			return;
+	}
 	player->message = DEH_String(GOTSHELLS);
 	break;
 	
       case SPR_SBOX:
-	if (!P_GiveAmmo (player, am_shell, 5,
-                          (special->flags & MF_DROPPED) != 0))
-	    return;
+	if (special->flags & MF_DROPPED)
+	{
+		if (!P_GiveAmmo (player, am_shell,2.5))
+			return;
+	}
+	else
+	{
+		if (!P_GiveAmmo (player, am_shell,5))
+			return;
+	}
 	player->message = DEH_String(GOTSHELLBOX);
 	break;
 	
@@ -607,7 +667,7 @@ P_TouchSpecialThing
 	    player->backpack = true;
 	}
 	for (i=0 ; i<NUMAMMO ; i++)
-	    P_GiveAmmo (player, i, 1, false);
+	    P_GiveAmmo (player, i, 1);
 	player->message = DEH_String(GOTBACKPACK);
 	break;
 	
