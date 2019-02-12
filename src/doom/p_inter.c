@@ -59,7 +59,7 @@ int	clipammo[NUMAMMO] = {10, 4, 20, 1};
 // P_GiveAmmo
 // Num is the number of clip loads,
 // not the individual count (0= 1/2 clip).
-// [NS] Negative values give half the absolute amount.
+// [NS] Dropped ammo/weapons give half as much.
 // Returns false if the ammo can't be picked up at all
 //
 
@@ -67,7 +67,8 @@ boolean
 P_GiveAmmo
 ( player_t*	player,
   ammotype_t	ammo,
-  int		num )
+  int		num,
+  boolean	dropped )
 {
     int		oldammo;
 	
@@ -81,19 +82,9 @@ P_GiveAmmo
 	return false;
 		
     if (num)
-	{
-		if (num > 0)
-		num *= clipammo[ammo];
-		// [NS] Give half ammo for drops.
-		else
-		num *= -clipammo[ammo]/2;
-	}
+	num *= clipammo[ammo];
     else
 	num = clipammo[ammo]/2;
-		
-	// [NS] Prevent 1-unit clips from going lower than 1.
-    if (num < 1)
-	num = 1;
     
     if (gameskill == sk_baby
 	|| gameskill == sk_nightmare)
@@ -104,6 +95,15 @@ P_GiveAmmo
     }
     
 		
+	// [NS] Halve if needed.
+	if (dropped)
+	{
+		num >>= 1;
+		// Don't round down to 0.
+		if (!num)
+			num = 1;
+	}
+
     oldammo = player->ammo[ammo];
     player->ammo[ammo] += num;
 
@@ -202,9 +202,9 @@ P_GiveWeapon
 	player->weaponowned[weapon] = true;
 
 	if (deathmatch)
-	    P_GiveAmmo (player, weaponinfo[weapon].ammo, 5);
+	    P_GiveAmmo (player, weaponinfo[weapon].ammo, 5, false);
 	else
-	    P_GiveAmmo (player, weaponinfo[weapon].ammo, 2);
+	    P_GiveAmmo (player, weaponinfo[weapon].ammo, 2, false);
 	player->pendingweapon = weapon;
 	// [crispy] show weapon pickup messages in multiplayer games
 	player->message = DEH_String(WeaponPickupMessages[weapon]);
@@ -218,14 +218,17 @@ P_GiveWeapon
     {
 	// give one clip with a dropped weapon,
 	// two clips with a found weapon
+	// [NS] Just need to pass that it's dropped.
+	gaveammo = P_GiveAmmo (player, weaponinfo[weapon].ammo, 2, dropped);
+	/*
 	if (dropped)
 	    gaveammo = P_GiveAmmo (player, weaponinfo[weapon].ammo, 1);
 	else
 	    gaveammo = P_GiveAmmo (player, weaponinfo[weapon].ammo, 2);
+	*/
     }
     else
 	gaveammo = false;
-	
     if (player->weaponowned[weapon])
 	gaveweapon = false;
     else
@@ -363,6 +366,7 @@ P_TouchSpecialThing
     int		i;
     fixed_t	delta;
     int		sound;
+    boolean dropped;
 		
     delta = special->z - toucher->z;
 
@@ -376,6 +380,7 @@ P_TouchSpecialThing
 	
     sound = sfx_itemup;	
     player = toucher->player;
+    dropped = (special->flags & MF_DROPPED) != 0;
 
     // Dead thing touching.
     // Can happen with a sliding player corpse.
@@ -554,10 +559,12 @@ P_TouchSpecialThing
 	break;
 	
 	// ammo
+	// [NS] Give half ammo for drops of all types.
       case SPR_CLIP:
+	/*
 	if (special->flags & MF_DROPPED)
 	{
-	    if (!P_GiveAmmo (player,am_clip,-1))
+	    if (!P_GiveAmmo (player,am_clip,0))
 		return;
 	}
 	else
@@ -565,104 +572,51 @@ P_TouchSpecialThing
 	    if (!P_GiveAmmo (player,am_clip,1))
 		return;
 	}
+	*/
+	if (!P_GiveAmmo (player,am_clip,1,dropped))
+	return;
 	player->message = DEH_String(GOTCLIP);
 	break;
 	
       case SPR_AMMO:
-	if (special->flags & MF_DROPPED)
-	{
-		if (!P_GiveAmmo (player, am_clip,-5))
-			return;
-	}
-	else
-	{
-		if (!P_GiveAmmo (player, am_clip,5))
-			return;
-	}
+	if (!P_GiveAmmo (player, am_clip,5,dropped))
+	    return;
 	player->message = DEH_String(GOTCLIPBOX);
 	break;
 	
       case SPR_ROCK:
-	if (special->flags & MF_DROPPED)
-	{
-		if (!P_GiveAmmo (player, am_misl,-1))
-			return;
-	}
-	else
-	{
-		if (!P_GiveAmmo (player, am_misl,1))
-			return;
-	}
+	if (!P_GiveAmmo (player, am_misl,1,dropped))
+	    return;
 	player->message = DEH_String(GOTROCKET);
 	break;
 	
       case SPR_BROK:
-	if (special->flags & MF_DROPPED)
-	{
-		if (!P_GiveAmmo (player, am_misl,-5))
-			return;
-	}
-	else
-	{
-		if (!P_GiveAmmo (player, am_misl,5))
-			return;
-	}
+	if (!P_GiveAmmo (player, am_misl,5,dropped))
+	    return;
 	player->message = DEH_String(GOTROCKBOX);
 	break;
 	
       case SPR_CELL:
-	if (special->flags & MF_DROPPED)
-	{
-		if (!P_GiveAmmo (player, am_cell,-1))
-			return;
-	}
-	else
-	{
-		if (!P_GiveAmmo (player, am_cell,1))
-			return;
-	}
+	if (!P_GiveAmmo (player, am_cell,1,dropped))
+	    return;
 	player->message = DEH_String(GOTCELL);
 	break;
 	
       case SPR_CELP:
-	if (special->flags & MF_DROPPED)
-	{
-		if (!P_GiveAmmo (player, am_cell,-5))
-			return;
-	}
-	else
-	{
-		if (!P_GiveAmmo (player, am_cell,5))
-			return;
-	}
+	if (!P_GiveAmmo (player, am_cell,5,dropped))
+	    return;
 	player->message = DEH_String(GOTCELLBOX);
 	break;
 	
       case SPR_SHEL:
-	if (special->flags & MF_DROPPED)
-	{
-		if (!P_GiveAmmo (player, am_shell,-1))
-			return;
-	}
-	else
-	{
-		if (!P_GiveAmmo (player, am_shell,1))
-			return;
-	}
+	if (!P_GiveAmmo (player, am_shell,1,dropped))
+	    return;
 	player->message = DEH_String(GOTSHELLS);
 	break;
 	
       case SPR_SBOX:
-	if (special->flags & MF_DROPPED)
-	{
-		if (!P_GiveAmmo (player, am_shell,-5))
-			return;
-	}
-	else
-	{
-		if (!P_GiveAmmo (player, am_shell,5))
-			return;
-	}
+	if (!P_GiveAmmo (player, am_shell,5,dropped))
+	    return;
 	player->message = DEH_String(GOTSHELLBOX);
 	break;
 	
@@ -674,62 +628,56 @@ P_TouchSpecialThing
 	    player->backpack = true;
 	}
 	for (i=0 ; i<NUMAMMO ; i++)
-	    P_GiveAmmo (player, i, 1);
+	    P_GiveAmmo (player, i, 1, false);
 	player->message = DEH_String(GOTBACKPACK);
 	break;
 	
 	// weapons
+	// [NS] Give half ammo for all dropped weapons.
       case SPR_BFUG:
-	if (!P_GiveWeapon (player, wp_bfg,
-                          (special->flags & MF_DROPPED) != 0))
+	if (!P_GiveWeapon (player, wp_bfg, dropped) )
 	    return;
 	player->message = DEH_String(GOTBFG9000);
 	sound = sfx_wpnup;	
 	break;
 	
       case SPR_MGUN:
-        if (!P_GiveWeapon(player, wp_chaingun,
-                          (special->flags & MF_DROPPED) != 0))
+        if (!P_GiveWeapon(player, wp_chaingun, dropped) )
             return;
 	player->message = DEH_String(GOTCHAINGUN);
 	sound = sfx_wpnup;	
 	break;
 	
       case SPR_CSAW:
-	if (!P_GiveWeapon (player, wp_chainsaw,
-                          (special->flags & MF_DROPPED) != 0))
+	if (!P_GiveWeapon (player, wp_chainsaw, dropped) )
 	    return;
 	player->message = DEH_String(GOTCHAINSAW);
 	sound = sfx_wpnup;	
 	break;
 	
       case SPR_LAUN:
-	if (!P_GiveWeapon (player, wp_missile,
-                          (special->flags & MF_DROPPED) != 0))
+	if (!P_GiveWeapon (player, wp_missile, dropped) )
 	    return;
 	player->message = DEH_String(GOTLAUNCHER);
 	sound = sfx_wpnup;	
 	break;
 	
       case SPR_PLAS:
-	if (!P_GiveWeapon (player, wp_plasma,
-                          (special->flags & MF_DROPPED) != 0))
+	if (!P_GiveWeapon (player, wp_plasma, dropped) )
 	    return;
 	player->message = DEH_String(GOTPLASMA);
 	sound = sfx_wpnup;	
 	break;
 	
       case SPR_SHOT:
-        if (!P_GiveWeapon(player, wp_shotgun,
-                          (special->flags & MF_DROPPED) != 0))
+        if (!P_GiveWeapon(player, wp_shotgun, dropped) )
             return;
 	player->message = DEH_String(GOTSHOTGUN);
 	sound = sfx_wpnup;	
 	break;
 		
       case SPR_SGN2:
-        if (!P_GiveWeapon(player, wp_supershotgun,
-                          (special->flags & MF_DROPPED) != 0))
+        if (!P_GiveWeapon(player, wp_supershotgun, dropped) )
             return;
 	player->message = DEH_String(GOTSHOTGUN2);
 	sound = sfx_wpnup;	
