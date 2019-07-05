@@ -171,7 +171,7 @@ void P_InitSwitchList(void)
     // [crispy] add support for SWITCHES lumps
     if (from_lump)
     {
-	Z_ChangeTag(alphSwitchList, PU_CACHE);
+	W_ReleaseLumpName("SWITCHES");
     }
 
     // [crispy] pre-allocate some memory for the buttonlist[] array
