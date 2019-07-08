@@ -25,7 +25,7 @@
 #include "p_local.h"
 #include "i_swap.h" // [crispy] SHORT()
 #include "w_wad.h" // [crispy] W_CheckNumForName()
-#include "z_zone.h" // [crispy] purge tags
+#include "z_zone.h" // [crispy] PU_STATIC
 
 #include "g_game.h"
 
