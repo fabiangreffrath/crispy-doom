@@ -436,7 +436,7 @@ void P_LoadBlockMap(int lump)
 
     lumplen = W_LumpLength(lump);
 
-    count = lumplen / 2;
+    count = lumplen / 2; // [crispy] remove BLOCKMAP limit
 
     // [crispy] remove BLOCKMAP limit
     wadblockmaplump = Z_Malloc(lumplen, PU_LEVEL, NULL);
@@ -450,10 +450,12 @@ void P_LoadBlockMap(int lump)
     blockmaplump[3] = (int32_t)(SHORT(wadblockmaplump[3])) & 0xffff;
 
     // Swap all short integers to native byte ordering:
+	
+    // count = lumplen / 2; // [crispy] moved up
     for (i=4; i<count; i++)
     {
         short t = SHORT(wadblockmaplump[i]);
-	    blockmaplump[i] = (t == -1) ? -1l : (int32_t) t & 0xffff;
+        blockmaplump[i] = (t == -1) ? -1l : (int32_t) t & 0xffff;
     }
 
     Z_Free(wadblockmaplump);
