@@ -752,6 +752,13 @@ void S_StartSound(void *origin_p, int sfx_id)
         sfx->lumpnum = I_GetSfxLumpNum(sfx);
     }
 
+    // actually don't fail if the sound doesn't exist
+    if (sfx->lumpnum < 0)
+    {
+        printf("S_StartSound: Missing sound: %s\n", sfx->name);
+        return;
+    }
+
     channels[cnum].pitch = pitch;
     channels[cnum].handle = I_StartSound(sfx, cnum, volume, sep, channels[cnum].pitch);
 }
@@ -936,9 +943,9 @@ void S_ChangeMusic(int musicnum, int looping)
                                || snd_musicdevice == SNDDEVICE_SB))
     {
         const int intro = W_GetNumForName("D_INTRO"),
-                  introa = W_GetNumForName("D_INTROA");
+                  introa = W_CheckNumForName("D_INTROA");
         // [crispy] if D_INTRO is from a PWAD, and D_INTROA is from a different WAD file, play the former
-        if (W_IsIWADLump(lumpinfo[intro]) || (lumpinfo[intro]->wad_file == lumpinfo[introa]->wad_file))
+        if (introa > 0 && (W_IsIWADLump(lumpinfo[intro]) || (lumpinfo[intro]->wad_file == lumpinfo[introa]->wad_file)))
         {
         musicnum = mus_introa;
         }
