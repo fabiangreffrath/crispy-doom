@@ -33,8 +33,8 @@
     id freedm;
 
     id heretic;
-    id hexen;
-    id strife;
+    //id hexen;
+    //id strife;
 }
 
 - (void) closeConfigWindow: (id)sender;

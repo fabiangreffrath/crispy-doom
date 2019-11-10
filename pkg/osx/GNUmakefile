@@ -11,6 +11,7 @@ DMG=$(PACKAGE_TARNAME)-$(PACKAGE_VERSION).dmg
 
 TOPLEVEL=../..
 TOPLEVEL_DOCS=$(patsubst %,../../%,$(DOC_FILES))
+GAMES=doom #heretic hexen strife
 
 # DMG file containing package:
 
@@ -60,26 +61,23 @@ $(STAGING_DIR): launcher $(TOPLEVEL_DOCS)
 	cp launcher "$(APP_BIN_DIR)"
 	$(STRIP) "$(APP_BIN_DIR)/launcher"
 
-	./cp-with-libs $(TOPLEVEL)/src/$(PROGRAM_PREFIX)doom "$(APP_BIN_DIR)"
-	$(STRIP) "$(APP_BIN_DIR)/$(PROGRAM_PREFIX)doom"
-	./cp-with-libs $(TOPLEVEL)/src/$(PROGRAM_PREFIX)heretic "$(APP_BIN_DIR)"
-	$(STRIP) "$(APP_BIN_DIR)/$(PROGRAM_PREFIX)heretic"
-	./cp-with-libs $(TOPLEVEL)/src/$(PROGRAM_PREFIX)hexen "$(APP_BIN_DIR)"
-	$(STRIP) "$(APP_BIN_DIR)/$(PROGRAM_PREFIX)hexen"
-	./cp-with-libs $(TOPLEVEL)/src/$(PROGRAM_PREFIX)strife "$(APP_BIN_DIR)"
-	$(STRIP) "$(APP_BIN_DIR)/$(PROGRAM_PREFIX)strife"
+	for game in $(GAMES); do	\
+		./cp-with-libs $(TOPLEVEL)/src/$(PROGRAM_PREFIX)$$game "$(APP_BIN_DIR)";	\
+		$(STRIP) "$(APP_BIN_DIR)/$(PROGRAM_PREFIX)$$game";	\
+	done
 	./cp-with-libs $(TOPLEVEL)/src/$(PROGRAM_PREFIX)setup "$(APP_BIN_DIR)"
 	$(STRIP) "$(APP_BIN_DIR)/$(PROGRAM_PREFIX)setup"
 
 	$(TOPLEVEL)/man/simplecpp -DPRECOMPILED -D__MACOSX__  \
 	                -DDOOM -DHERETIC -DHEXEN -DSTRIFE     \
+					-DLONG_GAME_NAME="Crispy Doom" \
 	             < $(TOPLEVEL)/man/INSTALL.template       \
 	             > "$(APP_DOC_DIR)/INSTALL"
 
 	mkdir -p "$(APP_BIN_DIR)/man/man5" "$(APP_BIN_DIR)/man/man6"
 	cp $(TOPLEVEL)/man/*.5 "$(APP_BIN_DIR)/man/man5"
 	cp $(TOPLEVEL)/man/*.6 "$(APP_BIN_DIR)/man/man6"
-	for game in doom heretic hexen strife; do       \
+	for game in $(GAMES); do       \
 		cp $(TOPLEVEL)/man/CMDLINE.$$game       \
 		   "$(APP_DOC_DIR)/CMDLINE-$$game";     \
 	done
