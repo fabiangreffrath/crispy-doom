@@ -428,7 +428,7 @@ static boolean ExpandSoundData_SRC(sfxinfo_t *sfxinfo,
     assert(src_data.data_in != NULL && src_data.data_out != NULL);
 
     // Convert input data to floats
-
+    // [crispy] Handle 16 bit audio data
     if (bits == 16)
     {
         for (i=0; i<samplecount; ++i)
@@ -685,6 +685,7 @@ static boolean ExpandSoundData_SDL(sfxinfo_t *sfxinfo,
 
             src = (i * expand_ratio) >> 8;
 
+            // [crispy] Handle 16 bit audio data
             if (bits == 16)
             {
                 sample = data[src * 2] | (data[src * 2 + 1] << 8);
@@ -695,7 +696,7 @@ static boolean ExpandSoundData_SDL(sfxinfo_t *sfxinfo,
                 sample -= 32768;
             }
 
-            // expand 8->16 bits, mono->stereo
+            // expand mono->stereo
 
             expanded[i * 2] = expanded[i * 2 + 1] = sample;
         }
@@ -752,12 +753,27 @@ static boolean CacheSFX(sfxinfo_t *sfxinfo)
     data = W_CacheLumpNum(lumpnum, PU_STATIC);
     lumplen = W_LumpLength(lumpnum);
 
-    // Check if this is a valid RIFF wav file
+    // [crispy] Check if this is a valid RIFF wav file
     if (lumplen > 44 && memcmp(data, "RIFF", 4) == 0 && memcmp(data + 8, "WAVEfmt ", 8) == 0)
     {
-        // Valid RIFF wav file, set values
+        // Valid RIFF wav file
+        int check;
+
+        // Make sure this is a PCM format file
+        // "fmt " chunk size must == 16
+        check = data[16] | (data[17] << 8) | (data[18] << 16) | (data[19] << 24);
+        if (check != 16)
+            return false;
+
+        // Format must == 1 (PCM)
+        check = data[20] | (data[21] << 8);
+        if (check != 1)
+            return false;
+
         // FIXME: can't handle stereo wavs
-        if ((data[22] | (data[23] << 8)) != 1)
+        // Number of channels must == 1
+        check = data[22] | (data[23] << 8);
+        if (check != 1)
             return false;
 
         samplerate = data[24] | (data[25] << 8) | (data[26] << 16) | (data[27] << 24);
@@ -767,6 +783,10 @@ static boolean CacheSFX(sfxinfo_t *sfxinfo)
             length = lumplen - 44;
 
         bits = data[34] | (data[35] << 8);
+
+        // Reject non 8 or 16 bit
+        if (bits != 16 && bits != 8)
+            return false;
 
         data += 44;
     }
