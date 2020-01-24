@@ -103,6 +103,8 @@ void V_CopyRect(int srcx, int srcy, pixel_t *source,
     pixel_t *src;
     pixel_t *dest;
  
+    destx += DELTAWIDTH;
+
     srcx <<= crispy->hires;
     srcy <<= crispy->hires;
     width <<= crispy->hires;
@@ -112,7 +114,7 @@ void V_CopyRect(int srcx, int srcy, pixel_t *source,
 
 #ifdef RANGECHECK 
     if (srcx < 0
-     || srcx + width > SCREENWIDTH
+     || srcx + width > HIRESWIDTH
      || srcy < 0
      || srcy + height > SCREENHEIGHT 
      || destx < 0
@@ -132,13 +134,13 @@ void V_CopyRect(int srcx, int srcy, pixel_t *source,
 
     V_MarkRect(destx, desty, width, height); 
  
-    src = source + SCREENWIDTH * srcy + srcx; 
+    src = source + HIRESWIDTH * srcy + srcx; 
     dest = dest_screen + SCREENWIDTH * desty + destx; 
 
     for ( ; height>0 ; height--) 
     { 
         memcpy(dest, src, width * sizeof(*dest));
-        src += SCREENWIDTH; 
+        src += HIRESWIDTH; 
         dest += SCREENWIDTH; 
     } 
 } 
@@ -214,6 +216,7 @@ void V_DrawPatch(int x, int y, patch_t *patch)
 
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
+    x += DELTAWIDTH; // [crispy] horizontal widescreen offset
 
     // haleyjd 08/28/10: Strife needs silent error checking here.
     if(patchclip_callback)
@@ -307,13 +310,18 @@ void V_DrawPatchFullScreen(patch_t *patch, boolean flipped)
     const short width = SHORT(patch->width);
     const short height = SHORT(patch->height);
 
-    dx = (SCREENWIDTH << FRACBITS) / width;
-    dxi = (width << FRACBITS) / SCREENWIDTH;
+    dx = (HIRESWIDTH << FRACBITS) / width;
+    dxi = (width << FRACBITS) / HIRESWIDTH;
     dy = (SCREENHEIGHT << FRACBITS) / height;
     dyi = (height << FRACBITS) / SCREENHEIGHT;
 
     patch->leftoffset = 0;
     patch->topoffset = 0;
+
+    if (SCREENWIDTH != HIRESWIDTH)
+    {
+        V_DrawFilledBox(0, 0, SCREENWIDTH, SCREENHEIGHT, 0);
+    }
 
     if (flipped)
     {
@@ -324,8 +332,8 @@ void V_DrawPatchFullScreen(patch_t *patch, boolean flipped)
         V_DrawPatch(0, 0, patch);
     }
 
-    dx = (SCREENWIDTH << FRACBITS) / ORIGWIDTH;
-    dxi = (ORIGWIDTH << FRACBITS) / SCREENWIDTH;
+    dx = (HIRESWIDTH << FRACBITS) / ORIGWIDTH;
+    dxi = (ORIGWIDTH << FRACBITS) / HIRESWIDTH;
     dy = (SCREENHEIGHT << FRACBITS) / ORIGHEIGHT;
     dyi = (ORIGHEIGHT << FRACBITS) / SCREENHEIGHT;
 }
@@ -348,6 +356,7 @@ void V_DrawPatchFlipped(int x, int y, patch_t *patch)
  
     y -= SHORT(patch->topoffset); 
     x -= SHORT(patch->leftoffset); 
+    x += DELTAWIDTH; // [crispy] horizontal widescreen offset
 
     // haleyjd 08/28/10: Strife needs silent error checking here.
     if(patchclip_callback)
@@ -845,10 +854,10 @@ void V_DrawRawScreen(pixel_t *raw)
 void V_Init (void) 
 { 
     // [crispy] initialize resolution-agnostic patch drawing
-    if (SCREENWIDTH && SCREENHEIGHT)
+    if (HIRESWIDTH && SCREENHEIGHT)
     {
-        dx = (SCREENWIDTH << FRACBITS) / ORIGWIDTH;
-        dxi = (ORIGWIDTH << FRACBITS) / SCREENWIDTH;
+        dx = (HIRESWIDTH << FRACBITS) / ORIGWIDTH;
+        dxi = (ORIGWIDTH << FRACBITS) / HIRESWIDTH;
         dy = (SCREENHEIGHT << FRACBITS) / ORIGHEIGHT;
         dyi = (ORIGHEIGHT << FRACBITS) / SCREENHEIGHT;
     }

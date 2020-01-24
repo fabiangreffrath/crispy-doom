@@ -50,6 +50,7 @@
 #include "z_zone.h"
 
 int SCREENWIDTH, SCREENHEIGHT, SCREENHEIGHT_4_3;
+int DELTAWIDTH, HIRESWIDTH; // [crispy] horizontal widescreen offset
 
 // These are (1) the window (or the full screen) that our game is rendered to
 // and (2) the renderer that scales the texture (see below) into this window.
@@ -1522,6 +1523,22 @@ static void SetVideoMode(void)
     CreateUpscaledTexture(true);
 }
 
+// [crispy] run-time variable high-resolution rendering
+void I_GetScreenDimensions (void)
+{
+	SCREENWIDTH = ORIGWIDTH << crispy->hires;
+	SCREENHEIGHT = ORIGHEIGHT << crispy->hires;
+
+	HIRESWIDTH = SCREENWIDTH;
+
+	if (crispy->widescreen)
+	{
+		SCREENWIDTH = MAX(19 * SCREENWIDTH / 16, MAXWIDTH);
+	}
+
+	DELTAWIDTH = ((SCREENWIDTH - HIRESWIDTH) >> crispy->hires) / 2;
+}
+
 void I_InitGraphics(void)
 {
     SDL_Event dummy;
@@ -1562,18 +1579,8 @@ void I_InitGraphics(void)
     }
 
     // [crispy] run-time variable high-resolution rendering
-    if (crispy->hires)
-    {
-        SCREENWIDTH = MAXWIDTH;
-        SCREENHEIGHT = MAXHEIGHT;
-        SCREENHEIGHT_4_3 = MAXHEIGHT_4_3;
-    }
-    else
-    {
-        SCREENWIDTH = ORIGWIDTH;
-        SCREENHEIGHT = ORIGHEIGHT;
-        SCREENHEIGHT_4_3 = ORIGHEIGHT_4_3;
-    }
+    I_GetScreenDimensions();
+
 #ifndef CRISPY_TRUECOLOR
     blit_rect.w = SCREENWIDTH;
     blit_rect.h = SCREENHEIGHT;
@@ -1584,7 +1591,7 @@ void I_InitGraphics(void)
 
     if (aspect_ratio_correct == 1)
     {
-        actualheight = SCREENHEIGHT_4_3;
+        actualheight = 6 * SCREENHEIGHT / 5;
     }
     else
     {
@@ -1659,18 +1666,8 @@ void I_ReInitGraphics (int reinit)
 		unsigned int rmask, gmask, bmask, amask;
 		int unused_bpp;
 
-		if (crispy->hires)
-		{
-			SCREENWIDTH = MAXWIDTH;
-			SCREENHEIGHT = MAXHEIGHT;
-			SCREENHEIGHT_4_3 = MAXHEIGHT_4_3;
-		}
-		else
-		{
-			SCREENWIDTH = ORIGWIDTH;
-			SCREENHEIGHT = ORIGHEIGHT;
-			SCREENHEIGHT_4_3 = ORIGHEIGHT_4_3;
-		}
+		I_GetScreenDimensions();
+
 #ifndef CRISPY_TRUECOLOR
 		blit_rect.w = SCREENWIDTH;
 		blit_rect.h = SCREENHEIGHT;
@@ -1749,7 +1746,7 @@ void I_ReInitGraphics (int reinit)
 	{
 		if (aspect_ratio_correct == 1)
 		{
-			actualheight = SCREENHEIGHT_4_3;
+			actualheight = 6 * SCREENHEIGHT / 5;
 		}
 		else
 		{
