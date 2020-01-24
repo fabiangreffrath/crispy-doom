@@ -802,6 +802,11 @@ void R_ExecuteSetViewSize (void)
 
     setsizeneeded = false;
 
+    if (crispy->widescreen && setblocks < 11)
+    {
+        setblocks = 11;
+    }
+
     if (setblocks >= 11) // [crispy] Crispy HUD
     {
 	scaledviewwidth = SCREENWIDTH;
@@ -856,10 +861,11 @@ void R_ExecuteSetViewSize (void)
     {
 	// [crispy] re-generate lookup-table for yslope[] (free look)
 	// whenever "detailshift" or "screenblocks" change
+	const int blockratio = crispy->widescreen ? 10 : screenblocks < 11 ? screenblocks : 11;
 	const fixed_t num = (viewwidth<<detailshift)/2*FRACUNIT;
 	for (j = 0; j < LOOKDIRS; j++)
 	{
-	dy = ((i-(viewheight/2 + ((j-LOOKDIRMIN) * (1 << crispy->hires)) * (screenblocks < 11 ? screenblocks : 11) / 10))<<FRACBITS)+FRACUNIT/2;
+	dy = ((i-(viewheight/2 + ((j-LOOKDIRMIN) * (1 << crispy->hires)) * blockratio / 10))<<FRACBITS)+FRACUNIT/2;
 	dy = abs(dy);
 	yslopes[j][i] = FixedDiv (num, dy);
 	}
@@ -975,6 +981,8 @@ void R_SetupFrame (player_t* player)
     int		tempCentery;
     int		pitch;
     
+    const int blockratio = crispy->widescreen ? 10 : screenblocks < 11 ? screenblocks : 11;
+
     viewplayer = player;
 
     // [AM] Interpolate the player camera if the feature is enabled.
@@ -1017,7 +1025,7 @@ void R_SetupFrame (player_t* player)
 	pitch = -LOOKDIRMIN;
 
     // apply new yslope[] whenever "lookdir", "detailshift" or "screenblocks" change
-    tempCentery = viewheight/2 + (pitch * (1 << crispy->hires)) * (screenblocks < 11 ? screenblocks : 11) / 10;
+    tempCentery = viewheight/2 + (pitch * (1 << crispy->hires)) * blockratio / 10;
     if (centery != tempCentery)
     {
         centery = tempCentery;

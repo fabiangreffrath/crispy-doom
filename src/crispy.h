@@ -78,6 +78,7 @@ typedef struct
 	int uncapped;
 	int vsync;
 	int weaponsquat;
+	int widescreen;
 
 	// [crispy] in-game switches and variables
 	int screenshotmsg;

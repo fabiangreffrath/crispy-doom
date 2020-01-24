@@ -582,7 +582,11 @@ void AM_LevelInit(void)
 
     f_x = f_y = 0;
     f_w = SCREENWIDTH;
-    f_h = SCREENHEIGHT - (ST_HEIGHT << crispy->hires);
+    f_h = SCREENHEIGHT;
+    if (!crispy->widescreen)
+    {
+        f_h -= (ST_HEIGHT << crispy->hires);
+    }
 
     AM_clearMarks();
 
@@ -600,7 +604,11 @@ void AM_LevelInit(void)
 void AM_ReInit (void)
 {
     f_w = SCREENWIDTH;
-    f_h = SCREENHEIGHT - (ST_HEIGHT << crispy->hires);
+    f_h = SCREENHEIGHT;
+    if (!crispy->widescreen)
+    {
+        f_h -= (ST_HEIGHT << crispy->hires);
+    }
 
     AM_findMinMaxBoundaries();
 

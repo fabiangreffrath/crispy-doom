@@ -1942,7 +1942,7 @@ void ST_diffDraw(void)
 void ST_Drawer (boolean fullscreen, boolean refresh)
 {
   
-    st_statusbaron = (!fullscreen) || (automapactive && !crispy->automapoverlay);
+    st_statusbaron = (!fullscreen) || (automapactive && !crispy->automapoverlay && !crispy->widescreen);
     // [crispy] immediately redraw status bar after help screens have been shown
     st_firsttime = st_firsttime || refresh || inhelpscreens;
 
@@ -2155,9 +2155,11 @@ void ST_createWidgets(void)
 
     int i;
 
+    I_GetScreenDimensions();
+
     // ready weapon ammo
     STlib_initNum(&w_ready,
-		  ST_AMMOX,
+		  ST_AMMOX - DELTAWIDTH,
 		  ST_AMMOY,
 		  tallnum,
 		  &plyr->ammo[weaponinfo[plyr->readyweapon].ammo],
@@ -2169,7 +2171,7 @@ void ST_createWidgets(void)
 
     // health percentage
     STlib_initPercent(&w_health,
-		      ST_HEALTHX,
+		      ST_HEALTHX - DELTAWIDTH,
 		      ST_HEALTHY,
 		      tallnum,
 		      &plyr->health,
@@ -2178,7 +2180,7 @@ void ST_createWidgets(void)
 
     // arms background
     STlib_initBinIcon(&w_armsbg,
-		      ST_ARMSBGX,
+		      ST_ARMSBGX - DELTAWIDTH,
 		      ST_ARMSBGY,
 		      armsbg,
 		      &st_notdeathmatch,
@@ -2188,7 +2190,7 @@ void ST_createWidgets(void)
     for(i=0;i<6;i++)
     {
         STlib_initMultIcon(&w_arms[i],
-                           ST_ARMSX+(i%3)*ST_ARMSXSPACE,
+                           ST_ARMSX-DELTAWIDTH+(i%3)*ST_ARMSXSPACE,
                            ST_ARMSY+(i/3)*ST_ARMSYSPACE,
                            arms[i],
                            &plyr->weaponowned[i+1],
@@ -2199,7 +2201,7 @@ void ST_createWidgets(void)
 
     // frags sum
     STlib_initNum(&w_frags,
-		  ST_FRAGSX,
+		  ST_FRAGSX - DELTAWIDTH,
 		  ST_FRAGSY,
 		  tallnum,
 		  &st_fragscount,
@@ -2216,7 +2218,7 @@ void ST_createWidgets(void)
 
     // armor percentage - should be colored later
     STlib_initPercent(&w_armor,
-		      ST_ARMORX,
+		      ST_ARMORX + DELTAWIDTH,
 		      ST_ARMORY,
 		      tallnum,
 		      &plyr->armorpoints,
@@ -2224,21 +2226,21 @@ void ST_createWidgets(void)
 
     // keyboxes 0-2
     STlib_initMultIcon(&w_keyboxes[0],
-		       ST_KEY0X,
+		       ST_KEY0X + DELTAWIDTH,
 		       ST_KEY0Y,
 		       keys,
 		       &keyboxes[0],
 		       &st_statusbaron);
     
     STlib_initMultIcon(&w_keyboxes[1],
-		       ST_KEY1X,
+		       ST_KEY1X + DELTAWIDTH,
 		       ST_KEY1Y,
 		       keys,
 		       &keyboxes[1],
 		       &st_statusbaron);
 
     STlib_initMultIcon(&w_keyboxes[2],
-		       ST_KEY2X,
+		       ST_KEY2X + DELTAWIDTH,
 		       ST_KEY2Y,
 		       keys,
 		       &keyboxes[2],
@@ -2246,7 +2248,7 @@ void ST_createWidgets(void)
 
     // ammo count (all four kinds)
     STlib_initNum(&w_ammo[0],
-		  ST_AMMO0X,
+		  ST_AMMO0X + DELTAWIDTH,
 		  ST_AMMO0Y,
 		  shortnum,
 		  &plyr->ammo[0],
@@ -2254,7 +2256,7 @@ void ST_createWidgets(void)
 		  ST_AMMO0WIDTH);
 
     STlib_initNum(&w_ammo[1],
-		  ST_AMMO1X,
+		  ST_AMMO1X + DELTAWIDTH,
 		  ST_AMMO1Y,
 		  shortnum,
 		  &plyr->ammo[1],
@@ -2262,7 +2264,7 @@ void ST_createWidgets(void)
 		  ST_AMMO1WIDTH);
 
     STlib_initNum(&w_ammo[2],
-		  ST_AMMO2X,
+		  ST_AMMO2X + DELTAWIDTH,
 		  ST_AMMO2Y,
 		  shortnum,
 		  &plyr->ammo[2],
@@ -2270,7 +2272,7 @@ void ST_createWidgets(void)
 		  ST_AMMO2WIDTH);
     
     STlib_initNum(&w_ammo[3],
-		  ST_AMMO3X,
+		  ST_AMMO3X + DELTAWIDTH,
 		  ST_AMMO3Y,
 		  shortnum,
 		  &plyr->ammo[3],
@@ -2279,7 +2281,7 @@ void ST_createWidgets(void)
 
     // max ammo count (all four kinds)
     STlib_initNum(&w_maxammo[0],
-		  ST_MAXAMMO0X,
+		  ST_MAXAMMO0X + DELTAWIDTH,
 		  ST_MAXAMMO0Y,
 		  shortnum,
 		  &plyr->maxammo[0],
@@ -2287,7 +2289,7 @@ void ST_createWidgets(void)
 		  ST_MAXAMMO0WIDTH);
 
     STlib_initNum(&w_maxammo[1],
-		  ST_MAXAMMO1X,
+		  ST_MAXAMMO1X + DELTAWIDTH,
 		  ST_MAXAMMO1Y,
 		  shortnum,
 		  &plyr->maxammo[1],
@@ -2295,7 +2297,7 @@ void ST_createWidgets(void)
 		  ST_MAXAMMO1WIDTH);
 
     STlib_initNum(&w_maxammo[2],
-		  ST_MAXAMMO2X,
+		  ST_MAXAMMO2X + DELTAWIDTH,
 		  ST_MAXAMMO2Y,
 		  shortnum,
 		  &plyr->maxammo[2],
@@ -2303,7 +2305,7 @@ void ST_createWidgets(void)
 		  ST_MAXAMMO2WIDTH);
     
     STlib_initNum(&w_maxammo[3],
-		  ST_MAXAMMO3X,
+		  ST_MAXAMMO3X + DELTAWIDTH,
 		  ST_MAXAMMO3Y,
 		  shortnum,
 		  &plyr->maxammo[3],
