@@ -2371,7 +2371,8 @@ void ST_Init (void)
     }
 
     ST_loadData();
-    st_backing_screen = (pixel_t *) Z_Malloc((ST_WIDTH << 1) * (ST_HEIGHT << 1) * sizeof(*st_backing_screen), PU_STATIC, 0);
+    I_GetScreenDimensions();
+    st_backing_screen = (pixel_t *) Z_Malloc(SCREENWIDTH * (ST_HEIGHT << 1) * sizeof(*st_backing_screen), PU_STATIC, 0);
 }
 
 // [crispy] Demo Timer widget
