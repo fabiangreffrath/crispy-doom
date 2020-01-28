@@ -114,7 +114,7 @@ void V_CopyRect(int srcx, int srcy, pixel_t *source,
 
 #ifdef RANGECHECK 
     if (srcx < 0
-     || srcx + width > HIRESWIDTH
+     || srcx + width > SCREENWIDTH
      || srcy < 0
      || srcy + height > SCREENHEIGHT 
      || destx < 0
@@ -134,13 +134,13 @@ void V_CopyRect(int srcx, int srcy, pixel_t *source,
 
     V_MarkRect(destx, desty, width, height); 
  
-    src = source + HIRESWIDTH * srcy + srcx; 
+    src = source + SCREENWIDTH * srcy + srcx; 
     dest = dest_screen + SCREENWIDTH * desty + destx; 
 
     for ( ; height>0 ; height--) 
     { 
         memcpy(dest, src, width * sizeof(*dest));
-        src += HIRESWIDTH; 
+        src += SCREENWIDTH; 
         dest += SCREENWIDTH; 
     } 
 } 

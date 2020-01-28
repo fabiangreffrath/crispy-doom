@@ -1888,7 +1888,7 @@ void M_SizeDisplay(int choice)
     switch(choice)
     {
       case 0:
-	if (screenSize > 0)
+	if (screenSize > 0 + (crispy->widescreen ? 8 : 0))
 	{
 	    screenblocks--;
 	    screenSize--;
