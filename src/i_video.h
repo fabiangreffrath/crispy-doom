@@ -29,7 +29,6 @@
 #define ORIGHEIGHT 200 // [crispy]
 
 #define MAXWIDTH  (426 << 1) // (ORIGWIDTH << 1) // [crispy]
->>>>>>> 4cf30b0a2b1e1782c599f70880a95e6144c0aa72
 #define MAXHEIGHT (ORIGHEIGHT << 1) // [crispy]
 
 extern int SCREENWIDTH;
