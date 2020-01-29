@@ -1526,14 +1526,28 @@ static void SetVideoMode(void)
 // [crispy] run-time variable high-resolution rendering
 void I_GetScreenDimensions (void)
 {
+	SDL_DisplayMode mode;
+	int w = 16, h = 9;
+
 	SCREENWIDTH = ORIGWIDTH << crispy->hires;
 	SCREENHEIGHT = ORIGHEIGHT << crispy->hires;
 
 	HIRESWIDTH = SCREENWIDTH;
 
+	if (SDL_GetCurrentDisplayMode(video_display, &mode) == 0)
+	{
+		w = mode.w;
+		h = mode.h;
+	}
+
 	if (crispy->widescreen)
 	{
-		SCREENWIDTH = MAX(19 * SCREENWIDTH / 16, MAXWIDTH);
+		int ah;
+
+		ah = (aspect_ratio_correct == 1) ? (6 * SCREENHEIGHT / 5) : SCREENHEIGHT;
+
+		SCREENWIDTH = w * ah / h;
+		SCREENWIDTH = MIN(SCREENWIDTH, MAXWIDTH);
 	}
 
 	DELTAWIDTH = ((SCREENWIDTH - HIRESWIDTH) >> crispy->hires) / 2;
