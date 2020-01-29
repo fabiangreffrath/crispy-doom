@@ -1948,7 +1948,7 @@ void ST_Drawer (boolean fullscreen, boolean refresh)
 
     // [crispy] distinguish classic status bar with background and player face from Crispy HUD
     st_crispyhud = screenblocks >= CRISPY_HUD && (!automapactive || crispy->automapoverlay);
-    st_classicstatusbar = st_statusbaron && !st_crispyhud;
+    st_classicstatusbar = st_statusbaron && !st_crispyhud && !crispy->widescreen;
     st_statusbarface = st_classicstatusbar || (st_crispyhud && screenblocks == CRISPY_HUD);
 
     if (crispy->cleanscreenshot == 2)
