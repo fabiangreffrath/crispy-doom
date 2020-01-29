@@ -210,7 +210,7 @@ static void M_MouseInvert(int choice); // [crispy] mouse sensitivity menu
 static void M_SfxVol(int choice);
 static void M_MusicVol(int choice);
 static void M_ChangeDetail(int choice);
-static void M_SizeDisplay(int choice);
+void M_SizeDisplay(int choice); // [crispy] un-static for R_ExecuteSetViewSize()
 static void M_Mouse(int choice); // [crispy] mouse sensitivity menu
 static void M_Sound(int choice);
 

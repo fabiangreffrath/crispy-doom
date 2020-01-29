@@ -806,10 +806,17 @@ void R_ExecuteSetViewSize (void)
 
     setsizeneeded = false;
 
-    if (crispy->widescreen && setblocks < 11)
-    {
-        screenblocks = setblocks = 11;
-    }
+	if (crispy->widescreen)
+	{
+		extern void M_SizeDisplay(int choice);
+
+		while (setblocks < 11)
+		{
+			M_SizeDisplay(1);
+			R_ExecuteSetViewSize();
+			return;
+		}
+	}
 
     if (setblocks >= 11) // [crispy] Crispy HUD
     {
