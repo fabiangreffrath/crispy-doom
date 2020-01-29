@@ -1528,24 +1528,27 @@ void I_GetScreenDimensions (void)
 {
 	SDL_DisplayMode mode;
 	int w = 16, h = 9;
+	int ah;
 
 	SCREENWIDTH = ORIGWIDTH << crispy->hires;
 	SCREENHEIGHT = ORIGHEIGHT << crispy->hires;
 
 	HIRESWIDTH = SCREENWIDTH;
 
+	ah = (aspect_ratio_correct == 1) ? (6 * SCREENHEIGHT / 5) : SCREENHEIGHT;
+
 	if (SDL_GetCurrentDisplayMode(video_display, &mode) == 0)
 	{
-		w = mode.w;
-		h = mode.h;
+		// [crispy] sanity check: really widescreen display?
+		if (mode.w * ah >= mode.h * SCREENWIDTH)
+		{
+			w = mode.w;
+			h = mode.h;
+		}
 	}
 
 	if (crispy->widescreen)
 	{
-		int ah;
-
-		ah = (aspect_ratio_correct == 1) ? (6 * SCREENHEIGHT / 5) : SCREENHEIGHT;
-
 		SCREENWIDTH = w * ah / h;
 		SCREENWIDTH = MIN(SCREENWIDTH, MAXWIDTH);
 	}
