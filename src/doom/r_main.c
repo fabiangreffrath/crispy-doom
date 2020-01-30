@@ -626,7 +626,7 @@ void R_InitTextureMapping (void)
     //  so FIELDOFVIEW angles covers SCREENWIDTH.
     // [crispy] in widescreen mode, make sure the same number of horizontal
     // pixels show the same game scene as in regular rendering mode
-    focalwidth = crispy->widescreen ? (HIRESWIDTH/2)<<FRACBITS : centerxfrac;
+    focalwidth = crispy->widescreen ? ((HIRESWIDTH>>detailshift)/2)<<FRACBITS : centerxfrac;
     focallength = FixedDiv (focalwidth,
 			    finetangent[FINEANGLES/4+FIELDOFVIEW/2] );
 	
@@ -860,8 +860,8 @@ void R_ExecuteSetViewSize (void)
     R_InitTextureMapping ();
     
     // psprite scales
-    pspritescale = FRACUNIT*viewwidth/ORIGWIDTH;
-    pspriteiscale = FRACUNIT*ORIGWIDTH/viewwidth;
+    pspritescale = FRACUNIT*MIN(viewwidth, HIRESWIDTH>>detailshift)/ORIGWIDTH;
+    pspriteiscale = FRACUNIT*ORIGWIDTH/MIN(viewwidth, HIRESWIDTH>>detailshift);
     
     // thing clipping
     for (i=0 ; i<viewwidth ; i++)
@@ -872,8 +872,8 @@ void R_ExecuteSetViewSize (void)
     {
 	// [crispy] re-generate lookup-table for yslope[] (free look)
 	// whenever "detailshift" or "screenblocks" change
-	const int blockratio = crispy->widescreen ? 10 : screenblocks < 11 ? screenblocks : 11;
-	const fixed_t num = (viewwidth<<detailshift)/2*FRACUNIT;
+	const int blockratio = crispy->widescreen ? 11 : screenblocks < 11 ? screenblocks : 11;
+	const fixed_t num = MIN(viewwidth<<detailshift, HIRESWIDTH)/2*FRACUNIT;
 	for (j = 0; j < LOOKDIRS; j++)
 	{
 	dy = ((i-(viewheight/2 + ((j-LOOKDIRMIN) * (1 << crispy->hires)) * blockratio / 10))<<FRACBITS)+FRACUNIT/2;
@@ -898,7 +898,7 @@ void R_ExecuteSetViewSize (void)
 	startmap = ((LIGHTLEVELS-LIGHTBRIGHT-i)*2)*NUMCOLORMAPS/LIGHTLEVELS;
 	for (j=0 ; j<MAXLIGHTSCALE ; j++)
 	{
-	    level = startmap - j*SCREENWIDTH/(viewwidth<<detailshift)/DISTMAP;
+	    level = startmap - j*HIRESWIDTH/MIN(viewwidth<<detailshift, HIRESWIDTH)/DISTMAP;
 	    
 	    if (level < 0)
 		level = 0;
@@ -992,7 +992,7 @@ void R_SetupFrame (player_t* player)
     int		tempCentery;
     int		pitch;
     
-    const int blockratio = crispy->widescreen ? 10 : screenblocks < 11 ? screenblocks : 11;
+    const int blockratio = crispy->widescreen ? 11 : screenblocks < 11 ? screenblocks : 11;
 
     viewplayer = player;
 
