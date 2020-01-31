@@ -148,6 +148,8 @@ extern void P_SegLengths (boolean contrast_only);
 extern void R_ExecuteSetViewSize (void);
 extern void R_InitLightTables (void);
 extern void I_ReInitGraphics (int reinit);
+extern void ST_createWidgets(void);
+extern void HU_Start(void);
 
 static void M_CrispyToggleAspectRatioHook (void)
 {
@@ -550,4 +552,31 @@ void M_CrispyToggleWeaponSquat(int choice)
 {
     choice = 0;
     crispy->weaponsquat = !crispy->weaponsquat;
+}
+
+static void M_CrispyToggleWidescreenHook (void)
+{
+    crispy->widescreen = !crispy->widescreen;
+
+    // [crispy] re-initialize framebuffers, textures and renderer
+    I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
+    // [crispy] re-calculate framebuffer coordinates
+    R_ExecuteSetViewSize();
+    // [crispy] re-draw bezel
+    R_FillBackScreen();
+    // [crispy] re-calculate disk icon coordinates
+    EnableLoadingDisk();
+    // [crispy] re-calculate automap coordinates
+    AM_ReInit();
+    // [crispy] re-arrange status bar widgets
+    ST_createWidgets();
+    // [crispy] re-arrange heads-up widgets
+    HU_Start();
+}
+
+void M_CrispyToggleWidescreen(int choice)
+{
+    choice = 0;
+
+    crispy->post_rendering_hook = M_CrispyToggleWidescreenHook;
 }

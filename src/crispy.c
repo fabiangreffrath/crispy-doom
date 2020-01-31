@@ -29,7 +29,6 @@ static crispy_t crispy_s = {
 	.smoothscaling = 1,
 	.soundfix = 1,
 	.vsync = 1,
-	.widescreen = 1,
 };
 crispy_t *const crispy = &crispy_s;
 
