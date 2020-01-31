@@ -836,7 +836,7 @@ void R_ExecuteSetViewSize (void)
     centerx = viewwidth/2;
     centerxfrac = centerx<<FRACBITS;
     centeryfrac = centery<<FRACBITS;
-    projection = centerxfrac;
+    projection = MIN(centerxfrac, ((HIRESWIDTH>>detailshift)/2)<<FRACBITS);
 
     if (!detailshift)
     {
