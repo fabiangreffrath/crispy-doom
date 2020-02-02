@@ -2399,7 +2399,7 @@ void ST_DrawDemoTimer (const int time)
 
 		if (c >= 0 && c <= 9)
 		{
-			V_DrawPatch(x, viewwindowy >> crispy->hires, shortnum[c]);
+			V_DrawPatch(x - DELTAWIDTH, viewwindowy >> crispy->hires, shortnum[c]);
 		}
 	}
 
