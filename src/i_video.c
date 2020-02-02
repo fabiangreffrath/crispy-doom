@@ -1549,7 +1549,7 @@ void I_GetScreenDimensions (void)
 
 	if (crispy->widescreen)
 	{
-		SCREENWIDTH = w * ah / h;
+		SCREENWIDTH = (w * ah / h) & (int)~3;
 		SCREENWIDTH = MIN(SCREENWIDTH, MAXWIDTH);
 	}
 
