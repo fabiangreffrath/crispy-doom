@@ -545,10 +545,14 @@ static void M_CrispyToggleWidescreenHook (void)
     EnableLoadingDisk();
     // [crispy] re-calculate automap coordinates
     AM_ReInit();
-    // [crispy] re-arrange status bar widgets
-    ST_createWidgets();
-    // [crispy] re-arrange heads-up widgets
-    HU_Start();
+
+    if (gamestate == GS_LEVEL && gamemap > 0)
+    {
+	// [crispy] re-arrange status bar widgets
+	ST_createWidgets();
+	// [crispy] re-arrange heads-up widgets
+	HU_Start();
+    }
 }
 
 void M_CrispyToggleWidescreen(int choice)
