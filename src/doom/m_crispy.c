@@ -25,13 +25,6 @@
 
 #include "m_crispy.h"
 
-multiitem_t multiitem_aspectratio[NUM_ASPECTRATIOS] =
-{
-    {ASPECTRATIO_OFF, "none"},
-    {ASPECTRATIO_4_3, "4:3"},
-    {ASPECTRATIO_16_10, "16:10"},
-};
-
 multiitem_t multiitem_bobfactor[NUM_BOBFACTORS] =
 {
     {BOBFACTOR_FULL, "full"},
@@ -150,22 +143,6 @@ extern void R_InitLightTables (void);
 extern void I_ReInitGraphics (int reinit);
 extern void ST_createWidgets(void);
 extern void HU_Start(void);
-
-static void M_CrispyToggleAspectRatioHook (void)
-{
-    aspect_ratio_correct = (aspect_ratio_correct + 1) % NUM_ASPECTRATIOS;
-
-    // [crispy] re-set logical rendering resolution
-
-    I_ReInitGraphics(REINIT_ASPECTRATIO);
-}
-
-void M_CrispyToggleAspectRatio(int choice)
-{
-    choice = 0;
-
-    crispy->post_rendering_hook = M_CrispyToggleAspectRatioHook;
-}
 
 void M_CrispyToggleAutomapstats(int choice)
 {

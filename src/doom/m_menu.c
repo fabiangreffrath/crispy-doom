@@ -461,7 +461,6 @@ enum
     crispness_uncapped,
     crispness_vsync,
     crispness_smoothscaling,
-    crispness_aspectratio,
     crispness_sep_rendering_,
 
     crispness_sep_visual,
@@ -486,7 +485,6 @@ static menuitem_t Crispness1Menu[]=
     {1,"",	M_CrispyToggleUncapped,'u'},
     {1,"",	M_CrispyToggleVsync,'v'},
     {1,"",	M_CrispyToggleSmoothScaling,'s'},
-    {1,"",	M_CrispyToggleAspectRatio,'f'},
     {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {1,"",	M_CrispyToggleColoredhud,'c'},
@@ -1506,7 +1504,6 @@ static void M_DrawCrispness1(void)
     M_DrawCrispnessItem(crispness_uncapped, "Uncapped Framerate", crispy->uncapped, true);
     M_DrawCrispnessItem(crispness_vsync, "Enable VSync", crispy->vsync, !force_software_renderer);
     M_DrawCrispnessItem(crispness_smoothscaling, "Smooth Pixel Scaling", crispy->smoothscaling, true);
-    M_DrawCrispnessMultiItem(crispness_aspectratio, "Force Aspect Ratio", multiitem_aspectratio, aspect_ratio_correct, true);
 
     M_DrawCrispnessSeparator(crispness_sep_visual, "Visual");
     M_DrawCrispnessMultiItem(crispness_coloredhud, "Colorize HUD Elements", multiitem_coloredhud, crispy->coloredhud, true);
