@@ -86,6 +86,7 @@ int			screenblocks = 10; // [crispy] increased
 
 // temp for screenblocks (0-9)
 int			screenSize;
+int			screenSize_min;
 
 // -1 = no quicksave slot picked!
 int			quickSaveSlot;
@@ -1387,8 +1388,8 @@ void M_DrawOptions(void)
                 OptionsDef.y + LINEHEIGHT * messages + 8 - (M_StringHeight("OnOff")/2),
                 showMessages ? "On" : "Off");
 
-    M_DrawThermo(OptionsDef.x,OptionsDef.y+LINEHEIGHT*(scrnsize+1),
-		 9 + 3,screenSize); // [crispy] Crispy HUD
+    M_DrawThermo(OptionsDef.x + screenSize_min * 8,OptionsDef.y+LINEHEIGHT*(scrnsize+1),
+		 9 + 3 - screenSize_min,screenSize - screenSize_min); // [crispy] Crispy HUD
 }
 
 // [crispy] mouse sensitivity menu
@@ -1888,7 +1889,7 @@ void M_SizeDisplay(int choice)
     switch(choice)
     {
       case 0:
-	if (screenSize > 0 + (crispy->widescreen ? 8 : 0))
+	if (screenSize > screenSize_min)
 	{
 	    screenblocks--;
 	    screenSize--;
@@ -1907,6 +1908,21 @@ void M_SizeDisplay(int choice)
     R_SetViewSize (screenblocks, detailLevel);
 }
 
+// [crispy] initialize screenSize_min
+void M_InitScreenSize(void)
+{
+	if (crispy->widescreen)
+	{
+		screenblocks = MAX(11, screenblocks);
+		screenSize_min = 8;
+	}
+	else
+	{
+		screenSize_min = 0;
+	}
+
+	screenSize = screenblocks - 3;
+}
 
 
 
@@ -3069,7 +3085,8 @@ void M_Init (void)
     itemOn = currentMenu->lastOn;
     whichSkull = 0;
     skullAnimCounter = 10;
-    screenSize = screenblocks - 3;
+    // [crispy] initialize screenSize_min
+    M_InitScreenSize(); //  screenSize = screenblocks - 3;
     messageToPrint = 0;
     messageString = NULL;
     messageLastMenuActive = menuactive;
