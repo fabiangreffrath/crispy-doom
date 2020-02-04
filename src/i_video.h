@@ -33,9 +33,9 @@
 
 extern int SCREENWIDTH;
 extern int SCREENHEIGHT;
-extern int HIRESWIDTH; // [crispy] non-widescren SCREENWIDTH
+extern int HIRESWIDTH; // [crispy] non-widescreen SCREENWIDTH
 extern int DELTAWIDTH; // [crispy] horizontal widescreen offset
-void I_GetScreenDimensions (void);
+void I_GetScreenDimensions (void); // [crispy] re-calculate DELTAWIDTH
 
 // Screen height used when aspect_ratio_correct=true.
 

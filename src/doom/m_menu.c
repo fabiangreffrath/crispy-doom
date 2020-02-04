@@ -1886,6 +1886,9 @@ void M_ChangeDetail(int choice)
 
 void M_SizeDisplay(int choice)
 {
+    // [crispy] initialize screenSize_min
+    screenSize_min = crispy->widescreen ? 8 : 0;
+
     switch(choice)
     {
       case 0:
@@ -1905,24 +1908,13 @@ void M_SizeDisplay(int choice)
     }
 	
 
+    // [crispy] initialize screenSize_min
+    if (choice == 0 || choice == 1)
+    {
     R_SetViewSize (screenblocks, detailLevel);
+    }
 }
 
-// [crispy] initialize screenSize_min
-void M_InitScreenSize(void)
-{
-	if (crispy->widescreen)
-	{
-		screenblocks = MAX(11, screenblocks);
-		screenSize_min = 8;
-	}
-	else
-	{
-		screenSize_min = 0;
-	}
-
-	screenSize = screenblocks - 3;
-}
 
 
 
@@ -3085,8 +3077,8 @@ void M_Init (void)
     itemOn = currentMenu->lastOn;
     whichSkull = 0;
     skullAnimCounter = 10;
-    // [crispy] initialize screenSize_min
-    M_InitScreenSize(); //  screenSize = screenblocks - 3;
+    screenSize = screenblocks - 3;
+    M_SizeDisplay(-1); // [crispy] initialize screenSize_min
     messageToPrint = 0;
     messageString = NULL;
     messageLastMenuActive = menuactive;

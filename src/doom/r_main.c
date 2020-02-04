@@ -625,7 +625,7 @@ void R_InitTextureMapping (void)
     // Calc focallength
     //  so FIELDOFVIEW angles covers SCREENWIDTH.
     // [crispy] in widescreen mode, make sure the same number of horizontal
-    // pixels show the same game scene as in regular rendering mode
+    // pixels shows the same part of the game scene as in regular rendering mode
     focalwidth = crispy->widescreen ? ((HIRESWIDTH>>detailshift)/2)<<FRACBITS : centerxfrac;
     focallength = FixedDiv (focalwidth,
 			    finetangent[FINEANGLES/4+FIELDOFVIEW/2] );
@@ -806,6 +806,7 @@ void R_ExecuteSetViewSize (void)
 
     setsizeneeded = false;
 
+	// [crispy] make absolutely sure screenblocks is never < 11 in widescreen mode
 	if (crispy->widescreen)
 	{
 		extern void M_SizeDisplay(int choice);
@@ -872,11 +873,10 @@ void R_ExecuteSetViewSize (void)
     {
 	// [crispy] re-generate lookup-table for yslope[] (free look)
 	// whenever "detailshift" or "screenblocks" change
-	const int blockratio = crispy->widescreen ? 11 : screenblocks < 11 ? screenblocks : 11;
 	const fixed_t num = MIN(viewwidth<<detailshift, HIRESWIDTH)/2*FRACUNIT;
 	for (j = 0; j < LOOKDIRS; j++)
 	{
-	dy = ((i-(viewheight/2 + ((j-LOOKDIRMIN) * (1 << crispy->hires)) * blockratio / 10))<<FRACBITS)+FRACUNIT/2;
+	dy = ((i-(viewheight/2 + ((j-LOOKDIRMIN) * (1 << crispy->hires)) * (screenblocks < 11 ? screenblocks : 11) / 10))<<FRACBITS)+FRACUNIT/2;
 	dy = abs(dy);
 	yslopes[j][i] = FixedDiv (num, dy);
 	}
@@ -992,8 +992,6 @@ void R_SetupFrame (player_t* player)
     int		tempCentery;
     int		pitch;
     
-    const int blockratio = crispy->widescreen ? 11 : screenblocks < 11 ? screenblocks : 11;
-
     viewplayer = player;
 
     // [AM] Interpolate the player camera if the feature is enabled.
@@ -1036,7 +1034,7 @@ void R_SetupFrame (player_t* player)
 	pitch = -LOOKDIRMIN;
 
     // apply new yslope[] whenever "lookdir", "detailshift" or "screenblocks" change
-    tempCentery = viewheight/2 + (pitch * (1 << crispy->hires)) * blockratio / 10;
+    tempCentery = viewheight/2 + (pitch * (1 << crispy->hires)) * (screenblocks < 11 ? screenblocks : 11) / 10;
     if (centery != tempCentery)
     {
         centery = tempCentery;

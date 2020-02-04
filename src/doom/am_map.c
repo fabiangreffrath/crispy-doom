@@ -583,6 +583,7 @@ void AM_LevelInit(void)
     f_x = f_y = 0;
     f_w = SCREENWIDTH;
     f_h = SCREENHEIGHT;
+    // [crispy] automap without status bar in widescreen mode
     if (!crispy->widescreen)
     {
         f_h -= (ST_HEIGHT << crispy->hires);
@@ -605,6 +606,7 @@ void AM_ReInit (void)
 {
     f_w = SCREENWIDTH;
     f_h = SCREENHEIGHT;
+    // [crispy] automap without status bar in widescreen mode
     if (!crispy->widescreen)
     {
         f_h -= (ST_HEIGHT << crispy->hires);

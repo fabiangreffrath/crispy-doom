@@ -103,8 +103,6 @@ void V_CopyRect(int srcx, int srcy, pixel_t *source,
     pixel_t *src;
     pixel_t *dest;
  
-    destx += DELTAWIDTH;
-
     srcx <<= crispy->hires;
     srcy <<= crispy->hires;
     width <<= crispy->hires;
@@ -318,6 +316,7 @@ void V_DrawPatchFullScreen(patch_t *patch, boolean flipped)
     patch->leftoffset = 0;
     patch->topoffset = 0;
 
+    // [crispy] fill pillarboxes in widescreen mode
     if (SCREENWIDTH != HIRESWIDTH)
     {
         V_DrawFilledBox(0, 0, SCREENWIDTH, SCREENHEIGHT, 0);

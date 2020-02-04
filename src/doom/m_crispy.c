@@ -143,7 +143,7 @@ extern void R_InitLightTables (void);
 extern void I_ReInitGraphics (int reinit);
 extern void ST_createWidgets(void);
 extern void HU_Start(void);
-extern void M_InitScreenSize(void);
+extern void M_SizeDisplay(int choice);
 
 
 void M_CrispyToggleAutomapstats(int choice)
@@ -538,7 +538,7 @@ static void M_CrispyToggleWidescreenHook (void)
     crispy->widescreen = !crispy->widescreen;
 
     // [crispy] re-initialize screenSize_min
-    M_InitScreenSize();
+    M_SizeDisplay(-1);
     // [crispy] re-initialize framebuffers, textures and renderer
     I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
     // [crispy] re-calculate framebuffer coordinates

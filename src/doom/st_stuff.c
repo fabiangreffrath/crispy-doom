@@ -140,73 +140,73 @@ extern boolean inhelpscreens; // [crispy] prevent palette changes
 
 // AMMO number pos.
 #define ST_AMMOWIDTH		3	
-#define ST_AMMOX			44
+#define ST_AMMOX			(44 - DELTAWIDTH)
 #define ST_AMMOY			171
 
 // HEALTH number pos.
 #define ST_HEALTHWIDTH		3	
-#define ST_HEALTHX			90
+#define ST_HEALTHX			(90 - DELTAWIDTH)
 #define ST_HEALTHY			171
 
 // Weapon pos.
-#define ST_ARMSX			111
+#define ST_ARMSX			(111 - DELTAWIDTH)
 #define ST_ARMSY			172
-#define ST_ARMSBGX			104
+#define ST_ARMSBGX			(104 - DELTAWIDTH)
 #define ST_ARMSBGY			168
 #define ST_ARMSXSPACE		12
 #define ST_ARMSYSPACE		10
 
 // Frags pos.
-#define ST_FRAGSX			138
+#define ST_FRAGSX			(138 - DELTAWIDTH)
 #define ST_FRAGSY			171	
 #define ST_FRAGSWIDTH		2
 
 // ARMOR number pos.
 #define ST_ARMORWIDTH		3
-#define ST_ARMORX			221
+#define ST_ARMORX			(221 + DELTAWIDTH)
 #define ST_ARMORY			171
 
 // Key icon positions.
 #define ST_KEY0WIDTH		8
 #define ST_KEY0HEIGHT		5
-#define ST_KEY0X			239
+#define ST_KEY0X			(239 + DELTAWIDTH)
 #define ST_KEY0Y			171
 #define ST_KEY1WIDTH		ST_KEY0WIDTH
-#define ST_KEY1X			239
+#define ST_KEY1X			(239 + DELTAWIDTH)
 #define ST_KEY1Y			181
 #define ST_KEY2WIDTH		ST_KEY0WIDTH
-#define ST_KEY2X			239
+#define ST_KEY2X			(239 + DELTAWIDTH)
 #define ST_KEY2Y			191
 
 // Ammunition counter.
 #define ST_AMMO0WIDTH		3
 #define ST_AMMO0HEIGHT		6
-#define ST_AMMO0X			288
+#define ST_AMMO0X			(288 + DELTAWIDTH)
 #define ST_AMMO0Y			173
 #define ST_AMMO1WIDTH		ST_AMMO0WIDTH
-#define ST_AMMO1X			288
+#define ST_AMMO1X			(288 + DELTAWIDTH)
 #define ST_AMMO1Y			179
 #define ST_AMMO2WIDTH		ST_AMMO0WIDTH
-#define ST_AMMO2X			288
+#define ST_AMMO2X			(288 + DELTAWIDTH)
 #define ST_AMMO2Y			191
 #define ST_AMMO3WIDTH		ST_AMMO0WIDTH
-#define ST_AMMO3X			288
+#define ST_AMMO3X			(288 + DELTAWIDTH)
 #define ST_AMMO3Y			185
 
 // Indicate maximum ammunition.
 // Only needed because backpack exists.
 #define ST_MAXAMMO0WIDTH		3
 #define ST_MAXAMMO0HEIGHT		5
-#define ST_MAXAMMO0X		314
+#define ST_MAXAMMO0X		(314 + DELTAWIDTH)
 #define ST_MAXAMMO0Y		173
 #define ST_MAXAMMO1WIDTH		ST_MAXAMMO0WIDTH
-#define ST_MAXAMMO1X		314
+#define ST_MAXAMMO1X		(314 + DELTAWIDTH)
 #define ST_MAXAMMO1Y		179
 #define ST_MAXAMMO2WIDTH		ST_MAXAMMO0WIDTH
-#define ST_MAXAMMO2X		314
+#define ST_MAXAMMO2X		(314 + DELTAWIDTH)
 #define ST_MAXAMMO2Y		191
 #define ST_MAXAMMO3WIDTH		ST_MAXAMMO0WIDTH
-#define ST_MAXAMMO3X		314
+#define ST_MAXAMMO3X		(314 + DELTAWIDTH)
 #define ST_MAXAMMO3Y		185
 
 // pistol
@@ -484,7 +484,7 @@ void ST_refreshBackground(boolean force)
 
 	// [crispy] back up arms widget background
 	if (!deathmatch)
-	    V_DrawPatch(ST_ARMSBGX - DELTAWIDTH, 0, armsbg);
+	    V_DrawPatch(ST_ARMSBGX, 0, armsbg);
 
 	if (netgame)
 	    V_DrawPatch(ST_FX, 0, faceback);
@@ -1906,7 +1906,7 @@ void ST_drawWidgets(boolean refresh)
     // [crispy] draw the actual face widget background
     if (st_crispyhud && screenblocks == CRISPY_HUD)
     {
-	V_CopyRect(ST_FX + DELTAWIDTH, 1, st_backing_screen, SHORT(faceback->width), ST_HEIGHT - 1, ST_FX, ST_Y + 1);
+	V_CopyRect(ST_FX + DELTAWIDTH, 1, st_backing_screen, SHORT(faceback->width), ST_HEIGHT - 1, ST_FX + DELTAWIDTH, ST_Y + 1);
     }
 
     STlib_updateMultIcon(&w_faces, refresh);
@@ -2155,11 +2155,12 @@ void ST_createWidgets(void)
 
     int i;
 
+    // [crispy] re-calculate DELTAWIDTH
     I_GetScreenDimensions();
 
     // ready weapon ammo
     STlib_initNum(&w_ready,
-		  ST_AMMOX - DELTAWIDTH,
+		  ST_AMMOX,
 		  ST_AMMOY,
 		  tallnum,
 		  &plyr->ammo[weaponinfo[plyr->readyweapon].ammo],
@@ -2171,7 +2172,7 @@ void ST_createWidgets(void)
 
     // health percentage
     STlib_initPercent(&w_health,
-		      ST_HEALTHX - DELTAWIDTH,
+		      ST_HEALTHX,
 		      ST_HEALTHY,
 		      tallnum,
 		      &plyr->health,
@@ -2180,7 +2181,7 @@ void ST_createWidgets(void)
 
     // arms background
     STlib_initBinIcon(&w_armsbg,
-		      ST_ARMSBGX - DELTAWIDTH,
+		      ST_ARMSBGX,
 		      ST_ARMSBGY,
 		      armsbg,
 		      &st_notdeathmatch,
@@ -2190,7 +2191,7 @@ void ST_createWidgets(void)
     for(i=0;i<6;i++)
     {
         STlib_initMultIcon(&w_arms[i],
-                           ST_ARMSX-DELTAWIDTH+(i%3)*ST_ARMSXSPACE,
+                           ST_ARMSX+(i%3)*ST_ARMSXSPACE,
                            ST_ARMSY+(i/3)*ST_ARMSYSPACE,
                            arms[i],
                            &plyr->weaponowned[i+1],
@@ -2201,7 +2202,7 @@ void ST_createWidgets(void)
 
     // frags sum
     STlib_initNum(&w_frags,
-		  ST_FRAGSX - DELTAWIDTH,
+		  ST_FRAGSX,
 		  ST_FRAGSY,
 		  tallnum,
 		  &st_fragscount,
@@ -2218,7 +2219,7 @@ void ST_createWidgets(void)
 
     // armor percentage - should be colored later
     STlib_initPercent(&w_armor,
-		      ST_ARMORX + DELTAWIDTH,
+		      ST_ARMORX,
 		      ST_ARMORY,
 		      tallnum,
 		      &plyr->armorpoints,
@@ -2226,21 +2227,21 @@ void ST_createWidgets(void)
 
     // keyboxes 0-2
     STlib_initMultIcon(&w_keyboxes[0],
-		       ST_KEY0X + DELTAWIDTH,
+		       ST_KEY0X,
 		       ST_KEY0Y,
 		       keys,
 		       &keyboxes[0],
 		       &st_statusbaron);
     
     STlib_initMultIcon(&w_keyboxes[1],
-		       ST_KEY1X + DELTAWIDTH,
+		       ST_KEY1X,
 		       ST_KEY1Y,
 		       keys,
 		       &keyboxes[1],
 		       &st_statusbaron);
 
     STlib_initMultIcon(&w_keyboxes[2],
-		       ST_KEY2X + DELTAWIDTH,
+		       ST_KEY2X,
 		       ST_KEY2Y,
 		       keys,
 		       &keyboxes[2],
@@ -2248,7 +2249,7 @@ void ST_createWidgets(void)
 
     // ammo count (all four kinds)
     STlib_initNum(&w_ammo[0],
-		  ST_AMMO0X + DELTAWIDTH,
+		  ST_AMMO0X,
 		  ST_AMMO0Y,
 		  shortnum,
 		  &plyr->ammo[0],
@@ -2256,7 +2257,7 @@ void ST_createWidgets(void)
 		  ST_AMMO0WIDTH);
 
     STlib_initNum(&w_ammo[1],
-		  ST_AMMO1X + DELTAWIDTH,
+		  ST_AMMO1X,
 		  ST_AMMO1Y,
 		  shortnum,
 		  &plyr->ammo[1],
@@ -2264,7 +2265,7 @@ void ST_createWidgets(void)
 		  ST_AMMO1WIDTH);
 
     STlib_initNum(&w_ammo[2],
-		  ST_AMMO2X + DELTAWIDTH,
+		  ST_AMMO2X,
 		  ST_AMMO2Y,
 		  shortnum,
 		  &plyr->ammo[2],
@@ -2272,7 +2273,7 @@ void ST_createWidgets(void)
 		  ST_AMMO2WIDTH);
     
     STlib_initNum(&w_ammo[3],
-		  ST_AMMO3X + DELTAWIDTH,
+		  ST_AMMO3X,
 		  ST_AMMO3Y,
 		  shortnum,
 		  &plyr->ammo[3],
@@ -2281,7 +2282,7 @@ void ST_createWidgets(void)
 
     // max ammo count (all four kinds)
     STlib_initNum(&w_maxammo[0],
-		  ST_MAXAMMO0X + DELTAWIDTH,
+		  ST_MAXAMMO0X,
 		  ST_MAXAMMO0Y,
 		  shortnum,
 		  &plyr->maxammo[0],
@@ -2289,7 +2290,7 @@ void ST_createWidgets(void)
 		  ST_MAXAMMO0WIDTH);
 
     STlib_initNum(&w_maxammo[1],
-		  ST_MAXAMMO1X + DELTAWIDTH,
+		  ST_MAXAMMO1X,
 		  ST_MAXAMMO1Y,
 		  shortnum,
 		  &plyr->maxammo[1],
@@ -2297,7 +2298,7 @@ void ST_createWidgets(void)
 		  ST_MAXAMMO1WIDTH);
 
     STlib_initNum(&w_maxammo[2],
-		  ST_MAXAMMO2X + DELTAWIDTH,
+		  ST_MAXAMMO2X,
 		  ST_MAXAMMO2Y,
 		  shortnum,
 		  &plyr->maxammo[2],
@@ -2305,7 +2306,7 @@ void ST_createWidgets(void)
 		  ST_MAXAMMO2WIDTH);
     
     STlib_initNum(&w_maxammo[3],
-		  ST_MAXAMMO3X + DELTAWIDTH,
+		  ST_MAXAMMO3X,
 		  ST_MAXAMMO3Y,
 		  shortnum,
 		  &plyr->maxammo[3],
@@ -2385,7 +2386,7 @@ void ST_DrawDemoTimer (const int time)
 	n = M_snprintf(buffer, sizeof(buffer), "%02i %02i %02i",
 	               secs / 60, secs % 60, time % TICRATE);
 
-	x = (viewwindowx >> crispy->hires) + (scaledviewwidth >> crispy->hires);
+	x = (viewwindowx >> crispy->hires) + (scaledviewwidth >> crispy->hires) - DELTAWIDTH;
 
 	// [crispy] draw the Demo Timer widget with gray numbers
 	dp_translation = cr[CR_GRAY];
@@ -2399,7 +2400,7 @@ void ST_DrawDemoTimer (const int time)
 
 		if (c >= 0 && c <= 9)
 		{
-			V_DrawPatch(x - DELTAWIDTH, viewwindowy >> crispy->hires, shortnum[c]);
+			V_DrawPatch(x, viewwindowy >> crispy->hires, shortnum[c]);
 		}
 	}
 

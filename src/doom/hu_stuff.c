@@ -60,7 +60,7 @@
 #define HU_TITLEM	(mapnames_commercial[gamemap-1 + 105 + 3])
 #define HU_TITLE_CHEX   (mapnames_chex[(gameepisode-1)*9+gamemap-1])
 #define HU_TITLEHEIGHT	1
-#define HU_TITLEX	0
+#define HU_TITLEX	(0 - DELTAWIDTH)
 #define HU_TITLEY	(167 - SHORT(hu_font[0]->height))
 
 #define HU_INPUTTOGGLE	't'
@@ -69,7 +69,7 @@
 #define HU_INPUTWIDTH	64
 #define HU_INPUTHEIGHT	1
 
-#define HU_COORDX	(ORIGWIDTH - 7 * hu_font['A'-HU_FONTSTART]->width)
+#define HU_COORDX	((ORIGWIDTH - 7 * hu_font['A'-HU_FONTSTART]->width) + DELTAWIDTH)
 
 
 char *chat_macros[10] =
@@ -610,11 +610,12 @@ void HU_Start(void)
     secret_on = false;
     chat_on = false;
 
+    // [crispy] re-calculate DELTAWIDTH
     I_GetScreenDimensions();
 
     // create the message widget
     HUlib_initSText(&w_message,
-		    HU_MSGX - DELTAWIDTH, HU_MSGY, HU_MSGHEIGHT,
+		    HU_MSGX, HU_MSGY, HU_MSGHEIGHT,
 		    hu_font,
 		    HU_FONTSTART, &message_on);
 
@@ -626,53 +627,53 @@ void HU_Start(void)
 
     // create the map title widget
     HUlib_initTextLine(&w_title,
-		       HU_TITLEX - DELTAWIDTH, HU_TITLEY,
+		       HU_TITLEX, HU_TITLEY,
 		       hu_font,
 		       HU_FONTSTART);
 
     // [crispy] create the generic map title, kills, items, secrets and level time widgets
     HUlib_initTextLine(&w_map,
-		       HU_TITLEX - DELTAWIDTH, HU_TITLEY - SHORT(hu_font[0]->height + 1),
+		       HU_TITLEX, HU_TITLEY - SHORT(hu_font[0]->height + 1),
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_kills,
-		       HU_TITLEX - DELTAWIDTH, HU_MSGY + 1 * 8,
+		       HU_TITLEX, HU_MSGY + 1 * 8,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_items,
-		       HU_TITLEX - DELTAWIDTH, HU_MSGY + 2 * 8,
+		       HU_TITLEX, HU_MSGY + 2 * 8,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_scrts,
-		       HU_TITLEX - DELTAWIDTH, HU_MSGY + 3 * 8,
+		       HU_TITLEX, HU_MSGY + 3 * 8,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_ltime,
-		       HU_TITLEX - DELTAWIDTH, HU_MSGY + 4 * 8,
+		       HU_TITLEX, HU_MSGY + 4 * 8,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_coordx,
-		       HU_COORDX + DELTAWIDTH, HU_MSGY + 1 * 8,
+		       HU_COORDX, HU_MSGY + 1 * 8,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_coordy,
-		       HU_COORDX + DELTAWIDTH, HU_MSGY + 2 * 8,
+		       HU_COORDX, HU_MSGY + 2 * 8,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_coorda,
-		       HU_COORDX + DELTAWIDTH, HU_MSGY + 3 * 8,
+		       HU_COORDX, HU_MSGY + 3 * 8,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_fps,
-		       HU_COORDX + DELTAWIDTH, HU_MSGY,
+		       HU_COORDX, HU_MSGY,
 		       hu_font,
 		       HU_FONTSTART);
 

@@ -933,6 +933,7 @@ void F_BunnyScroll (void)
     dy = (SCREENHEIGHT << FRACBITS) / ORIGHEIGHT;
     dyi = (ORIGHEIGHT << FRACBITS) / SCREENHEIGHT;
 
+    // [crispy] fill pillarboxes in widescreen mode
     if (SCREENWIDTH != HIRESWIDTH)
     {
 	V_DrawFilledBox(0, 0, SCREENWIDTH, SCREENHEIGHT, 0);
