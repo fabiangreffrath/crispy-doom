@@ -29,6 +29,17 @@ static crispy_t crispy_s = {
 	.smoothscaling = 1,
 	.soundfix = 1,
 	.vsync = 1,
+	.redhealth = 25,
+	.yellowhealth = 50,
+	.greenhealth = 100,
+	.redarmor = 25,
+	.yellowarmor = 50,
+	.greenarmor = 100,
+	.redammo = 25,
+	.yellowammo = 50,
+	.greenammo = 100,
+	.graypercent = 1,
+	.armorcolorbytype = 1,
 };
 crispy_t *const crispy = &crispy_s;
 

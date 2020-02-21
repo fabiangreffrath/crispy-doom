@@ -82,6 +82,18 @@ typedef struct
 	int weaponsquat;
 	int widescreen;
 
+	int redhealth;
+	int yellowhealth;
+	int greenhealth;
+	int redarmor;
+	int yellowarmor;
+	int greenarmor;
+	int redammo;
+	int yellowammo;
+	int greenammo;
+	int graypercent;
+	int armorcolorbytype;
+
 	// [crispy] in-game switches and variables
 	int screenshotmsg;
 	int cleanscreenshot;

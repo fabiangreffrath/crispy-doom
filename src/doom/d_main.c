@@ -469,6 +469,17 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_vsync",           &crispy->vsync);
     M_BindIntVariable("crispy_weaponsquat",     &crispy->weaponsquat);
     M_BindIntVariable("crispy_widescreen",      &crispy->widescreen);
+    M_BindIntVariable("crispy_redhealth",       &crispy->redhealth);
+    M_BindIntVariable("crispy_yellowhealth",    &crispy->yellowhealth);
+    M_BindIntVariable("crispy_greenhealth",     &crispy->greenhealth);
+    M_BindIntVariable("crispy_redarmor",        &crispy->redarmor);
+    M_BindIntVariable("crispy_yellowarmor",     &crispy->yellowarmor);
+    M_BindIntVariable("crispy_greenarmor",      &crispy->greenarmor);
+    M_BindIntVariable("crispy_redammo",         &crispy->redammo);
+    M_BindIntVariable("crispy_yellowammo",      &crispy->yellowammo);
+    M_BindIntVariable("crispy_greenammo",       &crispy->greenammo);
+    M_BindIntVariable("crispy_graypercent",     &crispy->graypercent);
+    M_BindIntVariable("crispy_armorcolorbytype",&crispy->armorcolorbytype);
 }
 
 //

@@ -2234,6 +2234,18 @@ static default_t extra_defaults_list[] =
     //
 
     CONFIG_VARIABLE_INT(crispy_widescreen),
+
+    CONFIG_VARIABLE_INT(crispy_redhealth),
+    CONFIG_VARIABLE_INT(crispy_yellowhealth),
+    CONFIG_VARIABLE_INT(crispy_greenhealth),
+    CONFIG_VARIABLE_INT(crispy_redarmor),
+    CONFIG_VARIABLE_INT(crispy_yellowarmor),
+    CONFIG_VARIABLE_INT(crispy_greenarmor),
+    CONFIG_VARIABLE_INT(crispy_redammo),
+    CONFIG_VARIABLE_INT(crispy_yellowammo),
+    CONFIG_VARIABLE_INT(crispy_greenammo),
+    CONFIG_VARIABLE_INT(crispy_graypercent),
+    CONFIG_VARIABLE_INT(crispy_armorcolorbytype),
 };
 
 static default_collection_t extra_defaults =

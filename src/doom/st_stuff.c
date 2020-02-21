@@ -1762,11 +1762,13 @@ static byte* ST_WidgetColor(int i)
                 int ammo =  plyr->ammo[weaponinfo[plyr->readyweapon].ammo];
                 int fullammo = maxammo[weaponinfo[plyr->readyweapon].ammo];
 
-                if (ammo < fullammo/4)
+		int ammopercent = 100 * ammo / fullammo;
+
+                if (ammopercent < crispy->redammo)
                     return cr[CR_RED];
-                else if (ammo < fullammo/2)
+                else if (ammopercent < crispy->yellowammo)
                     return cr[CR_GOLD];
-                else if (ammo <= fullammo)
+                else if (ammopercent < crispy->greenammo)
                     return cr[CR_GREEN];
                 else
                     return cr[CR_BLUE];
@@ -1781,11 +1783,11 @@ static byte* ST_WidgetColor(int i)
             if (plyr->cheats & CF_GODMODE ||
                 plyr->powers[pw_invulnerability])
                 return cr[CR_GRAY];
-            else if (health < 25)
+            else if (health < crispy->redhealth)
                 return cr[CR_RED];
-            else if (health < 50)
+            else if (health < crispy->yellowhealth)
                 return cr[CR_GOLD];
-            else if (health <= 100)
+            else if (health <= crispy->greenhealth)
                 return cr[CR_GREEN];
             else
                 return cr[CR_BLUE];
@@ -1811,26 +1813,29 @@ static byte* ST_WidgetColor(int i)
 	    if (plyr->cheats & CF_GODMODE ||
                 plyr->powers[pw_invulnerability])
                 return cr[CR_GRAY];
-	    // [crispy] color by armor type
-	    else if (plyr->armortype >= 2)
-                return cr[CR_BLUE];
-	    else if (plyr->armortype == 1)
-                return cr[CR_GREEN];
-	    else if (plyr->armortype == 0)
-                return cr[CR_RED];
-/*
-            // [crispy] alternatively, color by armor points
-            int armor = plyr->armorpoints;
 
-            if (armor < 25)
-                return cr[CR_RED];
-            else if (armor < 50)
-                return cr[CR_GOLD];
-            else if (armor <= 100)
-                return cr[CR_GREEN];
-            else
-                return cr[CR_BLUE];
-*/
+	    if (crispy->armorcolorbytype) {
+	        // [crispy] color by armor type
+	        if (plyr->armortype >= 2)
+                    return cr[CR_BLUE];
+	        else if (plyr->armortype == 1)
+                    return cr[CR_GREEN];
+	        else if (plyr->armortype == 0)
+                    return cr[CR_RED];
+	    } else {
+                // [crispy] alternatively, color by armor points
+                int armor = plyr->armorpoints;
+
+                if (armor < crispy->redarmor)
+                    return cr[CR_RED];
+                else if (armor < crispy->yellowarmor)
+                    return cr[CR_GOLD];
+                else if (armor <= crispy->greenarmor)
+                    return cr[CR_GREEN];
+                else
+                    return cr[CR_BLUE];
+	    }
+
             break;
         }
     }
