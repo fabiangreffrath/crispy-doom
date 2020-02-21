@@ -1550,7 +1550,8 @@ void I_GetScreenDimensions (void)
 
 	if (crispy->widescreen)
 	{
-		SCREENWIDTH = w * ah / h;
+		if (aspect_ratio_correct) // don't extend the game scene in case of aspect_ratio_correct == 0, just stretch the framebuffer
+			SCREENWIDTH = w * ah / h;
 		// [crispy] make sure SCREENWIDTH is an integer multiple of 4 ...
 		SCREENWIDTH = (SCREENWIDTH + 3) & (int)~3;
 		// [crispy] ... but never exceeds MAXWIDTH (array size!)
