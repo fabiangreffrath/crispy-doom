@@ -1537,7 +1537,10 @@ void I_GetScreenDimensions (void)
 	HIRESWIDTH = SCREENWIDTH;
 
 	ah = (aspect_ratio_correct == 1) ? (6 * SCREENHEIGHT / 5) : SCREENHEIGHT;
-
+	
+	if (!aspect_ratio_correct)
+		crispy->widescreen = 0; // [crispy] widescreen rendering makes no sense without aspect ratio correction
+	
 	if (SDL_GetCurrentDisplayMode(video_display, &mode) == 0)
 	{
 		// [crispy] sanity check: really widescreen display?
