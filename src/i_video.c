@@ -1537,7 +1537,7 @@ void I_GetScreenDimensions (void)
 	HIRESWIDTH = SCREENWIDTH;
 
 	ah = (aspect_ratio_correct == 1) ? (6 * SCREENHEIGHT / 5) : SCREENHEIGHT;
-	
+
 	if (SDL_GetCurrentDisplayMode(video_display, &mode) == 0)
 	{
 		// [crispy] sanity check: really widescreen display?
