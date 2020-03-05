@@ -1528,7 +1528,7 @@ static void SetVideoMode(void)
 void I_GetScreenDimensions (void)
 {
 	SDL_DisplayMode mode;
-	int w = 16, h = 9;
+	int w = 16, h = 9; // minimum aspect ratio considered widescreen
 	int ah;
 
 	SCREENWIDTH = ORIGWIDTH << crispy->hires;
@@ -1549,7 +1549,6 @@ void I_GetScreenDimensions (void)
 	}
 
 	// [crispy] widescreen rendering makes no sense without aspect ratio correction
-	// [crispy] this way widescreen setting is remembered when disabled by 'none' aspect ratio correction setting
 
 	if (crispy->widescreen && aspect_ratio_correct)
 	{
