@@ -174,12 +174,6 @@ void M_CrispyToggleColoredblood(int choice)
 {
     thinker_t *th;
 
-    if (gameversion == exe_chex)
-    {
-	S_StartSound(NULL,sfx_oof);
-	return;
-    }
-
     choice = 0;
     crispy->coloredblood = !crispy->coloredblood;
 
@@ -231,11 +225,6 @@ void M_CrispyToggleCrosshairTarget(int choice)
 
 void M_CrispyToggleCrosshairtype(int choice)
 {
-    if (!crispy->crosshair)
-    {
-	S_StartSound(NULL,sfx_oof);
-	return;
-    }
 
     choice = 0;
     crispy->crosshairtype = crispy->crosshairtype + 1;
@@ -260,11 +249,6 @@ void M_CrispyToggleDemoTimer(int choice)
 
 void M_CrispyToggleDemoTimerDir(int choice)
 {
-    if (!(crispy->demotimer & DEMOTIMER_PLAYBACK))
-    {
-	S_StartSound(NULL,sfx_oof);
-	return;
-    }
 
     choice = 0;
     crispy->demotimerdir = !crispy->demotimerdir;
@@ -284,11 +268,6 @@ void M_CrispyToggleExtsaveg(int choice)
 
 void M_CrispyToggleFlipcorpses(int choice)
 {
-    if (gameversion == exe_chex)
-    {
-	S_StartSound(NULL,sfx_oof);
-	return;
-    }
 
     choice = 0;
     crispy->flipcorpses = !crispy->flipcorpses;
@@ -296,11 +275,6 @@ void M_CrispyToggleFlipcorpses(int choice)
 
 void M_CrispyToggleFreeaim(int choice)
 {
-    if (!crispy->singleplayer)
-    {
-	S_StartSound(NULL,sfx_oof);
-	return;
-    }
 
     choice = 0;
     crispy->freeaim = (crispy->freeaim + 1) % NUM_FREEAIMS;
@@ -365,11 +339,6 @@ void M_CrispyToggleHires(int choice)
 
 void M_CrispyToggleJumping(int choice)
 {
-    if (!crispy->singleplayer)
-    {
-	S_StartSound(NULL,sfx_oof);
-	return;
-    }
 
     choice = 0;
     crispy->jump = (crispy->jump + 1) % NUM_JUMPS;
@@ -400,11 +369,6 @@ void M_CrispyToggleNeghealth(int choice)
 
 void M_CrispyToggleOverunder(int choice)
 {
-    if (!crispy->singleplayer)
-    {
-	S_StartSound(NULL,sfx_oof);
-	return;
-    }
 
     choice = 0;
     crispy->overunder = !crispy->overunder;
@@ -429,11 +393,6 @@ void M_CrispyTogglePlayerCoords(int choice)
 
 void M_CrispyToggleRecoil(int choice)
 {
-    if (!crispy->singleplayer)
-    {
-	S_StartSound(NULL,sfx_oof);
-	return;
-    }
 
     choice = 0;
     crispy->recoil = !crispy->recoil;
@@ -517,12 +476,6 @@ void M_CrispyToggleVsyncHook (void)
 void M_CrispyToggleVsync(int choice)
 {
     choice = 0;
-
-    if (force_software_renderer)
-    {
-	S_StartSound(NULL,sfx_oof);
-	return;
-    }
 
     crispy->post_rendering_hook = M_CrispyToggleVsyncHook;
 }
