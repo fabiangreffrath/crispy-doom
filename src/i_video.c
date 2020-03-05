@@ -1528,7 +1528,7 @@ static void SetVideoMode(void)
 void I_GetScreenDimensions (void)
 {
 	SDL_DisplayMode mode;
-	int w = 16, h = 9; // minimum aspect ratio considered widescreen
+	int w = 16, h = 9;
 	int ah;
 
 	SCREENWIDTH = ORIGWIDTH << crispy->hires;
