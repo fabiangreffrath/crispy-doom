@@ -260,7 +260,6 @@ void M_CrispyToggleDemoTimerDir(int choice)
 {
     if (!(crispy->demotimer & DEMOTIMER_PLAYBACK))
     {
-	S_StartSound(NULL,sfx_oof);
 	return;
     }
 
