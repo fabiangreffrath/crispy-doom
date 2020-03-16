@@ -752,6 +752,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_automapstats",    &crispy->automapstats);
     M_BindIntVariable("crispy_leveltime",       &crispy->leveltime);
     M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
+    M_BindIntVariable("crispy_secretmessage",   &crispy->secretmessage);
 }
 
 // 
