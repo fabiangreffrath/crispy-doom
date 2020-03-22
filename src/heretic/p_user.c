@@ -560,6 +560,15 @@ void P_PlayerThink(player_t * player)
         ultimatemsg = false;    // clear out any chat messages.
         BorderTopRefresh = true;
     }
+    
+    // [crispy] Decrement centered message tics
+    player->centerMessageTics--;      // Can go negative
+    if (!player->centerMessageTics)
+    {                           
+        // Refresh the screen when a message goes away
+        BorderTopRefresh = true;
+    }
+
     if (player->playerstate == PST_DEAD)
     {
         P_DeathThink(player);
