@@ -561,8 +561,12 @@ void P_PlayerThink(player_t * player)
         BorderTopRefresh = true;
     }
     
-    // [crispy] Decrement centered message tics
-    player->centerMessageTics--;      // Can go negative
+    // [crispy] Decrement centered message tics if greater than 0
+    if (player->centerMessageTics > 0)
+    {
+        player->centerMessageTics--;
+    }
+
     if (!player->centerMessageTics)
     {                           
         // Refresh the screen when a message goes away
