@@ -142,7 +142,7 @@ void P_SetMessage(player_t * player, const char *message, boolean ultmsg)
 //
 // PROC P_SetCenterMessage
 //
-// [crispy] Set vertically centered message
+// [crispy] Set centered message
 //
 //--------------------------------------------------------------------------
 void P_SetCenterMessage(player_t * player, const char *message)
