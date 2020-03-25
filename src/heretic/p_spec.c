@@ -890,11 +890,11 @@ void P_PlayerInSpecialSector(player_t * player)
                 P_HitFloor(player->mo);
             }
             break;
-        // Set flag when secret incrmented so message displayed?
         case 9:                // SecretArea
             player->secretcount++;
             // [crispy] Show centered "Secret Revealed!" message
-            if (messageson && crispy->secretmessage && player == &players[consoleplayer]) {
+            if (messageson && crispy->secretmessage && player == &players[consoleplayer]) 
+            {
                 static char str_count[32];
                 
                 M_snprintf(str_count, sizeof(str_count), "SECRET %d OF %d REVEALED!", player->secretcount, totalsecret);
