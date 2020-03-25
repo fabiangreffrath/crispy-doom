@@ -469,7 +469,7 @@ typedef struct player_s
     mobj_t *rain2;              // active rain maker 2
 
     // [crispy] show centered "Secret Revealed!" message
-    char* centerMessage;
+    const char *centerMessage;
     int centerMessageTics;            // counter for showing centered messages
 } player_t;
 
