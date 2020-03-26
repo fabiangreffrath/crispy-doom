@@ -565,12 +565,12 @@ void P_PlayerThink(player_t * player)
     if (player->centerMessageTics > 0)
     {
         player->centerMessageTics--;
-    }
 
-    if (!player->centerMessageTics)
-    {                           
-        // Refresh the screen when a message goes away
-        BorderTopRefresh = true;
+        if (!player->centerMessageTics)
+        {
+            // Refresh the screen when a message goes away
+            BorderTopRefresh = true;
+        }
     }
 
     if (player->playerstate == PST_DEAD)
