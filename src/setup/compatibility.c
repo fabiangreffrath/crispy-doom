@@ -110,6 +110,7 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
         M_BindIntVariable("crispy_secretmessage",   &crispy->secretmessage);
         M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
+        M_BindIntVariable("crispy_uncapped",        &crispy->uncapped);
     }
     else
     {
