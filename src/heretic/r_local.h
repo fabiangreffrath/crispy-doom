@@ -117,6 +117,9 @@ typedef struct
     fixed_t rowoffset;          // add this to the calculated texture top
     short toptexture, bottomtexture, midtexture;
     sector_t *sector;
+
+    // [crispy] smooth texture scrolling
+    fixed_t	basetextureoffset;
 } side_t;
 
 typedef enum

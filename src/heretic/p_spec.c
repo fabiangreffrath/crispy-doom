@@ -210,6 +210,10 @@ struct
 
 mobj_t LavaInflictor;
 
+// [AM] Fractional part of the current tic, in the half-open
+//      range of [0.0, 1.0).  Used for interpolation.
+extern fixed_t          fractionaltic;
+
 //----------------------------------------------------------------------------
 //
 // PROC P_InitLava
@@ -1047,6 +1051,31 @@ void P_UpdateSpecials(void)
                 S_StartSound(buttonlist[i].soundorg, sfx_switch);
                 memset(&buttonlist[i], 0, sizeof(button_t));
             }
+        }
+    }
+}
+
+// [crispy] smooth texture scrolling
+void R_InterpolateTextureOffsets(void)
+{
+    if (crispy->uncapped && leveltime > oldleveltime)
+    {
+        int i;
+
+        for (i = 0; i < numlinespecials; i++)
+        {
+            const line_t* const line = linespeciallist[i];
+            side_t* const side = &sides[line->sidenum[0]];
+
+            if (line->special == 48)
+            {
+                side->textureoffset = side->basetextureoffset + fractionaltic;
+            }
+            else
+                if (line->special == 85)
+                {
+                    side->textureoffset = side->basetextureoffset - fractionaltic;
+                }
         }
     }
 }
