@@ -1018,10 +1018,16 @@ void P_UpdateSpecials(void)
         switch (line->special)
         {
             case 48:           // Effect_Scroll_Left
-                sides[line->sidenum[0]].textureoffset += FRACUNIT;
+                // [crispy] smooth texture scrolling
+                sides[line->sidenum[0]].basetextureoffset += FRACUNIT;
+                sides[line->sidenum[0]].textureoffset =
+                    sides[line->sidenum[0]].basetextureoffset;
                 break;
             case 99:           // Effect_Scroll_Right
-                sides[line->sidenum[0]].textureoffset -= FRACUNIT;
+                // [crispy] smooth texture scrolling
+                sides[line->sidenum[0]].basetextureoffset -= FRACUNIT;
+                sides[line->sidenum[0]].textureoffset =
+                    sides[line->sidenum[0]].basetextureoffset;
                 break;
         }
     }
