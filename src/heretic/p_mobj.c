@@ -1572,6 +1572,10 @@ mobj_t *P_SpawnPlayerMissile(mobj_t * source, mobjtype_t type)
         MissileMobj->y += (MissileMobj->momy >> 1);
         MissileMobj->z += (MissileMobj->momz >> 1);
     }
+
+    // [crispy] suppress interpolation of player missiles for the first tic
+    MissileMobj->interp = -1;
+
     if (!P_TryMove(MissileMobj, MissileMobj->x, MissileMobj->y))
     {                           // Exploded immediately
         P_ExplodeMissile(MissileMobj);
