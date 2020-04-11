@@ -760,33 +760,30 @@ void R_SetupFrame(player_t * player)
         // that would necessitate turning it off for a tic.
         player->mo->interp == true &&
         // Don't interpolate during a paused state
-        leveltime > oldleveltime &&
-        // [JG] Don't worry about interpolating if chicken for now
-        !player->chickenTics && !player->chickenPeck)
+        leveltime > oldleveltime)
     {
         viewx = player->mo->oldx + FixedMul(player->mo->x - player->mo->oldx, fractionaltic);
         viewy = player->mo->oldy + FixedMul(player->mo->y - player->mo->oldy, fractionaltic);
         viewz = player->oldviewz + FixedMul(player->viewz - player->oldviewz, fractionaltic);
         viewangle = R_InterpolateAngle(player->mo->oldangle, player->mo->angle, fractionaltic) + viewangleoffset;
-        tableAngle = viewangle >> ANGLETOFINESHIFT;
     }
     else
     {
-        viewangle = player->mo->angle + viewangleoffset;
-        tableAngle = viewangle >> ANGLETOFINESHIFT;
-        if (player->chickenTics && player->chickenPeck)
-        {                           // Set chicken attack view position
-            viewx = player->mo->x + player->chickenPeck * finecosine[tableAngle];
-            viewy = player->mo->y + player->chickenPeck * finesine[tableAngle];
-        }
-        else
-        {                           // Normal view position
-            viewx = player->mo->x;
-            viewy = player->mo->y;
-        }
+        viewx = player->mo->x;
+        viewy = player->mo->y;
         viewz = player->viewz;
+        viewangle = player->mo->angle + viewangleoffset;
     }
+
+    tableAngle = viewangle >> ANGLETOFINESHIFT;
     
+    // [crispy] Set chicken attack view position
+    if (player->chickenTics && player->chickenPeck)
+    {
+        viewx += player->chickenPeck * finecosine[tableAngle];
+        viewy += player->chickenPeck * finesine[tableAngle];
+    }
+
     extralight = player->extralight;
     tempCentery = viewheight / 2 + ((player->lookdir) << crispy->hires) * screenblocks / 10;
     if (centery != tempCentery)
