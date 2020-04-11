@@ -667,6 +667,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     lumpname[3] = '0' + map;
     lumpname[4] = 0;
     leveltime = 0;
+    oldleveltime = 0;  // [crispy] Track if game is running
 
     lumpnum = W_GetNumForName(lumpname);
 
