@@ -210,7 +210,7 @@ static void CrispyDrawStats (void)
 // [crispy] Draw the current FPS if show fps cheat is active
 static void CrispyDrawFps(void)
 {
-    static short coord_x, height;
+    short coord_x, height;
     char str[32];
     player_t* const player = &players[consoleplayer];
 
