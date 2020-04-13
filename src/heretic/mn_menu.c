@@ -137,7 +137,6 @@ extern void AM_initVariables(void);
 
 extern int detailLevel;
 extern int screenblocks;
-extern boolean automapactive;
 
 // Public Data
 
@@ -1108,6 +1107,8 @@ static boolean SCInfo(int option)
 
 static boolean CrispyHires(int option)
 {
+    extern boolean automapactive;
+
     crispy->hires = !crispy->hires;
     // [crispy] re-initialize framebuffers, textures and renderer
     I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
