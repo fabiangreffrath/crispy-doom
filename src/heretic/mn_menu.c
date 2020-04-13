@@ -1143,10 +1143,15 @@ static boolean CrispyUncapped(int option)
     return true;
 }
 
-static boolean CrispyVsync(int option)
+static void CrispyVsyncHook(void)
 {
     crispy->vsync = !crispy->vsync;
     I_ReInitGraphics(REINIT_RENDERER | REINIT_TEXTURES | REINIT_ASPECTRATIO);
+}
+
+static boolean CrispyVsync(int option)
+{
+    crispy->post_rendering_hook = CrispyVsyncHook;
 
     return true;
 }
