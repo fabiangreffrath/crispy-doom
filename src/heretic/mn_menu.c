@@ -131,11 +131,13 @@ void MN_LoadSlotText(void);
 extern void I_ReInitGraphics(int reinit);
 extern void R_ExecuteSetViewSize(void);
 extern void AM_LevelInit(void);
+extern void AM_initVariables(void);
 
 // External Data
 
 extern int detailLevel;
 extern int screenblocks;
+extern boolean automapactive;
 
 // Public Data
 
@@ -1114,10 +1116,12 @@ static boolean CrispyHires(int option)
     // [crispy] scale the sky for new resolution
     R_InitSkyMap();
     // [crispy] re-calculate automap coordinates
-    AM_LevelInit(); // [JG] Add "reinit" option like doom version has?
+    AM_LevelInit();
+    if (automapactive) {
+        AM_initVariables();
+    }
     // [crispy] refresh the status bar
     SB_state = -1;
-    // [JG] Need to make sure SKY doesn't get rescaled
     return true;
 }
 
