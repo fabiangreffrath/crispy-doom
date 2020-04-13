@@ -1111,6 +1111,8 @@ static boolean CrispyHires(int option)
     I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
     // [crispy] re-calculate framebuffer coordinates
     R_ExecuteSetViewSize();
+    // [crispy] scale the sky for new resolution
+    R_InitSkyMap();
     // [crispy] re-calculate automap coordinates
     AM_LevelInit(); // [JG] Add "reinit" option like doom version has?
     // [crispy] refresh the status bar
