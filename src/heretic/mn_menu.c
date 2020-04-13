@@ -1106,7 +1106,7 @@ static boolean SCInfo(int option)
 //
 //---------------------------------------------------------------------------
 
-static boolean CrispyHiresHook(int option)
+static void CrispyHiresHook(void)
 {
     crispy->hires = !crispy->hires;
     // [crispy] re-initialize framebuffers, textures and renderer
@@ -1126,7 +1126,6 @@ static boolean CrispyHiresHook(int option)
 
 static boolean CrispyHires(int option)
 {
-    option = 0;
     crispy->post_rendering_hook = CrispyHiresHook;
 
     return true;
@@ -1148,6 +1147,7 @@ static boolean CrispyVsync(int option)
 {
     crispy->vsync = !crispy->vsync;
     I_ReInitGraphics(REINIT_RENDERER | REINIT_TEXTURES | REINIT_ASPECTRATIO);
+
     return true;
 }
 
