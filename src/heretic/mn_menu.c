@@ -104,6 +104,7 @@ static boolean SCSaveGame(int option);
 static boolean SCMessages(int option);
 static boolean SCEndGame(int option);
 static boolean SCInfo(int option);
+static boolean CrispyHires(int option);
 static boolean CrispySmoothing(int option);
 static boolean CrispyAutomapStats(int option);
 static boolean CrispyLevelTime(int option);
@@ -128,6 +129,8 @@ void MN_LoadSlotText(void);
 // External Functions
 
 extern void I_ReInitGraphics(int reinit);
+extern void R_ExecuteSetViewSize(void);
+extern void AM_LevelInit(void);
 
 // External Data
 
@@ -294,6 +297,7 @@ static Menu_t Options2Menu = {
 };
 
 static MenuItem_t CrispnessItems[] = {
+    {ITT_LRFUNC, "HIGH RESOLUTION:", CrispyHires, 0, MENU_NONE},
     {ITT_LRFUNC, "SMOOTH PIXEL SCALING:", CrispySmoothing, 0, MENU_NONE},
     {ITT_LRFUNC, "UNCAPPED FRAMERATE:", CrispyUncapped, 0, MENU_NONE},
     {ITT_LRFUNC, "ENABLE VSYNC:", CrispyVsync, 0, MENU_NONE},
@@ -308,7 +312,7 @@ static MenuItem_t CrispnessItems[] = {
 static Menu_t CrispnessMenu = {
     68, 40,
     DrawCrispnessMenu,
-    9, CrispnessItems,
+    10, CrispnessItems,
     0,
     MENU_OPTIONS
 };
@@ -1100,6 +1104,21 @@ static boolean SCInfo(int option)
 //
 //---------------------------------------------------------------------------
 
+static boolean CrispyHires(int option)
+{
+    crispy->hires = !crispy->hires;
+    // [crispy] re-initialize framebuffers, textures and renderer
+    I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
+    // [crispy] re-calculate framebuffer coordinates
+    R_ExecuteSetViewSize();
+    // [crispy] re-calculate automap coordinates
+    AM_LevelInit(); // [JG] Add "reinit" option like doom version has?
+    // [crispy] refresh the status bar
+    SB_state = -1;
+    // [JG] Need to make sure SKY doesn't get rescaled
+    return true;
+}
+
 static boolean CrispySmoothing(int option)
 {
     crispy->smoothscaling = !crispy->smoothscaling;
@@ -1822,32 +1841,35 @@ static void DrawCrispnessMenu(void)
 
     // Subheaders
     MN_DrTextA("RENDERING", 63, 30);
-    MN_DrTextA("NAVIGATIONAL", 63, 80);
+    MN_DrTextA("NAVIGATIONAL", 63, 90);
 
     // Smooth pixel scaling
-    MN_DrTextA(crispy->smoothscaling ? "ON" : "OFF", 216, 40);
+    MN_DrTextA(crispy->hires ? "ON" : "OFF", 181, 40);
+
+    // Smooth pixel scaling
+    MN_DrTextA(crispy->smoothscaling ? "ON" : "OFF", 216, 50);
 
     // Uncapped framerate
-    MN_DrTextA(crispy->uncapped ? "ON" : "OFF", 217, 50);
+    MN_DrTextA(crispy->uncapped ? "ON" : "OFF", 217, 60);
 
     // Vsync
-    MN_DrTextA(crispy->vsync ? "ON" : "OFF", 167, 60);
+    MN_DrTextA(crispy->vsync ? "ON" : "OFF", 167, 70);
 
     // Show level stats
     MN_DrTextA(crispy->automapstats == WIDGETS_OFF ? "NEVER" :
                crispy->automapstats == WIDGETS_AUTOMAP ? "IN AUTOMAP" :
-                                                         "ALWAYS", 190, 90);
+                                                         "ALWAYS", 190, 100);
 
     // Show level time
     MN_DrTextA(crispy->leveltime == WIDGETS_OFF ? "NEVER" :
                crispy->leveltime == WIDGETS_AUTOMAP ? "IN AUTOMAP" :
-                                                       "ALWAYS", 179, 100);
+                                                       "ALWAYS", 179, 110);
 
     // Show player coords
-    MN_DrTextA(crispy->playercoords == WIDGETS_OFF ? "NEVER" : "IN AUTOMAP", 211, 110);
+    MN_DrTextA(crispy->playercoords == WIDGETS_OFF ? "NEVER" : "IN AUTOMAP", 211, 120);
 
     // Show secret message
     MN_DrTextA(crispy->secretmessage == SECRETMESSAGE_OFF ? "OFF" :
         crispy->secretmessage == SECRETMESSAGE_ON ? "ON" :
-        "COUNT", 250, 120);
+        "COUNT", 250, 130);
 }
