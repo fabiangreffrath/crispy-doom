@@ -299,7 +299,7 @@ static Menu_t Options2Menu = {
 };
 
 static MenuItem_t CrispnessItems[] = {
-    {ITT_LRFUNC, "HIGH RESOLUTION:", CrispyHires, 0, MENU_NONE},
+    {ITT_LRFUNC, "HIGH RESOLUTION RENDERING:", CrispyHires, 0, MENU_NONE},
     {ITT_LRFUNC, "SMOOTH PIXEL SCALING:", CrispySmoothing, 0, MENU_NONE},
     {ITT_LRFUNC, "UNCAPPED FRAMERATE:", CrispyUncapped, 0, MENU_NONE},
     {ITT_LRFUNC, "ENABLE VSYNC:", CrispyVsync, 0, MENU_NONE},
@@ -1850,7 +1850,7 @@ static void DrawCrispnessMenu(void)
     MN_DrTextA("NAVIGATIONAL", 63, 90);
 
     // Smooth pixel scaling
-    MN_DrTextA(crispy->hires ? "ON" : "OFF", 181, 40);
+    MN_DrTextA(crispy->hires ? "ON" : "OFF", 254, 40);
 
     // Smooth pixel scaling
     MN_DrTextA(crispy->smoothscaling ? "ON" : "OFF", 216, 50);
