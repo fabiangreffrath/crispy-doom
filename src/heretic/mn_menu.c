@@ -1849,7 +1849,7 @@ static void DrawCrispnessMenu(void)
     MN_DrTextA("RENDERING", 63, 30);
     MN_DrTextA("NAVIGATIONAL", 63, 90);
 
-    // Smooth pixel scaling
+    // Hires rendering
     MN_DrTextA(crispy->hires ? "ON" : "OFF", 254, 40);
 
     // Smooth pixel scaling
