@@ -1106,7 +1106,7 @@ static boolean SCInfo(int option)
 //
 //---------------------------------------------------------------------------
 
-static boolean CrispyHires(int option)
+static boolean CrispyHiresHook(int option)
 {
     crispy->hires = !crispy->hires;
     // [crispy] re-initialize framebuffers, textures and renderer
@@ -1122,6 +1122,13 @@ static boolean CrispyHires(int option)
     }
     // [crispy] refresh the status bar
     SB_state = -1;
+}
+
+static boolean CrispyHires(int option)
+{
+    option = 0;
+    crispy->post_rendering_hook = CrispyHiresHook;
+
     return true;
 }
 
