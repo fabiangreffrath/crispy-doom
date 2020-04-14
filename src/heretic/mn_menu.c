@@ -1001,10 +1001,11 @@ static boolean SCMouseSensi(int option)
 {
     if (option == RIGHT_DIR)
     {
-        if (mouseSensitivity < 9)
-        {
-            mouseSensitivity++;
-        }
+		//[crispy] remove mouse sensitivity limit
+        //if (mouseSensitivity < 9)
+        //{
+        mouseSensitivity++;
+        //}
     }
     else if (mouseSensitivity)
     {
@@ -1827,7 +1828,12 @@ static void DrawSlider(Menu_t * menu, int item, int width, int slot)
     int x;
     int y;
     int x2;
+    int position; // [crispy] slider position in case of slot being out of bounds
     int count;
+    char	num[4];
+
+    // [crispy] do not crash anymore if the value is out of bounds
+    position = slot < width ? slot : width-1;
 
     x = menu->x + 24;
     y = menu->y + 2 + (item * ITEM_HEIGHT);
@@ -1838,8 +1844,13 @@ static void DrawSlider(Menu_t * menu, int item, int width, int slot)
                                            : "M_SLDMD2"), PU_CACHE));
     }
     V_DrawPatch(x2, y, W_CacheLumpName(DEH_String("M_SLDRT"), PU_CACHE));
-    V_DrawPatch(x + 4 + slot * 8, y + 7,
+    V_DrawPatch(x + 4 + position * 8, y + 7,
                 W_CacheLumpName(DEH_String("M_SLDKB"), PU_CACHE));
+
+    // [crispy] print the value
+    M_snprintf(num, 4, "%3d", slot);
+    MN_DrTextA(num, x2 + 32, y + 3);
+
 }
 
 //---------------------------------------------------------------------------
