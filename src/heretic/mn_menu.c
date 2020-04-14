@@ -1001,11 +1001,11 @@ static boolean SCMouseSensi(int option)
 {
     if (option == RIGHT_DIR)
     {
-		//[crispy] remove mouse sensitivity limit
-        //if (mouseSensitivity < 9)
-        //{
-        mouseSensitivity++;
-        //}
+		// [crispy] remove mouse sensitivity limit
+        if (mouseSensitivity < 255)
+        {
+			mouseSensitivity++;
+        }
     }
     else if (mouseSensitivity)
     {
