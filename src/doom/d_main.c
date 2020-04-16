@@ -1486,7 +1486,7 @@ static void LoadSigilWad(void)
 // [crispy] support loading NERVE.WAD alongside DOOM2.WAD
 static void LoadNerveWad(void)
 {
-    int i, j, k;
+    int i, j;
 
     if (gamemission != doom2)
         return;
@@ -1500,16 +1500,6 @@ static void LoadNerveWad(void)
 	DEH_AddStringReplacement ("TITLEPIC", "INTERPIC");
     }
     else
-    // [crispy] The "New Game -> Which Expansion" menu is only shown if the
-    // menu graphics lumps are available and (a) if they are from the IWAD
-    // and that is the BFG Edition DOOM2.WAD or (b) if they are from a PWAD.
-    if ((i = W_CheckNumForName("M_EPI1")) != -1 &&
-        (j = W_CheckNumForName("M_EPI2")) != -1 &&
-        (k = W_CheckNumForName("M_EPISOD")) != -1 &&
-        (gamevariant == bfgedition ||
-        (!W_IsIWADLump(lumpinfo[i]) &&
-         !W_IsIWADLump(lumpinfo[j]) &&
-         !W_IsIWADLump(lumpinfo[k]))))
     {
         if (strrchr(iwadfile, DIR_SEPARATOR) != NULL)
         {
