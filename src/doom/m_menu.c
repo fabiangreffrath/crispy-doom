@@ -192,7 +192,6 @@ menu_t*	currentMenu;
 //
 static void M_NewGame(int choice);
 static void M_Episode(int choice);
-static void M_Expansion(int choice); // [crispy] NRFTL
 static void M_ChooseSkill(int choice);
 static void M_LoadGame(int choice);
 static void M_SaveGame(int choice);
@@ -303,8 +302,8 @@ enum
 
 menuitem_t EpisodeMenu[]=
 {
-    {1,"M_EPI1", M_Episode,'k'},
-    {1,"M_EPI2", M_Episode,'t'},
+    {1,"M_EPI1", M_Episode,'k', "Hell On Earth"},
+    {1,"M_EPI2", M_Episode,'t', "No Rest for the Living"},
     {1,"M_EPI3", M_Episode,'i'},
     {1,"M_EPI4", M_Episode,'t'}
    ,{1,"M_EPI5", M_Episode,'s'} // [crispy] Sigil
@@ -318,32 +317,6 @@ menu_t  EpiDef =
     M_DrawEpisode,	// drawing routine ->
     48,63,              // x,y
     ep1			// lastOn
-};
-
-//
-// EXPANSION SELECT
-//
-enum
-{
-    ex1,
-    ex2,
-    ex_end
-} expansions_e;
-
-static menuitem_t ExpansionMenu[]=
-{
-    {1,"M_EPI1", M_Expansion,'h'},
-    {1,"M_EPI2", M_Expansion,'n'},
-};
-
-static menu_t  ExpDef =
-{
-    ex_end,		// # of menu items
-    &MainDef,		// previous menu
-    ExpansionMenu,	// menuitem_t ->
-    M_DrawEpisode,	// drawing routine ->
-    48,63,              // x,y
-    ex1			// lastOn
 };
 
 //
@@ -1290,10 +1263,7 @@ void M_NewGame(int choice)
 	
     // Chex Quest disabled the episode select screen, as did Doom II.
 
-    if (nervewadfile)
-	M_SetupNextMenu(&ExpDef);
-    else
-    if (gamemode == commercial || gameversion == exe_chex)
+    if ((gamemode == commercial && !nervewadfile) || gameversion == exe_chex)
 	M_SetupNextMenu(&NewDef);
     else
 	M_SetupNextMenu(&EpiDef);
@@ -1345,11 +1315,6 @@ void M_Episode(int choice)
     M_SetupNextMenu(&NewDef);
 }
 
-static void M_Expansion(int choice)
-{
-    epi = choice;
-    M_SetupNextMenu(&NewDef);
-}
 
 
 //
@@ -3104,11 +3069,19 @@ void M_Init (void)
         MainMenu[readthis] = MainMenu[quitdoom];
         MainDef.numitems--;
         MainDef.y += 8;
-        NewDef.prevMenu = nervewadfile ? &ExpDef : &MainDef;
+        NewDef.prevMenu = &MainDef;
         ReadDef1.routine = M_DrawReadThisCommercial;
         ReadDef1.x = 330;
         ReadDef1.y = 165;
         ReadMenu1[rdthsempty1].routine = M_FinishReadThis;
+        // [crispy] NRFTL
+        if (nervewadfile)
+        {
+            NewDef.prevMenu =  &EpiDef;
+            EpiDef.numitems = 1;
+            EpisodeMenu[0].alphaKey = 'h';
+            EpisodeMenu[1].alphaKey = 'n';
+        }
     }
 
     // [crispy] Sigil
