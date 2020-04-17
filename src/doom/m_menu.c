@@ -1264,7 +1264,7 @@ void M_NewGame(int choice)
 	
     // Chex Quest disabled the episode select screen, as did Doom II.
 
-    if ((gamemode == commercial && !nervewadfile) || gameversion == exe_chex)
+    if ((gamemode == commercial && !nervewadfile) || gameversion == exe_chex) // [crispy] NRFTL
 	M_SetupNextMenu(&NewDef);
     else
 	M_SetupNextMenu(&EpiDef);
