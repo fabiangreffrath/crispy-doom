@@ -160,7 +160,7 @@ typedef struct
     
     // hotkey in menu
     char	alphaKey;			
-    char	*alttext; // [crispy] alternative text for the Options menu
+    char	*alttext; // [crispy] alternative text for menu items
 } menuitem_t;
 
 
@@ -174,6 +174,7 @@ typedef struct menu_s
     short		x;
     short		y;		// x,y of menu
     short		lastOn;		// last item user was on in menu
+    short		lumps_missing;	// [crispy] indicate missing menu graphics lumps
 } menu_t;
 
 short		itemOn;			// menu item skull is on
@@ -302,8 +303,8 @@ enum
 
 menuitem_t EpisodeMenu[]=
 {
-    {1,"M_EPI1", M_Episode,'k', "Hell On Earth"},
-    {1,"M_EPI2", M_Episode,'t', "No Rest for the Living"},
+    {1,"M_EPI1", M_Episode,'k'},
+    {1,"M_EPI2", M_Episode,'t'},
     {1,"M_EPI3", M_Episode,'i'},
     {1,"M_EPI4", M_Episode,'t'}
    ,{1,"M_EPI5", M_Episode,'s'} // [crispy] Sigil
@@ -1320,37 +1321,47 @@ void M_Episode(int choice)
 //
 // M_Options
 //
-// [crispy] no patches are drawn in the Options menu anymore
-/*
 static const char *detailNames[2] = {"M_GDHIGH","M_GDLOW"};
 static const char *msgNames[2] = {"M_MSGOFF","M_MSGON"};
-*/
 
 void M_DrawOptions(void)
 {
     V_DrawPatchDirect(108, 15, W_CacheLumpName(DEH_String("M_OPTTTL"),
                                                PU_CACHE));
 	
-// [crispy] no patches are drawn in the Options menu anymore
-/*
+    if (OptionsDef.lumps_missing == -1)
+    {
     V_DrawPatchDirect(OptionsDef.x + 175, OptionsDef.y + LINEHEIGHT * detail,
 		      W_CacheLumpName(DEH_String(detailNames[detailLevel]),
 			              PU_CACHE));
-*/
-
+    }
+    else
+    if (OptionsDef.lumps_missing > 0)
+    {
     M_WriteText(OptionsDef.x + M_StringWidth("Graphic Detail: "),
                 OptionsDef.y + LINEHEIGHT * detail + 8 - (M_StringHeight("HighLow")/2),
                 detailLevel ? "Low" : "High");
+    }
 
-// [crispy] no patches are drawn in the Options menu anymore
-/*
+    if (OptionsDef.lumps_missing == -1)
+    {
     V_DrawPatchDirect(OptionsDef.x + 120, OptionsDef.y + LINEHEIGHT * messages,
                       W_CacheLumpName(DEH_String(msgNames[showMessages]),
                                       PU_CACHE));
-*/
+    }
+    else
+    if (OptionsDef.lumps_missing > 0)
+    {
     M_WriteText(OptionsDef.x + M_StringWidth("Messages: "),
                 OptionsDef.y + LINEHEIGHT * messages + 8 - (M_StringHeight("OnOff")/2),
                 showMessages ? "On" : "Off");
+    }
+
+// [crispy] mouse sensitivity menu
+/*
+    M_DrawThermo(OptionsDef.x, OptionsDef.y + LINEHEIGHT * (mousesens + 1),
+		 10, mouseSensitivity);
+*/
 
     M_DrawThermo(OptionsDef.x,OptionsDef.y+LINEHEIGHT*(scrnsize+1),
 		 9 + (crispy->widescreen ? 6 : 3),screenSize); // [crispy] Crispy HUD
@@ -1730,7 +1741,6 @@ void M_QuitResponse(int key)
 
     if (key != key_menu_confirm)
 	return;
-
     // [crispy] play quit sound only if the ENDOOM screen is also shown
     if (!netgame && show_endoom)
     {
@@ -2945,11 +2955,25 @@ void M_Drawer (void)
     y = currentMenu->y;
     max = currentMenu->numitems;
 
+    // [crispy] check current menu for missing menu graphics lumps - only once
+    if (currentMenu->lumps_missing == 0)
+    {
+        for (i = 0; i < max; i++)
+            if (currentMenu->menuitems[i].name[0])
+                if (W_CheckNumForName(currentMenu->menuitems[i].name) < 0)
+                    currentMenu->lumps_missing++;
+
+        // [crispy] no lump missing, no need to check again
+        if (currentMenu->lumps_missing == 0)
+            currentMenu->lumps_missing = -1;
+    }
+
     for (i=0;i<max;i++)
     {
+        char *alttext = currentMenu->menuitems[i].alttext;
         name = DEH_String(currentMenu->menuitems[i].name);
 
-	if (name[0]) // && W_CheckNumForName(name) > 0) // [crispy] moved...
+	if (name[0] && (W_CheckNumForName(name) > 0 || alttext))
 	{
 	    // [crispy] shade unavailable menu items
 	    if ((currentMenu == &MainDef && i == savegame && (!usergame || gamestate != GS_LEVEL)) ||
@@ -2958,15 +2982,10 @@ void M_Drawer (void)
 	        (currentMenu == &MainDef && i == newgame && (demorecording || (netgame && !demoplayback))))
 	        dp_translation = cr[CR_DARK];
 
-	    if (currentMenu == &OptionsDef)
-	    {
-		char *alttext = currentMenu->menuitems[i].alttext;
-
-		if (alttext)
-		    M_WriteText(x, y+8-(M_StringHeight(alttext)/2), alttext);
-	    }
-	    else if (W_CheckNumForName(name) > 0) // [crispy] ...here
+	    if (W_CheckNumForName(name) > 0 && currentMenu->lumps_missing == -1)
 	    V_DrawPatchDirect (x, y, W_CacheLumpName(name, PU_CACHE));
+	    else if (alttext)
+		M_WriteText(x, y+8-(M_StringHeight(alttext)/2), alttext);
 
 	    dp_translation = NULL;
 	}
@@ -3074,14 +3093,6 @@ void M_Init (void)
         ReadDef1.x = 330;
         ReadDef1.y = 165;
         ReadMenu1[rdthsempty1].routine = M_FinishReadThis;
-        // [crispy] NRFTL
-        if (nervewadfile)
-        {
-            NewDef.prevMenu =  &EpiDef;
-            EpiDef.numitems = 1;
-            EpisodeMenu[0].alphaKey = 'h';
-            EpisodeMenu[1].alphaKey = 'n';
-        }
     }
 
     // [crispy] Sigil
@@ -3104,6 +3115,17 @@ void M_Init (void)
         EpiDef.numitems = 1;
         // [crispy] never show the Episode menu
         NewDef.prevMenu = &MainDef;
+    }
+
+    // [crispy] NRFTL
+    if (nervewadfile)
+    {
+        NewDef.prevMenu = &EpiDef;
+        EpiDef.numitems = 2;
+        EpisodeMenu[0].alphaKey = 'h';
+        EpisodeMenu[0].alttext = "Hell on Earth";
+        EpisodeMenu[1].alphaKey = 'n';
+        EpisodeMenu[1].alttext = "No Rest for the Living";
     }
 
     // [crispy] rearrange Load Game and Save Game menus

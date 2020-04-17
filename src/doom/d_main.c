@@ -1536,6 +1536,17 @@ static void LoadNerveWad(void)
             lumpinfo[W_GetNumForName(lumpname)]->name[0] = 'N';
         }
 
+        // [crispy] The "New Game -> Which Expansion" menu is only shown if the
+        // menu graphics lumps are available and (a) if they are from the IWAD
+        // and that is the BFG Edition DOOM2.WAD or (b) if they are from a PWAD.
+        if (gamevariant != bfgedition)
+        {
+            if ((i = W_CheckNumForName("M_EPI1")) != -1)// && W_IsIWADLump(lumpinfo[i]))
+                lumpinfo[i]->name[0] = 'X';
+            if ((i = W_CheckNumForName("M_EPI2")) != -1)// && W_IsIWADLump(lumpinfo[i]))
+                lumpinfo[i]->name[0] = 'X';
+        }
+
         // [crispy] regenerate the hashtable
         W_GenerateHashTable();
     }
