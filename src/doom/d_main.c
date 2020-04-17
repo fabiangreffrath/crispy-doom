@@ -1541,9 +1541,9 @@ static void LoadNerveWad(void)
         // and that is the BFG Edition DOOM2.WAD or (b) if they are from a PWAD.
         if (gamevariant != bfgedition)
         {
-            if ((i = W_CheckNumForName("M_EPI1")) != -1)// && W_IsIWADLump(lumpinfo[i]))
+            if ((i = W_CheckNumForName("M_EPI1")) != -1 && W_IsIWADLump(lumpinfo[i]))
                 lumpinfo[i]->name[0] = 'X';
-            if ((i = W_CheckNumForName("M_EPI2")) != -1)// && W_IsIWADLump(lumpinfo[i]))
+            if ((i = W_CheckNumForName("M_EPI2")) != -1 && W_IsIWADLump(lumpinfo[i]))
                 lumpinfo[i]->name[0] = 'X';
         }
 
