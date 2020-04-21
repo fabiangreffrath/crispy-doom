@@ -1528,24 +1528,25 @@ static void LoadNerveWad(void)
         printf(" [expansion]");
         D_AddFile(nervewadfile);
 
-        // [crispy] rename level name patch lumps out of the way
+        // [crispy] add suffices to level and level name patch lump names
         for (i = 0; i < 9; i++)
         {
             char lumpname[9];
 
             M_snprintf (lumpname, 9, "CWILV%2.2d", i);
-            lumpinfo[W_GetNumForName(lumpname)]->name[7] = 'N';
+            j = W_GetNumForName(lumpname);
+            strcat(lumpinfo[j]->name, "N");
 
             M_snprintf (lumpname, 9, "MAP%02d", i + 1);
-            lumpinfo[W_GetNumForName(lumpname)]->name[5] = 'N';
+            j = W_GetNumForName(lumpname);
+            strcat(lumpinfo[j]->name, "N");
         }
 
-        // [crispy] The "New Game -> Which Expansion" menu is only shown if the
-        // menu graphics lumps are available and (a) if they are from the IWAD
-        // and that is the BFG Edition DOOM2.WAD or (b) if they are from a PWAD.
+        // [crispy] invalidate the episode menu graphics
+        // if they are not from the BFG Edition Doom 2 IWAD or a PWAD
         if (gamevariant != bfgedition && (i = W_CheckNumForName("M_EPI2")) != -1 && W_IsIWADLump(lumpinfo[i]))
         {
-            lumpinfo[i]->name[0] = 'X';
+            strcat(lumpinfo[i]->name, "N");
         }
 
         // [crispy] regenerate the hashtable
@@ -1596,20 +1597,25 @@ static void LoadMasterlevelsWad(void)
         printf(" [expansion]");
         D_AddFile(masterlevelsfile);
 
-        // [crispy] rename level name patch lumps out of the way
+        // [crispy] add suffices to level and level name patch lump names
         for (i = 0; i < 21; i++)
         {
             char lumpname[9];
 
-            M_snprintf (lumpname, 9, "CWILV%2.2d", i);
-            lumpinfo[W_GetNumForName(lumpname)]->name[7] = 'M';
+            M_snprintf(lumpname, 9, "CWILV%2.2d", i);
+            j = W_GetNumForName(lumpname);
+            strcat(lumpinfo[j]->name, "M");
 
-            M_snprintf (lumpname, 9, "MAP%02d", i + 1);
-            lumpinfo[W_GetNumForName(lumpname)]->name[5] = 'M';
+            M_snprintf(lumpname, 9, "MAP%02d", i + 1);
+            j = W_GetNumForName(lumpname);
+            strcat(lumpinfo[j]->name, "M");
         }
 
+        // [crispy] invalidate the episode menu graphics if they are not from a PWAD
         if ((i = W_CheckNumForName("M_EPI1")) != -1 && W_IsIWADLump(lumpinfo[i]))
-            lumpinfo[i]->name[0] = 'X';
+        {
+            strcat(lumpinfo[i]->name, "M");
+        }
 
         // [crispy] regenerate the hashtable
         W_GenerateHashTable();

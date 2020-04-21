@@ -1714,13 +1714,14 @@ static void WI_loadUnloadData(load_callback_t callback)
 	for (i=0 ; i<NUMCMAPS ; i++)
 	{
 	    DEH_snprintf(name, 9, "CWILV%2.2d", i);
+	    // [crispy] NRFTL / The Master Levels
 	    if (nervewadfile && gamemission == pack_nerve && i < 9)
 	    {
-		name[7] = 'N';
+		strcat(name, "N");
 	    }
 	    if (masterlevelsfile && gamemission == pack_master && i < 21)
 	    {
-		name[7] = 'M';
+		strcat(name, "M");
 	    }
             callback(name, &lnames[i]);
 	}
