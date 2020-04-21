@@ -1715,11 +1715,11 @@ static void WI_loadUnloadData(load_callback_t callback)
 	{
 	    DEH_snprintf(name, 9, "CWILV%2.2d", i);
 	    // [crispy] NRFTL / The Master Levels
-	    if (nervewadfile && gamemission == pack_nerve && i < 9)
+	    if (crispy->havenerve && gamemission == pack_nerve && i < 9)
 	    {
 		strcat(name, "N");
 	    }
-	    if (masterlevelsfile && gamemission == pack_master && i < 21)
+	    if (crispy->havemaster && gamemission == pack_master && i < 21)
 	    {
 		strcat(name, "M");
 	    }

@@ -1062,11 +1062,11 @@ int P_GetNumForMap (int episode, int map, boolean critical)
     }
 
     // [crispy] NRFTL / The Master Levels
-    if (nervewadfile && episode == 2 && map <= 9)
+    if (crispy->havenerve && episode == 2 && map <= 9)
     {
 	strcat(lumpname, "N");
     }
-    if (masterlevelsfile && episode == 3 && map <= 21)
+    if (crispy->havemaster && episode == 3 && map <= 21)
     {
 	strcat(lumpname, "M");
     }
@@ -1104,14 +1104,14 @@ P_SetupLevel
     }
 
     // [crispy] NRFTL / The Master Levels
-    if (nervewadfile || masterlevelsfile)
+    if (crispy->havenerve || crispy->havemaster)
     {
-        if (masterlevelsfile && episode == 3)
+        if (crispy->havemaster && episode == 3)
         {
             gamemission = pack_master;
         }
         else
-        if (nervewadfile && episode == 2)
+        if (crispy->havenerve && episode == 2)
         {
             gamemission = pack_nerve;
         }

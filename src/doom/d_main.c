@@ -130,8 +130,6 @@ char		mapdir[1024];           // directory of development maps
 int             show_endoom = 0; // [crispy] disable
 int             show_diskicon = 1;
 
-char            *nervewadfile = NULL;
-char            *masterlevelsfile = NULL;
 
 void D_ConnectNetGame(void);
 void D_CheckNetGame(void);
@@ -1506,27 +1504,27 @@ static void LoadNerveWad(void)
         {
             char *dir;
             dir = M_DirName(iwadfile);
-            nervewadfile = M_StringJoin(dir, DIR_SEPARATOR_S, "nerve.wad", NULL);
+            crispy->havenerve = M_StringJoin(dir, DIR_SEPARATOR_S, "nerve.wad", NULL);
             free(dir);
         }
         else
         {
-            nervewadfile = M_StringDuplicate("nerve.wad");
+            crispy->havenerve = M_StringDuplicate("nerve.wad");
         }
 
-        if (!M_FileExists(nervewadfile))
+        if (!M_FileExists(crispy->havenerve))
         {
-            free(nervewadfile);
-            nervewadfile = D_FindWADByName("nerve.wad");
+            free(crispy->havenerve);
+            crispy->havenerve = D_FindWADByName("nerve.wad");
         }
 
-        if (nervewadfile == NULL)
+        if (crispy->havenerve == NULL)
         {
             return;
         }
 
         printf(" [expansion]");
-        D_AddFile(nervewadfile);
+        D_AddFile(crispy->havenerve);
 
         // [crispy] add suffices to level and level name patch lump names
         for (i = 0; i < 9; i++)
@@ -1575,27 +1573,27 @@ static void LoadMasterlevelsWad(void)
         {
             char *dir;
             dir = M_DirName(iwadfile);
-            masterlevelsfile = M_StringJoin(dir, DIR_SEPARATOR_S, "masterlevels.wad", NULL);
+            crispy->havemaster = M_StringJoin(dir, DIR_SEPARATOR_S, "masterlevels.wad", NULL);
             free(dir);
         }
         else
         {
-            masterlevelsfile = M_StringDuplicate("masterlevels.wad");
+            crispy->havemaster = M_StringDuplicate("masterlevels.wad");
         }
 
-        if (!M_FileExists(masterlevelsfile))
+        if (!M_FileExists(crispy->havemaster))
         {
-            free(masterlevelsfile);
-            masterlevelsfile = D_FindWADByName("masterlevels.wad");
+            free(crispy->havemaster);
+            crispy->havemaster = D_FindWADByName("masterlevels.wad");
         }
 
-        if (masterlevelsfile == NULL)
+        if (crispy->havemaster == NULL)
         {
             return;
         }
 
         printf(" [expansion]");
-        D_AddFile(masterlevelsfile);
+        D_AddFile(crispy->havemaster);
 
         // [crispy] add suffices to level and level name patch lump names
         for (i = 0; i < 21; i++)

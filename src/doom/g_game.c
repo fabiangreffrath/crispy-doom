@@ -2280,9 +2280,9 @@ G_InitNew
 	skill = sk_nightmare;
 
   // [crispy] if NRFTL is not available, "episode 2" may mean The Master Levels ("episode 3")
-  if (gamemode == commercial && episode == 2 && !nervewadfile)
+  if (gamemode == commercial && episode == 2 && !crispy->havenerve)
   {
-    episode = masterlevelsfile ? 3 : 1;
+    episode = crispy->havemaster ? 3 : 1;
   }
 
   // [crispy] only fix episode/map if it doesn't exist
