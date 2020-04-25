@@ -45,6 +45,31 @@ int key_speed = KEY_RSHIFT;
 int key_toggleautorun = KEY_CAPSLOCK; // [crispy]
 int key_togglenovert = 0; // [crispy]
 
+// [marshmallow] New keyboard controls
+int key_enter = KEY_ENTER;
+int key_escape = KEY_ESCAPE;
+int key_p = 'p';
+int key_t = 't';
+int key_f = 'f';
+int key_h = 'h';
+int key_b = 'b';
+int key_m = 'm';
+int key_g = 'g';
+int key_r = 'r';
+int key_o = 'o';
+int key_q = 'q';
+int key_l = 'l';
+int key_s = 's';
+int key_inventory = 'v';
+int key_useitem = '\\';
+int key_previtem = '[';
+int key_nextitem = ']';
+int key_quake2bfg = '0';
+int key_mightyfist = '`';
+int key_pgup = KEY_PGUP;
+int key_pgdn = KEY_PGDN;
+int key_insert = KEY_INS;
+
 // 
 // Heretic keyboard controls
 //

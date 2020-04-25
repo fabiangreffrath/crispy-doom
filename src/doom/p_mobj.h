@@ -36,7 +36,7 @@
 // Needs precompiled tables/data structures.
 #include "info.h"
 
-
+#include "backpack.h"  // [marshmallow]
 
 
 
@@ -292,6 +292,37 @@ typedef struct mobj_s
     fixed_t		oldy;
     fixed_t		oldz;
     angle_t		oldangle;
+
+    // [marshmallow] Keep track of powerup's remaining resources for conserved items feature
+    int			remaining;
+    int			armor;     // [marshmallow] Only used for megasphere
+
+    // [marshmallow] For path following
+    int			current_node;
+    int			previous_node;
+    int			potential_node;
+
+    // [marshmallow] Timeout for enemy HP hud widget
+    int			target_timeout;
+
+    // [marshmallow] New values for PKE meter
+    boolean		PKE__on_radar;
+    boolean		attacking_player;
+    boolean		already_indexed;
+
+    // [marshmallow] For gibbable corpses
+    int			corpsehealth;
+
+    // [marshmallow] In case this is a dropped backpack
+    backpack_s dropped_backpack;
+    int	       owner;
+    boolean    is_gift;
+
+    // [marshmallow] For dropped item cleanup
+    int		   drop_tic;
+
+    // [marshmallow] For player corpse cleanup
+    int		   death_tic;
 
 } mobj_t;
 

@@ -434,7 +434,7 @@ void SetCrispyOptions()
 
 	//crispy->uncapped = UNCAPPED_VSYNC;	
 	
-	crispy->coloredblood = COLOREDBLOOD_BOTH;
+	//crispy->coloredblood = COLOREDBLOOD_BOTH;
 	crispy->brightmaps = BRIGHTMAPS_BOTH;
 	crispy->translucency = TRANSLUCENCY_BOTH;
 	crispy->flipcorpses = true;

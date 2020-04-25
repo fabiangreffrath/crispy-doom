@@ -70,10 +70,22 @@
 #define HU_INPUTWIDTH	64
 #define HU_INPUTHEIGHT	1
 
-#define HU_COORDX	((ORIGWIDTH - 8 * hu_font['A'-HU_FONTSTART]->width) + WIDESCREENDELTA)
+#define HU_COORDX	((ORIGWIDTH - 7 * hu_font['A'-HU_FONTSTART]->width) + WIDESCREENDELTA)
 
 
-char *chat_macros[10];
+char *chat_macros[10] =
+{
+    HUSTR_CHATMACRO0,
+    HUSTR_CHATMACRO1,
+    HUSTR_CHATMACRO2,
+    HUSTR_CHATMACRO3,
+    HUSTR_CHATMACRO4,
+    HUSTR_CHATMACRO5,
+    HUSTR_CHATMACRO6,
+    HUSTR_CHATMACRO7,
+    HUSTR_CHATMACRO8,
+    HUSTR_CHATMACRO9
+};
 
 const char *player_names[] =
 {
@@ -400,7 +412,7 @@ const char *mapnames_commercial[] =
     MHUSTR_21
 };
 
-static void CrispyReplaceColor (const char *str, const int cr, const char *col)
+/*static*/ void CrispyReplaceColor (const char *str, const int cr, const char *col)  // [marshmallow] we need this to be global
 {
     char *str_replace, col_replace[16];
 
@@ -716,10 +728,7 @@ void HU_Start(void)
 
     // [crispy] explicitely display (episode and) map if the
     // map is from a PWAD or if the map title string has been dehacked
-    if (DEH_HasStringReplacement(s) ||
-        (!W_IsIWADLump(maplumpinfo) &&
-        !(crispy->havenerve && gamemission == pack_nerve) &&
-        !(crispy->havemaster && gamemission == pack_master)))
+    if (DEH_HasStringReplacement(s) || (!W_IsIWADLump(maplumpinfo) && (!nervewadfile || gamemission != pack_nerve)))
     {
 	char *m;
 
@@ -824,12 +833,6 @@ void HU_Drawer(void)
 	return;
     }
 
-    // [crispy] re-calculate widget coordinates on demand
-    if (hu_widescreendelta != WIDESCREENDELTA)
-    {
-        HU_Start();
-    }
-
     // [crispy] translucent messages for translucent HUD
     if (screenblocks >= CRISPY_HUD && (screenblocks % 3 == 2) && (!automapactive || crispy->automapoverlay))
 	dp_translucent = true;
@@ -866,8 +869,7 @@ void HU_Drawer(void)
 	HUlib_drawTextLine(&w_scrts, false);
     }
 
-    if (crispy->leveltime == WIDGETS_ALWAYS || (automapactive && crispy->leveltime == WIDGETS_AUTOMAP) ||
-        (crispy->btusetimer && plr->btuse_tics))
+    if (crispy->leveltime == WIDGETS_ALWAYS || (automapactive && crispy->leveltime == WIDGETS_AUTOMAP))
     {
 	HUlib_drawTextLine(&w_ltime, false);
     }
@@ -932,6 +934,12 @@ void HU_Ticker(void)
     int i, rc;
     char c;
     char str[32], *s;
+
+    // [crispy] re-calculate widget coordinates on demand
+    if (hu_widescreendelta != WIDESCREENDELTA)
+    {
+        HU_Start();
+    }
 
     // tick down message counter if message is up
     if (message_counter && !--message_counter)
@@ -1065,21 +1073,6 @@ void HU_Ticker(void)
 	else
 	    M_snprintf(str, sizeof(str), "%s%02d:%02d", crstr[CR_GRAY],
 	            time/60, time%60);
-	HUlib_clearTextLine(&w_ltime);
-	s = str;
-	while (*s)
-	    HUlib_addCharToTextLine(&w_ltime, *(s++));
-    }
-
-    // [crispy] "use" button timer overrides the level time widget
-    if (crispy->btusetimer && plr->btuse_tics)
-    {
-	const int mins = plr->btuse / (60 * TICRATE);
-	const float secs = (float)(plr->btuse % (60 * TICRATE)) / TICRATE;
-
-	plr->btuse_tics--;
-
-	M_snprintf(str, sizeof(str), "%sU %02i:%05.02f", crstr[CR_GRAY], mins, secs);
 	HUlib_clearTextLine(&w_ltime);
 	s = str;
 	while (*s)

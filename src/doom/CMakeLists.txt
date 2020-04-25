@@ -78,7 +78,28 @@ add_library(doom STATIC
             statdump.c      statdump.h
             st_lib.c        st_lib.h
             st_stuff.c      st_stuff.h
-            wi_stuff.c      wi_stuff.h)
+            wi_stuff.c      wi_stuff.h
+
+            marshmallow.c   marshmallow.h
+            profile.c       profile.h
+            pkemeter.c      pkemeter.h
+            dj.c            dj.h
+            hud.c           hud.h
+            datapad.c       datapad.h
+            bot.c           bot.h
+            bot_lib.c
+            bot_dm.c
+            math.c
+            navigation.c    navigation.h
+            inventory.c
+            tweaks.c
+            lib.c
+            sandbox.c
+            fileio.c
+            imports.h
+            macros.h
+            strings.h
+        )
 
 target_include_directories(doom PRIVATE "../" "${CMAKE_CURRENT_BINARY_DIR}/../../")
 target_link_libraries(doom SDL2::SDL2 SDL2::mixer SDL2::net)

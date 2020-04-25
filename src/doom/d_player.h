@@ -196,6 +196,34 @@ typedef struct player_s
 
     // [crispy] "use" button timer
     int			btuse, btuse_tics;
+
+    // [marshmallow] For new inventory system
+    boolean		extra_powers[4];
+
+    // [marshmallow] Our new portable medkit
+    int			medkit_remaining;
+
+    // [marshmallow] Used to identify which bot or player we're working with
+    int			player_number;
+    int			bot_number;
+
+    // [marshmallow] For monster hitpoints readout
+    mobj_t*		victim;
+
+    // [marshmallow] Score for treasure
+    int			score;
+
+    // [marshmallow] For barrel pushing
+    boolean touching_barrel;
+    mobj_t* current_barrel;
+    int		barrel_timeout;
+
+    // [marshmallow] Sandbox object selection
+    mobjtype_t sandbox_object;
+
+    // [marshmallow] Time delay for both sandbox object drop and backpack gift drop
+    int DropObjectDelay;
+
 } player_t;
 
 
