@@ -31,6 +31,8 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+//#include "doom/marshmallow.h"	  // [marshmallow]
+
 static const iwad_t iwads[] =
 {
     { "doom2.wad",    doom2,     commercial, "Doom II" },
@@ -844,6 +846,85 @@ char *D_FindIWAD(int mask, GameMission_t *mission)
     int iwadparm;
     int i;
 
+    // [marshmallow] Before we check for -iwad parameter, check for our special Marshmallow iwad switches first
+
+    if (M_CheckParm("-d1")			// [marshmallow]  Shortcuts to set -iwad doom.wad
+        || M_CheckParm("-doom1")
+        || M_CheckParm ("-d1s")
+        || M_CheckParm ("-sigil"))
+    {
+        iwadfile = "doom.wad";
+        result = D_FindWADByName(iwadfile);
+        if (result == NULL)
+        {
+            I_Error("IWAD file '%s' not found!", iwadfile);
+        }
+        else
+        {
+            *mission = IdentifyIWADByName(result, mask);
+            return result;
+        }
+    }
+
+    if (M_CheckParm("-d2")   // [marshmallow]	  Shortcuts to set -iwad doom2.wad
+        || M_CheckParm("-doom2")
+        || M_CheckParm ("-d2s"))
+    {
+        iwadfile = "doom2.wad";
+        result = D_FindWADByName(iwadfile);
+
+        if (result == NULL)
+        {
+            I_Error("IWAD file '%s' not found!", iwadfile);
+        }
+        else
+        {
+            *mission = IdentifyIWADByName(result, mask);
+            return result;
+        }
+    }
+
+    if (M_CheckParm("-tnt"))  // [marshmallow]  Shortcut to set -iwad tnt.wad
+    {
+        char* wadcheck;
+
+        if (wadcheck = D_FindWADByName("tnt.wad"))
+        {
+            iwadfile = "tnt.wad";
+            result = D_FindWADByName(iwadfile);
+            *mission = IdentifyIWADByName(result, mask);
+            return result;
+        }
+        else  // If wad cannot be found, default to DOOM2.WAD instead
+        {
+            iwadfile = "doom2.wad";
+            result = D_FindWADByName(iwadfile);
+            *mission = IdentifyIWADByName(result, mask);
+            return result;
+        }
+    }
+
+    if (M_CheckParm("-plut")
+        || M_CheckParm("-plutonia"))  // [marshmallow] Shortcuts to set -iwad plutonia.wad
+    {
+        char* wadcheck;
+
+        if (wadcheck = D_FindWADByName("plutonia.wad"))
+        {
+            iwadfile = "plutonia.wad";
+            result = D_FindWADByName(iwadfile);
+            *mission = IdentifyIWADByName(result, mask);
+            return result;
+        }
+        else  // If wad cannot be found, default to DOOM2.WAD instead
+        {
+            iwadfile = "doom2.wad";
+            result = D_FindWADByName(iwadfile);
+            *mission = IdentifyIWADByName(result, mask);
+            return result;
+        }
+    }
+
     // Check for the -iwad parameter
 
     //!
@@ -882,7 +963,58 @@ char *D_FindIWAD(int mask, GameMission_t *mission)
             result = SearchDirectoryForIWAD(iwad_dirs[i], mask, mission);
         }
     }
+#if 0
+    if ( !M_CheckParm ("-iwad")	 // [marshmallow] Our IWAD selection dialog at game start
+         && !M_CheckParm ("-d1")
+         && !M_CheckParm ("-d2")
+         && !M_CheckParm ("-sigil")
+         && !M_CheckParm ("-tnt")
+         && !M_CheckParm ("-plut"))
+    {
+        int iwad = -1;
+        int wads_present = 0;
 
+        wads_present += CheckIfFileExists("doom.wad", "r+b");
+        wads_present += CheckIfFileExists("doom2.wad", "r+b");
+
+        if (wads_present == BOTH)
+            iwad = WadSelection();
+        else
+            return result;
+
+        if (iwad == DOOM2)
+        {
+            iwadfile = "doom2.wad";
+            result = D_FindWADByName(iwadfile);
+
+            if (result == NULL)
+            {
+                I_Error("IWAD file '%s' not found!", iwadfile);
+            }
+            else
+            {
+                *mission = IdentifyIWADByName(result, mask);
+                return result;
+            }
+        }
+
+        if (iwad == DOOM1)
+        {
+            iwadfile = "doom.wad";
+            result = D_FindWADByName(iwadfile);
+
+            if (result == NULL)
+            {
+                I_Error("IWAD file '%s' not found!", iwadfile);
+            }
+            else
+            {
+                *mission = IdentifyIWADByName(result, mask);
+                return result;
+            }
+        }
+    }		 // [m]
+#endif
     return result;
 }
 

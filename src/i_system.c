@@ -244,6 +244,8 @@ void I_BindVariables(void)
 // I_Quit
 //
 
+extern void WritePreferences_OnExit();   // [marshmallow]
+
 void I_Quit (void)
 {
     atexit_listentry_t *entry;
@@ -259,6 +261,8 @@ void I_Quit (void)
     }
 
     SDL_Quit();
+
+    WritePreferences_OnExit();   // [marshmallow] Save current preferences to local .cfg file
 
     exit(0);
 }

@@ -48,6 +48,33 @@ extern int key_invleft;
 extern int key_invright;
 extern int key_useartifact;
 
+// [marshmallow]
+extern int key_enter;
+extern int key_escape;
+extern int key_p;
+extern int key_t;
+extern int key_f;
+extern int key_h;
+extern int key_b;
+extern int key_m;
+extern int key_g;
+extern int key_r;
+extern int key_o;
+extern int key_q;
+extern int key_l;
+extern int key_s;
+extern int key_quake2bfg;
+extern int key_mightyfist;
+extern int key_nextthing;
+extern int key_prevthing;
+extern int key_inventory;
+extern int key_useitem;
+extern int key_previtem;
+extern int key_nextitem;
+extern int key_pgup;
+extern int key_pgdn;
+extern int key_insert;
+
 // villsa [STRIFE] strife keys
 extern int key_usehealth;
 extern int key_invquery;

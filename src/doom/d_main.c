@@ -77,6 +77,8 @@
 
 #include "d_main.h"
 
+#include "marshmallow.h"  	// [marshmallow]
+
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -1655,7 +1657,7 @@ void D_DoomMain (void)
     //
     // Disable monsters.
     //
-	
+    if (!M_CheckParm ("-dmm"))  // [marshmallow]
     nomonsters = M_CheckParm ("-nomonsters");
 
     //!
@@ -1930,6 +1932,20 @@ void D_DoomMain (void)
     // [crispy] experimental feature: in conjunction with -merge <files>
     // merges PWADs into the main IWAD and writes the merged data into <file>
     //
+
+    if (M_CheckParm ("-steal")   // [marshmallow] Wad stealing command line options
+        || M_CheckParm ("-d1ssg")
+        || M_CheckParm ("-d1s")
+        || M_CheckParm ("-d2s"))
+    {
+        DoWadStealing();
+    }
+
+    if ( CheckForOtherIWAD() )       // [marshmallow] Check of the other game's IWAD is present in the directory
+    {
+        if ( AskForWadStealing() )  // [marshmallow] Prompt user if they want to do wad stealing this session
+            DoWadStealing();
+    }
 
     p = M_CheckParm("-mergedump");
 
@@ -2308,6 +2324,11 @@ void D_DoomMain (void)
         autostart = true;
         testcontrols = true;
     }
+
+    SeedRandom();  // [marshmallow]
+
+    Marshmallow_InitVariables();		    // [marshmallow]
+    Marshmallow_CheckCommandLineArgs();     // [marshmallow]
 
     // [crispy] port level flipping feature over from Strawberry Doom
 #ifdef ENABLE_APRIL_1ST_JOKE

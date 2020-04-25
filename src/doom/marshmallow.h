@@ -12,7 +12,7 @@
 #include "macros.h"
 #include "strings.h"
 
-#include "imports.h"  
+#include "imports.h"
 
 #include "navigation.h"
 #include "bot.h"
@@ -20,9 +20,9 @@
 #include "hud.h"
 
 #include "profile.h"
-#include "misc.h"
+//#include "misc.h"
 
-#include "textscreen.h"
+//#include "textscreen.h"
 
 boolean Marshmallow_DynamicMusic; 
 boolean Marshmallow_Sandbox;   
@@ -351,7 +351,7 @@ void UnleashTheHordes();  // marshmallow, lib
 int PlaceSandboxItem(int i);  // p_mobj
 void ChangeThingType(int player, direction_t direction);  // lib, marshmallow
 void RestoreSavedSandbox();
-boolean CheckThingType(mobjtype_t thing);
+//boolean CheckThingType(mobjtype_t thing);  // static
 void ResetSandbox();
 
 // function prototypes: hud.c
@@ -495,7 +495,10 @@ boolean CheckKeyDelay();
 int menu_key_delay;    // TODO:  rename to menu_scroll_delay
 int menu_select_delay;
 
-void DoSharewareBossDeath();  
+void DoSharewareBossDeath();
+
+// For plutonia song names fix, though also being used in hud.c
+int	current_song;
 
 // math.h
 float F_Random();
