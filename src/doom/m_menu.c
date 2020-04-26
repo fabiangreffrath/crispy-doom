@@ -160,7 +160,7 @@ typedef struct
     
     // hotkey in menu
     char	alphaKey;			
-    char	*alttext; // [crispy] alternative text for menu items
+    const char	*alttext; // [crispy] alternative text for menu items
 } menuitem_t;
 
 
