@@ -2970,7 +2970,7 @@ void M_Drawer (void)
 
     for (i=0;i<max;i++)
     {
-        char *alttext = currentMenu->menuitems[i].alttext;
+        const char *alttext = currentMenu->menuitems[i].alttext;
         name = DEH_String(currentMenu->menuitems[i].name);
 
 	if (name[0] && (W_CheckNumForName(name) > 0 || alttext))
