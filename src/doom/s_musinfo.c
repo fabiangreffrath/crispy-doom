@@ -53,7 +53,7 @@
 
 static void CheckOpen(void);
 static void OpenScript(const char *name, int type);
-static void SC_OpenLump(char *name);
+static void SC_OpenLump(const char *name);
 static void SC_Close(void);
 static boolean SC_Compare(const char *text);
 
@@ -88,7 +88,7 @@ static boolean AlreadyGot = false;
 //
 //==========================================================================
 
-static void SC_OpenLump(char *name)
+static void SC_OpenLump(const char *name)
 {
     OpenScript(name, LUMP_SCRIPT);
 }
