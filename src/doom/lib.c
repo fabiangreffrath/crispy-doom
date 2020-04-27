@@ -958,8 +958,8 @@ void Marshmallow_SetupLevel()
 
 	marshmallow_tic = NULL;
 
-	if (realnetgame)
-		M_ClearRandom();  // maybe this will work better here
+	//if (realnetgame)
+	//	M_ClearRandom();
 }
 
 
@@ -1389,38 +1389,15 @@ static void GameplayKeyInput()
 		if ( realnetgame )
 			return;
 
-		//if (viewingbot && P_CheckMeleeRange(players[viewingbot].mo))
-		//{
-			//int bot;
-
-			//for (bot=BOT_1; bot<=BotsInGame; bot++)   // this "whack-move" sometimes doesn't work; removed on 3-12-19
-			//{
-			//	Bot_StartPatrolling(bot);
-			//}
-
-			//if (GetGameType() == DOOM1)
-			//	S_StartSound (NULL, sfx_punch); // lo-fi sounding punch sound in Doom1
-			//else
-			//	S_StartSound (NULL, sfx_skepch);  // might as well use the more hi-fi punch sound in Doom2 if available
-
-			//SHOW_MESSAGE "OUTTA THE WAY!";
-		//}
-		//else
-		//{
-			MightyFistEngaged();
-		//}
+		MightyFistEngaged();
 	}
 
 	if (gamekeydown[key_q])  
 	{                   
-		if (!Marshmallow_AllowSprint)
-			return;
+		return;  // Sprint disabled for now
 
-		if (!realnetgame
-			&& sprint_recharge == DEFAULT_SPRINT_RECHARGE) // TESTING: so we don't have duplicate sprint waypoints
-		{
-			Path_DropNode(&main_path, MAIN_PLAYER.mo);  // Drop a sprint waypoint
-		}
+	    if (!Marshmallow_AllowSprint)
+			return;
 
 		PlatformingSprint();
 	}

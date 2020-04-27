@@ -86,11 +86,11 @@ add_library(doom STATIC
             dj.c            dj.h
             hud.c           hud.h
             datapad.c       datapad.h
+            navigation.c    navigation.h
             bot.c           bot.h
             bot_lib.c
             bot_dm.c
             math.c
-            navigation.c    navigation.h
             inventory.c
             tweaks.c
             lib.c
@@ -103,3 +103,6 @@ add_library(doom STATIC
 
 target_include_directories(doom PRIVATE "../" "${CMAKE_CURRENT_BINARY_DIR}/../../")
 target_link_libraries(doom SDL2::SDL2 SDL2::mixer SDL2::net)
+
+#set(GCC_COVERAGE_COMPILE_FLAGS "-Wswitch")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${GCC_COVERAGE_COMPILE_FLAGS}" )

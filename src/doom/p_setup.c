@@ -45,6 +45,8 @@
 
 #include "p_extnodes.h" // [crispy] support extended node formats
 
+extern void Marshmallow_SetupLevel();	// [marshmallow]
+
 void	P_SpawnMapThing (mapthing_t*	mthing);
 
 
@@ -1267,6 +1269,8 @@ P_SetupLevel
 	P_LoadThings_Hexen (lumpnum+ML_THINGS);
     else
     P_LoadThings (lumpnum+ML_THINGS);
+
+    Marshmallow_SetupLevel();	// [marshmallow] Initialize Marshmallow-specific stuff
     
     // if deathmatch, randomly spawn the active players
     if (deathmatch)

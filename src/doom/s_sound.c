@@ -38,6 +38,8 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+#include "marshmallow.h"  // [marshmallow]
+
 // when to clip out sounds
 // Does not fit the large outdoor areas.
 
@@ -436,6 +438,9 @@ void S_Start(void)
         }
     }
 
+    // [marshmallow] Save the default song for this map so we can refer to it later
+    Doom_DJ.default_song = mnum;
+
     // [crispy] do not change music if not changing map (preserves IDMUS choice)
     {
 	const short curmap = (gameepisode << 8) + gamemap;
@@ -449,7 +454,22 @@ void S_Start(void)
     // [crispy] reset musinfo data at the start of a new map
     memset(&musinfo, 0, sizeof(musinfo));
 
-    S_ChangeMusic(mnum, true);
+    // [marshmallow]
+    if (M_CheckParm("-nomusic"))
+        return;
+
+    if (sandbox.design_mode)  // [marshmallow]  Don't start music when starting a sandbox game
+        return;
+
+    if (!Marshmallow_DynamicMusic && !Doom_DJ.autostart)
+    {
+        S_ChangeMusic(mnum, true);
+    }
+    else if (Doom_DJ.init)  // [marshmallow] So we don't do this when the game starts
+    {
+        DJ_StartPlaylist(SUSPENSEFUL);   // [marshmallow] We need this line for the transition between intermission screen and next level
+    }
+    // [m]
 }
 
 void S_StopSound(mobj_t *origin)
@@ -919,6 +939,18 @@ void S_ChangeMusic(int musicnum, int looping)
     }
     musinfo.current_item = -1;
 
+    // [marshmallow] Check the song blacklist and pick a new song if necessary
+    if ( IsBlacklistedSong(musicnum) )
+    {
+        int newsong;
+
+        do {
+            newsong = GetReplacementSong();
+        } while ( IsBlacklistedSong(newsong) );
+
+        musicnum = newsong;
+    }
+
     // [crispy] play no music if this is not the right map
     if (nodrawers && singletics)
 	return;
@@ -945,6 +977,8 @@ void S_ChangeMusic(int musicnum, int looping)
         }
     }
 
+    if ( !Marshmallow_WadStealing )  // [marshmallow] The block below breaks our sharing of music between DOOM and Doom II
+    {
     // [crispy] prevent music number under- and overflows
     if (musicnum <= mus_None || (gamemode == commercial && musicnum < mus_runnin) ||
         musicnum >= NUMMUSIC || (gamemode != commercial && musicnum >= mus_runnin) ||
@@ -960,6 +994,7 @@ void S_ChangeMusic(int musicnum, int looping)
         {
             musicnum = mus_e1m1 + (umusicnum % (mus_e4m1 - mus_e1m1));
         }
+    }
     }
 
     if (musicnum <= mus_None || musicnum >= NUMMUSIC)
@@ -1009,6 +1044,10 @@ void S_ChangeMusic(int musicnum, int looping)
 	musinfo.items[0] = music->lumpnum;
 	S_music[mus_musinfo].lumpnum = -1;
     }
+
+    Doom_DJ.current_song = musicnum; // [marshmallow]
+
+    ResetMusicTic();   // [marshmallow]
 }
 
 // [crispy] adapted from prboom-plus/src/s_sound.c:552-590

@@ -41,7 +41,7 @@ char* songnames[NUMSONGS] =
     "Sinister", //mus_e4m7,
     "Demons On The Prey", //mus_e4m8,
     "Hiding The Secrets", //mus_e4m9,
-	"Hate Machine",//mus_e5m1
+    "Hate Machine",//mus_e5m1
 	"You Ain't the Boss O' Me",//mus_e5m2
 	"Quell the Beast",//mus_e5m3
 	"Riot Squadron",//mus_e5m4
@@ -50,6 +50,7 @@ char* songnames[NUMSONGS] =
 	"Watching You",//mus_e5m7
 	"Easel",//mus_e5m8
 	"Adrenaline in the Blood",//mus_e5m9
+    "Sigil Intermission",//mus_sigint
     "Intermission from DOOM", //mus_inter,
     "DOOM Title Theme", //mus_intro,
     "Sweet Little Dead Bunny", //mus_bunny,
@@ -94,7 +95,6 @@ char* songnames[NUMSONGS] =
     "mus_musinfo" , //mus_musinfo
 } ;
 
-
 songlist_t doom2_standard_songs[SONGLIST_SIZE] = { mus_ddtblu, mus_doom, mus_openin , mus_dead, mus_adrian, mus_tense, mus_None };  
 songlist_t doom2_ambient_songs[SONGLIST_SIZE] = {mus_stalks, mus_countd ,mus_romero ,mus_messag, mus_openin, mus_None };
 songlist_t doom2_intense_songs[SONGLIST_SIZE] = {mus_ampie, mus_shawn, mus_in_cit, mus_betwee, mus_dm2int ,mus_None }; // removed mus_runnin and mus_evil
@@ -125,130 +125,7 @@ songlist_t both_all_songs[SONGLIST_SIZE] = {  mus_e1m6, mus_e1m5 , mus_e1m2,mus_
 											  mus_ampie, mus_openin, mus_in_cit, mus_runnin, mus_stalks, mus_countd ,mus_romero ,mus_messag, mus_ultima, mus_None };
 
 
-// NOTE: moved here from dj.c
 boolean song_blacklist[BLACKLIST_SIZE] = { true,     // runnin
 										   true,     // e1m1
 										   false,    // d1inter
 										   false };  // d2inter
-
-
-
-
-
-
-
-// Another option for ordering the all_songs songlist:
-#if 0
-songlist_t both_all_songs[SONGLIST_SIZE] = 
-{     
-	mus_None,
-    mus_e1m1,
-    mus_e1m2,
-    mus_e1m3,
-    mus_e1m4,
-    mus_e1m5,
-    mus_e1m6,
-    mus_e1m7,
-    mus_e1m8,
-    mus_e1m9,
-    mus_e2m1,
-    mus_e2m2,
-    mus_e2m3,
-    mus_e2m4,
-    mus_e2m5,
-    mus_e2m6,
-    mus_e2m7,
-    mus_e2m8,
-    mus_e2m9,
-    mus_e3m1,
-    mus_e3m2,
-    mus_e3m3,
-    mus_e3m4,
-    mus_e3m5,
-    mus_e3m6,
-    mus_e3m7,
-    mus_e3m8,
-    mus_e3m9,
-    // [crispy] support dedicated music tracks for the 4th episode
-    mus_e4m1,
-    mus_e4m2,
-    mus_e4m3,
-    mus_e4m4,
-    mus_e4m5,
-    mus_e4m6,
-    mus_e4m7,
-    mus_e4m8,
-    mus_e4m9,
-    mus_inter,
-    mus_intro,
-    mus_bunny,
-    mus_victor,
-    mus_introa,
-    mus_runnin,
-    mus_stalks,
-    mus_countd,
-    mus_betwee,
-    mus_doom,
-    mus_the_da,
-    mus_shawn,
-    mus_ddtblu,
-    mus_in_cit,
-    mus_dead,
-    mus_stlks2,
-    mus_theda2,
-    mus_doom2,
-    mus_ddtbl2,
-    mus_runni2,
-    mus_dead2,
-    mus_stlks3,
-    mus_romero,
-    mus_shawn2,
-    mus_messag,
-    mus_count2,
-    mus_ddtbl3,
-    mus_ampie,
-    mus_theda3,
-    mus_adrian,
-    mus_messg2,
-    mus_romer2,
-    mus_tense,
-    mus_shawn3,
-    mus_openin,
-    mus_evil,
-    mus_ultima,
-    mus_read_m,
-    mus_dm2ttl,
-    mus_dm2int,
-    NUMMUSIC,
-    mus_musinfo
-} ;
-#endif
-
-
-
-// Idea for multi-dimensional playlist arrays    
-
-//songlist_t suspense_songs[WHICH_GAME][SONGLIST_SIZE] = {
-//	{mus_e1m5 ,  mus_e1m2,mus_e1m7 ,mus_e2m6 , mus_e2m8,mus_e3m1 , mus_None} ,
-//	{ mus_ddtblu, mus_shawn ,mus_doom, mus_the_da, mus_openin , mus_dead, mus_adrian, mus_tense, mus_None}
-//};
-//
-//songlist_t ambient_songs[WHICH_GAME][SONGLIST_SIZE] = {
-//	{ mus_e1m3 , mus_e1m8 , mus_e2m2 , mus_e2m4 , mus_e2m7, mus_None },
-//	{mus_stalks, mus_countd ,mus_romero ,mus_messag, mus_None},
-//};
-//
-//songlist_t intense_songs[WHICH_GAME][SONGLIST_SIZE] = {
-//	{ mus_e1m9, mus_e2m1, mus_e1m4, mus_e3m8, mus_e3m2,mus_inter , mus_e1m1, mus_None},
-//	{mus_evil, mus_ampie, mus_openin, mus_in_cit, mus_runnin, mus_None},
-//};
-//
-//songlist_t boss_songs[WHICH_GAME][SONGLIST_SIZE] = {
-//	{ mus_e1m1, mus_inter, mus_None  },  
-//	{mus_ultima, mus_runnin, mus_None  }, 
-//};
-//
-//songlist_t victory_songs[WHICH_GAME][SONGLIST_SIZE] = {
-//	{ mus_intro, mus_victor, mus_None  },
-//	{mus_dm2ttl, mus_None  } ,
-//};  

@@ -39,6 +39,7 @@
 
 #include "p_inter.h"
 
+#include "marshmallow.h"  // [marshmallow]
 
 #define BONUSADD	6
 
@@ -715,6 +716,37 @@ P_KillMobj
 {
     mobjtype_t	item;
     mobj_t*	mo;
+
+    // [marshmallow]  Kill stuff
+    if (Marshmallow_Sandbox)
+    {
+        if ( IsMonster(target)
+             && target->type != MT_BARREL
+             && target->type != MT_KEEN)
+            sandbox.count--;
+    }
+
+    if ( IsMonster(target) )
+    {
+        if ( IsPlayer(source) )
+            source->player->victim = NULL;
+
+        PKE_KillEntity(target);
+
+        if (source &&
+            source->type == MT_PLAYER )
+        {
+            if ( !deathmatch )
+                level_stats.squad_kills++;
+
+            if ( !IsBot(source->player) )
+                level_stats.monsters_killed++;
+        }
+    }
+
+    if ( deathmatch && IsPlayer(target) )  // [marshmallow] Count deathmatch frags for profile stats
+        level_stats.dm_frags++;
+    // [m]
 	
     target->flags &= ~(MF_SHOOTABLE|MF_FLOAT|MF_SKULLFLY);
 
@@ -845,6 +877,9 @@ P_DamageMobj
 		
     if (target->health <= 0)
 	return;
+
+    if (sandbox.design_mode)  // [marshmallow] Don't take environment damage while designing a sandbox
+        return;
 
     if ( target->flags & MF_SKULLFLY )
     {

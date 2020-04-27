@@ -31,6 +31,15 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+// [marshmallow] Lump numbers to fix for WAD stealing
+#define DOOM2_TITLEPIC 612
+#define DOOM1_TITLEPIC 700
+#define DOOM2_LOGO 781
+#define DOOM1_LOGO 877
+
+extern int gamemode;  // [marshmallow]
+extern boolean Marshmallow_WadStealing;
+
 typedef enum 
 { 
     SECTION_NORMAL, 
@@ -498,6 +507,27 @@ static void DoMerge(void)
     for (i=0; i<pwad.numlumps; ++i)
     {
         lumpinfo_t *lump = pwad.lumps[i];
+
+        if (Marshmallow_WadStealing)  // [marshmallow] so we don't overwrite certain lumps
+        {
+            if (gamemode == 2)   // Doom II
+            {
+                if (i == DOOM1_TITLEPIC)
+                    continue;
+
+                if (i == DOOM1_LOGO)
+                    continue;
+            }
+
+            if (gamemode != 2)   // Ultimate DOOM
+            {
+                if (i == DOOM2_TITLEPIC)
+                    continue;
+
+                if (i == DOOM2_LOGO)
+                    continue;
+            }
+        }
 
         switch (current_section)
         {

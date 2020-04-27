@@ -38,6 +38,9 @@
 // Data.
 #include "sounds.h"
 
+// [marshmallow]
+#include "marshmallow.h"
+#include "pkemeter.h"
 
 
 
@@ -529,7 +532,8 @@ P_LookForPlayers
 	player = &players[actor->lastlook];
 
 	// [crispy] monsters don't look for players with NOTARGET cheat
-	if (player->cheats & CF_NOTARGET)
+	if (player->cheats & CF_NOTARGET
+	    || PLAYER_INVISIBLE)  //  [marshmallow] Ignore player if he is using invisibility powerup
 	    continue;
 
 	if (player->health <= 0)
@@ -610,6 +614,9 @@ void A_KeenDie (mobj_t* mo)
 void A_Look (mobj_t* actor)
 {
     mobj_t*	targ;
+
+    if (sandbox.design_mode) // [marshmallow] Monsters are frozen until sandbox round begins
+        return;
 	
     actor->threshold = 0;	// any shot will wake up
     targ = actor->subsector->sector->soundtarget;
@@ -869,7 +876,7 @@ void A_CPosAttack (mobj_t* actor)
     if (!actor->target)
 	return;
 
-    S_StartSound (actor, sfx_shotgn);
+    S_StartSound (actor, chaingunguy_attack_sound);  // [marshmallow] Option to change his firing sound between shotgun/chaingun
     A_FaceTarget (actor);
     bangle = actor->angle;
     slope = P_AimLineAttack (actor, bangle, MISSILERANGE);
@@ -982,12 +989,16 @@ void A_HeadAttack (mobj_t* actor)
     A_FaceTarget (actor);
     if (P_CheckMeleeRange (actor))
     {
+    if (Marshmallow_CacoMeleeSound)
+        S_StartSound (actor, sfx_claw);  // [marshmallow] Option for adding a sound to cacodemon's melee attack
+
 	damage = (P_Random()%6+1)*10;
 	P_DamageMobj (actor->target, actor, actor, damage);
 	return;
     }
     
     // launch a missile
+    if (actor->type == MT_HEAD)  // [marshmallow] Pain Elemental uses this function for his new melee attack, but don't let him fire missiles
     P_SpawnMissile (actor, actor->target, MT_HEADSHOT);
 }
 
@@ -998,6 +1009,8 @@ void A_CyberAttack (mobj_t* actor)
 		
     A_FaceTarget (actor);
     P_SpawnMissile (actor, actor->target, MT_ROCKET);
+
+    NotifyMissileLock(actor->target);    // [marshmallow] Triggers the missile lock-on notification on HUD
 }
 
 
@@ -1068,6 +1081,14 @@ void A_Tracer (mobj_t* actor)
     th->tics -= P_Random()&3;
     if (th->tics < 1)
 	th->tics = 1;
+
+    // [marshmallow] Homing missiles don't follow the player when he is invisible
+    if (actor->tracer->player
+        && actor->tracer->player->powers[pw_invisibility]
+        && Marshmallow_TrueInvisibility)
+    {
+        return;
+    }
     
     // adjust direction
     dest = actor->tracer;
@@ -1158,6 +1179,9 @@ boolean PIT_VileCheck (mobj_t*	thing)
 {
     int		maxdist;
     boolean	check;
+
+    if (Marshmallow_Sandbox)  // [marshmallow]  Archviles don't respawn monsters in sandbox games
+        return true;
 	
     if (!(thing->flags & MF_CORPSE) )
 	return true;	// not a monster
@@ -1331,6 +1355,13 @@ void A_VileTarget (mobj_t*	actor)
     if (!actor->target)
 	return;
 
+    // [marshmallow] Limiting the Archvile from targeting player when significantly above or below player
+    if (Marshmallow_VileZScopeLimit)
+    {
+        if (!CheckVileZScope(actor))
+            return;
+    }
+
     A_FaceTarget (actor);
 
     fog = P_SpawnMobj (actor->target->x,
@@ -1367,6 +1398,13 @@ void A_VileAttack (mobj_t* actor)
 	
     if (!actor->target)
 	return;
+
+    // [marshmallow] Limiting the Archvile from targeting player when significantly above or below player
+    if (Marshmallow_VileZScopeLimit)
+    {
+        if (!CheckVileZScope(actor))
+            return;
+    }
     
     A_FaceTarget (actor);
 
@@ -1387,7 +1425,7 @@ void A_VileAttack (mobj_t* actor)
     // move the fire between the vile and the player
     fire->x = actor->target->x - FixedMul (24*FRACUNIT, finecosine[an]);
     fire->y = actor->target->y - FixedMul (24*FRACUNIT, finesine[an]);	
-    P_RadiusAttack (fire, actor, 70 );
+    P_RadiusAttack (fire, actor, vile_damage );   // [marshmallow] Variable damage amount for Archvile
 }
 
 
@@ -1522,6 +1560,9 @@ A_PainShootSkull
     int		count;
     thinker_t*	currentthinker;
 
+    if (Marshmallow_Sandbox)  // [marshmallow] Don't spawn skulls in sandbox games
+        return;
+
     // count total number of skull currently on the level
     count = 0;
 
@@ -1581,15 +1622,26 @@ void A_PainAttack (mobj_t* actor)
 
     A_FaceTarget (actor);
     A_PainShootSkull (actor, actor->angle);
+
+    // [marshmallow] The Pain Elemental deals a melee attack in sandbox games
+    if (Marshmallow_Sandbox)
+    {
+        A_HeadAttack(actor);
+        return;
+    }
 }
 
 
 void A_PainDie (mobj_t* actor)
 {
     A_Fall (actor);
-    A_PainShootSkull (actor, actor->angle+ANG90);
-    A_PainShootSkull (actor, actor->angle+ANG180);
-    A_PainShootSkull (actor, actor->angle+ANG270);
+
+    if (!Marshmallow_AltPainDeath)  // [marshmallow] When this option is enabled, don't spawn lost souls on death
+    {
+        A_PainShootSkull(actor, actor->angle + ANG90);
+        A_PainShootSkull(actor, actor->angle + ANG180);
+        A_PainShootSkull(actor, actor->angle + ANG270);
+    }
 }
 
 
@@ -1733,6 +1785,9 @@ void A_BossDeath (mobj_t* mo)
     mobj_t*	mo2;
     line_t	junk;
     int		i;
+
+    if (Marshmallow_Sandbox)   // [marshmallow] Do not trigger any boss death events in sandbox games
+        return;
 		
     if ( gamemode == commercial)
     {
@@ -1973,6 +2028,8 @@ void A_BrainScream (mobj_t*	mo)
     }
 	
     S_StartSound (NULL,sfx_bosdth);
+
+    level_stats.bosses_killed = 1;  // [marshmallow] Counted for profile stats
 }
 
 
@@ -2012,6 +2069,12 @@ void A_BrainSpit (mobj_t*	mo)
     mobj_t*	newmobj;
     
     static int	easy = 0;
+
+    if (Marshmallow_Sandbox)  // [marshmallow] Don't spit cubes during sandbox games
+        return;
+
+    if (!PKE_Meter.bossfight && !deathmatch)
+        PKE_Meter.bossfight = true;   // [marshmallow] Set bossfight flag when it spits the first cube
 	
     easy ^= 1;
     if (gameskill <= sk_easy && (!easy))

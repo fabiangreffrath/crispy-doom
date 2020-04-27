@@ -36,6 +36,10 @@
 
 #include "doomstat.h"
 
+// [marshmallow]
+#include "marshmallow.h"
+#include "pkemeter.h"
+
 
 void G_PlayerReborn (int player);
 void P_SpawnMapThing (mapthing_t*	mthing);
@@ -908,9 +912,33 @@ void P_SpawnPlayer (mapthing_t* mthing)
     P_SetupPsprites (p);
     
     // give all cards in death match mode
-    if (deathmatch)
+    if (deathmatch || Marshmallow_Sandbox)   // [marshmallow] Give all keys in sandbox mode too
 	for (i=0 ; i<NUMCARDS ; i++)
 	    p->cards[i] = true;
+
+    // [marshmallow] Handle bot/player respawns differently
+	if ( !IsBot(p) )
+    {
+        if (!netgame)        // If we do PKE cleanup in co-op we run into problems
+        {
+            PKE_Reset();
+            PKE_Activate();
+        }
+
+        if (Marshmallow_DynamicMusic)
+            HandleMusicOnRespawn();
+
+        if (Marshmallow_Sandbox && !netgame)
+            InitSandbox();
+
+        spawntics = NULL;
+    }
+	/*
+    else  // Is a bot
+    {
+        int bot = IsBot(p);
+        Bot_ResetStuckTimeout(bot);
+    }*/
 			
     if (mthing->type-1 == consoleplayer)
     {
@@ -1015,7 +1043,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	return;
 		
     // don't spawn any monsters if -nomonsters
-    if (nomonsters
+    if ((nomonsters || Marshmallow_Sandbox)   // [marshmallow] Don't spawn monsters in sandbox games
 	&& ( i == MT_SKULL
 	     || (mobjinfo[i].flags & MF_COUNTKILL)) )
     {
@@ -1030,9 +1058,101 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	z = ONCEILINGZ;
     else
 	z = ONFLOORZ;
+
+    // [marshmallow]
+    i = UpgradeMonsters(i);
+
+    if (Marshmallow_Doom1SSG  // We can automatically create SSG spawns in Doom 1
+        && i == MT_SHOTGUN
+        && gamemode != commercial
+        && gamemap >= Doom1SSG_Level)
+    {
+        i = MT_SUPERSHOTGUN;
+    }
+
+    if (Marshmallow_WitholdSSG)
+        if (i == MT_SUPERSHOTGUN
+            && gamemap < SSG_Level)
+        {
+            i = MT_SHOTGUN;   // We can withold SSG weapon pickups until a desired map number
+        }
+
+    if (Marshmallow_TreasureMode
+        && !Marshmallow_Sandbox    // No treasure in sandbox mode
+        && !deathmatch)			   // No treasure in deathmatch
+    {
+        switch (i)   // Convert any skull keys in the map to regular keys since we are borrowing the skull key sprites for treasure
+        {
+            case MT_YELLOWSKULLKEY:
+                i = MT_YELLOWKEY;
+                break;
+            case MT_REDSKULLKEY:
+                i = MT_REDKEY;
+                break;
+            case MT_BLUESKULLKEY:
+                i = MT_BLUEKEY;
+                break;
+            case MT_HEALTH_BONUS:
+            case MT_ARMOR_BONUS:
+                if (Marshmallow_TreasureMode == 2)
+                {
+                    i = RandomTreasureItem(0, 0);
+                    is_treasure = true;
+                }
+                break;
+        }
+    }
+
+    if (DEATHMATCH_ITEM)
+    {
+        if (Marshmallow_Sandbox)
+            return;
+
+        if (!Marshmallow_TreasureMode || deathmatch)
+        {
+            if (!Marshmallow_DeathmatchWeapons
+                && !Marshmallow_Sandbox)  // Spawn deathmatch weapon pickups in sandbox mode
+                return;
+        }
+        else
+        {
+            i = RandomTreasureItem(0, 0);
+            is_treasure = true;
+        }
+    }
+
+    // Generate random items if needed
+    if (Marshmallow_Sandbox)
+    {
+        i = PlaceSandboxItem(i);
+    }
+    else
+    if (Marshmallow_RandomItems) {
+        i = RandomizeItem(i);
+    }
+    // [m]
     
     mobj = P_SpawnMobj (x,y,z, i);
     mobj->spawnpoint = *mthing;
+
+    // [marshmallow]
+    mthing->type = i; // Save item type so we can respawn it later
+
+    if (is_treasure)
+    {
+        mobj->flags |= MF_TREASURE;
+
+        treasure_bag.total_in_level++;
+        treasure_bag.remaining_in_level++;
+    }
+
+    if ( IsMonster(mobj) )
+    {
+        if (MonsterHitpointsScale)
+            mobj = Marshmallow_InitScaledMonster(mobj);
+
+        BuildObjList();
+    }
 
     if (mobj->tics > 0)
 	mobj->tics = 1 + (P_Random () % mobj->tics);
