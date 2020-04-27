@@ -117,9 +117,14 @@ boolean PIT_StompThing (mobj_t* thing)
     
     // monsters don't stomp things except on boss level
     if ( !tmthing->player && gamemap != 30)
-	return false;	
-		
-    P_DamageMobj (thing, tmthing, tmthing, 10000);
+	return false;
+
+    if (thing->type == MT_PLAYER)
+        P_KillMobj(NULL, thing);   // [marshmallow] Force the telefrag kill even if friendly fire is disabled
+    else
+        P_DamageMobj (thing, tmthing, tmthing, 10000);  // Telefragged monsters get the usual 10000 damage
+
+    players[consoleplayer].message = DEH_String("TELEFRAG!");  // [marshmallow]
 	
     return true;
 }

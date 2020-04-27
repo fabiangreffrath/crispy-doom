@@ -963,9 +963,10 @@ void DoWadStealing()
 	W_MergeFile(filename);
 }
 
+
 fixed_t save_x, save_y;
 
-static void DistanceCheck()
+static void DistanceCheck()  // temp utility function
 {
 	fixed_t dist;
 //	fixed_t x, y;
@@ -1006,6 +1007,12 @@ void Marshmallow_Ticker()
 
 	AddCmdLineBots();  
 	InitMusic();
+
+    if (Marshmallow_DynamicMusic			// TODO: function!
+        && Doom_DJ.init)
+        Doom_DJ.musictic++;
+
+    marshmallow_tic++;  // maybe include this in the above func
 }
 
 

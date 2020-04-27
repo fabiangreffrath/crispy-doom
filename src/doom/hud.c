@@ -4,11 +4,9 @@
 //
 //////////////////////////////////////
 
-
 #include "hud.h"
 #include "bot.h"  
 #include "dj.h"
-//#include "menus.h"
 
 
 //  The info readout allows us to watch variables on-screen during gameplay
@@ -20,7 +18,7 @@ void UpdateInfoReadout()
 	}
 	else
 	{   
-		//DJ_ShowInfo();
+		DJ_ShowInfo();
 		
 		//PKE_ShowInfo();
 
@@ -1309,7 +1307,7 @@ void HUDMenuTicker()   // add an if (thismenu_on) to each of these blocks?
 	HUlib_addMessageToSText(&musicmenu_mode, "    MUSIC MODE", DisplayMusicMode() );   
 
 //	if (modifiedgame)  // wrong song names are shown in TNT and Plutonia
-		HUlib_addMessageToSText(&musicmenu_skip, "    SONG              ", songnames[current_song] );
+		HUlib_addMessageToSText(&musicmenu_skip, "    SONG              ", songnames[Doom_DJ.current_song] );
 
 	//HUlib_addMessageToSText(&musicmenu_shuffle, "    SHUFFLE       ", DisplayOnOff(Doom_DJ.shuffle));
 	HUlib_addMessageToSText(&musicmenu_msgs, "    MESSAGES     ", DisplayOnOff(Marshmallow_DJMessages));
@@ -2012,7 +2010,6 @@ void HUDMenuKeyInput()
 
 		if (realnetgame || deathmatch)
 		{
-			//SHOW_MESSAGE "NOT AVAILABLE IN NETGAME.";  // new... because datapad seems to be crashing realnetgame
 			return;
 		}
 
@@ -2021,14 +2018,14 @@ void HUDMenuKeyInput()
 		
 		if (!pkereadout_on)  
 		{
-			S_StartSound(NULL, sfx_bdopn);  // TODO: make #define for this sound
+			S_StartSound(NULL, sfx_tink);
 			HideAllMenus();
 			pkereadout_on = true;
 		}
 		else 
 		{
 			HideAllMenus();
-			S_StartSound(NULL, sfx_bdcls);  // TODO: make #define for this sound
+			S_StartSound(NULL, sfx_tink);
 		}
 	}
 
@@ -2114,14 +2111,14 @@ void HUDMenuKeyInput()
 
 		if (!menus_on)  // opening the datapad
 		{
-			S_StartSound(MAIN_PLAYER.mo, sfx_bdopn);  // TODO: make #define for this sound
+			S_StartSound(MAIN_PLAYER.mo, sfx_tink);
 			HideAllMenus();
 			mainmenu_on = true;
 		}
 		else  // closing the datapad
 		{
 			HideAllMenus();
-			S_StartSound(MAIN_PLAYER.mo, sfx_bdcls);  // TODO: make #define for this sound
+			S_StartSound(MAIN_PLAYER.mo, sfx_tink);
 		}
 	}
 

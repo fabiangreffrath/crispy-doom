@@ -258,10 +258,10 @@ int GetNextTrackNum()
 
 boolean AreaClear()
 {
-	float threshold = (PKE_Meter.monsters_in_level * AREA_CLEAR_THRESHOLD);  
+	float threshold = ((float)PKE_Meter.monsters_in_level * AREA_CLEAR_THRESHOLD);
 	int remaining = PKE_Meter.monsters_remaining;
 
-	// Don't report area clear if we still have a pile of monsters attacking us
+	// Don't report area clear if we still have a bunch of monsters attacking us
 	if ( (PKE_Meter.attackers_hp > PKE_Meter.highdanger_threshold 
 		|| PKE_Meter.safety_time < SAFETY_THRESHOLD) 
 		&& !Marshmallow_FastMusicChanges )
@@ -314,31 +314,31 @@ boolean HighDanger()
 
 void SetMusicThresholds()
 {
-	float modifier;  
-	
-	if (!upgrade_chance)
-		modifier = 0;
-	else
-		modifier = (upgrade_chance * 0.01);
+//	float modifier;
+//
+//	if (!upgrade_chance)
+//		modifier = 0;
+//	else
+//		modifier = (upgrade_chance * 0.01);
 
-	modifier *= 1.5;  
+	//modifier *= 1.5;
 
 	switch (gameskill)
 	{
 	case sk_baby:
-		PKE_Meter.highdanger_threshold = (MUSIC_THRESHOLD_SKILL1 + MUSIC_THRESHOLD_SKILL1*modifier) * MonsterHitpointsScale;   
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL1 * MonsterHitpointsScale;
 		break;
 	case sk_easy:
-		PKE_Meter.highdanger_threshold = (MUSIC_THRESHOLD_SKILL2 + MUSIC_THRESHOLD_SKILL2*modifier) * MonsterHitpointsScale;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL2 * MonsterHitpointsScale;
 		break;
 	case sk_medium:
-		PKE_Meter.highdanger_threshold = (MUSIC_THRESHOLD_SKILL3 + MUSIC_THRESHOLD_SKILL3*modifier) * MonsterHitpointsScale;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL3 * MonsterHitpointsScale;
 		break;
 	case sk_hard:
-		PKE_Meter.highdanger_threshold = (MUSIC_THRESHOLD_SKILL4 + MUSIC_THRESHOLD_SKILL4*modifier) * MonsterHitpointsScale;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL4 * MonsterHitpointsScale;
 		break;
 	case sk_nightmare:
-		PKE_Meter.highdanger_threshold = (MUSIC_THRESHOLD_SKILL5 + MUSIC_THRESHOLD_SKILL5*modifier) * MonsterHitpointsScale;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL5 * MonsterHitpointsScale;
 		break;
 	}
 }

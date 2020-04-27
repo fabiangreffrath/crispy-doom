@@ -31,7 +31,8 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
-//#include "doom/marshmallow.h"	  // [marshmallow]
+extern int CheckIfFileExists(const char *filename, const char *mode);   // [marshmallow]
+enum { DOOM1, DOOM2, BOTH, WHICH_GAME };   // [marshmallow]
 
 static const iwad_t iwads[] =
 {
@@ -963,7 +964,7 @@ char *D_FindIWAD(int mask, GameMission_t *mission)
             result = SearchDirectoryForIWAD(iwad_dirs[i], mask, mission);
         }
     }
-#if 0
+
     if ( !M_CheckParm ("-iwad")	 // [marshmallow] Our IWAD selection dialog at game start
          && !M_CheckParm ("-d1")
          && !M_CheckParm ("-d2")
@@ -1014,7 +1015,7 @@ char *D_FindIWAD(int mask, GameMission_t *mission)
             }
         }
     }		 // [m]
-#endif
+
     return result;
 }
 

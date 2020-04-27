@@ -125,6 +125,8 @@ struct
 	int				playlist_length;  
 	int				last_intense_song;
 	int				song_length;
+
+    int	            current_song;  // Used for displaying song name in menus
 	
 	int				song[SONGLIST_SIZE];  // TODO: maybe rename to songlist or playlist
 	int				default_song;

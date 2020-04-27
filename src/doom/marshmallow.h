@@ -20,9 +20,7 @@
 #include "hud.h"
 
 #include "profile.h"
-//#include "misc.h"
 
-//#include "textscreen.h"
 
 boolean Marshmallow_DynamicMusic; 
 boolean Marshmallow_Sandbox;   
@@ -180,16 +178,6 @@ boolean changing_name;
 char* new_player_name;
 
 skill_t newskill;
-
-#define DOOM2_TITLEPIC 612
-#define DOOM1_TITLEPIC 700
-#define DOOM2_LOGO 781
-#define DOOM1_LOGO 877
-//patch_t* titlepic;
-//patch_t* logo;
-//patch_t* sky1;
-//#define DOOM2_SKY 2416
-//#define DOOM1_SKY 2000
 
 typedef enum {  
 
@@ -497,9 +485,6 @@ int menu_select_delay;
 
 void DoSharewareBossDeath();
 
-// For plutonia song names fix, though also being used in hud.c
-int	current_song;
-
 // math.h
 float F_Random();
 float GetRandomFloatInRange(float lo, float hi);
@@ -604,22 +589,13 @@ void CorpseGib(mobj_t *actor);
 int usetimer;
 #define DEFAULT_USE_TIMER 20
 
-
-// UNUSED
-void CheckDuplicateLine();  // unused
-void Marshmallow_Test_Entry();  // unused
-void InitMainMenuText(); // unused
-boolean RealNetGame(); // unused
-void Marshmallow_SendItemToAllPlayers(mobj_t* special);	// for weapon/key sharing  (unused)
-void Marshmallow_GiveNewSoulspherePowerup(mobj_t* toucher, mobj_t* special);  // unused
-void CheckForLightTextures();  // WIP experiment...
-boolean IsBarrel(mobj_t* actor);  // unused so far
-void TreasureRewards();  // unused
-void InvertBoolean(boolean option);  // unused
-boolean CheckForWeaponsStay(weapontype_t weapon, player_t* player);  // unused
-boolean DoDelay(int* delay, int duration);  // unused
+boolean is_treasure;
 
 // Tweaks
+
+int chaingunguy_attack_sound;
+int vile_damage;
+
 #define DEFAULT_SSG_LEVEL 4
 void ToggleGoodiesMode();
 void ChangeInvis(boolean option_on); 

@@ -50,6 +50,8 @@
 #include "v_video.h" // [crispy] V_DrawPatch() et al.
 #include "v_trans.h" // [crispy] colored kills/items/secret/etc. messages
 
+#include "marshmallow.h"  // [marshmallow]
+
 //
 // Locally used constants, shortcuts.
 //
@@ -504,10 +506,10 @@ void HU_Init(void)
 	CrispyReplaceColor(GOTBLUESKUL, CR_BLUE, " blue ");
 	CrispyReplaceColor(PD_BLUEO,    CR_BLUE, " blue ");
 	CrispyReplaceColor(PD_BLUEK,    CR_BLUE, " blue ");
-	CrispyReplaceColor(GOTREDCARD,  CR_RED,  " red ");
-	CrispyReplaceColor(GOTREDSKULL, CR_RED,  " red ");
-	CrispyReplaceColor(PD_REDO,     CR_RED,  " red ");
-	CrispyReplaceColor(PD_REDK,     CR_RED,  " red ");
+	CrispyReplaceColor(GOTREDCARD,  CR_DARK,  " red ");  // [marshmallow] Changed to CR_DARK
+	CrispyReplaceColor(GOTREDSKULL, CR_DARK,  " red ");  // [marshmallow] Changed to CR_DARK
+	CrispyReplaceColor(PD_REDO,     CR_DARK,  " red ");  // [marshmallow] Changed to CR_DARK
+	CrispyReplaceColor(PD_REDK,     CR_DARK,  " red ");  // [marshmallow] Changed to CR_DARK
 	CrispyReplaceColor(GOTYELWCARD, CR_GOLD, " yellow ");
 	CrispyReplaceColor(GOTYELWSKUL, CR_GOLD, " yellow ");
 	CrispyReplaceColor(PD_YELLOWO,  CR_GOLD, " yellow ");
@@ -518,6 +520,8 @@ void HU_Init(void)
 	CrispyReplaceColor(HUSTR_PLRINDIGO, CR_GRAY,  "Indigo: ");
 	CrispyReplaceColor(HUSTR_PLRBROWN,  CR_GOLD,  "Brown: ");
 	CrispyReplaceColor(HUSTR_PLRRED,    CR_RED,   "Red: ");
+
+	SetMarshmallowColors();		// [marshmallow]
     }
 }
 
@@ -616,6 +620,8 @@ void HU_Start(void)
     // [crispy] re-calculate WIDESCREENDELTA
     I_GetScreenDimensions();
     hu_widescreendelta = WIDESCREENDELTA;
+
+    InitHUDMenuText();   // [marshmallow]
 
     // create the message widget
     HUlib_initSText(&w_message,
@@ -757,7 +763,7 @@ void HU_Start(void)
 
     // create the chat widget
     HUlib_initIText(&w_chat,
-		    HU_INPUTX, HU_INPUTY,
+            MARSHMALLOW_HU_INPUTY, HU_INPUTY,	// [marshmallow] Moving the chat text input line down a bit to make room for other things
 		    hu_font,
 		    HU_FONTSTART, &chat_on);
 
@@ -832,6 +838,8 @@ void HU_Drawer(void)
 	HU_Erase();
 	return;
     }
+
+    DrawHUDMenu();   // [marshmallow]
 
     // [crispy] translucent messages for translucent HUD
     if (screenblocks >= CRISPY_HUD && (screenblocks % 3 == 2) && (!automapactive || crispy->automapoverlay))
@@ -940,6 +948,8 @@ void HU_Ticker(void)
     {
         HU_Start();
     }
+
+    HUDMenuTicker();	// [marshmallow]
 
     // tick down message counter if message is up
     if (message_counter && !--message_counter)

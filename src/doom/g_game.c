@@ -15,7 +15,9 @@
 // DESCRIPTION:  none
 //
 
-
+#include "marshmallow.h"  // [marshmallow]
+//#include "pkemeter.h"    // [marshmallow]  only for PKE_Reset?????
+extern void PKE_Reset();
 
 #include <string.h>
 #include <stdlib.h>
@@ -204,7 +206,7 @@ static const struct
 #define NUMKEYS		256 
 #define MAX_JOY_BUTTONS 20
 
-static boolean  gamekeydown[NUMKEYS]; 
+/*static*/ boolean  gamekeydown[NUMKEYS];    // [marshmallow] We need this to be global
 static int      turnheld;		// for accelerative turning 
 static int      lookheld;		// [crispy] for accelerative looking
  
@@ -493,7 +495,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     } 
     else 
     { 
-	if (gamekeydown[key_right]) 
+	if (gamekeydown[key_right])
 	    cmd->angleturn -= angleturn[tspeed]; 
 	if (gamekeydown[key_left]) 
 	    cmd->angleturn += angleturn[tspeed]; 
@@ -791,6 +793,8 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 
         carry = desired_angleturn - cmd->angleturn;
     }
+
+    Marshmallow_Controls();  // [marshmallow] For reading Marshmallow's new keyboard controls
 } 
  
 
@@ -967,7 +971,14 @@ boolean G_Responder (event_t* ev)
 	    return true; 
 	} 
 	return false; 
-    } 
+    }
+
+    // [marshmallow] Getting our hook on the ENTER key
+    if (ev->type == ev_keydown)
+    {
+        if (ev->data1 == key_enter)
+            gamekeydown[key_enter] = true;
+    }
 
     if (gamestate == GS_LEVEL) 
     { 
@@ -1070,7 +1081,7 @@ static void G_ReadGameParms (void)
 {
     respawnparm = M_CheckParm ("-respawn");
     fastparm = M_CheckParm ("-fast");
-    nomonsters = M_CheckParm ("-nomonsters");
+    //nomonsters = M_CheckParm ("-nomonsters");  // [marshmallow] Removed because we handle -nomonsters differently
 }
  
 // [crispy] take a screenshot after rendering the next frame
@@ -1327,6 +1338,10 @@ void G_PlayerFinishLevel (int player)
     p->jumpTics =
     p->recoilpitch = p->oldrecoilpitch =
     p->psp_dy_max = 0;
+
+    // [marshmallow]  Current weapon arsenal is saved so that during the next map we respawn with this arsenal
+    if (Marshmallow_KeepWeapons)
+        SaveArsenal(player);
 } 
  
 
@@ -1342,7 +1357,14 @@ void G_PlayerReborn (int player)
     int		frags[MAXPLAYERS]; 
     int		killcount;
     int		itemcount;
-    int		secretcount; 
+    int		secretcount;
+
+    // [marshmallow]  Save which keys the player has so he can respawn with them if option is enabled
+    if (Marshmallow_KeepKeys)
+        SaveKeys(player);
+
+    // [marshmallow] Reset our inventory cursor to the "empty" line
+    invmenu_selection = 0;
 	 
     memcpy (frags,players[player].frags,sizeof(frags)); 
     killcount = players[player].killcount; 
@@ -1368,8 +1390,28 @@ void G_PlayerReborn (int player)
     p->ammo[am_clip] = deh_initial_bullets; 
 	 
     for (i=0 ; i<NUMAMMO ; i++) 
-	p->maxammo[i] = maxammo[i]; 
-		 
+	p->maxammo[i] = maxammo[i];
+
+    // [marshmallow] Reset the monster selection cursor to the beginning of the list
+    if (Marshmallow_Sandbox)
+    {
+        for (i=0;i<MAXPLAYERS;i++)
+            players[i].sandbox_object = FIRST_MONSTER;
+    }
+
+    // [marshmallow] Re-initialize player number
+    if ( !realnetgame )
+    {
+        if (player != consoleplayer)
+            p->bot_number = player;
+    }
+    else
+    {
+        p->player_number = player;
+    }
+
+    HandleRespawnInventory(player);   // [marshmallow]  Restores keys, weapons, and sets player->readyweapon
+    GiveGradedWeapons(player);  // [marshmallow]  Give player free weapons and ammo if warping to a map
 }
 
 //
@@ -1528,6 +1570,8 @@ void G_DoReborn (int playernum)
 	 
     if (!netgame)
     {
+    PKE_Reset();  // [marshmallow]  For single player only
+
 	// [crispy] if the player dies and the game has been loaded or saved
 	// in the mean time, reload that savegame instead of restarting the level
 	// when "Run" is pressed upon resurrection
@@ -1619,7 +1663,15 @@ boolean		secretexit;
 extern char*	pagename; 
  
 void G_ExitLevel (void) 
-{ 
+{
+    if (!Marshmallow_Sandbox)    // [marshmallow]
+    {
+        level_stats.levels_completed = 1;
+        SaveStats(); // [marshmallow] As long as player didn't cheat, stats are saved on level exit
+    }
+
+    organic_levelchange = true;  // [marshmallow] So we don't get "warp weapons" on normal level changes
+
     secretexit = false; 
     G_ClearSavename();
     gameaction = ga_completed; 
@@ -1871,7 +1923,13 @@ void G_DoCompleted (void)
     StatCopy(&wminfo);
     }
  
-    WI_Start (&wminfo); 
+    WI_Start (&wminfo);
+
+    missilelock_on = false; // [marshmallow]
+    HideAllMenus(); // [marshmallow]
+    Bot_ExitLevelCleanup();  // [marshmallow]
+
+    PKE_Reset();    // [marshmallow]
 } 
 
 
@@ -2214,9 +2272,24 @@ void G_DoNewGame (void)
 {
     demoplayback = false; 
     netdemo = false;
+
+    Bot_ExitLevelCleanup();  // [marshmallow] Clean up bot stuff like path nodes, etc.
+
+    if (Marshmallow_DynamicMusic)
+    {
+        if (!deathmatch)
+            DJ_StartPlaylist(SUSPENSEFUL);
+    }
+
+    PKE_Reset();
+
+    // [marshmallow] Don't change these variables here
+    /*
     netgame = false;
     deathmatch = false;
     playeringame[1] = playeringame[2] = playeringame[3] = 0;
+     */
+
     // [crispy] do not reset -respawn, -fast and -nomonsters parameters
     /*
     respawnparm = false;
@@ -2276,8 +2349,16 @@ G_InitNew
     }
     */
 
-    if (skill > sk_nightmare)
-	skill = sk_nightmare;
+    // [marshmallow] For our new skill levels
+    if (skill == 5)
+        skill = sk_hard;
+
+    if (skill == 6)
+        skill = sk_nightmare;
+
+    if (skill > 6)
+        skill = sk_nightmare;
+    // [m]
 
   // [crispy] only fix episode/map if it doesn't exist
   if (P_GetNumForMap(episode, map, false) < 0)
