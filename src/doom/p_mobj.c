@@ -938,6 +938,8 @@ void P_SpawnMapThing (mapthing_t* mthing)
     fixed_t		y;
     fixed_t		z;
     int			musid = 0;
+
+    boolean is_treasure = false;  // [marshmallow]
 		
     // count deathmatch start positions
     if (mthing->type == 11)
@@ -969,11 +971,11 @@ void P_SpawnMapThing (mapthing_t* mthing)
 
 	return;
     }
-
+/*
     // check for apropriate skill level
     if (!netgame && (mthing->options & 16) )
 	return;
-		
+*/
     if (gameskill == sk_baby)
 	bit = 1;
     else if (gameskill == sk_nightmare)
@@ -1014,7 +1016,10 @@ void P_SpawnMapThing (mapthing_t* mthing)
 		
     // don't spawn keycards and players in deathmatch
     if (deathmatch && mobjinfo[i].flags & MF_NOTDMATCH)
-	return;
+    {
+        if (!Marshmallow_TreasureMode)
+            return;
+    }
 		
     // don't spawn any monsters if -nomonsters
     if ((nomonsters || Marshmallow_Sandbox)   // [marshmallow] Don't spawn monsters in sandbox games

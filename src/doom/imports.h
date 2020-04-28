@@ -19,6 +19,7 @@
 #include "SDL_endian.h"
 */
 
+#include "deh_str.h"
 #include "p_mobj.h"
 #include "d_player.h"
 #include "m_argv.h"
@@ -40,7 +41,6 @@
 
 // Prototypes for vanilla doom objects that we'll need:
 int showMessages;
-extern char* net_player_name;
 void P_KillMobj ( mobj_t*	source, mobj_t*	target );
 //boolean P_GiveAmmo( player_t*	player, ammotype_t	ammo, int		num );
 //mobj_t* P_SpawnMobj ( fixed_t	x, fixed_t	y, fixed_t	z, mobjtype_t	type );
@@ -48,9 +48,9 @@ void HU_queueChatChar(char c);
 boolean P_GiveBody ( player_t*	player, int		num );
 boolean P_GiveWeapon( player_t*	player,  weapontype_t	weapon,  boolean	dropped );
 void P_GiveCard( player_t*	player,  card_t	card );
-void S_StartSound(void *origin_p, int sfx_id);
+//void S_StartSound(void *origin_p, int sfx_id);
 //extern const char *player_names[4];
-extern int M_snprintf(char *buf, size_t buf_len, const char *s, ...);
+//extern int M_snprintf(char *buf, size_t buf_len, const char *s, ...);
 extern void PlayerQuitGame(player_t *player);
 //extern mapthing_t	playerstarts[MAXPLAYERS];
 void A_FaceTarget (mobj_t* actor);
@@ -60,12 +60,12 @@ void A_Chase (mobj_t*	actor);
 boolean P_Move (mobj_t*	actor);
 boolean P_TryWalk (mobj_t* actor);
 void P_NewChaseDir (mobj_t*	actor);
-int P_Random (void);
+//int P_Random (void);
 boolean P_CheckMeleeRange (mobj_t*	actor);
 //char *DEH_String(char *s);
-boolean M_StringCopy(char *dest, const char *src, size_t dest_size);
+//boolean M_StringCopy(char *dest, const char *src, size_t dest_size);
 boolean playeringame[MAXPLAYERS];
-void P_UseLines (player_t*	player);
+//void P_UseLines (player_t*	player);
 boolean	PTR_UseTraverse (intercept_t* in);
 boolean		onground;
 void P_CalcHeight (player_t* player) ;

@@ -97,8 +97,35 @@ void RestartMap ()
 }
 
 
-void CollectTreasure()  // possibly expand this to take BLUESKULL, etc to select points awarded
+void CollectTreasure(treasure_t color, mobj_t* toucher)
 {
+    switch (color)
+    {
+        case BLUE:
+            toucher->player->message = DEH_String(TREASURE_BLUESKULL);
+
+            treasure_bag.score += ICESKULL_REWARD;
+            treasure_bag.blueskulls++;
+
+            break;
+
+        case GOLD:
+            toucher->player->message = DEH_String(TREASURE_YELLOWSKULL);
+
+            treasure_bag.score += GOLDSKULL_REWARD;
+            treasure_bag.goldskulls++;
+
+            break;
+
+        case RED:
+            toucher->player->message = DEH_String(TREASURE_REDSKULL);
+
+            treasure_bag.score += BLOODSKULL_REWARD;
+            treasure_bag.redskulls++;
+
+            break;
+    }
+
 	treasure_bag.remaining_in_level--;
 
 	if (treasure_bag.remaining_in_level == 0)
@@ -106,6 +133,12 @@ void CollectTreasure()  // possibly expand this to take BLUESKULL, etc to select
 		SHOW_CENTERED_MESSAGE DEH_String(TREASURECONGRATS);
 		level_stats.alltreasure++;
 	}
+}
+
+
+void ResetTreasure()
+{
+    treasure_bag.total_in_level = treasure_bag.remaining_in_level = 0;
 }
 
 
@@ -2527,19 +2560,6 @@ int RandomMap()
 	int map;
 
 	map = GetShuffledMap();
-
-	return map;
-}
-
-
-int RandomMapWAS()
-{
-	int map;
-
-	if (gamemode == commercial)
-		map = GetRandomIntegerInRange(1,32);
-	else
-		map = GetRandomIntegerInRange(1,9);
 
 	return map;
 }

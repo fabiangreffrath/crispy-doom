@@ -7,6 +7,7 @@
 #include "marshmallow.h"
 
 extern void CrispyReplaceColor (char *str, const int cr, const char *col);
+extern char* net_player_name;
 
 static void ReadProfile()
 {

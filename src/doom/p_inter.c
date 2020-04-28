@@ -472,6 +472,14 @@ P_TouchSpecialThing
 	return;
 	
       case SPR_BSKU:
+          // [marshmallow]
+          if (special->flags & MF_TREASURE)
+          {
+              CollectTreasure(BLUE, toucher);
+              break;
+          }
+          // [m]
+
 	if (!player->cards[it_blueskull])
 	    player->message = DEH_String(GOTBLUESKUL);
 	P_GiveCard (player, it_blueskull);
@@ -480,7 +488,15 @@ P_TouchSpecialThing
 	return;
 	
       case SPR_YSKU:
-	if (!player->cards[it_yellowskull])
+          // [marshmallow]
+          if (special->flags & MF_TREASURE)
+          {
+              CollectTreasure(GOLD, toucher);
+              break;
+          }
+            // [m]
+
+            if (!player->cards[it_yellowskull])
 	    player->message = DEH_String(GOTYELWSKUL);
 	P_GiveCard (player, it_yellowskull);
 	if (!netgame)
@@ -488,7 +504,19 @@ P_TouchSpecialThing
 	return;
 	
       case SPR_RSKU:
-	if (!player->cards[it_redskull])
+          // [marshmallow]
+          if (special->flags & MF_TREASURE)
+          {
+              CollectTreasure(RED, toucher);
+
+              if ( GetGameType() != DOOM1 )
+                  sound = sfx_keenpn;
+
+              break;
+          }
+            // [m]
+
+            if (!player->cards[it_redskull])
 	    player->message = DEH_String(GOTREDSKULL);
 	P_GiveCard (player, it_redskull);
 	if (!netgame)
@@ -701,6 +729,21 @@ P_TouchSpecialThing
 	player->itemcount++;
     P_RemoveMobj (special);
     player->bonuscount += BONUSADD;
+
+    // [marshmallow]
+    if ( !treasure_bag.all_collected
+         && treasure_bag.remaining_in_level == 0
+         && treasure_bag.total_in_level > 0 )
+    {
+        if (GetGameType() == DOOM1)
+            sound = sfx_getpow;
+        else
+            sound = sfx_keendt;
+
+        treasure_bag.all_collected = true;
+    }
+    // [m]
+
     if (player == &players[consoleplayer])
 	S_StartSound (NULL, sound);
 }
