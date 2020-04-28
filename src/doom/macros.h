@@ -13,7 +13,9 @@ enum { BOTS_CAREFUL, BOTS_WALK, BOTS_RUN };
 typedef enum {BACKWARD,	FORWARD} direction_t;
 typedef int playerindex_t;
 
-#define MF_TREASURE 0x90000000
+typedef enum { BLUE, GOLD, RED } treasure_t;
+
+#define MF_TREASURE 0x400 // hijacking MF_DROPOFF flag as our treasure flag
 #define DEATHMATCH_ITEM (mthing->options & 16)
 #define DEFAULT_TARGET_TIMEOUT 175   // 5 seconds
 #define DEFAULT_ATTACKER_TIMEOUT 30 // 875 is 25 seconds

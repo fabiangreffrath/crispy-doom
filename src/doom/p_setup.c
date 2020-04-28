@@ -45,7 +45,9 @@
 
 #include "p_extnodes.h" // [crispy] support extended node formats
 
-extern void Marshmallow_SetupLevel();	// [marshmallow]
+// [marshmallow]
+extern void Marshmallow_SetupLevel();
+extern void ResetTreasure();
 
 void	P_SpawnMapThing (mapthing_t*	mthing);
 
@@ -1099,6 +1101,8 @@ P_SetupLevel
     int		lumpnum;
     boolean	crispy_validblockmap;
     mapformat_t	crispy_mapformat;
+
+    ResetTreasure();  // [marshmallow]
 	
     totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
     // [crispy] count spawned monsters

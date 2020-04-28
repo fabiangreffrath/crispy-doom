@@ -522,7 +522,8 @@ boolean CheckVileZScope(mobj_t *actor);
 void RestartMap();  // hud, marshmallow
 void ToggleFastMonsters();
 void CheckDeathmatchStatus();
-void CollectTreasure(); // p_inter
+void CollectTreasure(treasure_t color, mobj_t* toucher); // p_inter
+void ResetTreasure();
 void SetPlayerTarget(mobj_t* source, mobj_t* target); // p_inter
 void DoWadStealing();  // d_main
 int AskForWadStealing();  // d_main
@@ -588,8 +589,6 @@ void CorpseGib(mobj_t *actor);
 
 int usetimer;
 #define DEFAULT_USE_TIMER 20
-
-boolean is_treasure;
 
 // Tweaks
 
