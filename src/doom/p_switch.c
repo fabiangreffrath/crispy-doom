@@ -38,6 +38,8 @@
 #include "doomstat.h"
 #include "r_state.h"
 
+#include "marshmallow.h"  // [marshmallow]
+
 
 //
 // CHANGE THE TEXTURE OF A WALL SWITCH TO ITS OPPOSITE
@@ -429,6 +431,34 @@ P_UseSpecialLine
 	
       case 11:
 	// Exit level
+
+    // [marshmallow] level exit conditions in deathmatch
+	if ( deathmatch )
+    {
+        if (Marshmallow_AllowExit)
+        {
+            P_ChangeSwitchTexture(line,0);
+            G_ExitLevel ();
+            break;
+        }
+
+        if (Marshmallow_KillOnExit)
+        {
+            P_RadiusAttack(thing, NULL, 1000);
+            break;
+        }
+
+        break;
+    }
+
+    // [marshmallow] No level exit during sandbox battle
+    if ( Marshmallow_Sandbox && !sandbox.design_mode )
+    {
+        SHOW_MESSAGE "CANNOT EXIT LEVEL DURING BATTLE!";
+        break;
+    }
+    // [m]
+
 	P_ChangeSwitchTexture(line,0);
 	G_ExitLevel ();
 	break;

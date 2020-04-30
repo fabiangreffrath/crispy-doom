@@ -547,6 +547,7 @@ int GetReplacementSong();
 void LaunchHelpWidget();  // m_menu, lib
 void IncrementShotsFired(player_t* player);  // p_pspr
 void RegisterShotsHit(mobj_t* inflictor, mobj_t* target);  // p_pspr
+void InfightAlert(mobj_t* actor);  // p_enemy
 
 // consider moving or making public:
 void GiveAllItems();  // marshmallow

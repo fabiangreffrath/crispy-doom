@@ -178,6 +178,20 @@ void RegisterShotsHit(mobj_t* inflictor, mobj_t* target)
     }
 }
 
+void InfightAlert(mobj_t* actor)
+{
+    if (IsMonster(actor)
+        && IsMonster(actor->target)
+        && Marshmallow_InfightAlert )
+    {
+        SHOW_MESSAGE DEH_String(MONSTERFIGHT);
+    }
+    else
+    {
+        return;
+    }
+}
+
 
 boolean PercentChance(int chance)  
 {
