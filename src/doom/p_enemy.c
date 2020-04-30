@@ -565,7 +565,10 @@ P_LookForPlayers
 	}
 		
 	actor->target = player->mo;
-	return true;
+
+	AnnounceMostDangerousMonsters(actor);  // [marshmallow]
+
+    return true;
     }
 
     return false;

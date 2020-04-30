@@ -393,13 +393,17 @@ P_TouchSpecialThing
       case SPR_ARM1:
 	if (!P_GiveArmor (player, deh_green_armor_class))
 	    return;
-	player->message = DEH_String(GOTARMOR);
+
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTARMOR);
 	break;
 		
       case SPR_ARM2:
 	if (!P_GiveArmor (player, deh_blue_armor_class))
 	    return;
-	player->message = DEH_String(GOTMEGA);
+
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTMEGA);
 	break;
 	
 	// bonus items
@@ -408,7 +412,9 @@ P_TouchSpecialThing
 	if (player->health > deh_max_health)
 	    player->health = deh_max_health;
 	player->mo->health = player->health;
-	player->message = DEH_String(GOTHTHBONUS);
+
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTHTHBONUS);
 	break;
 	
       case SPR_BON2:
@@ -419,7 +425,9 @@ P_TouchSpecialThing
         // for the armor helmets, armortype 1 is always used.
 	if (!player->armortype)
 	    player->armortype = 1;
-	player->message = DEH_String(GOTARMBONUS);
+
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTARMBONUS);
 	break;
 	
       case SPR_SOUL:
@@ -427,7 +435,9 @@ P_TouchSpecialThing
 	if (player->health > deh_max_soulsphere)
 	    player->health = deh_max_soulsphere;
 	player->mo->health = player->health;
-	player->message = DEH_String(GOTSUPER);
+
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTSUPER);
 	if (gameversion > exe_doom_1_2)
 	    sound = sfx_getpow;
 	break;
@@ -440,7 +450,9 @@ P_TouchSpecialThing
         // We always give armor type 2 for the megasphere; dehacked only 
         // affects the MegaArmor.
 	P_GiveArmor (player, 2);
-	player->message = DEH_String(GOTMSPHERE);
+
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTMSPHERE);
 	if (gameversion > exe_doom_1_2)
 	    sound = sfx_getpow;
 	break;
@@ -527,7 +539,9 @@ P_TouchSpecialThing
       case SPR_STIM:
 	if (!P_GiveBody (player, 10))
 	    return;
-	player->message = DEH_String(GOTSTIM);
+
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTSTIM);
 	break;
 	
       case SPR_MEDI:
@@ -546,7 +560,9 @@ P_TouchSpecialThing
       case SPR_PINV:
 	if (!P_GivePower (player, pw_invulnerability))
 	    return;
-	player->message = DEH_String(GOTINVUL);
+
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTINVUL);
 	if (gameversion > exe_doom_1_2)
 	    sound = sfx_getpow;
 	break;
@@ -564,7 +580,8 @@ P_TouchSpecialThing
       case SPR_PINS:
 	if (!P_GivePower (player, pw_invisibility))
 	    return;
-	player->message = DEH_String(GOTINVIS);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTINVIS);
 	if (gameversion > exe_doom_1_2)
 	    sound = sfx_getpow;
 	break;
@@ -572,7 +589,8 @@ P_TouchSpecialThing
       case SPR_SUIT:
 	if (!P_GivePower (player, pw_ironfeet))
 	    return;
-	player->message = DEH_String(GOTSUIT);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTSUIT);
 	if (gameversion > exe_doom_1_2)
 	    sound = sfx_getpow;
 	break;
@@ -580,7 +598,8 @@ P_TouchSpecialThing
       case SPR_PMAP:
 	if (!P_GivePower (player, pw_allmap))
 	    return;
-	player->message = DEH_String(GOTMAP);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTMAP);
 	if (gameversion > exe_doom_1_2)
 	    sound = sfx_getpow;
 	break;
@@ -588,7 +607,8 @@ P_TouchSpecialThing
       case SPR_PVIS:
 	if (!P_GivePower (player, pw_infrared))
 	    return;
-	player->message = DEH_String(GOTVISOR);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTVISOR);
 	if (gameversion > exe_doom_1_2)
 	    sound = sfx_getpow;
 	break;
@@ -610,49 +630,57 @@ P_TouchSpecialThing
 	*/
 	    if (!P_GiveAmmo (player,am_clip,1,dropped))
 		return;
-	player->message = DEH_String(GOTCLIP);
+	    if (Marshmallow_PickupMessages)   // [marshmallow]
+	        player->message = DEH_String(GOTCLIP);
 	break;
 	
       case SPR_AMMO:
 	if (!P_GiveAmmo (player, am_clip,5,dropped))
 	    return;
-	player->message = DEH_String(GOTCLIPBOX);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTCLIPBOX);
 	break;
 	
       case SPR_ROCK:
 	if (!P_GiveAmmo (player, am_misl,1,dropped))
 	    return;
-	player->message = DEH_String(GOTROCKET);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTROCKET);
 	break;
 	
       case SPR_BROK:
 	if (!P_GiveAmmo (player, am_misl,5,dropped))
 	    return;
-	player->message = DEH_String(GOTROCKBOX);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTROCKBOX);
 	break;
 	
       case SPR_CELL:
 	if (!P_GiveAmmo (player, am_cell,1,dropped))
 	    return;
-	player->message = DEH_String(GOTCELL);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTCELL);
 	break;
 	
       case SPR_CELP:
 	if (!P_GiveAmmo (player, am_cell,5,dropped))
 	    return;
-	player->message = DEH_String(GOTCELLBOX);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTCELLBOX);
 	break;
 	
       case SPR_SHEL:
 	if (!P_GiveAmmo (player, am_shell,1,dropped))
 	    return;
-	player->message = DEH_String(GOTSHELLS);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTSHELLS);
 	break;
 	
       case SPR_SBOX:
 	if (!P_GiveAmmo (player, am_shell,5,dropped))
 	    return;
-	player->message = DEH_String(GOTSHELLBOX);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTSHELLBOX);
 	break;
 	
       case SPR_BPAK:
@@ -664,7 +692,8 @@ P_TouchSpecialThing
 	}
 	for (i=0 ; i<NUMAMMO ; i++)
 	    P_GiveAmmo (player, i, 1, false);
-	player->message = DEH_String(GOTBACKPACK);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTBACKPACK);
 	break;
 	
 	// weapons
@@ -672,7 +701,8 @@ P_TouchSpecialThing
       case SPR_BFUG:
 	if (!P_GiveWeapon (player, wp_bfg, dropped) )
 	    return;
-	player->message = DEH_String(GOTBFG9000);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTBFG9000);
 	sound = sfx_wpnup;	
 	break;
 	
@@ -680,28 +710,32 @@ P_TouchSpecialThing
         if (!P_GiveWeapon(player, wp_chaingun,
                           (special->flags & MF_DROPPED) != 0))
             return;
-	player->message = DEH_String(GOTCHAINGUN);
+        if (Marshmallow_PickupMessages)   // [marshmallow]
+	        player->message = DEH_String(GOTCHAINGUN);
 	sound = sfx_wpnup;	
 	break;
 	
       case SPR_CSAW:
 	if (!P_GiveWeapon (player, wp_chainsaw, dropped) )
 	    return;
-	player->message = DEH_String(GOTCHAINSAW);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTCHAINSAW);
 	sound = sfx_wpnup;	
 	break;
 	
       case SPR_LAUN:
 	if (!P_GiveWeapon (player, wp_missile, dropped) )
 	    return;
-	player->message = DEH_String(GOTLAUNCHER);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTLAUNCHER);
 	sound = sfx_wpnup;	
 	break;
 	
       case SPR_PLAS:
 	if (!P_GiveWeapon (player, wp_plasma, dropped) )
 	    return;
-	player->message = DEH_String(GOTPLASMA);
+	if (Marshmallow_PickupMessages)   // [marshmallow]
+	    player->message = DEH_String(GOTPLASMA);
 	sound = sfx_wpnup;	
 	break;
 	
@@ -709,7 +743,8 @@ P_TouchSpecialThing
         if (!P_GiveWeapon(player, wp_shotgun,
                           (special->flags & MF_DROPPED) != 0))
             return;
-	player->message = DEH_String(GOTSHOTGUN);
+        if (Marshmallow_PickupMessages)   // [marshmallow]
+	        player->message = DEH_String(GOTSHOTGUN);
 	sound = sfx_wpnup;	
 	break;
 		
@@ -717,7 +752,8 @@ P_TouchSpecialThing
         if (!P_GiveWeapon(player, wp_supershotgun,
                           (special->flags & MF_DROPPED) != 0))
             return;
-	player->message = DEH_String(GOTSHOTGUN2);
+        if (Marshmallow_PickupMessages)   // [marshmallow]
+	        player->message = DEH_String(GOTSHOTGUN2);
 	sound = sfx_wpnup;	
 	break;
 		
@@ -798,6 +834,11 @@ P_KillMobj
 
     target->flags |= MF_CORPSE|MF_DROPOFF;
     target->height >>= 2;
+
+    // [marshmallow]
+    AnnounceWhoKilledWhat(source, target, players);
+    AnnounceMostDangerousMonstersDeath(target);
+    // [m]
 
     if (source && source->player)
     {
@@ -976,11 +1017,22 @@ P_DamageMobj
 	target->momx += FixedMul (thrust, finecosine[ang]);
 	target->momy += FixedMul (thrust, finesine[ang]);
     }
+
+    SetPlayerTarget(source, target);  // [marshmallow]
     
     // player specific
     if (player)
     {
-	// end of game hell hack
+
+    // [marshmallow]
+    if (Marshmallow_MirrorDamage)
+        Marshmallow_DoMirrorDamage(source, target);
+
+    if (!CheckPlayerDamage(source, target))  // [marshmallow] Returns true if we're doing damage, false if we're not
+        return;
+    // [m]
+
+        // end of game hell hack
 	if (target->subsector->sector->special == 11
 	    && damage >= target->health)
 	{
@@ -1032,7 +1084,9 @@ P_DamageMobj
 	if (player == &players[consoleplayer])
 	    I_Tactile (40,10,40+temp*2);
     }
-    
+
+    RegisterShotsHit(inflictor, target);  // [marshmallow]
+
     // do the damage	
     target->health -= damage;	
     if (target->health <= 0)

@@ -545,6 +545,8 @@ int CheckSongBlacklist(int musicnum);  // s_sound
 boolean IsBlacklistedSong(int musicnum); 
 int GetReplacementSong();
 void LaunchHelpWidget();  // m_menu, lib
+void IncrementShotsFired(player_t* player);  // p_pspr
+void RegisterShotsHit(mobj_t* inflictor, mobj_t* target);  // p_pspr
 
 // consider moving or making public:
 void GiveAllItems();  // marshmallow
