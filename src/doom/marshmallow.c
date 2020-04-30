@@ -21,6 +21,7 @@ void Marshmallow_InitVariables()
 	Marshmallow_KillOnExit = true;
 
 	Marshmallow_BarrelPushing = true;
+    mobjinfo[MT_BARREL].flags |= MF_SPECIAL;
 
 	Marshmallow_PlayerCollision = true; 
 

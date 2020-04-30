@@ -1,6 +1,6 @@
 # Marshmallow Doom
 
-[![Icon](https://www.chocolate-doom.org/wiki/images/thumb/c/c9/Marshmallows.jpg/300px-Marshmallows.jpg)]
+![Icon](https://www.chocolate-doom.org/wiki/images/thumb/c/c9/Marshmallows.jpg/300px-Marshmallows.jpg)
 
 Marshmallow Doom is a source port which lightly sweetens classic Doom gameplay with new additions such as dynamic gameplay-driven music, cooperative bot players, persistent player stats, enhanced blood and gore, treasure items, new difficulty levels, customizable sandbox battles, a much-improved multiplayer experience, and more.
 
@@ -8,7 +8,7 @@ Marshmallow Doom is a source port which lightly sweetens classic Doom gameplay w
 
 Marshmallow Doom is a fork of the Crispy Doom source port. Itself being a fork of Chocolate Doom, Crispy Doom adds features such as 640x400 resolution, colored HUD text, removal of static engine limits, translucency, free vertical looking, jumping, and other modern improvements.  Marshmallow Doom greatly expands on this same ethos of a lightly-sweetened-yet-still-classic Doom gameplay experience.
 
-## Objectives and features
+## Features
 
 Here is a partial list of Marshmallow Doom's new features:
 

@@ -39,7 +39,9 @@
 
 #include "p_inter.h"
 
-#include "marshmallow.h"  // [marshmallow]
+// [marshmallow]
+#include "marshmallow.h"
+int thrust_multiplier[NUMPHYSICSMODES] = { DEFAULT_THRUST, MEDIUM_THRUST_MULTIPLIER, HIGH_THRUST_MULTIPLIER };
 
 #define BONUSADD	6
 
@@ -393,7 +395,22 @@ P_TouchSpecialThing
     // Identify by sprite.
     switch (special->sprite)
     {
-	// armor
+      // [marshmallow] for pushing barrels
+      case SPR_BAR1:
+          if ( !Marshmallow_BarrelPushing )
+              return;
+
+          toucher->player->touching_barrel = true;
+          toucher->player->current_barrel = special;
+          toucher->player->barrel_timeout = 30;
+
+          return;
+
+      case SPR_BEXP:
+          return;
+      // [m]
+
+            // armor
       case SPR_ARM1:
 	if (!P_GiveArmor (player, deh_green_armor_class))
 	    return;
@@ -925,6 +942,18 @@ P_KillMobj
         return;
     }
 
+    // [marshmallow] Drop Goodies
+    if (Marshmallow_DropGoodies)
+    {
+        if (!IsPlayer(source) && IsMonster(target))
+            return;  // Don't drop anything if player wasn't the killer
+        else
+            Marshmallow_NewDropItemsRoutine(target);
+
+        return;
+    }
+    // [m]
+
     // Drop stuff.
     // This determines the kind of object spawned
     // during the death frame of a thing.
@@ -1013,12 +1042,16 @@ P_DamageMobj
 		
 	thrust = damage*(FRACUNIT>>3)*100/target->info->mass;
 
+    if ( physics_mode && !IsPlayer(target) )
+        thrust *= thrust_multiplier[ physics_mode ];      // [marshmallow] Increasing thrust/inertia
+
 	// make fall forwards sometimes
 	if ( damage < 40
 	     && damage > target->health
 	     && target->z - inflictor->z > 64*FRACUNIT
-	     && (P_Random ()&1) )
-	{
+	     && (P_Random ()&1)
+	     && physics_mode )  // [marshmallow] Don't fall forward when using alternate physics modes
+    {
 	    ang += ANG180;
 	    thrust *= 4;
 	}

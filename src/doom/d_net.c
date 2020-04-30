@@ -36,6 +36,8 @@
 
 #include "d_loop.h"
 
+#include "marshmallow.h"  // [marshmallow]
+
 ticcmd_t *netcmds;
 
 // Called when a player leaves the game
@@ -226,7 +228,7 @@ void D_ConnectNetGame(void)
     net_connect_data_t connect_data;
 
     InitConnectData(&connect_data);
-    netgame = D_InitNetGame(&connect_data);
+    realnetgame = netgame = D_InitNetGame(&connect_data);  // [marshmallow] Added realnetgame flag
 
     //!
     // @category net
