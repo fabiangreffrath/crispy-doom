@@ -49,6 +49,8 @@
 // Data.
 #include "sounds.h"
 
+#include "marshmallow.h"  //[marshmallow]
+
 #define HUSTR_SECRETFOUND	"A secret is revealed!"
 
 //
@@ -792,7 +794,8 @@ P_CrossSpecialLinePtr
 	
       case 52:
 	// EXIT!
-	G_ExitLevel ();
+	if (!deathmatch)  // [marshmallow] No level exit in DM
+	    G_ExitLevel ();
 	break;
 	
       case 53:
@@ -1168,6 +1171,13 @@ void P_PlayerInSpecialSector (player_t* player)
 			
       case 9:
 	// SECRET SECTOR
+
+	// [marshmallow] add secret to stats
+    if (!level_stats.secrets_found)
+        level_stats.secrets_found = 1;
+    else
+        level_stats.secrets_found++;
+
 	player->secretcount++;
 	// [crispy] show centered "Secret Revealed!" message
 	if (showMessages && crispy->secretmessage && player == &players[consoleplayer])

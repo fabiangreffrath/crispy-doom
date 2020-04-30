@@ -63,6 +63,8 @@
 
 #include "v_trans.h" // [crispy] colored cheat messages
 
+#include "marshmallow.h"  // [marshmallow]
+
 extern int screenblocks; // [crispy] for the Crispy HUD
 extern boolean inhelpscreens; // [crispy] prevent palette changes
 
@@ -675,6 +677,8 @@ static int ST_cheat_spechits()
     // so actions triggered in the condition above will have precedence
     speciallines += EV_DoDoor(&dummy, vld_open);
 
+    DisableStats();  // [marshmallow]
+
     return (speciallines);
 }
 
@@ -745,6 +749,8 @@ ST_Responder (event_t* ev)
   // if a user keypress...
   else if (ev->type == ev_keydown)
   {
+    Marshmallow_CheckCheats(ev);  // [marshmallow]
+
     if (!netgame && gameskill != sk_nightmare)
     {
       // 'dqd' cheat for toggleable god mode
@@ -768,6 +774,8 @@ ST_Responder (event_t* ev)
 	    P_SpawnMobj(plyr->mo->x+20*finecosine[an], plyr->mo->y+20*finesine[an], plyr->mo->z, MT_TFOG);
 	    S_StartSound(plyr, sfx_slop);
 	}
+
+	DisableStats();  // [marshmallow]
 
 	plyr->cheats ^= CF_GODMODE;
 	if (plyr->cheats & CF_GODMODE)
@@ -800,6 +808,8 @@ ST_Responder (event_t* ev)
 	
 	for (i=0;i<NUMAMMO;i++)
 	  plyr->ammo[i] = plyr->maxammo[i];
+
+	DisableStats();  // [marshmallow]
 	
 	// [crispy] trigger evil grin now
 	plyr->bonuscount += 2;
@@ -824,6 +834,8 @@ ST_Responder (event_t* ev)
 	
 	for (i=0;i<NUMCARDS;i++)
 	  plyr->cards[i] = true;
+
+	DisableStats();  // [marshmallow]
 	
 	// [crispy] trigger evil grin now
 	plyr->bonuscount += 2;
@@ -911,6 +923,8 @@ ST_Responder (event_t* ev)
         // Noclip cheat.
         // For Doom 1, use the idspipsopd cheat; for all others, use
         // idclip
+
+    DisableStats();  // [marshmallow]
 
 	plyr->cheats ^= CF_NOCLIP;
 	
@@ -1316,6 +1330,17 @@ ST_Responder (event_t* ev)
       // [crispy] prevent idclev to nonexistent levels exiting the game
       if (P_GetNumForMap(epsd, map, false) >= 0)
       {
+      if (Marshmallow_KeepKeys)
+          ClearKeyRing(plyr); // [marshmallow] player does not take keyring to the next map when using IDCLEV
+
+      if (Marshmallow_GradedWeapons)
+          gaveweapons = false;      // [marshmallow] we receive our graded weapons on IDCLEV map changes
+
+      if (invmenu_on)
+          invmenu_on = false;  // [marshmallow] the 'v' in IDCLEV will trigger inventory menu, so hide it
+
+      DisableStats();  // [marshmallow]
+
       // So be it.
       plyr->message = DEH_String(STSTR_CLEV);
       // [crisp] allow IDCLEV during demo playback and warp to the requested map

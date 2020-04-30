@@ -424,7 +424,7 @@ void Marshmallow_CheckCommandLineArgs()
 
 void SetCrispyOptions()   
 {
-	showMessages = 1;  // we always need showMessages on 
+	showMessages = 1;  // We always need showMessages on
 	
 	if (crispy->coloredhud == COLOREDHUD_OFF)
 		crispy->coloredhud = COLOREDHUD_TEXT;  // Crispy's colored HUD text is required for our new in-game menus
@@ -435,10 +435,10 @@ void SetCrispyOptions()
 	//crispy->uncapped = UNCAPPED_VSYNC;	
 	
 	//crispy->coloredblood = COLOREDBLOOD_BOTH;
-	crispy->brightmaps = BRIGHTMAPS_BOTH;
-	crispy->translucency = TRANSLUCENCY_BOTH;
-	crispy->flipcorpses = true;
-	crispy->overunder = true;
+	//crispy->brightmaps = BRIGHTMAPS_BOTH;
+	//crispy->translucency = TRANSLUCENCY_BOTH;
+	//crispy->flipcorpses = true;
+	//crispy->overunder = true;
 }
 
 

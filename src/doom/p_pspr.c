@@ -35,6 +35,8 @@
 
 #include "p_pspr.h"
 
+#include "marshmallow.h"  //[marshmallow]
+
 #define LOWERSPEED		FRACUNIT*6
 #define RAISESPEED		FRACUNIT*6
 
@@ -299,6 +301,8 @@ void P_FireWeapon (player_t* player)
 	
     if (!P_CheckAmmo (player))
 	return;
+
+    IncrementShotsFired(player);  // [marshmallow]
 	
     P_SetMobjState (player->mo, S_PLAY_ATK1);
     newstate = weaponinfo[player->readyweapon].atkstate;

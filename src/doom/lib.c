@@ -142,6 +142,43 @@ void ResetTreasure()
 }
 
 
+void IncrementShotsFired(player_t* player)
+{
+    if (player->player_number == consoleplayer)  // Don't count bots or other players towards accuracy stats
+    {
+        switch (player->readyweapon) {
+            case wp_shotgun:
+            case wp_supershotgun:
+                level_stats.shots_fired += shotgun_pellets;
+                break;
+
+            case wp_bfg:  // Don't count bfg in shots_fired
+            case wp_chainsaw:  // Don't count chainsaw either
+                break;
+
+            default:
+                level_stats.shots_fired++;
+        }
+    }
+}
+
+
+void RegisterShotsHit(mobj_t* inflictor, mobj_t* target)
+{
+    if (inflictor
+        && inflictor->player)
+    {
+        if ( !IsBot(inflictor->player)
+             && IsMonster(target)
+             && inflictor->player->readyweapon != wp_bfg  // Don't count bfg in shots_hit
+             && inflictor->player->player_number == consoleplayer )  // Don't count bots or other players towards accuracy stats
+        {
+            level_stats.shots_hit++;
+        }
+    }
+}
+
+
 boolean PercentChance(int chance)  
 {
 	int num = GetRandomIntegerInRange(1, 99);
