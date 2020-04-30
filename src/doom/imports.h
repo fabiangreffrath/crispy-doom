@@ -51,7 +51,7 @@ void P_GiveCard( player_t*	player,  card_t	card );
 //void S_StartSound(void *origin_p, int sfx_id);
 //extern const char *player_names[4];
 //extern int M_snprintf(char *buf, size_t buf_len, const char *s, ...);
-extern void PlayerQuitGame(player_t *player);
+//extern void PlayerQuitGame(player_t *player);
 //extern mapthing_t	playerstarts[MAXPLAYERS];
 void A_FaceTarget (mobj_t* actor);
 void A_Look(mobj_t*	actor);
