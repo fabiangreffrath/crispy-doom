@@ -192,6 +192,14 @@ typedef enum {
 mobj_t* CorpseList[MAX_CORPSES];
 int corpselist_size;
 
+#define MT_PARTICLE_BLOOD MT_BLOOD
+#define MT_PARTICLE_DARKBLOOD MT_BLOOD
+#define MT_PARTICLE_SMOKE MT_PUFF
+#define MT_PARTICLE_FATSHOT MT_FATSHOT
+#define MT_PARTICLE_BLUEPLASMA MT_PLASMA
+//#define MT_PARTICLE_GREENPLASMA MT_ARACHPLAZ
+#define MT_PARTICLE_BRUISERSHOT MT_BRUISERSHOT
+
 //boolean saved_musicmode;  // for preserving dynamic music preference written to marshmallow.cfg
 
 // network stuff

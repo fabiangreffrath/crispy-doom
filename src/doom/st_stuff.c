@@ -1689,7 +1689,7 @@ void ST_doPaletteStuff(void)
     if (plyr->powers[pw_strength])
     {
 	// slowly fade the berzerk out
-  	bzc = 12 - (plyr->powers[pw_strength]>>6);
+  	bzc = berserk_redscreen_length - (plyr->powers[pw_strength]>>6);  // [marshmallow] Variable duration of the berserk red screen
 
 	if (bzc > cnt)
 	    cnt = bzc;

@@ -39,6 +39,8 @@
 // Data.
 #include "sounds.h"
 
+#include "marshmallow.h"
+
 // Spechit overrun magic value.
 //
 // This is the value used by PrBoom-plus.  I think the value below is 
@@ -1443,9 +1445,10 @@ boolean PIT_RadiusAttack (mobj_t* thing)
     fixed_t	dx;
     fixed_t	dy;
     fixed_t	dist;
-	
-    if (!(thing->flags & MF_SHOOTABLE) )
-	return true;
+
+    // [marshmallow] For gibbing corpses and corpse decorations
+    if (!(thing->flags & MF_SHOOTABLE) && !IsGibbableThing(thing))
+        return true;
 
     // Boss spider and cyborg
     // take no damage from concussion.

@@ -7,7 +7,7 @@
 #include "marshmallow.h"
 
 void Marshmallow_InitVariables()
-{	
+{
 	PKE_Activate();
 
 	F_Key_BotFollow = true;
@@ -21,6 +21,8 @@ void Marshmallow_InitVariables()
 	Marshmallow_KillOnExit = true;
 
 	Marshmallow_BarrelPushing = true;
+
+    // TODO: move this to after we read settings from cfg, so it doesn't get set if option off; maybe move it to when the barrel is spawned in SpawnMapThing()
     mobjinfo[MT_BARREL].flags |= MF_SPECIAL;
 
 	Marshmallow_PlayerCollision = true; 

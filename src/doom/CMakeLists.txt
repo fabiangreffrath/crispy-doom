@@ -90,6 +90,8 @@ add_library(doom STATIC
             bot_lib.c
             bot_dm.c
             math.c
+            particle.c
+            gibs.c
             inventory.c
             tweaks.c
             lib.c
