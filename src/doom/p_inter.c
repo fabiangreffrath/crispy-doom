@@ -957,12 +957,51 @@ P_KillMobj
     // Drop stuff.
     // This determines the kind of object spawned
     // during the death frame of a thing.
+
+     /* [m] Excluded code from rebase:
     if (target->info->droppeditem != MT_NULL) // [crispy] drop generalization
     {
         item = target->info->droppeditem;
     }
     else
         return;
+    */
+
+    switch (target->type)
+    {
+      case MT_WOLFSS:
+      case MT_POSSESSED:
+	item = MT_CLIP;
+	break;
+	
+      case MT_SHOTGUY:
+	item = MT_SHOTGUN;
+	break;
+	
+      case MT_CHAINGUY:
+	item = MT_CHAINGUN;
+	break;
+
+	// [marshmallow] We need this here in case Drop Goodies is off and Drop Backpack is on
+	case MT_PLAYER:
+        if (Marshmallow_DropBackpack)
+        {
+            if ( !deathmatch )
+            {
+                DropInventoryInBackpack(target);
+            }
+            else
+            {
+                CreateBackpack(target, false);
+                DropWeaponOnPlayerDeath(target);
+            }
+        }
+        return;
+    // [m]
+
+      default:
+	return;
+    }
 
     mo = P_SpawnMobj (target->x,target->y,ONFLOORZ, item);
     mo->flags |= MF_DROPPED;	// special versions of items

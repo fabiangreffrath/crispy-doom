@@ -647,6 +647,8 @@ P_SpawnMobjSafe
     mobj->flags = info->flags;
     mobj->health = info->spawnhealth;
 
+    mobj->corpsehealth = info->spawnhealth;  // [marshmallow]
+
     if (gameskill != sk_nightmare)
 	mobj->reactiontime = info->reactiontime;
     

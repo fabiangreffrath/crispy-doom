@@ -152,9 +152,11 @@ void IncrementShotsFired(player_t* player)
                 level_stats.shots_fired += shotgun_pellets;
                 break;
 
-            case wp_bfg:  // Don't count bfg in shots_fired
-            case wp_chainsaw:  // Don't count chainsaw either
-                break;
+            case wp_bfg:
+            case wp_fist:
+            case wp_chainsaw:
+            case wp_missile:
+                break;  // Don't count these weapons in shots_fired
 
             default:
                 level_stats.shots_fired++;
@@ -170,7 +172,10 @@ void RegisterShotsHit(mobj_t* inflictor, mobj_t* target)
     {
         if ( !IsBot(inflictor->player)
              && IsMonster(target)
-             && inflictor->player->readyweapon != wp_bfg  // Don't count bfg in shots_hit
+             && inflictor->player->readyweapon != wp_bfg  // Don't count these weapons in shots_hit
+             && inflictor->player->readyweapon != wp_fist
+             && inflictor->player->readyweapon != wp_chainsaw
+             && inflictor->player->readyweapon != wp_missile
              && inflictor->player->player_number == consoleplayer )  // Don't count bots or other players towards accuracy stats
         {
             level_stats.shots_hit++;
