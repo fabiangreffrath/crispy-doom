@@ -210,6 +210,10 @@ P_GiveWeapon
 
 	if (player == &players[consoleplayer])
 	    S_StartSound (NULL, sfx_wpnup);
+
+	if (!Marshmallow_WeaponsStay)  // [marshmallow] Leave the weapon on the ground
+        return true;
+
 	return false;
     }
 	
@@ -760,8 +764,14 @@ P_TouchSpecialThing
       default:
 	I_Error ("P_SpecialThing: Unknown gettable thing");
     }
+
+    // [marshmallow] WeaponsStay option should not apply to dropped weapons
+    if (IsWeapon(special) && Marshmallow_WeaponsStay && (!special->flags & MF_DROPPED))
+        return;
+    // [m]
 	
-    if (special->flags & MF_COUNTITEM)
+    if (special->flags & MF_COUNTITEM
+        && (!special->flags & MF_DROPPED))  // [marshmallow] Don't count dropped items towards intermission stats
 	player->itemcount++;
     P_RemoveMobj (special);
     player->bonuscount += BONUSADD;

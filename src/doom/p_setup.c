@@ -46,8 +46,8 @@
 #include "p_extnodes.h" // [crispy] support extended node formats
 
 // [marshmallow]
-extern void Marshmallow_SetupLevel();
-extern void ResetTreasure();
+#include "marshmallow.h"
+float Marshmallow_LightLevel[NUMLIGHTLEVELS] = { NORMAL_LIGHTLEVEL, CRT_LIGHTLEVEL, DOOM3_LIGHTLEVEL };
 
 void	P_SpawnMapThing (mapthing_t*	mthing);
 
@@ -385,7 +385,7 @@ void P_LoadSectors (int lump)
 	ss->ceilingheight = SHORT(ms->ceilingheight)<<FRACBITS;
 	ss->floorpic = R_FlatNumForName(ms->floorpic);
 	ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
-	ss->lightlevel = SHORT(ms->lightlevel);
+	ss->lightlevel = SHORT(ms->lightlevel) * Marshmallow_LightLevel[ Marshmallow_AlternateLighting ];  // [marshmallow]
 	ss->special = SHORT(ms->special);
 	ss->tag = SHORT(ms->tag);
 	ss->thinglist = NULL;

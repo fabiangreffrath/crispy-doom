@@ -810,6 +810,8 @@ void A_FaceTarget (mobj_t* actor)
 {	
     if (!actor->target)
 	return;
+
+    InfightAlert(actor);  // [marshmallow]
     
     actor->flags &= ~MF_AMBUSH;
 	
