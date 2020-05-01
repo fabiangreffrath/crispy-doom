@@ -64,6 +64,57 @@
 
 #include "v_trans.h" // [crispy] colored "invert mouse" message
 
+
+// [marshmallow]
+#define MARSHMALLOW_DOOMLOGO_Y_OFFSET 7
+#define MARSHMALLOW_MENU_Y_OFFSET 6
+#define MARSHMALLOW_TITLE_X 112
+#define MARSHMALLOW_TITLE_Y 1
+boolean menus_on;
+boolean help_on;
+boolean profilescreen_on;
+boolean pkereadout_on;
+boolean mainmenuhelp_on;
+boolean realnetgame;
+boolean Marshmallow_GradedWeapons;
+int Marshmallow_RandomItems;
+boolean Marshmallow_AlternateUltraViolence;
+boolean Marshmallow_AlternateNightmare;
+boolean Marshmallow_RespawnInNightmare;
+void M_Marshmallow(int choice);
+void M_DrawMarshmallowNewGame(void);
+extern void LaunchHelpWidget();
+extern void ChooseLevel_Next();
+extern void ChooseLevel_Prev();
+extern void Skill_Next();
+extern void Skill_Prev();
+extern void NewgameMode_Up();
+extern void NewgameMode_Down();
+extern void UpgradeChance_Up();
+extern void UpgradeChance_Down();
+extern void HPScale_Up();
+extern void HPScale_Down();
+extern void SkipToLevel();
+extern void SkipToRandomLevel();
+extern void CheckKeyDelay();
+extern char* ShowMapSelection();
+extern char* ShowSkillLevel();
+extern char* ShowMapWeapons();
+extern char* ShowRandomItemsMode();
+extern void  ColorizeMapNames();
+extern char* DisplayValue(int val);
+extern char* DisplayOnOff(boolean option);
+extern char* ShowGameSelection();
+extern void  StripWeapons(int player);
+int upgrade_chance;
+int MonsterHitpointsScale;
+int newgame_mode;
+int newskill;  // added 3-9-19
+/*extern */int skill_selection;  // not sure if I need this here yet
+extern void SetSpecialSkills();
+extern boolean organic_levelchange;
+// [m]
+
 extern patch_t*		hu_font[HU_FONTSIZE];
 extern boolean		message_dontfuckwithme;
 
@@ -319,6 +370,46 @@ menu_t  EpiDef =
     48,63,              // x,y
     ep1			// lastOn
 };
+
+
+// [marshmallow] Our all-new NEW GAME menu
+
+enum
+{
+    newgame_type,
+    newgame_skip,
+    newgame_skill,
+    newgame_weapons,
+    newgame_randomitems,
+    newgame_upgrade,
+    newgame_hitpoints,
+    newgame_empty1,
+    newgame_start,
+} marshmallow_e;
+
+static menuitem_t MarshmallowNewGame[]=
+{
+    {1,"", M_Marshmallow,NULL},
+    {2,"", M_Marshmallow,NULL},
+    {2,"", M_Marshmallow,NULL},
+    {2,"", M_Marshmallow,NULL},
+    {2,"", M_Marshmallow,NULL},
+    {2,"", M_Marshmallow,NULL},
+    {2,"", M_Marshmallow,NULL},
+    {-1,"",0,'\0'},	// blank line, no cursor
+    {1,"", M_Marshmallow,NULL},
+};
+
+static menu_t  MarshmallowNewGameDef =
+{
+    9,				// # of menu items
+    &MainDef,		// previous menu
+    MarshmallowNewGame,	// menuitem_t ->
+    M_DrawMarshmallowNewGame,	// drawing routine ->
+    48,43,              // x,y
+    0					// lastOn
+};
+// [m]
 
 //
 // NEW GAME
@@ -1112,7 +1203,7 @@ void M_QuickLoad(void)
     char *savegamestring;
 
     // [crispy] allow quickloading game while multiplayer demo playback
-    if (netgame && !demoplayback)
+    if (realnetgame && !demoplayback)  // [marshmallow] Changed to realnetgame
     {
 	M_StartMessage(DEH_String(QLOADNET),NULL,false);
 	return;
@@ -1229,14 +1320,126 @@ void M_MusicVol(int choice)
 }
 
 
+// [marshmallow]
+#define WALLPAPER_TILE "FLOOR5_2"
 
+static void M_DrawMarshmallowBackground(void)
+{
+    static byte *sdest;
+
+    inhelpscreens = true;
+
+    if (!sdest)
+    {
+        byte *src, *dest;
+        int x, y;
+
+        src = W_CacheLumpName( WALLPAPER_TILE, PU_CACHE);
+        dest = (unsigned char *) Z_Malloc (SCREENWIDTH * SCREENHEIGHT * sizeof(*dest), PU_STATIC, NULL);
+        sdest = dest;
+
+        for (y = 0; y < SCREENHEIGHT; y++)
+        {
+            for (x = 0; x < SCREENWIDTH; x++)
+            {
+                *dest++ = src[(y & 63) * 64 + (x & 63)];
+            }
+        }
+    }
+
+    memcpy(I_VideoBuffer, sdest, SCREENWIDTH * SCREENHEIGHT * sizeof(*I_VideoBuffer));
+}
+
+
+#define LINE1 "GAME TYPE: "
+#define LINE2 "CHOOSE LEVEL: "
+#define LINE3 "DIFFICULTY: "
+#define LINE4 "STARTING ARSENAL: "
+#define LINE4A "RANDOM ITEMS: "
+#define LINE5 "UPGRADE MONSTERS: "
+#define LINE6 "UPGRADE MONSTER HITPOINTS: "
+#define LINE7 " "
+#define LINE8 "START GAME"
+
+void M_DrawMarshmallowNewGame(void)
+{
+    char string1[4];   // these four are only for upgrade on menu
+    char string2[4];
+    char* skill = ShowSkillLevel();
+    int scale = MonsterHitpointsScale;
+    int upgrade = upgrade_chance;
+
+    if (skill_selection == 5)
+        upgrade = 60; // use macro
+    else if (skill_selection == 6)
+        upgrade = 90; // use macro
+    //else
+    //upgrade = 0;
+
+    M_DrawMarshmallowBackground();
+
+    V_DrawPatchDirect(96, 14, W_CacheLumpName(DEH_String("M_NEWG"), PU_CACHE));
+
+    ColorizeMapNames();
+    CrispyReplaceColor(skill, CR_GOLD, skill);
+    CrispyReplaceColor(LINE8, CR_GREEN, LINE8);
+    CrispyReplaceColor("% chance", CR_DARK, "% chance");
+    CrispyReplaceColor("x", CR_DARK, "x");
+
+    sprintf( string1, "%d", upgrade );
+    sprintf( string2, "%d", scale );
+
+    M_WriteText(currentMenu->x, currentMenu->y, DEH_String(LINE1));
+    M_WriteText(currentMenu->x+100, currentMenu->y, DEH_String( ShowGameSelection() ));
+
+    M_WriteText(currentMenu->x, currentMenu->y+LINEHEIGHT, DEH_String(LINE2));
+    M_WriteText(currentMenu->x+100, currentMenu->y+LINEHEIGHT, DEH_String( ShowMapSelection() ));
+
+    M_WriteText(currentMenu->x, currentMenu->y+LINEHEIGHT*2, DEH_String(LINE3));
+    M_WriteText(currentMenu->x+100, currentMenu->y+LINEHEIGHT*2, DEH_String( skill ));
+
+    M_WriteText(currentMenu->x, currentMenu->y+LINEHEIGHT*3, DEH_String(LINE4));
+    M_WriteText(currentMenu->x+125, currentMenu->y+LINEHEIGHT*3, DEH_String( ShowMapWeapons() ));
+
+    M_WriteText(currentMenu->x, currentMenu->y+LINEHEIGHT*4, DEH_String(LINE4A));
+    M_WriteText(currentMenu->x+100, currentMenu->y+LINEHEIGHT*4, DEH_String( ShowRandomItemsMode() ));
+
+    M_WriteText(currentMenu->x, currentMenu->y+LINEHEIGHT*5, DEH_String(LINE5));
+
+    if (upgrade > 0)
+    {
+        M_WriteText(currentMenu->x+128, currentMenu->y+LINEHEIGHT*5, DEH_String( string1 ));
+        M_WriteText(currentMenu->x+150, currentMenu->y+LINEHEIGHT*5, DEH_String( "% chance" ));
+    }
+    else
+    {
+        M_WriteText(currentMenu->x+135, currentMenu->y+LINEHEIGHT*5, DEH_String( "OFF" ));
+    }
+
+    M_WriteText(currentMenu->x, currentMenu->y+LINEHEIGHT*6, DEH_String(LINE6));
+
+    if (MonsterHitpointsScale > 1)
+    {
+        M_WriteText(currentMenu->x+195, currentMenu->y+LINEHEIGHT*6, DEH_String( string2 ));
+        M_WriteText(currentMenu->x+210, currentMenu->y+LINEHEIGHT*6, DEH_String( "x" ));
+    }
+    else
+    {
+        M_WriteText(currentMenu->x+195, currentMenu->y+LINEHEIGHT*6, DEH_String( "OFF" ));
+    }
+
+    M_WriteText(currentMenu->x, currentMenu->y+LINEHEIGHT*7, DEH_String(LINE7));
+
+    M_WriteText(currentMenu->x+20, currentMenu->y+LINEHEIGHT*8, DEH_String(LINE8));
+}
+// [m]
 
 //
 // M_DrawMainMenu
 //
 void M_DrawMainMenu(void)
 {
-    V_DrawPatchDirect(94, 2,
+    V_DrawPatchDirect(94, 2 + MARSHMALLOW_DOOMLOGO_Y_OFFSET,   // [marshmallow] Moving the logo down a bit to fit "Marshmallow" title
                       W_CacheLumpName(DEH_String("M_DOOM"), PU_CACHE));
 }
 
@@ -1260,11 +1463,16 @@ void M_NewGame(int choice)
 	return;
     }
 
-    if (netgame && !demoplayback)
+    if (realnetgame && !demoplayback)  // [marshmallow] Changed to realnetgame
     {
 	M_StartMessage(DEH_String(NEWGAME),NULL,false);
 	return;
     }
+
+    // [marshmallow]
+    M_SetupNextMenu(&MarshmallowNewGameDef);
+    return;
+    // [m]
 	
     // Chex Quest disabled the episode select screen, as did Doom II.
 
@@ -1320,7 +1528,11 @@ void M_Episode(int choice)
     M_SetupNextMenu(&NewDef);
 }
 
-
+// [marshmallow] Not using choice input
+void M_Marshmallow(int choice)
+{
+    M_SetupNextMenu(&MarshmallowNewGameDef);
+}
 
 //
 // M_Options
@@ -1635,6 +1847,10 @@ static void M_CrispnessPrev(int choice)
 //
 void M_ChangeMessages(int choice)
 {
+    // [marshmallow] Keeping messages enabled or else our new HUD stuff doesn't work
+    players[consoleplayer].message = "Messages must remain enabled.";
+    return;
+
     // warning: unused parameter `int choice'
     choice = 0;
     showMessages = 1 - showMessages;
@@ -1676,7 +1892,7 @@ void M_EndGame(int choice)
 	return;
     }
 	
-    if (netgame)
+    if (realnetgame)  // [marshmallow] Changed to realnetgame
     {
 	M_StartMessage(DEH_String(NETEND),NULL,false);
 	return;
@@ -2411,6 +2627,18 @@ boolean M_Responder (event_t* ev)
     if (key == -1)
 	return false;
 
+    // [marshmallow] So we can launch keyboard reference widget while mainmenu is up
+    if (key == 'h'
+        && !chat_on)
+    {
+        menuactive = false;
+
+        LaunchHelpWidget();
+
+        return false;
+    }
+    // [m]
+
     // Save Game string input
     if (saveStringEnter)
     {
@@ -2648,14 +2876,24 @@ boolean M_Responder (event_t* ev)
     // Pop-up menu?
     if (!menuactive)
     {
-	if (key == key_menu_activate)
+	if (key == key_menu_activate
+        && !menus_on  // [marshmallow] Only activate main menu if no other menus are up
+        && !profilescreen_on
+        && !pkereadout_on)
 	{
+        mainmenuhelp_on = true;  // [marshmallow] Help/version caption for title screen
 	    M_StartControlPanel ();
 	    S_StartSound(NULL,sfx_swtchn);
 	    return true;
 	}
 	return false;
     }
+    // [marshmallow]
+    else
+    {
+        mainmenuhelp_on = false;
+    }
+    // [m]
 
     // Keys usable within menu
 
@@ -2689,6 +2927,47 @@ boolean M_Responder (event_t* ev)
     }
     else if (key == key_menu_left)
     {
+        // [marshmallow]
+        if (currentMenu == &MarshmallowNewGameDef)
+        {
+            switch (itemOn)
+            {
+                case newgame_type:
+                    NewgameMode_Down();
+                    return true;
+
+                case newgame_skip:
+                    ChooseLevel_Prev();
+                    return true;
+
+                case newgame_skill:
+                    Skill_Prev();
+                    return true;
+
+                case newgame_weapons:
+                    Marshmallow_GradedWeapons = !Marshmallow_GradedWeapons;
+                    return true;
+
+                case newgame_upgrade:
+                    UpgradeChance_Down();
+                    return true;
+
+                case newgame_hitpoints:
+                    HPScale_Down();
+                    return true;
+
+                case newgame_randomitems:
+                    //Marshmallow_RandomItems = !Marshmallow_RandomItems;
+                    Marshmallow_RandomItems--;
+
+                    if (Marshmallow_RandomItems < 0)
+                        Marshmallow_RandomItems = 2;
+
+                    return true;
+            }
+        }
+        // [m]
+
         // Slide slider left
 
 	if (currentMenu->menuitems[itemOn].routine &&
@@ -2701,6 +2980,49 @@ boolean M_Responder (event_t* ev)
     }
     else if (key == key_menu_right)
     {
+        // [marshmallow]
+        if (currentMenu == &MarshmallowNewGameDef)
+        {
+            S_StartSound(NULL,sfx_stnmov);
+
+            switch (itemOn)
+            {
+                case newgame_type:
+                    NewgameMode_Up();
+                    return true;
+
+                case newgame_skip:
+                    ChooseLevel_Next();
+                    return true;
+
+                case newgame_skill:
+                    Skill_Next();
+                    return true;
+
+                case newgame_weapons:
+                    Marshmallow_GradedWeapons = !Marshmallow_GradedWeapons;
+                    return true;
+
+                case newgame_upgrade:
+                    UpgradeChance_Up();
+                    return true;
+
+                case newgame_hitpoints:
+                    HPScale_Up();
+                    return true;
+
+                case newgame_randomitems:
+                    //Marshmallow_RandomItems = !Marshmallow_RandomItems;
+                    Marshmallow_RandomItems++;
+
+                    if (Marshmallow_RandomItems > 2)
+                        Marshmallow_RandomItems = 0;
+
+                    return true;
+            }
+        }
+        // [m]
+
         // Slide slider right
 
 	if (currentMenu->menuitems[itemOn].routine &&
@@ -2713,22 +3035,46 @@ boolean M_Responder (event_t* ev)
     }
     else if (key == key_menu_forward)
     {
+        // [marshmallow]
+        if (currentMenu == &MarshmallowNewGameDef)
+        {
+            switch (itemOn)
+            {
+                //case newgame_random:
+                //	SkipToRandomLevel();
+                //	M_ClearMenus ();
+                //	return true;
+
+                case newgame_start:
+
+                    //SetSpecialSkills(); // added 3-9-19
+                    newskill = skill_selection;  // this seems to be necessary (3-9-19)
+
+                    organic_levelchange = false;  // NEW
+                    StripWeapons(consoleplayer);  // new
+                    SkipToLevel();
+                    M_ClearMenus ();
+                    return true;
+            }
+        }
+        // [m]
+
         // Activate menu item
 
 	if (currentMenu->menuitems[itemOn].routine &&
 	    currentMenu->menuitems[itemOn].status)
 	{
 	    currentMenu->lastOn = itemOn;
-	    if (currentMenu->menuitems[itemOn].status == 2)
-	    {
-		currentMenu->menuitems[itemOn].routine(1);      // right arrow
-		S_StartSound(NULL,sfx_stnmov);
-	    }
-	    else
-	    {
-		currentMenu->menuitems[itemOn].routine(itemOn);
-		S_StartSound(NULL,sfx_pistol);
-	    }
+        if (currentMenu != &MarshmallowNewGameDef)  // [marshmallow] No sounds when we hit enter
+        {
+            if (currentMenu->menuitems[itemOn].status == 2) {
+                currentMenu->menuitems[itemOn].routine(1);      // right arrow
+                S_StartSound(NULL, sfx_stnmov);
+            } else {
+                currentMenu->menuitems[itemOn].routine(itemOn);
+                S_StartSound(NULL, sfx_pistol);
+            }
+        }
 	}
 	return true;
     }
@@ -2833,6 +3179,11 @@ void M_StartControlPanel (void)
     // intro might call this repeatedly
     if (menuactive)
 	return;
+
+    // [marshmallow]
+    if (help_on)
+        help_on = false;
+    // [m]
 
     // [crispy] entering menus while recording demos pauses the game
     if (demorecording && !paused)
@@ -2950,6 +3301,11 @@ void M_Drawer (void)
 
     if (currentMenu->routine)
 	currentMenu->routine();         // call Draw routine
+
+    // [marshmallow]
+    if ( currentMenu == &MainDef )
+        M_WriteText(MARSHMALLOW_TITLE_X, MARSHMALLOW_TITLE_Y, DEH_String("Marshmallow"));
+    // [m]
     
     // DRAW MENU
     x = currentMenu->x;
@@ -2978,9 +3334,9 @@ void M_Drawer (void)
 	{
 	    // [crispy] shade unavailable menu items
 	    if ((currentMenu == &MainDef && i == savegame && (!usergame || gamestate != GS_LEVEL)) ||
-	        (currentMenu == &OptionsDef && i == endgame && (!usergame || netgame)) ||
-	        (currentMenu == &MainDef && i == loadgame && (netgame && !demoplayback)) ||
-	        (currentMenu == &MainDef && i == newgame && (demorecording || (netgame && !demoplayback))))
+	        (currentMenu == &OptionsDef && i == endgame && (!usergame || realnetgame)) ||         // [marshmallow] Changed to realnetgame
+	        (currentMenu == &MainDef && i == loadgame && (realnetgame && !demoplayback)) ||       // [marshmallow] Changed to realnetgame
+	        (currentMenu == &MainDef && i == newgame && (demorecording || (realnetgame && !demoplayback))))   // [marshmallow] Changed to realnetgame
 	        dp_translation = cr[CR_DARK];
 
 	    if (W_CheckNumForName(name) > 0 && currentMenu->lumps_missing == -1)
@@ -3101,6 +3457,8 @@ void M_Init (void)
     {
         EpiDef.numitems = 4;
     }
+
+    MainDef.y += MARSHMALLOW_MENU_Y_OFFSET;   // [marshmallow]
 
     // Versions of doom.exe before the Ultimate Doom release only had
     // three episodes; if we're emulating one of those then don't try

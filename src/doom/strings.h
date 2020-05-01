@@ -277,7 +277,7 @@
 #define RESETBUTTON "     RESET"
 #define WHICHMAP "    Choose Map:  "
 
-#define MENUHELP1 "  ver. 0.78c"   // string too long, so white bleeds into the next line, but it looks ok for now
+#define MENUHELP1 " ver. 0.78c"   // string too long, so white bleeds into the next line, but it looks ok for now
 #define MENUHELP2 " Press 'H' for" 
 #define MENUHELP3 "Keyboard Ref."
 
