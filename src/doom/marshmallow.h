@@ -11,7 +11,7 @@
 
 #include "macros.h"
 #include "strings.h"
-
+#include "defs.h"
 #include "imports.h"
 
 #include "navigation.h"
@@ -20,7 +20,6 @@
 #include "hud.h"
 
 #include "profile.h"
-
 
 boolean Marshmallow_DynamicMusic; 
 boolean Marshmallow_Sandbox;   

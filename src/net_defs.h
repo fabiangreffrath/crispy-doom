@@ -24,6 +24,9 @@
 #include "d_ticcmd.h"
 #include "sha1.h"
 
+// [marshmallow]
+#include "doom/defs.h"
+
 // Absolute maximum number of "nodes" in the game.  This is different to
 // NET_MAXPLAYERS, as there may be observers that are not participating
 // (eg. left/right monitors)
@@ -204,6 +207,9 @@ typedef struct
     int timelimit;
     int loadgame;
     int random;  // [Strife only]
+
+    //[marshmallow]
+    marshmallow_netgame_flags MarshmallowSettings;
 
     // These fields are only used by the server when sending a game
     // start message:

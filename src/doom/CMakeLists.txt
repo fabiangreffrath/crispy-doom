@@ -87,6 +87,7 @@ add_library(doom STATIC
             hud.c           hud.h
             datapad.c       datapad.h
             navigation.c    navigation.h
+            network.c       defs.h
             bot.c           bot.h
             bot_lib.c
             bot_dm.c
