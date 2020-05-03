@@ -37,6 +37,7 @@
 #include "d_loop.h"
 
 #include "marshmallow.h"  // [marshmallow]
+marshmallow_netgame_flags MarshmallowSettings;
 
 ticcmd_t *netcmds;
 
@@ -123,6 +124,82 @@ static void LoadGameSettings(net_gamesettings_t *settings)
     timelimit = settings->timelimit;
     consoleplayer = settings->consoleplayer;
 
+    Marshmallow_FriendlyFire = settings->MarshmallowSettings.FriendlyFire;
+    Marshmallow_MirrorDamage = settings->MarshmallowSettings.MirrorDamage;
+    Marshmallow_SelfDamage = settings->MarshmallowSettings.SelfDamage;
+    Marshmallow_DropGoodies = settings->MarshmallowSettings.DropGoodies;
+    Marshmallow_DropBackpack = settings->MarshmallowSettings.DropBackpack;
+    Marshmallow_CoopItemRespawn = settings->MarshmallowSettings.CoopItemRespawn;
+
+    Marshmallow_ConservePowerups = settings->MarshmallowSettings.ConservePowerups;
+    Marshmallow_KeepWeapons = settings->MarshmallowSettings.KeepWeapons;
+    Marshmallow_KeepKeys = settings->MarshmallowSettings.KeepKeys;
+    Marshmallow_SaveItems = settings->MarshmallowSettings.SaveItems;
+
+    Marshmallow_GradedWeapons = settings->MarshmallowSettings.GradedWeapons;
+    Marshmallow_DeathmatchWeapons = settings->MarshmallowSettings.DeathmatchWeapons;
+
+    if (!deathmatch)
+    {
+        Marshmallow_WeaponsStay = settings->MarshmallowSettings.WeaponsStay;
+    }
+    else
+    {
+        if ( deathmatch == 3 )
+            Marshmallow_WeaponsStay = true;
+    }
+
+    Marshmallow_AlternateUltraViolence = settings->MarshmallowSettings.AlternateUltraViolence;
+    Marshmallow_AlternateNightmare = settings->MarshmallowSettings.AlternateNightmare;
+    Marshmallow_RespawnInNightmare = settings->MarshmallowSettings.RespawnInNightmare;
+
+    if (Marshmallow_AlternateUltraViolence)  // any better place for this?
+        Marshmallow_InitAltUltraViolence();
+
+    if (Marshmallow_AlternateNightmare)  // any better place for this?
+        Marshmallow_InitAltNightmare();
+
+    Marshmallow_TrueInvisibility = settings->MarshmallowSettings.TrueInvisibility;
+
+    Marshmallow_PlayerCollision = settings->MarshmallowSettings.PlayerCollision;
+
+    Marshmallow_Sandbox = settings->MarshmallowSettings.SandboxMode;
+
+    if (Marshmallow_Sandbox)  // any better place for this?
+        InitSandbox();
+
+    Marshmallow_WitholdSSG = settings->MarshmallowSettings.Marshmallow_WitholdSSG;
+    Marshmallow_Doom1SSG = settings->MarshmallowSettings.Marshmallow_Doom1SSG;
+    SSG_Level = settings->MarshmallowSettings.SSG_Level;
+    Doom1SSG_Level = settings->MarshmallowSettings.Doom1SSG_Level;
+
+    physics_mode = settings->MarshmallowSettings.physics_mode;
+
+    upgrade_chance = settings->MarshmallowSettings.upgrade_chance;
+    MonsterHitpointsScale = settings->MarshmallowSettings.MonsterHitpointsScale;
+
+    Marshmallow_TreasureMode = settings->MarshmallowSettings.TreasureMode;
+
+    dm_timelimit = settings->MarshmallowSettings.dm_timelimit;
+    dm_fraglimit = settings->MarshmallowSettings.dm_fraglimit;
+
+    Marshmallow_RandomItems = settings->MarshmallowSettings.RandomItems;
+
+    Marshmallow_GibMode = settings->MarshmallowSettings.gibmode;
+
+    Marshmallow_AlternateLighting = settings->MarshmallowSettings.AlternateLighting;
+
+    Marshmallow_DangerousBFG = settings->MarshmallowSettings.DangerousBFG;
+    Marshmallow_BarrelPushing = settings->MarshmallowSettings.BarrelPushing;
+    Marshmallow_DeathmatchWeapons = settings->MarshmallowSettings.DeathmatchWeapons;
+    Marshmallow_KillOnExit = settings->MarshmallowSettings.DM_KillOnExit;
+    Marshmallow_AllowExit = settings->MarshmallowSettings.DM_AllowExit;
+    barrel_fx = settings->MarshmallowSettings.barrel_fx;
+    Marshmallow_EpicBossDeaths = settings->MarshmallowSettings.EpicBossDeaths;
+    Marshmallow_ResizeMonsters = settings->MarshmallowSettings.ResizeMonsters;
+
+    crispy->fliplevels = settings->MarshmallowSettings.fliplevels;
+
     if (lowres_turn)
     {
         printf("NOTE: Turning resolution is reduced; this is probably "
@@ -153,6 +230,73 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     settings->fast_monsters = fastparm;
     settings->respawn_monsters = respawnparm;
     settings->timelimit = timelimit;
+
+    settings->MarshmallowSettings.FriendlyFire = Marshmallow_FriendlyFire;
+    settings->MarshmallowSettings.MirrorDamage = Marshmallow_MirrorDamage;
+    settings->MarshmallowSettings.SelfDamage = Marshmallow_SelfDamage;
+    settings->MarshmallowSettings.DropGoodies = Marshmallow_DropGoodies;
+    settings->MarshmallowSettings.DropBackpack = Marshmallow_DropBackpack;
+    settings->MarshmallowSettings.CoopItemRespawn = Marshmallow_CoopItemRespawn;
+
+    settings->MarshmallowSettings.ConservePowerups = Marshmallow_ConservePowerups;
+    settings->MarshmallowSettings.KeepWeapons = Marshmallow_KeepWeapons;
+    settings->MarshmallowSettings.KeepKeys = Marshmallow_KeepKeys;
+    settings->MarshmallowSettings.SaveItems = Marshmallow_SaveItems;
+
+    settings->MarshmallowSettings.GradedWeapons = Marshmallow_GradedWeapons;
+    settings->MarshmallowSettings.DeathmatchWeapons = Marshmallow_DeathmatchWeapons;
+
+    if (!deathmatch)
+    {
+        settings->MarshmallowSettings.WeaponsStay = Marshmallow_WeaponsStay;
+    }
+    else
+    {
+        if ( deathmatch == 3 )
+            settings->MarshmallowSettings.WeaponsStay = true;
+    }
+
+    settings->MarshmallowSettings.AlternateUltraViolence = Marshmallow_AlternateUltraViolence;
+    settings->MarshmallowSettings.AlternateNightmare = Marshmallow_AlternateNightmare;
+    settings->MarshmallowSettings.RespawnInNightmare = Marshmallow_RespawnInNightmare;
+
+    settings->MarshmallowSettings.TrueInvisibility = Marshmallow_TrueInvisibility;
+
+    settings->MarshmallowSettings.PlayerCollision = Marshmallow_PlayerCollision;
+
+    settings->MarshmallowSettings.SandboxMode = Marshmallow_Sandbox;
+
+    settings->MarshmallowSettings.Marshmallow_WitholdSSG = Marshmallow_WitholdSSG;
+    settings->MarshmallowSettings.Marshmallow_Doom1SSG = Marshmallow_Doom1SSG;
+    settings->MarshmallowSettings.SSG_Level = SSG_Level;
+    settings->MarshmallowSettings.Doom1SSG_Level = Doom1SSG_Level;
+
+    settings->MarshmallowSettings.physics_mode = physics_mode;
+
+    settings->MarshmallowSettings.upgrade_chance = upgrade_chance;
+    settings->MarshmallowSettings.MonsterHitpointsScale = MonsterHitpointsScale;
+
+    settings->MarshmallowSettings.TreasureMode = Marshmallow_TreasureMode;
+
+    settings->MarshmallowSettings.dm_timelimit = dm_timelimit;
+    settings->MarshmallowSettings.dm_fraglimit = dm_fraglimit;
+
+    settings->MarshmallowSettings.RandomItems = Marshmallow_RandomItems;
+
+    settings->MarshmallowSettings.gibmode = Marshmallow_GibMode;
+
+    settings->MarshmallowSettings.AlternateLighting = Marshmallow_AlternateLighting;
+
+    settings->MarshmallowSettings.ResizeMonsters = Marshmallow_ResizeMonsters;
+    settings->MarshmallowSettings.EpicBossDeaths = Marshmallow_EpicBossDeaths;
+    settings->MarshmallowSettings.barrel_fx = barrel_fx;
+    settings->MarshmallowSettings.DM_AllowExit = Marshmallow_AllowExit;
+    settings->MarshmallowSettings.DM_KillOnExit = Marshmallow_KillOnExit;
+    settings->MarshmallowSettings.DeathmatchWeapons = Marshmallow_DeathmatchWeapons;
+    settings->MarshmallowSettings.BarrelPushing = Marshmallow_BarrelPushing;
+    settings->MarshmallowSettings.DangerousBFG = Marshmallow_DangerousBFG;
+
+    settings->MarshmallowSettings.fliplevels = crispy->fliplevels;
 
     settings->lowres_turn = (M_ParmExists("-record")
                          && !M_ParmExists("-longtics"))

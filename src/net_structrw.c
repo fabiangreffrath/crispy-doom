@@ -24,6 +24,11 @@
 #include "net_packet.h"
 #include "net_structrw.h"
 
+// [marshmallow]
+#include "doom/defs.h"
+extern boolean NET_ReadMarshmallowSettings(net_packet_t *packet, net_gamesettings_t *settings);
+extern void NET_WriteMarshmallowSettings(net_packet_t *packet, net_gamesettings_t *settings);
+
 // String names for the enum values in net_protocol_t, which are what is
 // sent over the wire. Every enum value must have an entry in this list.
 static struct
@@ -82,6 +87,8 @@ void NET_WriteSettings(net_packet_t *packet, net_gamesettings_t *settings)
     NET_WriteInt8(packet, settings->num_players);
     NET_WriteInt8(packet, settings->consoleplayer);
 
+    NET_WriteMarshmallowSettings(packet, settings);    // [marshmallow]
+
     for (i = 0; i < settings->num_players; ++i)
     {
         NET_WriteInt8(packet, settings->player_classes[i]);
@@ -93,23 +100,7 @@ boolean NET_ReadSettings(net_packet_t *packet, net_gamesettings_t *settings)
     boolean success;
     int i;
 
-    success = NET_ReadInt8(packet, (unsigned int *) &settings->ticdup)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->extratics)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->deathmatch)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->nomonsters)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->fast_monsters)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->respawn_monsters)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->episode)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->map)
-           && NET_ReadSInt8(packet, &settings->skill)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->gameversion)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->lowres_turn)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->new_sync)
-           && NET_ReadInt32(packet, (unsigned int *) &settings->timelimit)
-           && NET_ReadSInt8(packet, (signed int *) &settings->loadgame)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->random)
-           && NET_ReadInt8(packet, (unsigned int *) &settings->num_players)
-           && NET_ReadSInt8(packet, (signed int *) &settings->consoleplayer);
+    success = NET_ReadMarshmallowSettings(packet, settings);  // [marshmallow]
 
     if (!success)
     {

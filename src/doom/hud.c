@@ -8,6 +8,7 @@
 #include "bot.h"  
 #include "dj.h"
 
+extern int prndindex;
 
 //  The info readout allows us to watch variables on-screen during gameplay
 void UpdateInfoReadout()
@@ -17,8 +18,12 @@ void UpdateInfoReadout()
 		EraseInfoReadout();
 	}
 	else
-	{   
-		DJ_ShowInfo();
+	{
+        AddToInfoReadout("BarrelPushing: ", Marshmallow_BarrelPushing, 6);
+        AddToInfoReadout("marshmallow_rndindex: ", marshmallow_rndindex, 7);
+        AddToInfoReadout("prndindex: ", prndindex, 8);
+
+		//DJ_ShowInfo();
 		
 		//PKE_ShowInfo();
 
@@ -534,9 +539,6 @@ void BotCommandMenu()
 	CrispyReplaceColor(HOLDPOSITION, CR_GOLD, "'H'");
 	AddStringsToInfoReadout("", DEH_String(HOLDPOSITION), 5);	
 }
-
-extern int prndindex;
-extern int crndindex;
 
 void ScoreboardReadout()
 {
