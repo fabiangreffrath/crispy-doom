@@ -469,6 +469,7 @@ void NerfSkelMissile(boolean option_on)
 	SHOW_MESSAGE DEH_String(CHANGEFFECT);
 }
 
+boolean Marshmallow_BoostHP_Spiderboss; // move
 
 void NerfHP_BoostHP_Spiderboss(boolean option_on)  // not used yet
 {
@@ -804,7 +805,7 @@ void ChangeInvis(boolean option_on)
 	if (option_on)
 	{
 		Marshmallow_ShadowInvis = true;
-		mobjinfo[MT_INS].flags |= MF_SHADOW;  // make the invis powerup invisible as to distinguish from our new powerup, the Demonsphere
+		mobjinfo[MT_INS].flags |= MF_SHADOW;  // Make the invis powerup invisible as to distinguish from our new health bonus item, the "Demonsphere"
 	}
 	else
 	{
