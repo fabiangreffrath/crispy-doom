@@ -109,8 +109,8 @@ extern void  StripWeapons(int player);
 int upgrade_chance;
 int MonsterHitpointsScale;
 int newgame_mode;
-int newskill;  // added 3-9-19
-/*extern */int skill_selection;  // not sure if I need this here yet
+int newskill;
+int skill_selection;
 extern void SetSpecialSkills();
 extern boolean organic_levelchange;
 // [m]
@@ -3046,11 +3046,9 @@ boolean M_Responder (event_t* ev)
 
                 case newgame_start:
 
-                    //SetSpecialSkills(); // added 3-9-19
-                    newskill = skill_selection;  // this seems to be necessary (3-9-19)
-
-                    organic_levelchange = false;  // NEW
-                    StripWeapons(consoleplayer);  // new
+                    newskill = skill_selection;
+                    organic_levelchange = false;
+                    StripWeapons(consoleplayer);
                     SkipToLevel();
                     M_ClearMenus ();
                     return true;
