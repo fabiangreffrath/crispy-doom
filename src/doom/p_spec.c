@@ -1142,6 +1142,9 @@ void P_PlayerInSpecialSector (player_t* player)
     {
       case 5:
 	// HELLSLIME DAMAGE
+
+	OfferRadsuit(player);  // [marshmallow]
+
 	// [crispy] no nukage damage with NOCLIP cheat
 	if (!player->powers[pw_ironfeet] && !(player->mo->flags & MF_NOCLIP))
 	    if (!(leveltime&0x1f))
@@ -1150,6 +1153,9 @@ void P_PlayerInSpecialSector (player_t* player)
 	
       case 7:
 	// NUKAGE DAMAGE
+
+	OfferRadsuit(player);  // [marshmallow]
+
 	// [crispy] no nukage damage with NOCLIP cheat
 	if (!player->powers[pw_ironfeet] && !(player->mo->flags & MF_NOCLIP))
 	    if (!(leveltime&0x1f))
@@ -1160,6 +1166,9 @@ void P_PlayerInSpecialSector (player_t* player)
 	// SUPER HELLSLIME DAMAGE
       case 4:
 	// STROBE HURT
+
+	OfferRadsuit(player);  // [marshmallow]
+
 	// [crispy] no nukage damage with NOCLIP cheat
 	if ((!player->powers[pw_ironfeet]
 	    || (P_Random()<5) ) && !(player->mo->flags & MF_NOCLIP))
