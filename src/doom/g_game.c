@@ -495,9 +495,9 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     } 
     else 
     { 
-	if (gamekeydown[key_right])
-	    cmd->angleturn -= angleturn[tspeed]; 
-	if (gamekeydown[key_left]) 
+	if (gamekeydown[key_right] && !menus_on)  // [marshmallow] For using arrow keys on datapad menu
+	    cmd->angleturn -= angleturn[tspeed];
+	if (gamekeydown[key_left] && !menus_on)   // [marshmallow] For using arrow keys on datapad menu
 	    cmd->angleturn += angleturn[tspeed]; 
 	if (joyxmove > 0) 
 	    cmd->angleturn -= angleturn[tspeed]; 
@@ -505,12 +505,14 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 	    cmd->angleturn += angleturn[tspeed]; 
     } 
  
-    if (gamekeydown[key_up] || gamekeydown[key_alt_up]) // [crispy] add key_alt_*
+    if ((gamekeydown[key_up] || gamekeydown[key_alt_up]) // [crispy] add key_alt_*
+        && !menus_on)  // [marshmallow] For using arrow keys on datapad menu
     {
 	// fprintf(stderr, "up\n");
 	forward += forwardmove[speed]; 
     }
-    if (gamekeydown[key_down] || gamekeydown[key_alt_down]) // [crispy] add key_alt_*
+    if ((gamekeydown[key_down] || gamekeydown[key_alt_down]) // [crispy] add key_alt_*
+        && !menus_on)  // [marshmallow] For using arrow keys on datapad menu
     {
 	// fprintf(stderr, "down\n");
 	forward -= forwardmove[speed]; 
@@ -1166,7 +1168,8 @@ void G_Ticker (void)
  
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
-	if (playeringame[i]) 
+	if (playeringame[i]
+        && !bot_in_game[i])   // [marshmallow] Don't do this for bots
 	{ 
 	    cmd = &players[i].cmd; 
 
@@ -1371,7 +1374,15 @@ void G_PlayerReborn (int player)
     itemcount = players[player].itemcount; 
     secretcount = players[player].secretcount; 
 	 
-    p = &players[player]; 
+    p = &players[player];
+
+    // [marshmallow] This respawns the bot
+    if ( IsBot(p) )
+    {
+        Bot_Reborn(p->bot_number);
+    }
+    // [m]
+
     memset (p, 0, sizeof(*p)); 
  
     memcpy (players[player].frags, frags, sizeof(players[player].frags)); 
@@ -1588,7 +1599,8 @@ void G_DoReborn (int playernum)
     {
 	// respawn at the start
 
-	// first dissasociate the corpse 
+	// first dissasociate the corpse
+	if (!playeringame[playernum])  // [marshmallow]
 	players[playernum].mo->player = NULL;   
 		 
 	// spawn at random spot if in death match 

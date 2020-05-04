@@ -25,6 +25,7 @@
 #include "doomstat.h"
 
 extern void Marshmallow_Ticker();  // [marshmallow]
+extern boolean bot_in_game[MAXPLAYERS]; // [marshmallow]
 
 int	leveltime;
 
@@ -146,8 +147,13 @@ void P_Ticker (void)
     
 		
     for (i=0 ; i<MAXPLAYERS ; i++)
-	if (playeringame[i])
-	    P_PlayerThink (&players[i]);
+    if (playeringame[i])
+    {
+        if ( bot_in_game[i] )  // [marshmallow] We do Bot_Think() elsewhere
+            continue;
+
+        P_PlayerThink (&players[i]);
+    }
 
     Marshmallow_Ticker();   // [marshmallow] Entry point for most of Marshmallow Doom's new functionality
 

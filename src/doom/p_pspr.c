@@ -517,6 +517,8 @@ A_GunFlash
 {
     if (!player) return; // [crispy] let pspr action pointers get called from mobj states
     P_SetMobjState (player->mo, S_PLAY_ATK2);
+
+    if (!IsBot(player))    // [marshmallow]
     P_SetPsprite (player,ps_flash,weaponinfo[player->readyweapon].flashstate);
 }
 
@@ -762,12 +764,17 @@ A_FirePistol
   pspdef_t*	psp ) 
 {
     if (!player) return; // [crispy] let pspr action pointers get called from mobj states
+
+    if ( !IsBot( player ) )   // [marshmallow]
     S_StartSound (player->so, sfx_pistol); // [crispy] weapon sound source
 
     P_SetMobjState (player->mo, S_PLAY_ATK2);
-    DecreaseAmmo(player, weaponinfo[player->readyweapon].ammo, 1);
 
-    P_SetPsprite (player,
+    if (!Marshmallow_InfinitePistol)
+        DecreaseAmmo(player, weaponinfo[player->readyweapon].ammo, 1);
+
+    if (!IsBot(player))    // [marshmallow]
+        P_SetPsprite (player,
 		  ps_flash,
 		  weaponinfo[player->readyweapon].flashstate);
 
@@ -790,11 +797,15 @@ A_FireShotgun
     int		i;
 	
     if (!player) return; // [crispy] let pspr action pointers get called from mobj states
-    S_StartSound (player->so, sfx_shotgn); // [crispy] weapon sound source
+
+    if ( !IsBot( player ) )  // [marshmallow]
+        S_StartSound (player->so, sfx_shotgn); // [crispy] weapon sound source
+
     P_SetMobjState (player->mo, S_PLAY_ATK2);
 
     DecreaseAmmo(player, weaponinfo[player->readyweapon].ammo, 1);
 
+    if (!IsBot(player))    // [marshmallow]
     P_SetPsprite (player,
 		  ps_flash,
 		  weaponinfo[player->readyweapon].flashstate);
@@ -824,11 +835,15 @@ A_FireShotgun2
 		
 	
     if (!player) return; // [crispy] let pspr action pointers get called from mobj states
-    S_StartSound (player->so, sfx_dshtgn); // [crispy] weapon sound source
+
+    if ( !IsBot( player ) )  // [marshmallow]
+        S_StartSound (player->so, sfx_dshtgn); // [crispy] weapon sound source
+
     P_SetMobjState (player->mo, S_PLAY_ATK2);
 
     DecreaseAmmo(player, weaponinfo[player->readyweapon].ammo, 2);
 
+    if ( !IsBot( player ) )  // [marshmallow]
     P_SetPsprite (player,
 		  ps_flash,
 		  weaponinfo[player->readyweapon].flashstate);
@@ -860,6 +875,8 @@ A_FireCGun
   pspdef_t*	psp ) 
 {
     if (!player) return; // [crispy] let pspr action pointers get called from mobj states
+
+    if ( !IsBot( player ) )  // [marshmallow]
     S_StartSound (player->so, sfx_pistol); // [crispy] weapon sound source
 
     if (!player->ammo[weaponinfo[player->readyweapon].ammo])
@@ -868,6 +885,7 @@ A_FireCGun
     P_SetMobjState (player->mo, S_PLAY_ATK2);
     DecreaseAmmo(player, weaponinfo[player->readyweapon].ammo, 1);
 
+    if ( !IsBot( player ) )  // [marshmallow]
     P_SetPsprite (player,
 		  ps_flash,
 		  weaponinfo[player->readyweapon].flashstate

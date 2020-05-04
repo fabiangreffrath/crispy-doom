@@ -1207,18 +1207,23 @@ boolean HU_Responder(event_t *ev)
 
     if (!chat_on)
     {
+
+    // [marshmallow]
+    if (menus_on)
+        return false;
+
 	if (ev->data1 == key_message_refresh)
 	{
 	    message_on = true;
 	    message_counter = HU_MSGTIMEOUT;
 	    eatkey = true;
 	}
-	else if (netgame && ev->data2 == key_multi_msg)
+	else if (realnetgame && ev->data2 == key_multi_msg)  // [marshmallow] Changed to realnetgame
 	{
 	    eatkey = true;
             StartChatInput(HU_BROADCAST);
 	}
-	else if (netgame && numplayers > 2)
+	else if (realnetgame && numplayers > 2)  // [marshmallow] Changed to realnetgame
 	{
 	    for (i=0; i<MAXPLAYERS ; i++)
 	    {

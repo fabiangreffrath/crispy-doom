@@ -566,7 +566,10 @@ P_LookForPlayers
 		
 	actor->target = player->mo;
 
-	AnnounceMostDangerousMonsters(actor);  // [marshmallow]
+	// [marshmallow]
+	if ( !IsBot(player) )
+	    AnnounceMostDangerousMonsters(actor);
+	// [m]
 
     return true;
     }
@@ -816,6 +819,9 @@ void A_FaceTarget (mobj_t* actor)
 	return;
 
     InfightAlert(actor);  // [marshmallow]
+
+    if ( !IsBot( actor->player ) )  // [marshmallow] Don't do this to bots
+        actor->flags &= ~MF_AMBUSH;
     
     actor->flags &= ~MF_AMBUSH;
 	
@@ -823,7 +829,10 @@ void A_FaceTarget (mobj_t* actor)
 				    actor->y,
 				    actor->target->x,
 				    actor->target->y);
-    
+
+    if ( IsBot( actor->player ) ) // [marshmallow] So the bots don't "jitter" when aiming at spectres
+        return;
+
     if (actor->target->flags & MF_SHADOW)
 	actor->angle += P_SubRandom() << 21;
 }

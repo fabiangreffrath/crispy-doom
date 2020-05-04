@@ -670,7 +670,7 @@ void D_DoAdvanceDemo (void)
 	  S_StartMusic (mus_intro);
 	break;
       case 1:
-	G_DeferedPlayDemo(DEH_String("demo1"));
+	//G_DeferedPlayDemo(DEH_String("demo1"));   // [marshmallow] No demos at title screen
 	break;
       case 2:
 	pagetic = 200;
@@ -678,7 +678,7 @@ void D_DoAdvanceDemo (void)
 	pagename = DEH_String("CREDIT");
 	break;
       case 3:
-	G_DeferedPlayDemo(DEH_String("demo2"));
+	//G_DeferedPlayDemo(DEH_String("demo2"));  // [marshmallow] No demos at title screen
 	break;
       case 4:
 	gamestate = GS_DEMOSCREEN;
@@ -699,11 +699,11 @@ void D_DoAdvanceDemo (void)
 	}
 	break;
       case 5:
-	G_DeferedPlayDemo(DEH_String("demo3"));
+	//G_DeferedPlayDemo(DEH_String("demo3"));  // [marshmallow] No demos at title screen
 	break;
         // THE DEFINITIVE DOOM Special Edition demo
       case 6:
-	G_DeferedPlayDemo(DEH_String("demo4"));
+	//G_DeferedPlayDemo(DEH_String("demo4"));  // [marshmallow] No demos at title screen
 	break;
     }
 
