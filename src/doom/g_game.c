@@ -1136,8 +1136,11 @@ void G_Ticker (void)
 	  case ga_completed: 
 	    G_DoCompleted (); 
 	    break; 
-	  case ga_victory: 
-	    F_StartFinale (); 
+	  case ga_victory:
+        if ( deathmatch )  // [marshmallow] No finale screens in DM
+            G_DoWorldDone ();
+        else
+            F_StartFinale ();
 	    break; 
 	  case ga_worlddone: 
 	    G_DoWorldDone (); 
@@ -1981,6 +1984,9 @@ void G_WorldDone (void)
 	  case 11:
 	  case 20:
 	  case 30:
+          if ( deathmatch )  // [marshmallow] No finale screens in DM
+              break;
+
 	    F_StartFinale ();
 	    break;
 	}

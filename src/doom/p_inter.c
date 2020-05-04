@@ -385,7 +385,20 @@ P_TouchSpecialThing
 	// out of reach
 	return;
     }
-    
+
+    // [marshmallow] Bots don't pick up any items
+    if ( IsBot(toucher->player) )
+    {
+        if (special->sprite == SPR_BAR1)
+        {
+            toucher->player->touching_barrel = true;
+            toucher->player->current_barrel = special;
+            toucher->player->barrel_timeout = 30;
+        }
+
+        return;
+    }
+    // [m]
 	
     sound = sfx_itemup;	
     player = toucher->player;
