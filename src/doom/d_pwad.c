@@ -20,168 +20,151 @@
 
 #include <stdlib.h>
 
-#include "doomtype.h"
 #include "doomstat.h"
 #include "deh_str.h"
 #include "d_iwad.h"
-#include "d_mode.h"
 #include "m_misc.h"
 #include "w_wad.h"
 
 extern char *iwadfile;
 
-static void D_AddFile(char *filename)
-{
-    printf(" adding %s\n", filename);
-    W_AddFile(filename);
-}
-
 // [crispy] support loading SIGIL.WAD (and SIGIL_SHREDS.WAD) alongside DOOM.WAD
 void D_LoadSigilWad(void)
 {
-    int i;
+	int i, j;
+	char *sigil_wad = NULL, *sigil_shreds = NULL;
+	char *dirname;
 
-    struct {
-        const char *name;
-        const char new_name[8];
-    } sigil_lumps [] = {
-        {"CREDIT",   "SIGCREDI"},
-        {"HELP1",    "SIGHELP1"},
-        {"TITLEPIC", "SIGTITLE"},
-        {"DEHACKED", "SIG_DEH"},
-        {"DEMO1",    "SIGDEMO1"},
-        {"DEMO2",    "SIGDEMO2"},
-        {"DEMO3",    "SIGDEMO3"},
-        {"DEMO4",    "SIGDEMO4"},
-        {"D_INTER",  "D_SIGINT"},
-        {"D_INTRO",  "D_SIGTIT"},
-    };
+	const char *const sigil_wads[] = {
+		"SIGIL_v1_21.wad",
+		"SIGIL_v1_2.wad",
+		"SIGIL.wad"
+	};
 
-    const char *const texture_files[] = {
-        "PNAMES",
-        "TEXTURE1",
-        "TEXTURE2",
-    };
+	struct {
+		const char *name;
+		const char new_name[8];
+	} sigil_lumps [] = {
+		{"CREDIT",   "SIGCREDI"},
+		{"HELP1",    "SIGHELP1"},
+		{"TITLEPIC", "SIGTITLE"},
+		{"DEHACKED", "SIG_DEH"},
+		{"DEMO1",    "SIGDEMO1"},
+		{"DEMO2",    "SIGDEMO2"},
+		{"DEMO3",    "SIGDEMO3"},
+		{"DEMO4",    "SIGDEMO4"},
+		{"D_INTER",  "D_SIGINT"},
+		{"D_INTRO",  "D_SIGTIT"},
+	};
 
-    // [crispy] don't load SIGIL.wad if another PWAD already provides E5M1
-    i = W_CheckNumForName("E5M1");
-    if (i != -1)
-    {
-        return;
-    }
+	const char *const texture_files[] = {
+		"PNAMES",
+		"TEXTURE1",
+		"TEXTURE2",
+	};
 
-    // [crispy] don't load SIGIL.wad if SIGIL_COMPAT.wad is already loaded
-    i = W_CheckNumForName("E3M1");
-    if (i != -1 && !strncasecmp(W_WadNameForLump(lumpinfo[i]), "SIGIL_COMPAT", 12))
-    {
-        return;
-    }
+	// [crispy] don't load SIGIL.wad if another PWAD already provides E5M1
+	i = W_CheckNumForName("E5M1");
+	if (i != -1)
+	{
+		return;
+	}
 
-    // [crispy] don't load SIGIL.wad if another PWAD already modifies the texture files
-    for (i = 0; i < arrlen(texture_files); i++)
-    {
-        int j;
+	// [crispy] don't load SIGIL.wad if SIGIL_COMPAT.wad is already loaded
+	i = W_CheckNumForName("E3M1");
+	if (i != -1 && !strncasecmp(W_WadNameForLump(lumpinfo[i]), "SIGIL_COMPAT", 12))
+	{
+		return;
+	}
 
-        j = W_CheckNumForName(texture_files[i]);
+	// [crispy] don't load SIGIL.wad if another PWAD already modifies the texture files
+	for (i = 0; i < arrlen(texture_files); i++)
+	{
+		j = W_CheckNumForName(texture_files[i]);
 
-        if (j != -1 && !W_IsIWADLump(lumpinfo[j]))
-        {
-            return;
-        }
-    }
+		if (j != -1 && !W_IsIWADLump(lumpinfo[j]))
+		{
+			return;
+		}
+	}
 
-    if (gameversion == exe_ultimate)
-    {
-        const char *const sigil_wads[] = {
-            "SIGIL_v1_21.wad",
-            "SIGIL_v1_2.wad",
-            "SIGIL.wad"
-        };
-        char *sigil_wad = NULL, *sigil_shreds = NULL;
-        char *dirname;
+	dirname = M_DirName(iwadfile);
+	sigil_shreds = M_StringJoin(dirname, DIR_SEPARATOR_S, "SIGIL_SHREDS.wad", NULL);
 
-        dirname = M_DirName(iwadfile);
-        sigil_shreds = M_StringJoin(dirname, DIR_SEPARATOR_S, "SIGIL_SHREDS.wad", NULL);
+	// [crispy] load SIGIL.WAD
+	for (i = 0; i < arrlen(sigil_wads); i++)
+	{
+		sigil_wad = M_StringJoin(dirname, DIR_SEPARATOR_S, sigil_wads[i], NULL);
 
-        // [crispy] load SIGIL.WAD
-        for (i = 0; i < arrlen(sigil_wads); i++)
-        {
-            sigil_wad = M_StringJoin(dirname, DIR_SEPARATOR_S, sigil_wads[i], NULL);
+		if (M_FileExists(sigil_wad))
+		{
+			break;
+		}
 
-            if (M_FileExists(sigil_wad))
-            {
-                break;
-            }
+		free(sigil_wad);
+		sigil_wad = D_FindWADByName(sigil_wads[i]);
 
-            free(sigil_wad);
-            sigil_wad = D_FindWADByName(sigil_wads[i]);
+		if (sigil_wad)
+		{
+			break;
+		}
+	}
+	free(dirname);
 
-            if (sigil_wad)
-            {
-                break;
-            }
-        }
-        free(dirname);
+	if (sigil_wad == NULL)
+	{
+		free(sigil_shreds);
+		return;
+	}
 
-        if (sigil_wad == NULL)
-        {
-            free(sigil_shreds);
-            return;
-        }
+	printf(" [Sigil] adding %s\n", sigil_wad);
+	W_AddFile(sigil_wad);
+	free(sigil_wad);
 
-        printf(" [expansion]");
-        D_AddFile(sigil_wad);
-        free(sigil_wad);
+	// [crispy] load SIGIL_SHREDS.WAD
+	if (!M_FileExists(sigil_shreds))
+	{
+		free(sigil_shreds);
+		sigil_shreds = D_FindWADByName("SIGIL_SHREDS.wad");
+	}
 
-        // [crispy] load SIGIL_SHREDS.WAD
-        if (!M_FileExists(sigil_shreds))
-        {
-            free(sigil_shreds);
-            sigil_shreds = D_FindWADByName("SIGIL_SHREDS.wad");
-        }
+	if (sigil_shreds != NULL)
+	{
+		printf(" [Sigil Shreds] adding %s\n", sigil_shreds);
+		W_AddFile(sigil_shreds);
+		free(sigil_shreds);
+	}
 
-        if (sigil_shreds != NULL)
-        {
-            printf(" [expansion]");
-            D_AddFile(sigil_shreds);
-            free(sigil_shreds);
-        }
+	// [crispy] rename intrusive SIGIL_SHREDS.wad music lumps out of the way
+	for (i = 0; i < arrlen(sigil_lumps); i++)
+	{
+		// [crispy] skip non-music lumps
+		if (strncasecmp(sigil_lumps[i].name, "D_", 2))
+		{
+			continue;
+		}
 
-        // [crispy] rename intrusive SIGIL_SHREDS.wad music lumps out of the way
-        for (i = 0; i < arrlen(sigil_lumps); i++)
-        {
-            int j;
+		j = W_CheckNumForName(sigil_lumps[i].name);
 
-            // [crispy] skip non-music lumps
-            if (strncasecmp(sigil_lumps[i].name, "D_", 2))
-            {
-                continue;
-            }
+		if (j != -1 && !strncasecmp(W_WadNameForLump(lumpinfo[j]), "SIGIL_SHREDS", 12))
+		{
+			memcpy(lumpinfo[j]->name, sigil_lumps[i].new_name, 8);
+		}
+	}
 
-            j = W_CheckNumForName(sigil_lumps[i].name);
+	// [crispy] rename intrusive SIGIL.wad graphics, demos and music lumps out of the way
+	for (i = 0; i < arrlen(sigil_lumps); i++)
+	{
+		j = W_CheckNumForName(sigil_lumps[i].name);
 
-            if (j != -1 && !strncasecmp(W_WadNameForLump(lumpinfo[j]), "SIGIL_SHREDS", 12))
-            {
-                memcpy(lumpinfo[j]->name, sigil_lumps[i].new_name, 8);
-            }
-        }
+		if (j != -1 && !strncasecmp(W_WadNameForLump(lumpinfo[j]), "SIGIL", 5))
+		{
+			memcpy(lumpinfo[j]->name, sigil_lumps[i].new_name, 8);
+		}
+	}
 
-        // [crispy] rename intrusive SIGIL.wad graphics, demos and music lumps out of the way
-        for (i = 0; i < arrlen(sigil_lumps); i++)
-        {
-            int j;
-
-            j = W_CheckNumForName(sigil_lumps[i].name);
-
-            if (j != -1 && !strncasecmp(W_WadNameForLump(lumpinfo[j]), "SIGIL", 5))
-            {
-                memcpy(lumpinfo[j]->name, sigil_lumps[i].new_name, 8);
-            }
-        }
-
-        // [crispy] regenerate the hashtable
-        W_GenerateHashTable();
-    }
+	// [crispy] regenerate the hashtable
+	W_GenerateHashTable();
 }
 
 // [crispy] support loading NERVE.WAD alongside DOOM2.WAD
@@ -230,8 +213,8 @@ static boolean CheckLoadNerve(void)
 		return false;
 	}
 
-	printf(" [expansion]");
-	D_AddFile(crispy->havenerve);
+	printf(" [No Rest for the Living] adding %s\n", crispy->havenerve);
+	W_AddFile(crispy->havenerve);
 
 	// [crispy] add indicators to level and level name patch lump names
 	for (i = 0; i < 9; i++)
@@ -255,11 +238,6 @@ static boolean CheckLoadNerve(void)
 
 void D_LoadNerveWad(void)
 {
-	if (gamemission != doom2)
-	{
-		return;
-	}
-
 	// [crispy] check if NERVE.WAD is already loaded as a PWAD
 	if (!CheckNerveLoaded())
 	{
@@ -388,8 +366,8 @@ static boolean CheckLoadMasterlevels(void)
 		return false;
 	}
 
-	printf(" [expansion]");
-	D_AddFile(crispy->havemaster);
+	printf(" [The Master Levels] adding %s\n", crispy->havemaster);
+	W_AddFile(crispy->havemaster);
 
 	// [crispy] add indicators to level and level name patch lump names
 	for (i = 0; i < 21; i++)
@@ -421,8 +399,8 @@ static void LoadMasterlevelsWads(void)
 		// [crispy] add TEETH.WAD only once
 		if (masterlevels_wads[i].wad_name)
 		{
-			printf(" [master levels]");
-			D_AddFile(masterlevels_wads[i].file_path);
+			printf(" [The Master Levels %02d] adding %s\n", i+1, masterlevels_wads[i].file_path);
+			W_AddFile(masterlevels_wads[i].file_path);
 			free(masterlevels_wads[i].file_path);
 		}
 
@@ -443,11 +421,6 @@ static void LoadMasterlevelsWads(void)
 
 void D_LoadMasterlevelsWad(void)
 {
-	if (gamemission != doom2)
-	{
-		return;
-	}
-
 	// [crispy] check if the single MASTERLEVELS.WAD is already loaded as a PWAD
 	if (!CheckMasterlevelsLoaded())
 	{

@@ -35,6 +35,7 @@
 #include "sounds.h"
 
 #include "d_iwad.h"
+#include "d_pwad.h" // [crispy] D_Load{Sigil,Nerve,Masterlevels}Wad()
 
 #include "z_zone.h"
 #include "w_main.h"
@@ -1830,9 +1831,16 @@ void D_DoomMain (void)
     // [crispy] allow overriding of special-casing
     if (!M_ParmExists("-noautoload") && gamemode != shareware)
     {
-	D_LoadMasterlevelsWad();
-	D_LoadNerveWad();
-	D_LoadSigilWad();
+	if (gamemode == retail)
+	{
+		D_LoadSigilWad();
+	}
+
+	if (gamemission == doom2)
+	{
+		D_LoadNerveWad();
+		D_LoadMasterlevelsWad();
+	}
     }
 
     // Load DEHACKED lumps from WAD files - but only if we give the right
