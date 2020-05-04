@@ -55,6 +55,21 @@ typedef enum {
 
 } gibmode_t;
 
+// Inventory item slots
+typedef enum {
+    NO_ITEMS,
+    ITEM_RADSUIT,
+    ITEM_INVUL,
+    ITEM_INVIS,
+    ITEM_MEDKIT,
+    ITEM_VISOR,
+    MAX_INV_ITEMS,
+
+    // We are excluding automap for now
+    ITEM_AUTOMAP,
+
+} invitem_t;
+
 // Menu stuff
 #define FIRST_MENU_ITEM 1
 #define DOOMLABEL  "       DOOM"

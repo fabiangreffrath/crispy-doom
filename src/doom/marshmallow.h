@@ -16,7 +16,6 @@
 #include "bot.h"
 #include "dj.h"
 #include "hud.h"
-
 #include "profile.h"
 
 // Global option flags
@@ -89,12 +88,6 @@ boolean Marshmallow_BarrelPushing;
 int Marshmallow_TreasureMode;
 int Marshmallow_ShowTargetHP;
 
-// Our own ticker that resets on map changes
-int marshmallow_tic;
-
-//
-typedef int playerindex_t;
-
 // Global functions
 void Marshmallow_InitVariables();
 void Marshmallow_CheckCommandLineArgs();
@@ -163,6 +156,28 @@ void SetPunchSound();
 void ToggleFriendlyFire();
 int RandomEpisode();
 void SetOptionsFromCfg();
+int skip_to_level;  // Map # we're skipping to
+void SkipToLevel();
+void SkipToRandomLevel();
+void ChooseLevel_Next();
+void ChooseLevel_Prev();
+void SetSkillUpgrades();
+void Skill_Next();
+void Skill_Prev();
+void UpgradeChance_Up();
+void UpgradeChance_Down();
+void HPScale_Up();
+void HPScale_Down();
+int RandomMap();
+void ToggleSong_Runnin();
+void ToggleSong_E1M1();
+void ToggleSong_DoomInter();
+void ToggleSong_Doom2Inter();
+void AddToInfoReadout(char* label, int val, int line);
+void AddStringsToInfoReadout(char* label, char* output, int line);
+void ShowTargetHP();
+void PKE_Readout();
+void HUDMenuKeyInput();
 void DoSharewareBossDeath();  // check status of this (2020)
 
 // Network stuff
@@ -223,21 +238,6 @@ int dm_timelimit;
 int dm_scores[MAXPLAYERS];
 boolean Marshmallow_AllowExit;
 boolean Marshmallow_KillOnExit;
-
-// Inventory item slots
-typedef enum {     
-	NO_ITEMS,
-	ITEM_RADSUIT,
-	ITEM_INVUL,
-	ITEM_INVIS,
-	ITEM_MEDKIT,
-	ITEM_VISOR,
-	MAX_INV_ITEMS, 
-
-	// We are excluding automap for now
-	ITEM_AUTOMAP,
-
-} invitem_t;
 
 // Backpack and weapon drops
 void DropInventoryInBackpack(mobj_t* target);
@@ -301,74 +301,11 @@ int missilelock_delay;
 #define MISSILELOCK_X 200
 #define MISSILELOCK_Y 15
 
-// Info readout widget (for debugging only)
-void PKE_ShowInfo(); 
-void PKE_Readout();
+// Info readout widget
+void PKE_ShowInfo();
 void EraseInfoReadout();
 
-// HUD text stuff
-char* DisplayPhysicsMode();
-char* DisplayLightingMode();
-char* DisplayMedkitRemaining();
-char* DisplayValue(int val);             // these have been moved, just need to make them static and re-position in file
-char* DisplayOnOff(boolean option);
-char* DisplaySongStatus(boolean option);
-char* DisplayMusicMode();
-char* DisplayRedScreenMode();
-char* DisplayTreasureMode();
-char* DisplayGibMode();
-char* DisplayCGuySnd(boolean option);
-char* DisplayTargetHPSetting(int input);
-char* DisplayRevMissileSpeed();  
-char* DisplayBotSpeed();
-char* ShowRandomItemsMode();
-char* ShowThingName();
-char* ShowMapSelection();
-char* ShowMapWeapons();
-char* ShowSkillLevel();
-char* ShowGameType();
-char* ShowSongLength();
-char* ShowBotWeapon(int bot);
-
-void HUD_InitHelp();       // these have been moved, just need to make them static and re-position in file
-void HUD_InitEnemyMenu();
-void HUD_InitWeaponMenu();
-void HUD_InitSandboxMenu();
-void HUD_InitSkipLevelMenu();
-void HUD_InitMusicMenu();
-void HUD_InitMainMenu();
-void HUD_InitMessagesMenu();
-void HUD_InitSkillMenu();
-void HUD_InitInventoryMenu();
-void HUD_InitBotMenu();
-void HUD_InitGameplayMenu();
-void HUD_InitMiscText();
-void HUD_InitBlacklistMenu();
-void HUD_InitVanillaMusicMenu();
-void HUD_InitProfileScreen();
-
-int skip_to_level;  // map # we're skipping to
-void SkipToLevel();
-void SkipToRandomLevel();
-void ChooseLevel_Next();
-void ChooseLevel_Prev();
-void SetSkillUpgrades();
-void Skill_Next();
-void Skill_Prev();
-void UpgradeChance_Up();
-void UpgradeChance_Down();
-void HPScale_Up();
-void HPScale_Down();
-int RandomMap();
-void ToggleSong_Runnin(); 
-void ToggleSong_E1M1();  
-void ToggleSong_DoomInter();
-void ToggleSong_Doom2Inter();
-void AddToInfoReadout(char* label, int val, int line);
-void AddStringsToInfoReadout(char* label, char* output, int line);
-void ShowTargetHP();
-void HUDMenuKeyInput();
-
+// On/off flags for every submenu
 boolean pkereadout_on;
 boolean profilescreen_on;  
 boolean menus_on;
@@ -384,7 +321,7 @@ boolean musicmenu_on;
 boolean vanillamusicmenu_on;
 boolean blacklistmenu_on;
 boolean invmenu_on;
-boolean treasure_on;  // for realnetgame only
+boolean treasure_on;  // Used for realnetgame only
 boolean skillmenu_on;
 boolean optionsmenu_on;
 boolean botmenu_on;
@@ -395,17 +332,21 @@ boolean offer_suicide;
 boolean offer_radsuit;
 boolean offer_medkit;
 
-int offertimeout_suicide;
-int offertimeout_radsuit;
-int offertimeout_medkit;
-#define DEFAULT_OFFER_TIMEOUT 175   // 5 seconds
+// Inventory menu
+int invmenu_selection;
 
-int newgame_mode;
-skill_t newskill;
+enum {
+    NO_SELECTION,
 
-void SetKeyDelay();
-boolean CheckKeyDelay();
-int menu_key_delay;    // TODO:  rename to menu_scroll_delay
+    RADSUIT_SELECTED,
+    INVUL_SELECTED,
+    INVIS_SELECTED,
+    MEDKIT_SELECTED,
+    VISOR_SELECTED,
+    //AUTOMAP_SELECTED,
+
+    MAX_INV_OPTIONS,
+} ;
 
 // New math/randomization functions
 float F_Random();
@@ -418,7 +359,7 @@ int marshmallow_rndindex;
 void Test_Random();
 void SeedRandom();
 
-// Bots
+// Globals for bots
 int usetimer;
 #define DEFAULT_USE_TIMER 20
 int spawntics;  // for delaying use key orders after respawn
@@ -555,8 +496,20 @@ mobjtype_t GenerateRandomBonusItem();
 int GetRandomDoom2Monster(int i);
 int GetRandomDoom1Monster(int i);
 
-// Global sandbox data
+// Misc
+int offertimeout_suicide;
+int offertimeout_radsuit;
+int offertimeout_medkit;
+#define DEFAULT_OFFER_TIMEOUT 175   // 5 seconds
+int marshmallow_tic;  // Our own ticker that resets on map changes
+typedef int playerindex_t;  // Somewhat pointless
+int newgame_mode;
+skill_t newskill;
+void SetKeyDelay();
+boolean CheckKeyDelay();
+int menu_key_delay;    // TODO:  rename to menu_scroll_delay
 
+// Global sandbox data
 typedef struct {
 
 	boolean		design_mode;

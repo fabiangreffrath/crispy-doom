@@ -3,8 +3,7 @@
 
 #include "marshmallow.h"
 
-typedef int			songlist_t;
-//typedef int			musicstyle_t;
+typedef int	songlist_t;
 
 typedef enum
 {
