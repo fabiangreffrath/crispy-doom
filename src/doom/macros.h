@@ -1,3 +1,8 @@
+//
+// New macros to make our code more readable
+//
+
+
 // These are useful if we don't need to factor-in wad stealing (which is what GetGameType() is for)
 #define PLAYING_DOOM1 (gamemode != commercial)
 #define PLAYING_DOOM2 (gamemode == commercial)
@@ -5,40 +10,58 @@
 // For GetGameType() return value
 enum { DOOM1, DOOM2, BOTH, WHICH_GAME }; 
 
+// Misc enums
 enum { OFF, ON };
 enum { SINGLEPLAYER, COOP, DEATHMATCH , SANDBOX };  
 enum { HIDE, SHOW };
 enum { WEAPON, AMMO, MEDKIT, ARMOR, POWERUP };
 enum { BOTS_CAREFUL, BOTS_WALK, BOTS_RUN };
-typedef enum {BACKWARD,	FORWARD} direction_t;
-typedef int playerindex_t;
 
+// Misc typedefs
+typedef enum {BACKWARD,	FORWARD} direction_t;
+typedef enum { SHORTBLIP, LONGBLIP } blipsound_t;
 typedef enum { BLUE, GOLD, RED } treasure_t;
 
-#define MF_TREASURE 0x400 // hijacking MF_DROPOFF flag as our treasure flag
+// Misc macros
 #define DEATHMATCH_ITEM (mthing->options & 16)
 #define DEFAULT_TARGET_TIMEOUT 175   // 5 seconds
 #define DEFAULT_ATTACKER_TIMEOUT 30 // 875 is 25 seconds
 #define BARREL_PUSH_THRUST 90000
+#define DEMONSPHERE_HEALTH_PERCENTAGE 0.01   // At 1%, the Hell Knight's Demonsphere gives us 5 health
+#define PLAYER_INVISIBLE (Marshmallow_TrueInvisibility && player->powers[pw_invisibility])
+#define PORTABLE_MEDKIT 666
+#define SIGHT_TEST MT_SMOKE
+#define MINUTE 2100  // 2100 tics = 1 minute
 
+// Treasure flag (set in mobj->flags)
+#define MF_TREASURE 0x400   // Hijacking MF_DROPOFF flag as our treasure flag
+
+// Treasure reward values
+typedef enum {
+
+    ICESKULL_REWARD = 10,
+    GOLDSKULL_REWARD = 50,
+    BLOODSKULL_REWARD = 100
+
+} treasure_score_t;
+
+// Gore modes
+typedef enum {
+
+    NO_GIBS,
+    ROTT_GIBS,
+    DUKE_GIBS,
+    BRUTAL_GIBS,
+
+} gibmode_t;
+
+// Menu stuff
 #define FIRST_MENU_ITEM 1
-
 #define DOOMLABEL  "       DOOM"
 #define DOOM2LABEL "       DOOM 2"
 #define BOTHLABEL  "       BOTH"
 
-#define WALK_SPEED 0
-
-#define DEMONSPHERE_HEALTH_PERCENTAGE 0.01   // At 1%, the Hell Knight's Demonsphere gives us 5 health
-
-#define PORTABLE_MEDKIT 666
-
-#define SIGHT_TEST MT_SMOKE
-
-#define MINUTE 2100  // 2100 tics = 1 minute
-
-// Shortcuts for checking certain maps
-// NOTE: do checks for Doom/Doom2 before these are called
+// Shortcuts for checking certain maps  (NOTE: Do checks for Doom/Doom2 before these are called)
 #define MAP01 (gamemap == 1)
 #define MAP07 (gamemap == 7)
 #define MAP15 (gamemap == 15)
@@ -48,6 +71,7 @@ typedef enum { BLUE, GOLD, RED } treasure_t;
 #define E2M8 (gameepisode == 2 && gamemap == 8)
 #define E3M8 (gameepisode == 3 && gamemap == 8)
 
+// Menu keys
 #define MENUKEY_PREVIOUS (gamekeydown[key_previtem] || gamekeydown[key_up])
 #define MENUKEY_NEXT (gamekeydown[key_nextitem] || gamekeydown[key_down])
 #define MENUKEY_SELECT (gamekeydown[key_useitem] || gamekeydown[key_enter])
@@ -56,11 +80,8 @@ typedef enum { BLUE, GOLD, RED } treasure_t;
 #define MENUKEY_LEFTARROW (gamekeydown[key_left])
 #define MENUKEY_RIGHTARROW (gamekeydown[key_right])
 
-#define PLAYER_INVISIBLE (Marshmallow_TrueInvisibility && player->powers[pw_invisibility])
-
 // Our own custom macros for awfully-named vanilla doom objects
-#define MARSHMALLOW_BACKPACK			MT_MISC24   // TODO:  remove MARSHMALLOW_ prefix
-#define MARSHMALLOW_SMALL_FLOORLAMP	MT_MISC31   // TODO:  remove MARSHMALLOW_ prefix
+#define MARSHMALLOW_BACKPACK	MT_MISC24
 #define DOOM1_POOL_OF_BLOOD		MT_MISC71
 #define MT_RPG					MT_MISC27
 #define MT_BFG9000				MT_MISC25
@@ -103,6 +124,18 @@ typedef enum { BLUE, GOLD, RED } treasure_t;
 #define RED_SKULL MT_MISC8 
 #define BLUE_SKULL MT_MISC9
 #define CANDLE MT_MISC49
+
+// Sandbox macros
+#define MAX_MONSTERS 1000
+#define FIRST_MONSTER 1
+
+// Particles
+#define MT_PARTICLE_BLOOD MT_BLOOD
+#define MT_PARTICLE_DARKBLOOD MT_BLOOD
+#define MT_PARTICLE_SMOKE MT_PUFF
+#define MT_PARTICLE_FATSHOT MT_FATSHOT
+#define MT_PARTICLE_BLUEPLASMA MT_PLASMA
+#define MT_PARTICLE_BRUISERSHOT MT_BRUISERSHOT
 
 // Object dropping
 #define MARSHMALLOW_ITEMDROP_OFFSET 2000000
@@ -148,14 +181,7 @@ typedef enum { BLUE, GOLD, RED } treasure_t;
 #define MARSHMALLOW_CHEAT_BOTMOVE "move"
 #define MARSHMALLOW_CHEAT_BOTWAIT "hold"
 #define MARSHMALLOW_CHEAT_FRIENDLYFIRE "friendlyfire"
-#define MARSHMALLOW_CHEAT_CHECKSKILL "skill"
-#define MARSHMALLOW_CHEAT_CHANGESKILL1 "skillone"  
-#define MARSHMALLOW_CHEAT_CHANGESKILL2 "skilltwo"   // this 't' breaks it in netgame because it triggers chat
-#define MARSHMALLOW_CHEAT_CHANGESKILL3 "skillthree"  // this 't' breaks it in netgame because it triggers chat
-#define MARSHMALLOW_CHEAT_CHANGESKILL4 "skillfour"
-#define MARSHMALLOW_CHEAT_CHANGESKILL5 "skillfive"
-#define MARSHMALLOW_CHEAT_CHANGESKILL6 "skillsix"
-#define MARSHMALLOW_CHEAT_ENDMAPNOW "endmap" 
+#define MARSHMALLOW_CHEAT_ENDMAPNOW "endmap"
 #define MARSHMALLOW_CHEAT_RESTARTMAP "redomap" 
 #define MARSHMALLOW_CHEAT_KILLMENOW "killmenow"
 #define MARSHMALLOW_CHEAT_AUTOUSE "quakeuse"
@@ -207,7 +233,6 @@ enum {
 	START_BATTLE,
 };
 
-
 // ASCII values for our new netgame event signals
 #define MARSHMALLOW_CHATCHAR_PLAYER0_NEXTOBJECT  0xE8         //232
 #define MARSHMALLOW_CHATCHAR_PLAYER0_PREVOBJECT  0xE9         //233
@@ -220,6 +245,6 @@ enum {
 
 #define MARSHMALLOW_CHATCHAR_TOQUIT	0xF0					//240	360	F0	11110000	ð	&#240;	&eth;	Latin small letter eth
 #define MARSHMALLOW_CHATCHAR_TOKILL		0xF1				//241	361	F1	11110001	ñ	&#241;	&ntilde;	Latin small letter n with tilde        
-#define MARSHMALLOW_CHATCHAR_TO_DROPGIFT		0xF2			//242	362	F2	11110010	ò	&#242;	&ograve;	Latin small letter o with grave
+#define MARSHMALLOW_CHATCHAR_TO_DROPGIFT		0xF2		//242	362	F2	11110010	ò	&#242;	&ograve;	Latin small letter o with grave
 #define MARSHMALLOW_CHATCHAR_TO_DROPMONSTER	0xF4			//244	364	F4	11110100	ô	&#244;	&ocirc;	Latin small letter o with circumflex 
-#define MARSHMALLOW_CHATCHAR_TO_STARTBATTLE 0xF5					//245	365 F5  11110101    õ   &#245;  &otilde; Latin small letter o with tilde
+#define MARSHMALLOW_CHATCHAR_TO_STARTBATTLE 0xF5			//245	365 F5  11110101    õ   &#245;  &otilde; Latin small letter o with tilde

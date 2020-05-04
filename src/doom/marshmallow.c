@@ -25,7 +25,7 @@ void Marshmallow_InitVariables()
     // TODO: move this to after we read settings from cfg, so it doesn't get set if option off; maybe move it to when the barrel is spawned in SpawnMapThing()
     mobjinfo[MT_BARREL].flags |= MF_SPECIAL;
 
-	Marshmallow_PlayerCollision = true; 
+//	Marshmallow_PlayerCollision = true;
 
 	Marshmallow_GibMode = DUKE_GIBS;   
 
@@ -41,8 +41,6 @@ void Marshmallow_InitVariables()
 
 	upgrade_chance = 0;
 	MonsterHitpointsScale = 1;  // 1x means default spawnhealth
-
-	Marshmallow_ConsistencyChk = true;  
 
 	Marshmallow_SelfDamage = true; 
 	Marshmallow_EndMapNowCheat = true;  
@@ -407,8 +405,8 @@ void Marshmallow_CheckCommandLineArgs()
 	//else if (M_CheckParm("-crt"))
 	//	Marshmallow_AlternateLighting = CRT_LIGHTING;
 
-	if (M_CheckParm("-clip"))
-		Marshmallow_PlayerCollision = false;
+	//if (M_CheckParm("-clip"))
+	//	Marshmallow_PlayerCollision = false;
 
 	if (M_CheckParm("-flip"))  // NEW
 		crispy->fliplevels = !crispy->fliplevels;
@@ -459,14 +457,7 @@ cheatseq_t Marshmallow_EndMapCheatString = CHEAT(MARSHMALLOW_CHEAT_ENDMAPNOW, 0)
 cheatseq_t Marshmallow_SuicideCheatString = CHEAT(MARSHMALLOW_CHEAT_KILLMENOW, 0); 
 cheatseq_t Marshmallow_RestartMapCheatString = CHEAT(MARSHMALLOW_CHEAT_RESTARTMAP, 0); 
 cheatseq_t Marshmallow_AutoUseCheatString = CHEAT(MARSHMALLOW_CHEAT_AUTOUSE, 0); 
-cheatseq_t Marshmallow_FastMonstersCheatString = CHEAT(MARSHMALLOW_CHEAT_FASTMONSTERS, 0); 
-cheatseq_t Marshmallow_CheckSkillCheatString = CHEAT(MARSHMALLOW_CHEAT_CHECKSKILL, 0); 
-cheatseq_t Marshmallow_ChangeSkill1CheatString = CHEAT(MARSHMALLOW_CHEAT_CHANGESKILL1, 0); 
-cheatseq_t Marshmallow_ChangeSkill2CheatString = CHEAT(MARSHMALLOW_CHEAT_CHANGESKILL2, 0); 
-cheatseq_t Marshmallow_ChangeSkill3CheatString = CHEAT(MARSHMALLOW_CHEAT_CHANGESKILL3, 0); 
-cheatseq_t Marshmallow_ChangeSkill4CheatString = CHEAT(MARSHMALLOW_CHEAT_CHANGESKILL4, 0); 
-cheatseq_t Marshmallow_ChangeSkill5CheatString = CHEAT(MARSHMALLOW_CHEAT_CHANGESKILL5, 0); 
-cheatseq_t Marshmallow_ChangeSkill6CheatString = CHEAT(MARSHMALLOW_CHEAT_CHANGESKILL6, 0); 
+cheatseq_t Marshmallow_FastMonstersCheatString = CHEAT(MARSHMALLOW_CHEAT_FASTMONSTERS, 0);
 cheatseq_t Marshmallow_NoRespawnCheatString = CHEAT(MARSHMALLOW_CHEAT_NORESPAWN, 0); 
 cheatseq_t Marshmallow_NextTrackCheatString = CHEAT(MARSHMALLOW_CHEAT_NEXTTRACK, 0); 
 
@@ -596,72 +587,6 @@ void Marshmallow_CheckCheats(event_t* ev)
 			Marshmallow_AutoUse = true;
 			//SHOW_MESSAGE DEH_String();
 		}
-
-		return;
-	}
-
-	if (cht_CheckCheat(&Marshmallow_CheckSkillCheatString, ev->data2))
-	{
-		CheckCurrentSkill();
-	}
-
-	if (cht_CheckCheat(&Marshmallow_ChangeSkill1CheatString, ev->data2)
-		&& !realnetgame)
-	{
-		gameskill = sk_baby;
-		SHOW_MESSAGE DEH_String(SKILL1);
-
-		return;
-	}
-
-	if (cht_CheckCheat(&Marshmallow_ChangeSkill2CheatString, ev->data2)
-		&& !realnetgame)
-	{
-		gameskill = sk_easy;
-		SHOW_MESSAGE DEH_String(SKILL2);
-
-		return;
-	}
-
-	if (cht_CheckCheat(&Marshmallow_ChangeSkill3CheatString, ev->data2)
-		&& !realnetgame)
-	{
-		gameskill = sk_medium;
-		SHOW_MESSAGE DEH_String(SKILL3);
-
-		return;
-	}
-
-	if (cht_CheckCheat(&Marshmallow_ChangeSkill4CheatString, ev->data2)
-		&& !realnetgame)
-	{
-		gameskill = sk_hard;
-		SHOW_MESSAGE DEH_String(SKILL4);
-
-		return;
-	}
-
-	if (cht_CheckCheat(&Marshmallow_ChangeSkill5CheatString, ev->data2)
-		&& !realnetgame)
-	{
-		gameskill = sk_nightmare;
-		SHOW_MESSAGE DEH_String(SKILL5);
-
-		return;
-	}
-
-	if (cht_CheckCheat(&Marshmallow_ChangeSkill6CheatString, ev->data2)
-		&& !realnetgame)
-	{
-		if (Marshmallow_AlternateNightmare)
-		{
-			SHOW_MESSAGE DEH_String(NM2AL);
-			// TODO: turn it off
-				return;
-		}
-
-		SHOW_MESSAGE DEH_String(NM2NEXT);
-		Marshmallow_InitAltNightmare();
 
 		return;
 	}

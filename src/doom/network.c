@@ -1,3 +1,7 @@
+//
+// These functions allow us to share all game options with clients when starting a network game
+//
+
 #include "..\net_defs.h"
 #include "..\net_packet.h"
 
@@ -148,92 +152,3 @@ boolean NET_ReadMarshmallowSettings(net_packet_t *packet, net_gamesettings_t *se
 
     && NET_ReadInt8(packet, (unsigned int *) &settings->MarshmallowSettings.fliplevels);
 }
-
-
-
-#if 0
-// These are unused as we were getting a stack overflow when using these functions
-void SaveMarshmallowSettings(net_gamesettings_t *settings) 
-{
-	settings->MarshmallowSettings.FriendlyFire = Marshmallow_FriendlyFire;
-	settings->MarshmallowSettings.MirrorDamage = Marshmallow_MirrorDamage;
-	settings->MarshmallowSettings.SelfDamage = Marshmallow_SelfDamage;
-	settings->MarshmallowSettings.DropGoodies = Marshmallow_DropGoodies;
-	settings->MarshmallowSettings.DropBackpack = Marshmallow_DropBackpack;
-	settings->MarshmallowSettings.CoopItemRespawn = Marshmallow_CoopItemRespawn;
-
-	settings->MarshmallowSettings.ConservePowerups = Marshmallow_ConservePowerups;
-	settings->MarshmallowSettings.KeepWeapons = Marshmallow_KeepWeapons;
-	settings->MarshmallowSettings.KeepKeys = Marshmallow_KeepKeys;
-	settings->MarshmallowSettings.SaveItems = Marshmallow_SaveItems;
-
-	settings->MarshmallowSettings.GradedWeapons = Marshmallow_GradedWeapons;
-	settings->MarshmallowSettings.DeathmatchWeapons = Marshmallow_DeathmatchWeapons;
-	settings->MarshmallowSettings.WeaponsStay = Marshmallow_WeaponsStay;
-
-	settings->MarshmallowSettings.RespawnInNightmare = Marshmallow_RespawnInNightmare;
-
-	settings->MarshmallowSettings.TrueInvisibility = Marshmallow_TrueInvisibility;
-
-	settings->MarshmallowSettings.PlayerCollision = Marshmallow_PlayerCollision;
-
-	settings->MarshmallowSettings.SandboxMode = Marshmallow_Sandbox;
-
-	settings->MarshmallowSettings.Marshmallow_WitholdSSG = Marshmallow_WitholdSSG;
-	settings->MarshmallowSettings.Marshmallow_Doom1SSG = Marshmallow_Doom1SSG;
-	settings->MarshmallowSettings.SSG_Level = SSG_Level;
-	settings->MarshmallowSettings.Doom1SSG_Level = Doom1SSG_Level;
-
-	settings->MarshmallowSettings.physics_mode = physics_mode;
-
-	settings->MarshmallowSettings.MonsterHitpointsScale = MonsterHitpointsScale;
-
-	settings->MarshmallowSettings.TreasureMode = Marshmallow_TreasureMode;
-
-	settings->MarshmallowSettings.dm_timelimit = dm_timelimit;
-	settings->MarshmallowSettings.dm_fraglimit = dm_fraglimit; 
-}
-
-
-void LoadMarshmallowSettings(net_gamesettings_t *settings)
-{
-	Marshmallow_FriendlyFire = settings->MarshmallowSettings.FriendlyFire;
-	Marshmallow_MirrorDamage = settings->MarshmallowSettings.MirrorDamage;
-	Marshmallow_SelfDamage = settings->MarshmallowSettings.SelfDamage;
-	Marshmallow_DropGoodies = settings->MarshmallowSettings.DropGoodies;
-	Marshmallow_DropBackpack = settings->MarshmallowSettings.DropBackpack;
-	Marshmallow_CoopItemRespawn = settings->MarshmallowSettings.CoopItemRespawn;
-
-	Marshmallow_ConservePowerups = settings->MarshmallowSettings.ConservePowerups;
-	Marshmallow_KeepWeapons = settings->MarshmallowSettings.KeepWeapons;
-	Marshmallow_KeepKeys = settings->MarshmallowSettings.KeepKeys;
-	Marshmallow_SaveItems = settings->MarshmallowSettings.SaveItems;
-
-	Marshmallow_GradedWeapons = settings->MarshmallowSettings.GradedWeapons;
-	Marshmallow_DeathmatchWeapons = settings->MarshmallowSettings.DeathmatchWeapons;
-	Marshmallow_WeaponsStay = settings->MarshmallowSettings.WeaponsStay;
-
-	Marshmallow_RespawnInNightmare = settings->MarshmallowSettings.RespawnInNightmare;
-
-	Marshmallow_TrueInvisibility = settings->MarshmallowSettings.TrueInvisibility;
-
-	Marshmallow_PlayerCollision = settings->MarshmallowSettings.PlayerCollision;
-
-	Marshmallow_Sandbox = settings->MarshmallowSettings.SandboxMode;
-
-	Marshmallow_WitholdSSG = settings->MarshmallowSettings.Marshmallow_WitholdSSG;
-	Marshmallow_Doom1SSG = settings->MarshmallowSettings.Marshmallow_Doom1SSG;
-	SSG_Level = settings->MarshmallowSettings.SSG_Level;
-	Doom1SSG_Level = settings->MarshmallowSettings.Doom1SSG_Level;
-
-	physics_mode = settings->MarshmallowSettings.physics_mode;
-
-	MonsterHitpointsScale = settings->MarshmallowSettings.MonsterHitpointsScale;
-
-	Marshmallow_TreasureMode = settings->MarshmallowSettings.TreasureMode;
-
-	dm_timelimit = settings->MarshmallowSettings.dm_timelimit;
-	dm_fraglimit = settings->MarshmallowSettings.dm_fraglimit; 
-}
-
-#endif

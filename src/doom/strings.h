@@ -277,7 +277,7 @@
 #define RESETBUTTON "     RESET"
 #define WHICHMAP "    Choose Map:  "
 
-#define MENUHELP1 " ver. 0.78c"
+#define MENUHELP1 " ver. 0.78m"
 #define MENUHELP2 " Press 'H' for" 
 #define MENUHELP3 "Keyboard Ref."
 

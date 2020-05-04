@@ -164,7 +164,7 @@ static void LoadGameSettings(net_gamesettings_t *settings)
 
     Marshmallow_TrueInvisibility = settings->MarshmallowSettings.TrueInvisibility;
 
-    Marshmallow_PlayerCollision = settings->MarshmallowSettings.PlayerCollision;
+//    Marshmallow_PlayerCollision = settings->MarshmallowSettings.PlayerCollision;
 
     Marshmallow_Sandbox = settings->MarshmallowSettings.SandboxMode;
 
@@ -265,7 +265,7 @@ static void SaveGameSettings(net_gamesettings_t *settings)
 
     settings->MarshmallowSettings.TrueInvisibility = Marshmallow_TrueInvisibility;
 
-    settings->MarshmallowSettings.PlayerCollision = Marshmallow_PlayerCollision;
+    //settings->MarshmallowSettings.PlayerCollision = Marshmallow_PlayerCollision;
 
     settings->MarshmallowSettings.SandboxMode = Marshmallow_Sandbox;
 
