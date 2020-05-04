@@ -290,10 +290,10 @@ hu_stext_t pkeline1;
 hu_stext_t pkeline2;
 hu_stext_t pkeline3;
 hu_stext_t pkeline4;
-hu_stext_t pkeline5;
+/*hu_stext_t pkeline5;
 hu_stext_t pkeline6;
 hu_stext_t pkeline7;
-hu_stext_t pkeline8;
+hu_stext_t pkeline8;*/
 
 // Missile-lock widget
 int missilelock_delay;
