@@ -308,6 +308,9 @@ P_GiveCard
     
     player->bonuscount += netgame ? BONUSADD : 0; // [crispy] Fix "Key pickup resets palette"
     player->cards[card] = 1;
+
+    if (BotsInGame)
+        SendKeycardToBots();   // [marshmallow] Share any keys we find with all bots
 }
 
 
@@ -1172,6 +1175,17 @@ P_DamageMobj
 	
 	P_SetMobjState (target, target->info->painstate);
     }
+
+    // [marshmallow] If target is a bot, don't change its target; this is handled in our own bot AI functions
+    if (BotsInGame)
+    {
+        int	i;
+
+        for (i=BOT_1;i<MAX_BOTS;i++)
+            if (players[i].mo == target)
+                return;
+    }
+    // [m]
 			
     target->reactiontime = 0;		// we're awake now...	
 

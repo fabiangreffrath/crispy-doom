@@ -1016,6 +1016,17 @@ void Marshmallow_Ticker()
         Doom_DJ.musictic++;
 
     marshmallow_tic++;  // maybe include this in the above func
+
+    if ( Marshmallow_CheckForMultiplayerEvent() )  // this is usually in HUD_Ticker()
+    {
+        int i;
+
+        for (i=0 ; i<MAXPLAYERS; i++)
+        {
+            chat_on = false;   // [marshmallow] kill the input mode and cursor once it detects one of our special characters
+            players[i].cmd.chatchar = 0;
+        }
+    }
 }
 
 

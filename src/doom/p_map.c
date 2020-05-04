@@ -1374,13 +1374,16 @@ mobj_t*		usething;
 boolean	PTR_UseTraverse (intercept_t* in)
 {
     int		side;
+
+    int		bot = IsBot( usething->player);	  //  [marshmallow] Bots use stuff
 	
     if (!in->d.line->special)
     {
 	P_LineOpening (in->d.line);
 	if (openrange <= 0)
 	{
-	    S_StartSound (usething, sfx_noway);
+        if (!bot)  //  [marshmallow]   so bots don't say "oof"
+            S_StartSound (usething, sfx_noway);
 	    
 	    // can't use through a wall
 	    return false;	
@@ -1396,6 +1399,10 @@ boolean	PTR_UseTraverse (intercept_t* in)
     //	return false;		// don't use back side
 	
     P_UseSpecialLine (usething, in->d.line, side);
+
+    // [marshmallow]
+    if ( bot )
+        Bots[bot].waiting_for_door = true;
 
     // can't use for than one special line in a row
     return false;

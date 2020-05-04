@@ -80,6 +80,9 @@ static void RunTic(ticcmd_t *cmds, boolean *ingame)
 
     for (i = 0; i < MAXPLAYERS; ++i)
     {
+        if (bot_in_game[i]) 	// [marshmallow]
+            continue;
+
         if (!demoplayback && playeringame[i] && !ingame[i])
         {
             PlayerQuitGame(&players[i]);
