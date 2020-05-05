@@ -326,19 +326,19 @@ void SetMusicThresholds()
 	switch (gameskill)
 	{
 	case sk_baby:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL1 * MonsterHitpointsScale;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL1/* * MonsterHitpointsScale*/;
 		break;
 	case sk_easy:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL2 * MonsterHitpointsScale;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL2/* * MonsterHitpointsScale*/;
 		break;
 	case sk_medium:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL3 * MonsterHitpointsScale;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL3/* * MonsterHitpointsScale*/;
 		break;
 	case sk_hard:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL4 * MonsterHitpointsScale;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL4/* * MonsterHitpointsScale*/;
 		break;
 	case sk_nightmare:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL5 * MonsterHitpointsScale;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL5/* * MonsterHitpointsScale*/;
 		break;
 	}
 }
@@ -739,7 +739,7 @@ void ForcePlaylist()
 void DynamicMusic()  
 {
 	if (!Marshmallow_DynamicMusic)  
-		return;			
+		return;
 
 	if (!Doom_DJ.init)
 		InitDynamicMusic();    
@@ -838,14 +838,15 @@ boolean DJ_Msg_On()
 
 void DJ_ShowInfo()
 {
-	AddToInfoReadout("music_tic: ", Doom_DJ.musictic, 1);
-	AddToInfoReadout("bossfight: ", PKE_Meter.bossfight, 2);
-	AddToInfoReadout("safety_time: ", PKE_Meter.safety_time, 3);
-	AddToInfoReadout("last_intense_song: ", Doom_DJ.last_intense_song, 4);
-	AddToInfoReadout("track_playing: ", Doom_DJ.song[ Doom_DJ.track_playing ], 5);	
-	AddToInfoReadout("music_threshold: ", PKE_Meter.highdanger_threshold, 6);	
 
-	AddToInfoReadout("marshmallow_tic: ", marshmallow_tic, 8);	
+	AddToInfoReadout("music_threshold: ", PKE_Meter.highdanger_threshold, 1);
+    AddToInfoReadout("danger: ", PKE_Meter.attackers_hp, 2);
+	AddToInfoReadout("safety_time: ", PKE_Meter.safety_time, 3);
+	AddToInfoReadout("music_tic: ", Doom_DJ.musictic, 4);
+	AddToInfoReadout("marshmallow_tic: ", marshmallow_tic, 5);
+    AddToInfoReadout("last_intense_song: ", Doom_DJ.last_intense_song, 6);
+    AddToInfoReadout("track_playing: ", Doom_DJ.song[ Doom_DJ.track_playing ], 7);
+    AddToInfoReadout("bossfight: ", PKE_Meter.bossfight, 8);
 }
 
 
