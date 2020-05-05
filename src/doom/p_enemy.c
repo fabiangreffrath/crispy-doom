@@ -536,7 +536,7 @@ P_LookForPlayers
 	    || PLAYER_INVISIBLE)  //  [marshmallow] Ignore player if he is using invisibility powerup
 	    continue;
 
-	if (player->health <= 0)
+	if ( player->playerstate != PST_LIVE )  // [marshmallow] Checking playerstate instead of health helps us avoid a crash below in P_CheckSight()
 	    continue;		// dead
 
 	if (!P_CheckSight (actor, player->mo))
@@ -1876,6 +1876,14 @@ void A_BossDeath (mobj_t* mo)
 	  case 1:
 	    junk.tag = 666;
 	    EV_DoFloor (&junk, lowerFloorToLowest);
+
+        // [marshmallow]
+	    PKE_KillStaypuft();
+
+        if (Marshmallow_DynamicMusic)
+            S_ChangeMusic(mus_e1m8, true);   // Force the default e1m8 song on boss death
+        // [m]
+
 	    return;
 	    break;
 	    

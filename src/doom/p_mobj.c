@@ -599,7 +599,7 @@ void P_MobjThinker (mobj_t* mobj)
 	if (! (mobj->flags & MF_COUNTKILL) )
 	    return;
 
-	if (!respawnmonsters)
+	if (!respawnmonsters || !Marshmallow_RespawnInNightmare)  // [marshmallow]
 	    return;
 
 	mobj->movecount++;

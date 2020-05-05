@@ -283,7 +283,7 @@ static void ScanArea()
 }
 
 
-void PKE_KillStaypuft()
+void PKE_KillStaypuft()  // rename
 {
 	if (!PKE_Meter.bossfight)  
 		return;  // Only come in here once

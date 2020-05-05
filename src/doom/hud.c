@@ -26,13 +26,6 @@ void UpdateInfoReadout()
 		//DJ_ShowInfo();
 		
 		PKE_ShowInfo();
-
-		//AddToInfoReadout("too_tired_to_sprint: ", too_tired_to_sprint, 6);
-		//AddToInfoReadout("sprint_recharge: ", sprint_recharge, 7);
-		//AddToInfoReadout("sprint_timeout: ", sprint_timeout, 8);
-
-		//if ( Bots[BOT_1].player->mo )
-		//AddToInfoReadout("bot1node: ", Bots[BOT_1].player->mo->potential_node, 1);
 	}
 }
 
@@ -1980,6 +1973,8 @@ void HUDMenuKeyInput()
 
 	if (gamekeydown[key_l])
 	{
+	    return;   // no more flashlight
+
 		if (CheckKeyDelay())
 			return;		
 
@@ -4901,7 +4896,7 @@ void HUD_InitProfileScreen()
 		HU_FONTSTART, &profilescreen_on);
 
 	HUlib_initSText(&PROFILE_PERCENTSIGN,
-		FULLSCREEN_MENU_X_OFFSET+122, INV_HU_Y_5, HU_MSGHEIGHT,
+		FULLSCREEN_MENU_X_OFFSET+125, INV_HU_Y_5, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &profilescreen_on);
 

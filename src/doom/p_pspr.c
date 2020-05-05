@@ -35,7 +35,7 @@
 
 #include "p_pspr.h"
 
-#include "marshmallow.h"  //[marshmallow]
+#include "marshmallow.h"  // [marshmallow]
 
 #define LOWERSPEED		FRACUNIT*6
 #define RAISESPEED		FRACUNIT*6
@@ -543,7 +543,13 @@ A_Punch
     int		slope;
 	
     if (!player) return; // [crispy] let pspr action pointers get called from mobj states
-    damage = (P_Random ()%10+1)<<1;
+
+    // [marshmallow]
+    if (Marshmallow_TrueRandomDamage && !realnetgame)
+        damage = GetRandomIntegerInRange(4, 20);
+    else
+        damage = (P_Random ()%10+1)<<1 * fist_damage_multiplier;
+    // [m]
 
     if (player->powers[pw_strength])	
 	damage *= 10;
@@ -579,7 +585,7 @@ A_Saw
     int		slope;
 
     if (!player) return; // [crispy] let pspr action pointers get called from mobj states
-    damage = 2*(P_Random ()%10+1);
+    damage = 2*(P_Random ()%10+1) * chainsaw_damage_multiplier;  // [marshmallow]
     angle = player->mo->angle;
     angle += P_SubRandom() << 18;
     
@@ -743,8 +749,14 @@ P_GunShot
 {
     angle_t	angle;
     int		damage;
-	
-    damage = 5*(P_Random ()%3+1);
+
+    // [marshmallow]
+    if (Marshmallow_TrueRandomDamage && !realnetgame)
+        damage = GetRandomIntegerInRange(5, 15);
+    else
+        damage = gunshot_damage * (P_Random ()%3+1);
+    // [m]
+
     angle = mo->angle;
 
     if (!accurate)
@@ -812,7 +824,7 @@ A_FireShotgun
 
     P_BulletSlope (player->mo);
 	
-    for (i=0 ; i<7 ; i++)
+    for (i=0 ; i<shotgun_pellets ; i++)         // [marshmallow] Variable shotgun_pellets
 	P_GunShot (player->mo, false);
 
     A_Recoil (player);
@@ -852,12 +864,18 @@ A_FireShotgun2
 	
     for (i=0 ; i<20 ; i++)
     {
-	damage = 5*(P_Random ()%3+1);
+    // [marshmallow]
+    if (Marshmallow_TrueRandomDamage && !realnetgame)
+        damage = GetRandomIntegerInRange(5, 15);
+    else
+        damage = 5*(P_Random ()%3+1);
+    // [m]
+
 	angle = player->mo->angle;
 	angle += P_SubRandom() << ANGLETOFINESHIFT;
 	P_LineAttack (player->mo,
 		      angle,
-		      MISSILERANGE,
+		      ssg_range,   // [marshmallow] Variable ssg_range
 		      bulletslope + (P_SubRandom() << 5), damage);
     }
 
@@ -933,6 +951,13 @@ void A_BFGSpray (mobj_t* mo)
     int			j;
     int			damage;
     angle_t		an;
+
+    // [marshmallow] Particles on BFG explosion
+    BFG_MegaBlast(mo);
+
+    // [marshmallow] BFG splash damage
+    if (Marshmallow_DangerousBFG)
+        P_RadiusAttack(mo, mo->target, 128);
 	
     // offset angles from its attack angle
     for (i=0 ; i<40 ; i++)

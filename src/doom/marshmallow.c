@@ -340,13 +340,6 @@ void Marshmallow_CheckCommandLineArgs()
 
 	//if (M_CheckParm ("-keepkeys"))   // TODO: this is on by default now, so make this -nokeepkeys instead?
 	//	Marshmallow_KeepKeys = true;
-
-	if (M_CheckParm("-delayssg"))   // if no level number is specified, default to MAP04
-	{
-		SSG_Level = DEFAULT_SSG_LEVEL;  
-			
-		Marshmallow_WitholdSSG = true;
-	}
 	
 	if ((p = M_CheckParmWithArgs("-delayssg", 1)))
 	{
@@ -357,6 +350,14 @@ void Marshmallow_CheckCommandLineArgs()
 			
 		Marshmallow_WitholdSSG = true;
 	}
+
+    if (M_CheckParm("-delayssg"))   // if no level number is specified, default to MAP04
+    {
+        if (!SSG_Level)
+            SSG_Level = DEFAULT_SSG_LEVEL;
+
+        Marshmallow_WitholdSSG = true;
+    }
 
 	if ((p = M_CheckParmWithArgs("-d1ssg", 1)))  // NOTE: probably pointless since Crispy already does this
 	{

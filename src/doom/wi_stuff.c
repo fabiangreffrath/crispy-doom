@@ -47,6 +47,12 @@
 #include "st_stuff.h" // [crispy] ST_DrawDemoTimer()
 #include "wi_stuff.h"
 
+// [marshmallow]
+extern boolean song_blacklist[4];
+#define BLACKLIST_D1INTER 2
+#define BLACKLIST_D2INTER 3
+// [m]
+
 //
 // Data needed to add patches to full screen intermission pics.
 // Patches are statistics messages, and animations.
@@ -1668,12 +1674,18 @@ void WI_Ticker(void)
     {
 	// intermission music
   	if ( gamemode == commercial )
-	  S_ChangeMusic(mus_dm2int, true);
+  	{
+      if (!song_blacklist[BLACKLIST_D2INTER])   // [marshmallow] If song is blacklisted, don't start a new song
+          S_ChangeMusic(mus_dm2int, true);
+    }
 	// [crispy] Sigil
 	else if (crispy->haved1e5 && wbs->epsd == 4 && W_CheckNumForName(DEH_String("D_SIGINT")) != -1)
 	  S_ChangeMusic(mus_sigint, true);
 	else
-	  S_ChangeMusic(mus_inter, true); 
+	{
+      if (!song_blacklist[BLACKLIST_D1INTER])   // [marshmallow] If song is blacklisted, don't start a new song
+          S_ChangeMusic(mus_inter, true);
+    }
     }
 
     WI_checkForAccelerate();

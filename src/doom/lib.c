@@ -954,9 +954,6 @@ void BFG_MegaBlast(mobj_t *actor)
   if (!Marshmallow_BFGBlastWave || realnetgame)  // This creates too much lag in netgames
   return;
 
-  if (Marshmallow_DangerousBFG)
-  P_RadiusAttack(actor, actor->target, 128);
-
   for (i = -n; i <= n; i += 8)   
   {
     for (j = -n; j <= n; j += 8) 
@@ -965,7 +962,9 @@ void BFG_MegaBlast(mobj_t *actor)
 		target.x += i << FRACBITS;  
 		target.y += j << FRACBITS;
 		target.z += P_AproxDistance(i,j) * misc1;        
-		mo = P_SpawnMissile(actor, &target, MT_ARACHPLAZ); 
+		mo = P_SpawnMissile(actor, &target, MT_ARACHPLAZ);
+		mo->info->seesound = NULL;  // so we don't get the same sound playing 1000 times at once
+        mo->info->deathsound = NULL;  // so we don't get the same sound playing 1000 times at once
 		mo->momx = FixedMul(mo->momx, misc2);
 		mo->momy = FixedMul(mo->momy, misc2);           
 		mo->momz = FixedMul(mo->momz, misc2);
@@ -1054,7 +1053,7 @@ void Marshmallow_SetupLevel()
 
 boolean PlayerIsDead()
 {
-	player_t player = players[consoleplayer];  // NEW no longer locked to only using player zero
+	player_t player = players[consoleplayer];
 
 	if (player.playerstate != PST_LIVE
 		|| !player.health
@@ -1827,10 +1826,10 @@ void MightyFistEngaged()
 	angle = actor->angle;
 	slope = P_AimLineAttack (actor, angle, MELEERANGE);
 
-	if (GetGameType() == DOOM1)
+	//if (GetGameType() == DOOM1)
 		S_StartSound (actor, sfx_punch); // lo-fi sounding punch sound in Doom1
-	else
-		S_StartSound (actor, sfx_skepch);  // might as well use the more hi-fi punch sound in Doom2 if available
+	//else
+	//	S_StartSound (actor, sfx_skepch);  // might as well use the more hi-fi punch sound in Doom2 if available
 																				
 	angle += P_SubRandom() << 20;
 	damage = (P_Random ()%10+1)<<1 /** BOOSTED_FIST_DAMAGE*/;   // fixed damage for this punch
@@ -1846,9 +1845,9 @@ void MightyFistEngaged()
 	if (debugmode)
 	MAIN_PLAYER.message = DEH_String(FOOTENG);
 
-	P_NoiseAlert (actor, actor);    
+	P_NoiseAlert (actor, actor);  // To remain consistent with how regular fist works
 
-	level_stats.shots_fired++;   
+	//level_stats.shots_fired++;
 
 	// NOTE: not currently using player attack state animation for this melee attack
 }
@@ -1860,6 +1859,9 @@ void AutoUse()
 	
 	if (!Marshmallow_AutoUse)
 		return;
+
+    if (gamekeydown[key_use])
+        AutoUseDelay = DEFAULT_AUTO_USE_DELAY;   // [marshmallow] reset autouse timer so it's not re-triggering stuff we already opened manually
 
 	if ( realnetgame )  // until we get it working in multiplayer
 	return;

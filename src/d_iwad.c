@@ -966,7 +966,8 @@ char *D_FindIWAD(int mask, GameMission_t *mission)
         }
     }
 
-    if ( !M_CheckParm ("-iwad")	 // [marshmallow] Our IWAD selection dialog at game start
+    // [marshmallow] Our IWAD selection dialog at game start
+    if ( !M_CheckParm ("-iwad")
          && !M_CheckParm ("-d1")
          && !M_CheckParm ("-d2")
          && !M_CheckParm ("-sigil")
@@ -1015,7 +1016,8 @@ char *D_FindIWAD(int mask, GameMission_t *mission)
                 return result;
             }
         }
-    }		 // [m]
+    }
+    // [m]
 
     return result;
 }

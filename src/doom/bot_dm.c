@@ -160,7 +160,7 @@ void Bot_Melee(int bot)
 	//return;
    // }
 
-    S_StartSound (thisBot_mo, sfx_sawhit); 
+    S_StartSound (thisBot_mo, sfx_sawful);  // used to be sfx_sawhit
 	P_SetMobjState(thisBot_mo, thisBot_mo->info->missilestate);  // TESTING
 }
 

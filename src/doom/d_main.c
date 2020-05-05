@@ -2129,6 +2129,10 @@ void D_DoomMain (void)
         crispy->demowarp = startmap;
     }
 
+    // [marshmallow] If we got "-sigil" from command line with no warp level specified, make sure we start at episode 5
+    if ( M_CheckParm("-sigil") )
+        startepisode = 5;
+
     // Undocumented:
     // Invoked by setup to test the controls.
 

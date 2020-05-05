@@ -290,10 +290,6 @@ hu_stext_t pkeline1;
 hu_stext_t pkeline2;
 hu_stext_t pkeline3;
 hu_stext_t pkeline4;
-/*hu_stext_t pkeline5;
-hu_stext_t pkeline6;
-hu_stext_t pkeline7;
-hu_stext_t pkeline8;*/
 
 // Missile-lock widget
 int missilelock_delay;
@@ -402,7 +398,9 @@ void ParticleFX_SaucerBlast(mobj_t *actor);
 void ParticleFX_Test(mobj_t *actor);
 void BarrelFX_Test(mobj_t *actor);
 void ParticleFX_XDeath(mobj_t *actor);
-void BFG_MegaBlast();
+void BFG_MegaBlast(mobj_t *actor);
+void HandleChainsawBlood(mobj_t* target, mobj_t* inflictor);
+#define BRUTAL_GIBCHANCE 60
 
 // Monster tweaks
 int chaingunguy_attack_sound;
@@ -496,6 +494,13 @@ mobjtype_t GenerateRandomBonusItem();
 int GetRandomDoom2Monster(int i);
 int GetRandomDoom1Monster(int i);
 
+// Auto-use
+#define DEFAULT_AUTO_USE_DELAY 32
+int AutoUseDelay;
+int AutoUseLastX;
+int AutoUseLastY;
+void AutoUse();
+
 // Misc
 int offertimeout_suicide;
 int offertimeout_radsuit;
@@ -545,13 +550,6 @@ boolean specialnodes;  // probably not in use
 // Name change in-game
 boolean changing_name;  // unused/removed
 //char* new_player_name;
-
-// Auto-use
-#define DEFAULT_AUTO_USE_DELAY 32
-int AutoUseDelay;
-int AutoUseLastX;
-int AutoUseLastY;
-void AutoUse();
 
 // Sprint feature
 int		sprint_timeout;  // inter, lib, marshmallow
