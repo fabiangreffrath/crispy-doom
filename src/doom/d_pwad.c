@@ -28,17 +28,17 @@
 
 extern char *iwadfile;
 
-// [crispy] support loading SIGIL.WAD (and SIGIL_SHREDS.WAD) alongside DOOM.WAD
-void D_LoadSigilWad(void)
+// [crispy] auto-load SIGIL.WAD (and SIGIL_SHREDS.WAD) if available
+void D_LoadSigilWad (void)
 {
 	int i, j;
 	char *sigil_wad = NULL, *sigil_shreds = NULL;
 	char *dirname;
 
 	const char *const sigil_wads[] = {
-		"SIGIL_v1_21.wad",
-		"SIGIL_v1_2.wad",
-		"SIGIL.wad"
+		"SIGIL_V1_21.WAD",
+		"SIGIL_V1_2.WAD",
+		"SIGIL.WAD"
 	};
 
 	struct {
@@ -63,21 +63,21 @@ void D_LoadSigilWad(void)
 		"TEXTURE2",
 	};
 
-	// [crispy] don't load SIGIL.wad if another PWAD already provides E5M1
+	// [crispy] don't load SIGIL.WAD if another PWAD already provides E5M1
 	i = W_CheckNumForName("E5M1");
 	if (i != -1)
 	{
 		return;
 	}
 
-	// [crispy] don't load SIGIL.wad if SIGIL_COMPAT.wad is already loaded
+	// [crispy] don't load SIGIL.WAD if SIGIL_COMPAT.WAD is already loaded
 	i = W_CheckNumForName("E3M1");
 	if (i != -1 && !strncasecmp(W_WadNameForLump(lumpinfo[i]), "SIGIL_COMPAT", 12))
 	{
 		return;
 	}
 
-	// [crispy] don't load SIGIL.wad if another PWAD already modifies the texture files
+	// [crispy] don't load SIGIL.WAD if another PWAD already modifies the texture files
 	for (i = 0; i < arrlen(texture_files); i++)
 	{
 		j = W_CheckNumForName(texture_files[i]);
@@ -89,7 +89,7 @@ void D_LoadSigilWad(void)
 	}
 
 	dirname = M_DirName(iwadfile);
-	sigil_shreds = M_StringJoin(dirname, DIR_SEPARATOR_S, "SIGIL_SHREDS.wad", NULL);
+	sigil_shreds = M_StringJoin(dirname, DIR_SEPARATOR_S, "SIGIL_SHREDS.WAD", NULL);
 
 	// [crispy] load SIGIL.WAD
 	for (i = 0; i < arrlen(sigil_wads); i++)
@@ -125,7 +125,7 @@ void D_LoadSigilWad(void)
 	if (!M_FileExists(sigil_shreds))
 	{
 		free(sigil_shreds);
-		sigil_shreds = D_FindWADByName("SIGIL_SHREDS.wad");
+		sigil_shreds = D_FindWADByName("SIGIL_SHREDS.WAD");
 	}
 
 	if (sigil_shreds != NULL)
@@ -135,7 +135,7 @@ void D_LoadSigilWad(void)
 		free(sigil_shreds);
 	}
 
-	// [crispy] rename intrusive SIGIL_SHREDS.wad music lumps out of the way
+	// [crispy] rename intrusive SIGIL_SHREDS.WAD music lumps out of the way
 	for (i = 0; i < arrlen(sigil_lumps); i++)
 	{
 		// [crispy] skip non-music lumps
@@ -152,7 +152,7 @@ void D_LoadSigilWad(void)
 		}
 	}
 
-	// [crispy] rename intrusive SIGIL.wad graphics, demos and music lumps out of the way
+	// [crispy] rename intrusive SIGIL.WAD graphics, demos and music lumps out of the way
 	for (i = 0; i < arrlen(sigil_lumps); i++)
 	{
 		j = W_CheckNumForName(sigil_lumps[i].name);
@@ -167,15 +167,15 @@ void D_LoadSigilWad(void)
 	W_GenerateHashTable();
 }
 
-// [crispy] support loading NERVE.WAD alongside DOOM2.WAD
-static boolean CheckNerveLoaded(void)
+// [crispy] check if NERVE.WAD is already loaded as a PWAD
+static boolean CheckNerveLoaded (void)
 {
 	int i, j;
 
-	if ((i = W_GetNumForName("map01")) != -1 &&
-	    (j = W_GetNumForName("map09")) != -1 &&
-	    !strcasecmp(W_WadNameForLump(lumpinfo[i]), "nerve.wad") &&
-	    !strcasecmp(W_WadNameForLump(lumpinfo[j]), "nerve.wad"))
+	if ((i = W_GetNumForName("MAP01")) != -1 &&
+	    (j = W_GetNumForName("MAP09")) != -1 &&
+	    !strcasecmp(W_WadNameForLump(lumpinfo[i]), "NERVE.WAD") &&
+	    !strcasecmp(W_WadNameForLump(lumpinfo[j]), "NERVE.WAD"))
 	{
 		gamemission = pack_nerve;
 		DEH_AddStringReplacement ("TITLEPIC", "INTERPIC");
@@ -186,7 +186,8 @@ static boolean CheckNerveLoaded(void)
 	return false;
 }
 
-static boolean CheckLoadNerve(void)
+// [crispy] auto-load NERVE.WAD if available
+static void CheckLoadNerve (void)
 {
 	int i, j;
 
@@ -194,23 +195,23 @@ static boolean CheckLoadNerve(void)
 	{
 		char *dir;
 		dir = M_DirName(iwadfile);
-		crispy->havenerve = M_StringJoin(dir, DIR_SEPARATOR_S, "nerve.wad", NULL);
+		crispy->havenerve = M_StringJoin(dir, DIR_SEPARATOR_S, "NERVE.WAD", NULL);
 		free(dir);
 	}
 	else
 	{
-		crispy->havenerve = M_StringDuplicate("nerve.wad");
+		crispy->havenerve = M_StringDuplicate("NERVE.WAD");
 	}
 
 	if (!M_FileExists(crispy->havenerve))
 	{
 		free(crispy->havenerve);
-		crispy->havenerve = D_FindWADByName("nerve.wad");
+		crispy->havenerve = D_FindWADByName("NERVE.WAD");
 	}
 
 	if (crispy->havenerve == NULL)
 	{
-		return false;
+		return;
 	}
 
 	printf(" [No Rest for the Living] adding %s\n", crispy->havenerve);
@@ -233,10 +234,10 @@ static boolean CheckLoadNerve(void)
 	// [crispy] regenerate the hashtable
 	W_GenerateHashTable();
 
-	return true;
+	return;
 }
 
-void D_LoadNerveWad(void)
+void D_LoadNerveWad (void)
 {
 	// [crispy] check if NERVE.WAD is already loaded as a PWAD
 	if (!CheckNerveLoaded())
@@ -246,15 +247,15 @@ void D_LoadNerveWad(void)
 	}
 }
 
-// [crispy] support loading MASTERLEVELS.WAD alongside DOOM2.WAD
-static boolean CheckMasterlevelsLoaded(void)
+// [crispy] check if the single MASTERLEVELS.WAD is already loaded as a PWAD
+static boolean CheckMasterlevelsLoaded (void)
 {
 	int i, j;
 
-	if ((i = W_GetNumForName("map01")) != -1 &&
-	    (j = W_GetNumForName("map21")) != -1 &&
-	    !strcasecmp(W_WadNameForLump(lumpinfo[i]), "masterlevels.wad") &&
-	    !strcasecmp(W_WadNameForLump(lumpinfo[j]), "masterlevels.wad"))
+	if ((i = W_GetNumForName("MAP01")) != -1 &&
+	    (j = W_GetNumForName("MAP21")) != -1 &&
+	    !strcasecmp(W_WadNameForLump(lumpinfo[i]), "MASTERLEVELS.WAD") &&
+	    !strcasecmp(W_WadNameForLump(lumpinfo[j]), "MASTERLEVELS.WAD"))
 	{
 		gamemission = pack_master;
 
@@ -263,6 +264,59 @@ static boolean CheckMasterlevelsLoaded(void)
 
 	return false;
 }
+
+// [crispy] auto-load the single MASTERLEVELS.WAD if available
+static boolean CheckLoadMasterlevels (void)
+{
+	int i, j;
+
+	if (strrchr(iwadfile, DIR_SEPARATOR) != NULL)
+	{
+		char *dir;
+		dir = M_DirName(iwadfile);
+		crispy->havemaster = M_StringJoin(dir, DIR_SEPARATOR_S, "MASTERLEVELS.WAD", NULL);
+		free(dir);
+	}
+	else
+	{
+		crispy->havemaster = M_StringDuplicate("MASTERLEVELS.WAD");
+	}
+
+	if (!M_FileExists(crispy->havemaster))
+	{
+		free(crispy->havemaster);
+		crispy->havemaster = D_FindWADByName("MASTERLEVELS.WAD");
+	}
+
+	if (crispy->havemaster == NULL)
+	{
+		return false;
+	}
+
+	printf(" [The Master Levels] adding %s\n", crispy->havemaster);
+	W_AddFile(crispy->havemaster);
+
+	// [crispy] add indicators to level and level name patch lump names
+	for (i = 0; i < 21; i++)
+	{
+		char lumpname[9];
+
+		M_snprintf(lumpname, 9, "CWILV%2.2d", i);
+		j = W_GetNumForName(lumpname);
+		lumpinfo[j]->name[0] = 'M';
+
+		M_snprintf(lumpname, 9, "MAP%02d", i + 1);
+		j = W_GetNumForName(lumpname);
+		strcat(lumpinfo[j]->name, "M");
+	}
+
+	// [crispy] regenerate the hashtable
+	W_GenerateHashTable();
+
+	return true;
+}
+
+// [crispy] check if the 20 individual separate Mater Levels PWADs are available
 
 static struct {
 	const char *wad_name;
@@ -339,57 +393,8 @@ static boolean CheckMasterlevelsAvailable (void)
 	return true;
 }
 
-static boolean CheckLoadMasterlevels(void)
-{
-	int i, j;
-
-	if (strrchr(iwadfile, DIR_SEPARATOR) != NULL)
-	{
-		char *dir;
-		dir = M_DirName(iwadfile);
-		crispy->havemaster = M_StringJoin(dir, DIR_SEPARATOR_S, "masterlevels.wad", NULL);
-		free(dir);
-	}
-	else
-	{
-		crispy->havemaster = M_StringDuplicate("masterlevels.wad");
-	}
-
-	if (!M_FileExists(crispy->havemaster))
-	{
-		free(crispy->havemaster);
-		crispy->havemaster = D_FindWADByName("masterlevels.wad");
-	}
-
-	if (crispy->havemaster == NULL)
-	{
-		return false;
-	}
-
-	printf(" [The Master Levels] adding %s\n", crispy->havemaster);
-	W_AddFile(crispy->havemaster);
-
-	// [crispy] add indicators to level and level name patch lump names
-	for (i = 0; i < 21; i++)
-	{
-		char lumpname[9];
-
-		M_snprintf(lumpname, 9, "CWILV%2.2d", i);
-		j = W_GetNumForName(lumpname);
-		lumpinfo[j]->name[0] = 'M';
-
-		M_snprintf(lumpname, 9, "MAP%02d", i + 1);
-		j = W_GetNumForName(lumpname);
-		strcat(lumpinfo[j]->name, "M");
-	}
-
-	// [crispy] regenerate the hashtable
-	W_GenerateHashTable();
-
-	return true;
-}
-
-static void LoadMasterlevelsWads(void)
+// [crispy] auto-load the 20 individual separate Mater Levels PWADs as if the were the single MASTERLEVELS.WAD
+static void LoadMasterlevelsWads (void)
 {
 	int i, j;
 	char lumpname[9];
@@ -406,8 +411,8 @@ static void LoadMasterlevelsWads(void)
 
 		M_snprintf(lumpname, 9, "MAP%02d", masterlevels_wads[i].pc_slot);
 		j = W_GetNumForName(lumpname);
-		lumpinfo[j]->name[3] = '0' + (masterlevels_wads[i].psn_slot) / 10;
-		lumpinfo[j]->name[4] = '0' + (masterlevels_wads[i].psn_slot) % 10;
+		lumpinfo[j]->name[3] = '0' + (masterlevels_wads[i].psn_slot / 10);
+		lumpinfo[j]->name[4] = '0' + (masterlevels_wads[i].psn_slot % 10);
 		lumpinfo[j]->name[5] = 'M';
 	}
 
@@ -419,7 +424,7 @@ static void LoadMasterlevelsWads(void)
 	return;
 }
 
-void D_LoadMasterlevelsWad(void)
+void D_LoadMasterlevelsWad (void)
 {
 	// [crispy] check if the single MASTERLEVELS.WAD is already loaded as a PWAD
 	if (!CheckMasterlevelsLoaded())
