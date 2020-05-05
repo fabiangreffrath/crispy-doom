@@ -3051,6 +3051,7 @@ boolean M_Responder (event_t* ev)
                     StripWeapons(consoleplayer);
                     SkipToLevel();
                     M_ClearMenus ();
+                    PKE_Reset();
                     return true;
             }
         }

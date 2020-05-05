@@ -160,8 +160,6 @@ boolean IsGibbableThing(mobj_t* thing)
 }
 
 
-#define BRUTAL_GIBCHANCE 60
-
 void GibFactory(mobj_t* target, mobj_t* source)
 {
 	int negative_spawnhealth = target->info->spawnhealth * -1; 
@@ -213,4 +211,20 @@ void GibFactory(mobj_t* target, mobj_t* source)
 
 		break;
 	}
+}
+
+
+void HandleChainsawBlood(mobj_t* target, mobj_t* inflictor)
+{
+    if ( IsMonster(target)
+        && IsPlayer(inflictor) 
+        && Marshmallow_GibMode == BRUTAL_GIBS
+        && inflictor->player->readyweapon == wp_chainsaw
+        && target->type != MT_SKULL
+        && !gamekeydown[key_mightyfist] ) // this line doesn't work with bots
+        {
+            ParticleFX_ChainsawBloodSplat(target);
+            if ( PercentChance( 40 ) )
+                S_StartSound(NULL, sfx_slop);
+        }
 }

@@ -1208,7 +1208,7 @@ boolean HU_Responder(event_t *ev)
     if (!chat_on)
     {
 
-    // [marshmallow]
+    // [marshmallow] Don't do this if menus are active
     if (menus_on)
         return false;
 

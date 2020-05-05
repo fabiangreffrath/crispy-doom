@@ -209,6 +209,7 @@ P_GiveWeapon
 	    P_GiveAmmo (player, weaponinfo[weapon].ammo, 2, false);
 	player->pendingweapon = weapon;
 	// [crispy] show weapon pickup messages in multiplayer games
+	if (Marshmallow_PickupMessages) // [marshmallow] Only if pickup messages are enabled
 	player->message = DEH_String(WeaponPickupMessages[weapon]);
 
 	if (player == &players[consoleplayer])
@@ -1240,8 +1241,10 @@ P_TouchSpecialThing
 	}
 	for (i=0 ; i<NUMAMMO ; i++)
 	    P_GiveAmmo (player, i, 1, false);
-	if (Marshmallow_PickupMessages)   // [marshmallow]
-	    player->message = DEH_String(GOTBACKPACK);
+	player->message = DEH_String(GOTBACKPACK);
+
+	if (deathmatch && special->flags & MF_DROPPED)  // [marshmallow]
+        player->message = DEH_String(FOUNDBACKPACK);
 	break;
 	
 	// weapons
@@ -1631,6 +1634,8 @@ P_DamageMobj
     }
 
     SetPlayerTarget(source, target);  // [marshmallow]
+
+    HandleChainsawBlood(target, inflictor);  // [marshmallow]
     
     // player specific
     if (player)

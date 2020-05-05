@@ -345,7 +345,7 @@ P_CheckSight
     int		pnum;
     int		bytenum;
     int		bitnum;
-    
+
     // First check for trivial rejection.
 
     // Determine subsector entries in REJECT table.
