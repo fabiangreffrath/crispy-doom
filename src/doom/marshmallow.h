@@ -178,7 +178,11 @@ void AddStringsToInfoReadout(char* label, char* output, int line);
 void ShowTargetHP();
 void PKE_Readout();
 void HUDMenuKeyInput();
-void DoSharewareBossDeath();  // check status of this (2020)
+void Advance_M_Tics();
+void HandleNetgameEvents();
+void Player_Actions();
+void Game_Actions();
+void Game_Init();
 
 // Network stuff
 boolean netgamesignal;

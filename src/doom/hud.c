@@ -19,13 +19,13 @@ void UpdateInfoReadout()
 	}
 	else
 	{
-        //AddToInfoReadout("BarrelPushing: ", Marshmallow_BarrelPushing, 6);
+        //AddToInfoReadout("MonsterHitpointsScale: ", MonsterHitpointsScale, 5);
         //AddToInfoReadout("marshmallow_rndindex: ", marshmallow_rndindex, 7);
         //AddToInfoReadout("prndindex: ", prndindex, 8);
 
-		//DJ_ShowInfo();
+		DJ_ShowInfo();
 		
-		PKE_ShowInfo();
+		//PKE_ShowInfo();
 	}
 }
 

@@ -893,76 +893,18 @@ void DoWadStealing()
 }
 
 
-fixed_t save_x, save_y;
-
-static void DistanceCheck()  // temp utility function
-{
-	fixed_t dist;
-//	fixed_t x, y;
-
-	if (gametic == 3)
-	{
-		save_x = MAIN_PLAYER.mo->x;
-		save_y = MAIN_PLAYER.mo->y;
-	}
-
-	dist = P_AproxDistance( MAIN_PLAYER.mo->x - save_x,
-							MAIN_PLAYER.mo->y - save_y );
-
-	if (dist > 64*64*FRACUNIT)
-		SHOW_MESSAGE "DISTANCE HIT!";
-}
-
-
-void Advance_M_Tics()
-{
-    if (Marshmallow_DynamicMusic && Doom_DJ.init)
-        Doom_DJ.musictic++;
-
-    marshmallow_tic++;
-}
-
-
-void HandleNetgameEvents()
-{
-    if ( Marshmallow_CheckForMultiplayerEvent() )  // this was usually in HUD_Ticker()
-    {
-        int i;
-
-        for (i=0 ; i<MAXPLAYERS; i++)
-        {
-            chat_on = false;   // kill the input mode and cursor once it detects one of our special characters
-            players[i].cmd.chatchar = 0;
-        }
-    }
-}
-
-
 void Marshmallow_Ticker()
-{	
-	DroppedItemCleanup();  
-	CorpseCleanup();
-
-	DoAllBot_AI();
-
-	PKE_Scanner();
-
-	AutoUse();
-	DoTimeouts();
-	PushBarrel();
-	ResetBarrel();
+{
+    DoTimeouts();
+    DoAllBot_AI();
 	DynamicMusic();
-
+    Game_Init();
 	CheckSandboxStatus();
-	CheckDeathmatchStatus();
-	
-	Path_PlayerNodes();  
-
-	AddCmdLineBots();  
-	InitMusic();
-
+    CheckDeathmatchStatus();
+    Path_PlayerNodes();
+    Game_Actions();
+    Player_Actions();
     Advance_M_Tics();
-
     HandleNetgameEvents();
 }
 
