@@ -12,37 +12,37 @@ Marshmallow Doom is a fork of the Crispy Doom source port. Itself being a fork o
 
 Here is a partial list of Marshmallow Doom's new features:
 
-    * Dynamic music soundtrack that morphs based on the player’s in-game experience, taking Bobby Prince’s original soundtrack to a whole new level
+- Dynamic music soundtrack that morphs based on the player’s in-game experience, taking Bobby Prince’s original soundtrack to a whole new level
     
-    * Re-balanced multiplayer experience adding modern features such as progressive weapon loadout, dropping ammo for squad mates, conserved item pickups, weapons stay, friendly fire on/off, and more
+- Re-balanced multiplayer experience adding modern features such as progressive weapon loadout, dropping ammo for squad mates, conserved item pickups, weapons stay, friendly fire on/off, and more
     
-    * Bots available for cooperative or deathmatch games
+- Bots available for cooperative or deathmatch games
     
-    * Treasure mode helps give Doom an even more classic vibe like that of Commander Keen or Wolfenstein 3D
+- Treasure mode helps give Doom an even more classic vibe like that of Commander Keen or Wolfenstein 3D
     
-    * Sandbox mode allows the player (or multiple players in a network game) to build their own custom battles in any map
+- Sandbox mode allows the player (or multiple players in a network game) to build their own custom battles in any map
     
-    * Monster upgrades can give any old map a new challenge, even repopulating Doom maps with Doom II monsters
+- Monster upgrades can give any old map a new challenge, even repopulating Doom maps with Doom II monsters
     
-    * New skill levels Ultra Violence 2.0 and Nightmare 2.0 utilize monster upgrading to create an entirely new standard for Doom’s difficulty
+- New skill levels Ultra Violence 2.0 and Nightmare 2.0 utilize monster upgrading to create an entirely new standard for Doom’s difficulty
     
-    * Inventory system allows the player to store items for future use, such as radsuits, invisibility, portable medkit, and more
+- Inventory system allows the player to store items for future use, such as radsuits, invisibility, portable medkit, and more
     
-    * Both Doom and Doom II IWADs can be combined so that music, sound, and graphics from both games can be used
+- Both Doom and Doom II IWADs can be combined so that music, sound, and graphics from both games can be used
     
-    * Enhanced blood, gore, and epic boss deaths
+- Enhanced blood, gore, and epic boss deaths
     
-    * The invisibility powerup now makes the player truly invisible to enemies, introducing a stealth tactic to help the player better survive any Doom level
+- The invisibility powerup now makes the player truly invisible to enemies, introducing a stealth tactic to help the player better survive any Doom level
     
-    * Overplayed songs such as those from MAP01, E1M1, and intermission songs can be blacklisted, where an alternate song is randomly selected in its place
+-  Overplayed songs such as those from MAP01, E1M1, and intermission songs can be blacklisted, where an alternate song is randomly selected in its place
     
-    * Player stats such as total kills and accuracy are tracked by the player profile
+- Player stats such as total kills and accuracy are tracked by the player profile
     
-    * Various monster and weapon mutators
+- Various monster and weapon mutators
     
-    * Most new options are quickly accessible via the player’s HUD datapad, without having to tediously dig into Doom’s options menus
+- Most new options are quickly accessible via the player’s HUD datapad, without having to tediously dig into Doom’s options menus
     
-    * All preferences are saved to disk for future sessions, and a separate server.cfg configuration file is available for multiplayer-specific game settings
+- All preferences are saved to disk for future sessions, and a separate server.cfg configuration file is available for multiplayer-specific game settings
     
 For the full documentation, see the [wiki](https://www.chocolate-doom.org/wiki/index.php/Marshmallow_Doom).  (Alternate link [here](https://doomwiki.org/wiki/Marshmallow_Doom))
 
@@ -51,6 +51,17 @@ For the full documentation, see the [wiki](https://www.chocolate-doom.org/wiki/i
 Download the latest Windows binary at http://www.marshmallowdoom.com.
 
 ## News
+
+### May 5, 2020
+
+We now have about 98% of the project re-implemented in this new project.  Only a few features have been omitted as they were previously very poorly implemented into the Doom code.  These features that were skipped are:
+
+- Sprint
+- Extra text output line
+- Flashlight
+- Skill cheat (now using Crispy's version)
+
+Now it is time for testing, testing, and more testing before any releases.  
 
 ### April 30, 2020
 
@@ -71,9 +82,9 @@ Stay tuned!
 
 ## Versioning
 
-So far, Marshmallow Doom's version numbers have no significant meaning.  
-
 In true Doom fashion, the first release was version 0.666, and they have progressed from there.  Now that the project is being developed in a more organized fashion, version numbers will likely be given more thought.
+
+The upcoming version release (which will be the first public build of this new project) will have the letter "M" which stands for MinGW, the new compiler used from here on out.
 
 ## Contact
 
