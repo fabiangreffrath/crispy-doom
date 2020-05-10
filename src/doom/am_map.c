@@ -295,6 +295,43 @@ cheatseq_t cheat_amap = CHEAT("iddt", 0);
 
 static boolean stopped = true;
 
+// [crispy] Antialiased lines from Heretic with more colors
+#define NUMALIAS 13
+static byte antialias[NUMALIAS][8] = {
+    {REDS, REDS + 2, REDS + 4, REDS + 6, REDS + 8, REDS + 10, REDS + 12, REDS + 14},
+    {GREENS, GREENS + 2, GREENS + 4, GREENS + 6, GREENS + 8, GREENS + 10, GREENS + 12, GREENS + 14},
+    {BLUES, BLUES + 1, BLUES + 2, BLUES + 3, BLUES + 4, BLUES + 5, BLUES + 6, BLUES + 7},
+    {GRAYS, GRAYS + 2, GRAYS + 4, GRAYS + 6, GRAYS + 8, GRAYS + 10, GRAYS + 12, GRAYS + 14},
+    {BROWNS, BROWNS + 2, BROWNS + 4, BROWNS + 6, BROWNS + 8, BROWNS + 10, BROWNS + 12, BROWNS + 14},
+    {YELLOWS, 160, 161, 162, 163, 164, 165, 166},
+    {WHITE, 80, 82, 84, 86, 88, 90, 92},
+    {23, 24, 25, 26, 27, 28, 29, 30}, // Extended WALLCOLORS
+    {55, 56, 57, 58, 59, 60, 61, 62},  // Extended FDWALLCOLORS
+    {215, 216, 217, 218, 219, 220, 221, 222}, // Extended CDWALLCOLORS
+    {GRIDCOLORS, GRIDCOLORS + 1, GRIDCOLORS + 2, GRIDCOLORS + 3, GRIDCOLORS + 4, GRIDCOLORS + 5, GRIDCOLORS + 6, GRIDCOLORS + 7},
+    {SECRETWALLCOLORS, SECRETWALLCOLORS, SECRETWALLCOLORS + 1, SECRETWALLCOLORS + 1, SECRETWALLCOLORS + 1, SECRETWALLCOLORS + 2, SECRETWALLCOLORS + 2, SECRETWALLCOLORS + 2},
+    {GRAYS + 3, GRAYS + 4, GRAYS + 5, GRAYS + 6, GRAYS + 7, GRAYS + 8, GRAYS + 9, GRAYS + 10}, // pw_allmap
+};
+// Runtime lookup from original map color to gradient for use with DrawWuLine
+static byte antialias_LUT[256] = {
+    [REDS] = 1,
+    [GREENS] = 2,
+    [BLUES] = 3,
+    [GRAYS] = 4,
+    [BROWNS] = 5,
+    [YELLOWS] = 6,
+    [WHITE] = 7,
+    [23] = 8,
+    [55] = 9,
+    [215] = 10,
+    [GRIDCOLORS] = 11,
+    [SECRETWALLCOLORS] = 12,
+    [GRAYS + 3] = 13,
+};
+
+void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
+                int NumLevels, unsigned short IntensityBits);
+
 // [crispy] automap rotate mode needs these early on
 void AM_rotate (int64_t *x, int64_t *y, angle_t a);
 static void AM_rotatePoint (mpoint_t *pt);
@@ -1164,6 +1201,17 @@ AM_drawFline
     
     static int fuck = 0;
 
+    if (crispy->smoothmap) // [crispy] Use DrawWuLine from Heretic
+    {
+        byte aaidx = antialias_LUT[color];
+
+        if ((aaidx > 0) && (aaidx <= NUMALIAS))
+        {
+            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &antialias[aaidx - 1][0], 8, 3);
+            return;
+        }
+        // Pass through any unhandled colors to the original method
+    }
     // For debugging only
     if (      fl->a.x < 0 || fl->a.x >= f_w
 	   || fl->a.y < 0 || fl->a.y >= f_h
@@ -1225,6 +1273,145 @@ AM_drawFline
     }
 }
 
+/* Wu antialiased line drawer.
+ * (X0,Y0),(X1,Y1) = line to draw
+ * BaseColor = color # of first color in block used for antialiasing, the
+ *          100% intensity version of the drawing color
+ * NumLevels = size of color block, with BaseColor+NumLevels-1 being the
+ *          0% intensity version of the drawing color
+ * IntensityBits = log base 2 of NumLevels; the # of bits used to describe
+ *          the intensity of the drawing color. 2**IntensityBits==NumLevels
+ */
+void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
+                int NumLevels, unsigned short IntensityBits)
+{
+    unsigned short IntensityShift, ErrorAdj, ErrorAcc;
+    unsigned short ErrorAccTemp, Weighting, WeightingComplementMask;
+    short DeltaX, DeltaY, Temp, XDir;
+
+    /* Make sure the line runs top to bottom */
+    if (Y0 > Y1)
+    {
+        Temp = Y0;
+        Y0 = Y1;
+        Y1 = Temp;
+        Temp = X0;
+        X0 = X1;
+        X1 = Temp;
+    }
+    /* Draw the initial pixel, which is always exactly intersected by
+       the line and so needs no weighting */
+    PUTDOT(X0, Y0, BaseColor[0]);
+
+    if ((DeltaX = X1 - X0) >= 0)
+    {
+        XDir = 1;
+    }
+    else
+    {
+        XDir = -1;
+        DeltaX = -DeltaX;       /* make DeltaX positive */
+    }
+    /* Special-case horizontal, vertical, and diagonal lines, which
+       require no weighting because they go right through the center of
+       every pixel */
+    if ((DeltaY = Y1 - Y0) == 0)
+    {
+        /* Horizontal line */
+        while (DeltaX-- != 0)
+        {
+            X0 += XDir;
+            PUTDOT(X0, Y0, BaseColor[0]);
+        }
+        return;
+    }
+    if (DeltaX == 0)
+    {
+        /* Vertical line */
+        do
+        {
+            Y0++;
+            PUTDOT(X0, Y0, BaseColor[0]);
+        }
+        while (--DeltaY != 0);
+        return;
+    }
+    //diagonal line.
+    if (DeltaX == DeltaY)
+    {
+        do
+        {
+            X0 += XDir;
+            Y0++;
+            PUTDOT(X0, Y0, BaseColor[0]);
+        }
+        while (--DeltaY != 0);
+        return;
+    }
+    /* Line is not horizontal, diagonal, or vertical */
+    ErrorAcc = 0;               /* initialize the line error accumulator to 0 */
+    /* # of bits by which to shift ErrorAcc to get intensity level */
+    IntensityShift = 16 - IntensityBits;
+    /* Mask used to flip all bits in an intensity weighting, producing the
+       result (1 - intensity weighting) */
+    WeightingComplementMask = NumLevels - 1;
+    /* Is this an X-major or Y-major line? */
+    if (DeltaY > DeltaX)
+    {
+        /* Y-major line; calculate 16-bit fixed-point fractional part of a
+           pixel that X advances each time Y advances 1 pixel, truncating the
+           result so that we won't overrun the endpoint along the X axis */
+        ErrorAdj = ((unsigned int) DeltaX << 16) / (unsigned int) DeltaY;
+        /* Draw all pixels other than the first and last */
+        while (--DeltaY)
+        {
+            ErrorAccTemp = ErrorAcc;    /* remember currrent accumulated error */
+            ErrorAcc += ErrorAdj;       /* calculate error for next pixel */
+            if (ErrorAcc <= ErrorAccTemp)
+            {
+                /* The error accumulator turned over, so advance the X coord */
+                X0 += XDir;
+            }
+            Y0++;               /* Y-major, so always advance Y */
+            /* The IntensityBits most significant bits of ErrorAcc give us the
+               intensity weighting for this pixel, and the complement of the
+               weighting for the paired pixel */
+            Weighting = ErrorAcc >> IntensityShift;
+            PUTDOT(X0, Y0, BaseColor[Weighting]);
+            PUTDOT(X0 + XDir, Y0, BaseColor[(Weighting ^ WeightingComplementMask)]);
+        }
+        /* Draw the final pixel, which is always exactly intersected by the line
+           and so needs no weighting */
+        PUTDOT(X1, Y1, BaseColor[0]);
+        return;
+    }
+    /* It's an X-major line; calculate 16-bit fixed-point fractional part of a
+       pixel that Y advances each time X advances 1 pixel, truncating the
+       result to avoid overrunning the endpoint along the X axis */
+    ErrorAdj = ((unsigned int) DeltaY << 16) / (unsigned int) DeltaX;
+    /* Draw all pixels other than the first and last */
+    while (--DeltaX)
+    {
+        ErrorAccTemp = ErrorAcc;        /* remember currrent accumulated error */
+        ErrorAcc += ErrorAdj;   /* calculate error for next pixel */
+        if (ErrorAcc <= ErrorAccTemp)
+        {
+            /* The error accumulator turned over, so advance the Y coord */
+            Y0++;
+        }
+        X0 += XDir;             /* X-major, so always advance X */
+        /* The IntensityBits most significant bits of ErrorAcc give us the
+           intensity weighting for this pixel, and the complement of the
+           weighting for the paired pixel */
+        Weighting = ErrorAcc >> IntensityShift;
+        PUTDOT(X0, Y0, BaseColor[Weighting]);
+        PUTDOT(X0, Y0 + 1, BaseColor[(Weighting ^ WeightingComplementMask)]);
+
+    }
+    /* Draw the final pixel, which is always exactly intersected by the line
+       and so needs no weighting */
+    PUTDOT(X1, Y1, BaseColor[0]);
+}
 
 //
 // Clip lines, draw visible part sof lines.
