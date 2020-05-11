@@ -332,6 +332,12 @@ static byte antialias_LUT[256] = {
 void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
                 int NumLevels, unsigned short IntensityBits);
 
+// Forward declare for AM_LevelInit
+void AM_drawFline_Vanilla(fline_t* fl, int color);
+void AM_drawFline_Smooth(fline_t* fl, int color);
+// Indirect through this to avoid having to test crispy->smoothmap for every line
+void (*AM_drawFline)(fline_t*, int) = AM_drawFline_Vanilla;
+
 // [crispy] automap rotate mode needs these early on
 void AM_rotate (int64_t *x, int64_t *y, angle_t a);
 static void AM_rotatePoint (mpoint_t *pt);
@@ -621,6 +627,8 @@ void AM_LevelInit(boolean reinit)
     f_x = f_y = 0;
     f_w = SCREENWIDTH;
     f_h = SCREENHEIGHT - (ST_HEIGHT << crispy->hires);
+
+    AM_drawFline = crispy->smoothmap ? AM_drawFline_Smooth : AM_drawFline_Vanilla;
 
     if (!reinit)
     AM_clearMarks();
@@ -1185,7 +1193,7 @@ AM_clipMline
 // Classic Bresenham w/ whatever optimizations needed for speed
 //
 void
-AM_drawFline
+AM_drawFline_Vanilla
 ( fline_t*	fl,
   int		color )
 {
@@ -1201,17 +1209,6 @@ AM_drawFline
     
     static int fuck = 0;
 
-    if (crispy->smoothmap) // [crispy] Use DrawWuLine from Heretic
-    {
-        byte aaidx = antialias_LUT[color];
-
-        if ((aaidx > 0) && (aaidx <= NUMALIAS))
-        {
-            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &antialias[aaidx - 1][0], 8, 3);
-            return;
-        }
-        // Pass through any unhandled colors to the original method
-    }
     // For debugging only
     if (      fl->a.x < 0 || fl->a.x >= f_w
 	   || fl->a.y < 0 || fl->a.y >= f_h
@@ -1270,6 +1267,21 @@ AM_drawFline
 	    y += sy;
 	    d += ax;
 	}
+    }
+}
+
+// [crispy] Use DrawWuLine from Heretic
+void AM_drawFline_Smooth(fline_t* fl, int color)
+{
+    byte aaidx = antialias_LUT[color];
+
+    if ((aaidx > 0) && (aaidx <= NUMALIAS))
+    {
+        DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &antialias[aaidx - 1][0], 8, 3);
+    }
+    else
+    {
+        AM_drawFline_Vanilla(fl, color);
     }
 }
 
