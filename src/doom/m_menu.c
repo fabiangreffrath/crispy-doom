@@ -515,7 +515,7 @@ static menuitem_t Crispness2Menu[]=
     {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {1,"",	M_CrispyToggleExtAutomap,'e'},
-    {1,"",  M_CrispyToggleSmoothMap,'m'},
+    {1,"",	M_CrispyToggleSmoothMap,'m'},
     {1,"",	M_CrispyToggleAutomapstats,'s'},
     {1,"",	M_CrispyToggleLeveltime,'l'},
     {1,"",	M_CrispyTogglePlayerCoords,'p'},

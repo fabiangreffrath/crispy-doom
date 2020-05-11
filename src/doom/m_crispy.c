@@ -436,14 +436,6 @@ void M_CrispyToggleSecretmessage(int choice)
     crispy->secretmessage = (crispy->secretmessage + 1) % NUM_SECRETMESSAGE;
 }
 
-void M_CrispyToggleSmoothMap(int choice)
-{
-    choice = 0;
-    crispy->smoothmap = !crispy->smoothmap;
-    // Update function pointer used to draw lines
-    AM_LevelInit(true);
-}
-
 void M_CrispyToggleSmoothScaling(int choice)
 {
     choice = 0;
@@ -468,6 +460,15 @@ void M_CrispyToggleSmoothLighting(int choice)
 
     crispy->post_rendering_hook = M_CrispyToggleSmoothLightingHook;
 }
+
+void M_CrispyToggleSmoothMap(int choice)
+{
+    choice = 0;
+    crispy->smoothmap = !crispy->smoothmap;
+    // Update function pointer used to draw lines
+    AM_LevelInit(true);
+}
+
 
 void M_CrispyToggleSndChannels(int choice)
 {

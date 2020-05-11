@@ -67,6 +67,7 @@ typedef struct
 	int recoil;
 	int secretmessage;
 	int smoothlight;
+	int smoothmap;
 	int smoothscaling;
 	int soundfix;
 	int soundfull;
@@ -79,7 +80,6 @@ typedef struct
 	int vsync;
 	int weaponsquat;
 	int widescreen;
-	int smoothmap;
 
 	// [crispy] in-game switches and variables
 	int screenshotmsg;
