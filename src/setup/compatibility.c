@@ -100,6 +100,7 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("crispy_vsync",           &crispy->vsync);
         M_BindIntVariable("crispy_weaponsquat",     &crispy->weaponsquat);
         M_BindIntVariable("crispy_widescreen",      &crispy->widescreen);
+        M_BindIntVariable("crispy_smoothmap",       &crispy->smoothmap);
     }
     else if (gamemission == heretic)
     {
