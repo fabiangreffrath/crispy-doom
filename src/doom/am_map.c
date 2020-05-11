@@ -1237,32 +1237,12 @@ AM_drawFline_Vanilla
     }
 }
 
-// [crispy] Use DrawWuLine from Heretic
+// [crispy] Adapted from Heretic's DrawWuLine
 void AM_drawFline_Smooth(fline_t* fl, int color)
 {
-    // Use the COLORMAP to produce a range of brightness for the given color
-#define RESHADE(I) (colormaps[I * 256 + color])
-    byte shades[8] =
-    {
-        RESHADE( 0), RESHADE( 4), RESHADE( 8), RESHADE(12),
-        RESHADE(16), RESHADE(20), RESHADE(24), RESHADE(28)
-    };
-#undef RESHADE
-    DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &shades[0], 8, 3);
-}
+    int X0 = fl->a.x, Y0 = fl->a.y, X1 = fl->b.x, Y1 = fl->b.y;
+    byte* BaseColor = &color_shades[color * NUMSHADES];
 
-/* Wu antialiased line drawer.
- * (X0,Y0),(X1,Y1) = line to draw
- * BaseColor = color # of first color in block used for antialiasing, the
- *          100% intensity version of the drawing color
- * NumLevels = size of color block, with BaseColor+NumLevels-1 being the
- *          0% intensity version of the drawing color
- * IntensityBits = log base 2 of NumLevels; the # of bits used to describe
- *          the intensity of the drawing color. 2**IntensityBits==NumLevels
- */
-void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
-                int NumLevels, unsigned short IntensityBits)
-{
     unsigned short IntensityShift, ErrorAdj, ErrorAcc;
     unsigned short ErrorAccTemp, Weighting, WeightingComplementMask;
     short DeltaX, DeltaY, Temp, XDir;
@@ -1329,10 +1309,10 @@ void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
     /* Line is not horizontal, diagonal, or vertical */
     ErrorAcc = 0;               /* initialize the line error accumulator to 0 */
     /* # of bits by which to shift ErrorAcc to get intensity level */
-    IntensityShift = 16 - IntensityBits;
+    IntensityShift = 16 - NUMSHADES_BITS;
     /* Mask used to flip all bits in an intensity weighting, producing the
        result (1 - intensity weighting) */
-    WeightingComplementMask = NumLevels - 1;
+    WeightingComplementMask = NUMSHADES - 1;
     /* Is this an X-major or Y-major line? */
     if (DeltaY > DeltaX)
     {
