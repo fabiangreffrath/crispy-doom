@@ -296,39 +296,6 @@ cheatseq_t cheat_amap = CHEAT("iddt", 0);
 static boolean stopped = true;
 
 // [crispy] Antialiased lines from Heretic with more colors
-#define NUMALIAS 13
-static byte antialias[NUMALIAS][8] = {
-    {REDS, REDS + 2, REDS + 4, REDS + 6, REDS + 8, REDS + 10, REDS + 12, REDS + 14},
-    {GREENS, GREENS + 2, GREENS + 4, GREENS + 6, GREENS + 8, GREENS + 10, GREENS + 12, GREENS + 14},
-    {BLUES, BLUES + 1, BLUES + 2, BLUES + 3, BLUES + 4, BLUES + 5, BLUES + 6, BLUES + 7},
-    {GRAYS, GRAYS + 2, GRAYS + 4, GRAYS + 6, GRAYS + 8, GRAYS + 10, GRAYS + 12, GRAYS + 14},
-    {BROWNS, BROWNS + 2, BROWNS + 4, BROWNS + 6, BROWNS + 8, BROWNS + 10, BROWNS + 12, BROWNS + 14},
-    {YELLOWS, 160, 161, 162, 163, 164, 165, 166},
-    {WHITE, 80, 82, 84, 86, 88, 90, 92},
-    {23, 24, 25, 26, 27, 28, 29, 30}, // Extended WALLCOLORS
-    {55, 56, 57, 58, 59, 60, 61, 62},  // Extended FDWALLCOLORS
-    {215, 216, 217, 218, 219, 220, 221, 222}, // Extended CDWALLCOLORS
-    {GRIDCOLORS, GRIDCOLORS + 1, GRIDCOLORS + 2, GRIDCOLORS + 3, GRIDCOLORS + 4, GRIDCOLORS + 5, GRIDCOLORS + 6, GRIDCOLORS + 7},
-    {SECRETWALLCOLORS, SECRETWALLCOLORS, SECRETWALLCOLORS + 1, SECRETWALLCOLORS + 1, SECRETWALLCOLORS + 1, SECRETWALLCOLORS + 2, SECRETWALLCOLORS + 2, SECRETWALLCOLORS + 2},
-    {GRAYS + 3, GRAYS + 4, GRAYS + 5, GRAYS + 6, GRAYS + 7, GRAYS + 8, GRAYS + 9, GRAYS + 10}, // pw_allmap
-};
-// Runtime lookup from original map color to gradient for use with DrawWuLine
-static byte antialias_LUT[256] = {
-    [REDS] = 1,
-    [GREENS] = 2,
-    [BLUES] = 3,
-    [GRAYS] = 4,
-    [BROWNS] = 5,
-    [YELLOWS] = 6,
-    [WHITE] = 7,
-    [23] = 8,
-    [55] = 9,
-    [215] = 10,
-    [GRIDCOLORS] = 11,
-    [SECRETWALLCOLORS] = 12,
-    [GRAYS + 3] = 13,
-};
-
 void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
                 int NumLevels, unsigned short IntensityBits);
 
@@ -1273,16 +1240,15 @@ AM_drawFline_Vanilla
 // [crispy] Use DrawWuLine from Heretic
 void AM_drawFline_Smooth(fline_t* fl, int color)
 {
-    byte aaidx = antialias_LUT[color];
-
-    if ((aaidx > 0) && (aaidx <= NUMALIAS))
+    // Use the COLORMAP to produce a range of brightness for the given color
+#define RESHADE(I) (colormaps[I * 256 + color])
+    byte shades[8] =
     {
-        DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &antialias[aaidx - 1][0], 8, 3);
-    }
-    else
-    {
-        AM_drawFline_Vanilla(fl, color);
-    }
+        RESHADE( 0), RESHADE( 4), RESHADE( 8), RESHADE(12),
+        RESHADE(16), RESHADE(20), RESHADE(24), RESHADE(28)
+    };
+#undef RESHADE
+    DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &shades[0], 8, 3);
 }
 
 /* Wu antialiased line drawer.
