@@ -591,6 +591,8 @@ void AM_LevelInit(boolean reinit)
     fixed_t a, b;
     static int f_h_old;
     leveljuststarted = 0;
+    // [crispy] Only need to precalculate color lookup tables once
+    static int precalc_once;
 
     f_x = f_y = 0;
     f_w = SCREENWIDTH;
@@ -622,7 +624,6 @@ void AM_LevelInit(boolean reinit)
     f_h_old = f_h;
 
     // [crispy] Precalculate color lookup tables for antialised line drawing using COLORMAP
-    static int precalc_once;
     if (!precalc_once)
     {
         precalc_once = 1;
