@@ -590,9 +590,10 @@ void AM_LevelInit(boolean reinit)
 {
     fixed_t a, b;
     static int f_h_old;
-    leveljuststarted = 0;
     // [crispy] Only need to precalculate color lookup tables once
     static int precalc_once;
+
+    leveljuststarted = 0;
 
     f_x = f_y = 0;
     f_w = SCREENWIDTH;
