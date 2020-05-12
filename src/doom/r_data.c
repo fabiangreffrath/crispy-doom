@@ -167,8 +167,6 @@ fixed_t*	spritetopoffset;
 
 lighttable_t	*colormaps;
 
-// [crispy] lookup table of color shades
-byte color_shades[NUMSHADES * 256];
 
 //
 // MAPTEXTURE_T CACHING
@@ -1238,22 +1236,6 @@ void R_InitColormaps (void)
 	}
 
 	W_ReleaseLumpName("PLAYPAL");
-    }
-
-    // [crispy] Precalculate color lookup tables for antialised line drawing using COLORMAP
-    for (int color = 0; color < 256; ++color)
-    {
-#define REINDEX(I) (color + I * 256)
-        // Pick a range of shades for a steep gradient to keep lines thin
-        int shade_index[NUMSHADES] =
-        {
-            REINDEX(0), REINDEX(1), REINDEX(2), REINDEX(3), REINDEX(7), REINDEX(15), REINDEX(23), REINDEX(31),
-        };
-#undef REINDEX
-        for (int shade = 0; shade < NUMSHADES; ++shade)
-        {
-            color_shades[color * NUMSHADES + shade] = colormaps[shade_index[shade]];
-        }
     }
 }
 

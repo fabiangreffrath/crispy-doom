@@ -296,12 +296,13 @@ cheatseq_t cheat_amap = CHEAT("iddt", 0);
 static boolean stopped = true;
 
 // [crispy] Antialiased lines from Heretic with more colors
-void DrawWuLine(int X0, int Y0, int X1, int Y1, byte * BaseColor,
-                int NumLevels, unsigned short IntensityBits);
+#define NUMSHADES 8
+#define NUMSHADES_BITS 3 // log2(NUMSHADES)
+static byte color_shades[NUMSHADES * 256];
 
 // Forward declare for AM_LevelInit
-void AM_drawFline_Vanilla(fline_t* fl, int color);
-void AM_drawFline_Smooth(fline_t* fl, int color);
+static void AM_drawFline_Vanilla(fline_t* fl, int color);
+static void AM_drawFline_Smooth(fline_t* fl, int color);
 // Indirect through this to avoid having to test crispy->smoothmap for every line
 void (*AM_drawFline)(fline_t*, int) = AM_drawFline_Vanilla;
 
@@ -619,6 +620,27 @@ void AM_LevelInit(boolean reinit)
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
 
     f_h_old = f_h;
+
+    // [crispy] Precalculate color lookup tables for antialised line drawing using COLORMAP
+    static int precalc_once;
+    if (!precalc_once)
+    {
+        precalc_once = 1;
+        for (int color = 0; color < 256; ++color)
+        {
+#define REINDEX(I) (color + I * 256)
+            // Pick a range of shades for a steep gradient to keep lines thin
+            int shade_index[NUMSHADES] =
+            {
+                REINDEX(0), REINDEX(1), REINDEX(2), REINDEX(3), REINDEX(7), REINDEX(15), REINDEX(23), REINDEX(31),
+            };
+#undef REINDEX
+            for (int shade = 0; shade < NUMSHADES; ++shade)
+            {
+                color_shades[color * NUMSHADES + shade] = colormaps[shade_index[shade]];
+            }
+        }
+    }
 }
 
 
@@ -1159,7 +1181,7 @@ AM_clipMline
 //
 // Classic Bresenham w/ whatever optimizations needed for speed
 //
-void
+static void
 AM_drawFline_Vanilla
 ( fline_t*	fl,
   int		color )
@@ -1238,7 +1260,7 @@ AM_drawFline_Vanilla
 }
 
 // [crispy] Adapted from Heretic's DrawWuLine
-void AM_drawFline_Smooth(fline_t* fl, int color)
+static void AM_drawFline_Smooth(fline_t* fl, int color)
 {
     int X0 = fl->a.x, Y0 = fl->a.y, X1 = fl->b.x, Y1 = fl->b.y;
     byte* BaseColor = &color_shades[color * NUMSHADES];

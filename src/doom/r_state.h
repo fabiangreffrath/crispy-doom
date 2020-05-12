@@ -44,10 +44,6 @@ extern fixed_t*		spriteoffset;
 extern fixed_t*		spritetopoffset;
 
 extern lighttable_t*	colormaps;
-// [crispy] lookup table of color shades
-#define NUMSHADES       8
-#define NUMSHADES_BITS  3 // log2(NUMSHADES)
-extern byte             color_shades[];
 
 extern int		viewwidth;
 extern int		scaledviewwidth;
