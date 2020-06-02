@@ -1808,6 +1808,8 @@ void Bot_ResetOrders()
 
 				this_Bot.orders = FOLLOW_LEADER;
 				this_Bot.state = FOLLOWING_CLOSE;
+
+				this_Bot.player->attacker = this_Bot.player->victim = this_Bot.player->mo->target = NULL;
 			}
 
 		}

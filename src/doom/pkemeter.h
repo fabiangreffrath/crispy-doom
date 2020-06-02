@@ -3,6 +3,8 @@
 
 #include "marshmallow.h"
 
+extern void CrispyReplaceColor (char *str, const int cr, const char *col);
+
 #define MAXOBJECTS 1000  // more than enough?
 #define DRAW_DELAY 25
 #define PKE_RECALC_DELAY 25   // so we aren't spamming all of our scanning stuff every single tic

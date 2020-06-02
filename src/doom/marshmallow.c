@@ -898,7 +898,6 @@ void Marshmallow_Ticker()
     DoTimeouts();
     DoAllBot_AI();
 	DynamicMusic();
-    Game_Init();
 	CheckSandboxStatus();
     CheckDeathmatchStatus();
     Path_PlayerNodes();
@@ -906,6 +905,7 @@ void Marshmallow_Ticker()
     Player_Actions();
     Advance_M_Tics();
     HandleNetgameEvents();
+    Game_Init();
 }
 
 

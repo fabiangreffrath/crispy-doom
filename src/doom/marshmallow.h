@@ -306,6 +306,7 @@ void PKE_ShowInfo();
 void EraseInfoReadout();
 
 // On/off flags for every submenu
+boolean shortcutmenu_on;
 boolean pkereadout_on;
 boolean profilescreen_on;  
 boolean menus_on;

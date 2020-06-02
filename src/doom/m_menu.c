@@ -70,7 +70,12 @@
 #define MARSHMALLOW_MENU_Y_OFFSET 6
 #define MARSHMALLOW_TITLE_X 112
 #define MARSHMALLOW_TITLE_Y 1
+#define WALLPAPER_TILE "FLOOR5_2"
+int shortcutmenu_selection;
 boolean menus_on;
+boolean mainmenu_breadcrumb;
+boolean shortcutmenu_on;
+boolean optionsmenu_on;
 boolean help_on;
 boolean profilescreen_on;
 boolean pkereadout_on;
@@ -83,6 +88,7 @@ boolean Marshmallow_AlternateNightmare;
 boolean Marshmallow_RespawnInNightmare;
 void M_Marshmallow(int choice);
 void M_DrawMarshmallowNewGame(void);
+void M_MarshmallowMenu();
 extern void LaunchHelpWidget();
 extern void ChooseLevel_Next();
 extern void ChooseLevel_Prev();
@@ -464,7 +470,7 @@ enum
 menuitem_t OptionsMenu[]=
 {
     {1,"M_ENDGAM",	M_EndGame,'e', "End Game"},
-    {1,"M_MESSG",	M_ChangeMessages,'m', "Messages: "},
+    {1,"M_MESSG",	M_MarshmallowMenu,'m', "MARSHMALLOW Options"},  // [marshmallow] Overwriting Messages on/off with a shortcut to gameplay options
     {1,"M_DETAIL",	M_ChangeDetail,'g', "Graphic Detail: "},
     {2,"M_SCRNSZ",	M_SizeDisplay,'s', "Screen Size"},
     {-1,"",0,'\0'},
@@ -1321,8 +1327,6 @@ void M_MusicVol(int choice)
 
 
 // [marshmallow]
-#define WALLPAPER_TILE "FLOOR5_2"
-
 static void M_DrawMarshmallowBackground(void)
 {
     static byte *sdest;
@@ -1349,7 +1353,6 @@ static void M_DrawMarshmallowBackground(void)
 
     memcpy(I_VideoBuffer, sdest, SCREENWIDTH * SCREENHEIGHT * sizeof(*I_VideoBuffer));
 }
-
 
 #define LINE1 "GAME TYPE: "
 #define LINE2 "CHOOSE LEVEL: "
@@ -1433,6 +1436,7 @@ void M_DrawMarshmallowNewGame(void)
     M_WriteText(currentMenu->x+20, currentMenu->y+LINEHEIGHT*8, DEH_String(LINE8));
 }
 // [m]
+
 
 //
 // M_DrawMainMenu
@@ -1568,9 +1572,9 @@ void M_DrawOptions(void)
     else
     if (OptionsDef.lumps_missing > 0)
     {
-    M_WriteText(OptionsDef.x + M_StringWidth("Messages: "),
+    M_WriteText(OptionsDef.x + M_StringWidth("MARSHMALLOW Options"),  // [marshmallow] Replaced Messages on/off with shortcut to gameplay options
                 OptionsDef.y + LINEHEIGHT * messages + 8 - (M_StringHeight("OnOff")/2),
-                showMessages ? "On" : "Off");
+                showMessages ? "" : ""); // [marshmallow] Blanked-out On / Off strings
     }
 
 // [crispy] mouse sensitivity menu
@@ -1840,6 +1844,22 @@ static void M_CrispnessPrev(int choice)
 
     M_CrispnessCur(0);
 }
+
+
+//
+// [marshmallow] Open gameplay menu; replaces "Messages on/off" in options
+//
+void M_MarshmallowMenu()
+{
+    menuactive = false;
+    mainmenu_breadcrumb = true;
+    shortcutmenu_on = true;
+    menus_on = true;
+
+    if (!shortcutmenu_selection)
+        shortcutmenu_selection = 1;
+}
+// [m]
 
 
 //
@@ -3049,10 +3069,10 @@ boolean M_Responder (event_t* ev)
 
                     newskill = skill_selection;
                     organic_levelchange = false;
+                    PKE_Reset();
                     StripWeapons(consoleplayer);
                     SkipToLevel();
                     M_ClearMenus ();
-                    PKE_Reset();
                     return true;
             }
         }

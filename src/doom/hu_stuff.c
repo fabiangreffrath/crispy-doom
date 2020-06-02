@@ -116,7 +116,7 @@ static boolean		always_off = false;
 static char		chat_dest[MAXPLAYERS];
 static hu_itext_t w_inputbuffer[MAXPLAYERS];
 
-static boolean		message_on;
+/*static*/ boolean		message_on;  // [marshmallow] we need this to be global
 boolean			message_dontfuckwithme;
 static boolean		message_nottobefuckedwith;
 static boolean		secret_on;
