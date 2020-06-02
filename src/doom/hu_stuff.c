@@ -414,7 +414,7 @@ const char *mapnames_commercial[] =
     MHUSTR_21
 };
 
-/*static*/ void CrispyReplaceColor (char *str, const int cr, const char *col)  // [marshmallow] we need this to be global
+/*static*/ void CrispyReplaceColor (char *str, const int cr, const char *col)  // [marshmallow] Removed static
 {
     char *str_replace, col_replace[16];
 

@@ -4,12 +4,10 @@
 //
 /////////////////////////////
 
-
 #include "dj.h"
 #include "songs.h"
 #include "pkemeter.h" 
 
- 
 static void DJ_MusicStates()  
 {
 	musicstyle_t music_state = Doom_DJ.music_state;
@@ -118,7 +116,6 @@ void DJ_StartPlaylist(musicstyle_t style)
 	case AMBIENT:
 
 		if ( DJ_Msg_On() )
-	//if (Marshmallow_DJMessages)
 			SHOW_MESSAGE DEH_String(AMBIENTSONGS);
 
 		if (game == DOOM2)
@@ -133,7 +130,6 @@ void DJ_StartPlaylist(musicstyle_t style)
 	case SUSPENSEFUL:
 
 		if ( DJ_Msg_On() )
-		//if (Marshmallow_DJMessages)
 			SHOW_MESSAGE DEH_String(SUSPENSEFULSONGS);
 
 		if (game == DOOM2)
@@ -148,7 +144,6 @@ void DJ_StartPlaylist(musicstyle_t style)
 	case INTENSE:
 
 		if ( DJ_Msg_On() )
-		//if (Marshmallow_DJMessages)
 			SHOW_MESSAGE DEH_String(INTENSESONGS);
 
 		if (game == DOOM2)
@@ -163,7 +158,6 @@ void DJ_StartPlaylist(musicstyle_t style)
 	case BOSS:
 
 		if ( DJ_Msg_On() )
-		//if (Marshmallow_DJMessages)
 			SHOW_MESSAGE DEH_String(BOSSSONGS);
 
 		if (game == DOOM2)
@@ -178,7 +172,6 @@ void DJ_StartPlaylist(musicstyle_t style)
 	case VICTORY:
 
 		if ( DJ_Msg_On() )
-		//if (Marshmallow_DJMessages)
 			SHOW_MESSAGE DEH_String(VICTORYSONGS);
 
 		if (game == DOOM2)
@@ -195,7 +188,6 @@ void DJ_StartPlaylist(musicstyle_t style)
 	case ALL_SONGS:
 
 		if ( DJ_Msg_On() )
-		//if (Marshmallow_DJMessages)
 			SHOW_MESSAGE DEH_String(ALLSONGS);
 
 		if (game == DOOM2)
@@ -241,9 +233,7 @@ int GetNextTrackNum()
 	int next_track;
 
 	if ( !Doom_DJ.shuffle )
-	{
 		return TRACK_1;
-	}
 
 	RefreshShuffledTracks();
 
@@ -314,31 +304,31 @@ boolean HighDanger()
 
 void SetMusicThresholds()
 {
-//	float modifier;
-//
-//	if (!upgrade_chance)
-//		modifier = 0;
-//	else
-//		modifier = (upgrade_chance * 0.01);
+	float modifier = 0;
 
-	//modifier *= 1.5;
+	// If upgrading monsters, increase our threshold for what is considered "high danger"
+	if (upgrade_chance)
+	    modifier = upgrade_chance * 0.01;
+
+    // If upgrading monster healthpoints, multiply our high danger threshold by the same amount
+	modifier += MonsterHitpointsScale;
 
 	switch (gameskill)
 	{
 	case sk_baby:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL1/* * MonsterHitpointsScale*/;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL1 * modifier;
 		break;
 	case sk_easy:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL2/* * MonsterHitpointsScale*/;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL2 * modifier;
 		break;
 	case sk_medium:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL3/* * MonsterHitpointsScale*/;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL3 * modifier;
 		break;
 	case sk_hard:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL4/* * MonsterHitpointsScale*/;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL4 * modifier;
 		break;
 	case sk_nightmare:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL5/* * MonsterHitpointsScale*/;
+		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL5 * modifier;
 		break;
 	}
 }
@@ -476,12 +466,12 @@ void DJ_NextTrack()
 		Doom_DJ.track_playing = TRACK_1;
 
 		if (Marshmallow_DJMessages && !Doom_DJ.shuffle)
-		SHOW_MESSAGE "END OF PLAYLIST. RESTARTING.";		
+		    SHOW_MESSAGE "END OF PLAYLIST. RESTARTING.";
 	}
 	else
 	{
 		if (Marshmallow_DJMessages)
-		SHOW_MESSAGE DEH_String(NEXTSONG);	
+		    SHOW_MESSAGE DEH_String(NEXTSONG);
 	}
 
 	new_song = Doom_DJ.song[ Doom_DJ.track_playing ];

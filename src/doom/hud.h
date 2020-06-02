@@ -50,6 +50,9 @@ boolean targethp_on;
 // Wallpaper/background tile graphic for datapad submenus
 #define MENU_WALLPAPER "COMP03_1"
 
+// For gameplay options shortcut in main menu
+boolean mainmenu_breadcrumb;
+
 // Functions for hud.c
 char* DisplayPhysicsMode();
 char* DisplayLightingMode();
@@ -84,6 +87,7 @@ void HUD_InitMainMenu();
 void HUD_InitMessagesMenu();
 void HUD_InitSkillMenu();
 void HUD_InitInventoryMenu();
+void HUD_InitShortcutMenu();
 void HUD_InitBotMenu();
 void HUD_InitGameplayMenu();
 void HUD_InitMiscText();
@@ -106,6 +110,16 @@ int enemymenu_selection;
 int weaponmenu_selection;
 int mapweapons_selection;
 int treasure_selection;
+int shortcutmenu_selection;
+
+// Shortcut menu from main menu options
+enum {
+	NO_OPTIONSMENU_SELECTION,
+	GAMEPLAYMENU_SELECTED,
+	MUSICMENU_SELECTED,
+	MESSAGESMENU_SELECTED,
+	MAX_SHORTCUT_OPTIONS,
+};
 
 // Warp weapons options in menu
 enum { 
@@ -413,6 +427,10 @@ hu_stext_t optionsmenu_goodies;
 hu_stext_t optionsmenu_ludicrous;
 hu_stext_t optionsmenu_lighting;
 hu_stext_t optionsmenu_physics;
+
+hu_stext_t shortcutmenu_gameplay;
+hu_stext_t shortcutmenu_music;
+hu_stext_t shortcutmenu_messages;
 
 hu_stext_t skillmenu_title;
 hu_stext_t skillmenu_blank;

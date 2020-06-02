@@ -216,16 +216,15 @@ mobj_t* CreateBackpack(mobj_t* target, boolean is_inventory)
 
 	backpack_x = target->x - FixedMul (24*FRACUNIT, finecosine[an]) - offset; 
 	backpack_y = target->y - FixedMul (24*FRACUNIT, finesine[an]) - offset;
-	backpack_z = target->z;  
+	backpack_z = target->z;
 
-	mo = P_SpawnMobj (backpack_x,backpack_y,backpack_z, MARSHMALLOW_BACKPACK);  
+	mo = P_SpawnMobj (backpack_x, backpack_y, backpack_z, MARSHMALLOW_BACKPACK);
 	mo->flags |= MF_DROPPED;
 
 	if ( deathmatch )
-		mo->drop_tic = gametic;  // NEW
+		mo->drop_tic = gametic;
 
-	//if (is_inventory)  // TESTING
-		mo->owner = target->player->player_number;	
+	mo->owner = target->player->player_number;
 
 	return mo;
 }
@@ -282,7 +281,7 @@ void DropBackpackForAFriend(mobj_t* actor)
 	x = actor->x + FixedMul (24*FRACUNIT, finecosine[an])/* + MARSHMALLOW_DROPOBSTACLE_OFFSET_X*/ ; 
 	y = actor->y + FixedMul (24*FRACUNIT, finesine[an])/* + MARSHMALLOW_DROPOBSTACLE_OFFSET_Y*/;  
 
-	backpack = P_SpawnMobj (x, y, ONFLOORZ, item);  
+	backpack = P_SpawnMobj (x, y, ONFLOORZ, item);
 	backpack->flags |= MF_DROPPED;	
 
 	backpack->is_gift = true;  // NEW

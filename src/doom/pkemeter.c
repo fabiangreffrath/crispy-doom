@@ -2,14 +2,11 @@
 //
 //  PKEMETER.C: Danger tracking metrics
 //
-//	AUTHOR: Dr. Egon Spengler  (c) 1984 GBI.
-//
 /////////////////////////////////////////////////
 
 #include "pkemeter.h"
 
-
-// Returns number of living monsters in map, or zero if none found
+// Returns number of living monsters in map, or false if none found
 int PKE_MonstersInArea()   
 {
     thinker_t*	th;
@@ -294,7 +291,7 @@ void PKE_KillStaypuft()  // rename
 }
 
 
-void DoSharewareBossDeath()
+void DoSharewareBossDeath()  // unused now
 {
 	line_t junk;
 	junk.tag = 666;

@@ -1241,6 +1241,7 @@ P_TouchSpecialThing
 	}
 	for (i=0 ; i<NUMAMMO ; i++)
 	    P_GiveAmmo (player, i, 1, false);
+	if (!(special->flags & MF_DROPPED))
 	player->message = DEH_String(GOTBACKPACK);
 
 	if (deathmatch && special->flags & MF_DROPPED)  // [marshmallow]

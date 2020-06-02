@@ -796,7 +796,7 @@ void SetPlayerTarget(mobj_t* source, mobj_t* target)
 		source->target = target;    
 		target->target_timeout = DEFAULT_TARGET_TIMEOUT;	
 
-			source->player->victim = target;
+		source->player->victim = target;
 	}
 }
 
@@ -1071,7 +1071,13 @@ void Marshmallow_SetupLevel()
 	if (Marshmallow_KeepKeys)
 		ClearKeyRing(&MAIN_PLAYER); 
 
-	treasure_bag.score = NULL; 
+	treasure_bag.score = NULL;
+
+	if (MAIN_PLAYER.playerstate == PST_LIVE)
+	{
+        players[consoleplayer].attacker = NULL;
+        players[consoleplayer].mo->target = NULL;
+    }
 
 	if ( MAIN_PLAYER.cheats & CF_GODMODE 
 		|| MAIN_PLAYER.cheats & CF_NOCLIP )

@@ -8,7 +8,6 @@
 #include "bot.h"  
 #include "dj.h"
 
-extern int prndindex;
 
 //  The info readout allows us to watch variables on-screen during gameplay
 void UpdateInfoReadout()
@@ -29,15 +28,18 @@ void UpdateInfoReadout()
 	}
 }
 
-	
+
 void SetMarshmallowColors()
 {
-
 	CrispyReplaceColor( "BOT 1: ", CR_GRAY, "BOT 1: ");
 	CrispyReplaceColor( "BOT 2: ", CR_GOLD, "BOT 2: ");
 	CrispyReplaceColor( "BOT 3: ", CR_DARK, "BOT 3: ");
 
 	CrispyReplaceColor( MENU_CURSOR, CR_GREEN, MENU_CURSOR);
+
+    CrispyReplaceColor( "    Gameplay options...", CR_GRAY, "...");
+    CrispyReplaceColor( "    Music options...", CR_GRAY, "...");
+    CrispyReplaceColor( "    MESSAGES options...", CR_GRAY, "...");
 
 	CrispyReplaceColor( MENU_TITLE1, CR_GRAY, MENU_TITLE1);
 	CrispyReplaceColor( MENU_TITLE2, CR_GOLD, MENU_TITLE2);
@@ -650,6 +652,7 @@ void InitHUDMenuText()
 	HUD_InitBlacklistMenu();
 	HUD_InitVanillaMusicMenu();
 	HUD_InitProfileScreen();
+    HUD_InitShortcutMenu();
 
 	// So the cursor isn't stuck on zero at first
 	mainmenu_selection = FIRST_MENU_ITEM;
@@ -1006,6 +1009,13 @@ void DrawHUDMenu()
 		}
 	}
 
+	if (shortcutmenu_on)
+    {
+        HUlib_drawSText(&shortcutmenu_gameplay);
+        HUlib_drawSText(&shortcutmenu_music);
+        HUlib_drawSText(&shortcutmenu_messages);
+    }
+
 	if (skillmenu_on)
 	{
 		//HUlib_drawSText(&skillmenu_title); 
@@ -1244,6 +1254,12 @@ void HUDMenuTicker()   // add an if (thismenu_on) to each of these blocks?
 
 	HUlib_addMessageToSText(&optionsmenu_weaponstay, "    Weapons Stay", DisplayOnOff(Marshmallow_WeaponsStay));
 
+// shortcut menu
+
+    HUlib_addMessageToSText(&shortcutmenu_gameplay, NULL, DEH_String("    Gameplay options..."));
+    HUlib_addMessageToSText(&shortcutmenu_music, NULL, DEH_String("    Music options..."));
+    HUlib_addMessageToSText(&shortcutmenu_messages, NULL, DEH_String("    MESSAGES options..."));
+
 
 // skill menu
 
@@ -1405,6 +1421,27 @@ void CalculateCursorPosition()
 		// else...
 	}
 	*/
+
+	if (shortcutmenu_on)
+    {
+        switch (shortcutmenu_selection)
+        {
+            case 1:
+                cursor_y = INV_HU_Y_5;
+                break;
+
+            case 2:
+                cursor_y = INV_HU_Y_6;
+                break;
+
+            case 3:
+                cursor_y = INV_HU_Y_7;
+                break;
+
+            default:
+                return;
+        }
+    }
 
 	if (enemymenu_on)
 	{  
@@ -2056,16 +2093,69 @@ void HUDMenuKeyInput()
 				musicmenu_on = true;	
 			else
 				vanillamusicmenu_on = true;
-		}							
-		else if ( optionsmenu_on   // backtacking from a sub menu...
-				 || sandboxmenu_on
+		}
+		else if ( shortcutmenu_on )
+        {
+            HideAllMenus();
+            menuactive = true;
+        }
+		else if ( optionsmenu_on )
+        {
+            if (mainmenu_breadcrumb)
+            {
+                HideAllMenus();
+                shortcutmenu_on = true;
+            }
+            else
+            {
+                HideAllMenus();
+                mainmenu_on = true;
+            }
+        }
+        else if ( musicmenu_on )
+        {
+            if (mainmenu_breadcrumb)
+            {
+                HideAllMenus();
+                shortcutmenu_on = true;
+            }
+            else
+            {
+                HideAllMenus();
+                mainmenu_on = true;
+            }
+        }
+        else if ( msgsmenu_on )
+        {
+            if (mainmenu_breadcrumb)
+            {
+                HideAllMenus();
+                shortcutmenu_on = true;
+            }
+            else
+            {
+                HideAllMenus();
+                mainmenu_on = true;
+            }
+        }
+        else if ( vanillamusicmenu_on )
+        {
+            if (mainmenu_breadcrumb)
+            {
+                HideAllMenus();
+                shortcutmenu_on = true;
+            }
+            else
+            {
+                HideAllMenus();
+                mainmenu_on = true;
+            }
+        }
+		else if ( sandboxmenu_on  // backtacking from a sub menu...
 				 || skipmenu_on
-				 || musicmenu_on
-				 || vanillamusicmenu_on
 				 || blacklistmenu_on
 				 || optionsmenu_on
-				 || botmenu_on
-				 || msgsmenu_on )   
+				 || botmenu_on )
 		{
 			HideAllMenus();
 			mainmenu_on = true; 
@@ -2140,6 +2230,83 @@ void HUDMenuKeyInput()
 			botmenu_selection = FIRST_MENU_ITEM;
 	}
 
+    if (shortcutmenu_on)
+    {
+        if (MENUKEY_NEXT)
+        {
+            if (CheckKeyDelay())
+                return;
+
+            shortcutmenu_selection++;
+
+            if (shortcutmenu_selection == MAX_SHORTCUT_OPTIONS)
+                shortcutmenu_selection = FIRST_MENU_ITEM;
+        }
+
+        if (MENUKEY_PREVIOUS)
+        {
+            if (CheckKeyDelay())
+                return;
+
+            shortcutmenu_selection--;
+
+            if (shortcutmenu_selection == 0)
+                shortcutmenu_selection = MAX_SHORTCUT_OPTIONS - 1;
+        }
+
+        if (MENUKEY_SELECT)
+        {
+            if (CheckKeyDelay())
+                return;
+
+            switch (shortcutmenu_selection)
+            {
+                case GAMEPLAYMENU_SELECTED:
+                    HideAllMenus();
+                    optionsmenu_on = true;
+
+                    if (!options_selection)
+                    options_selection = FIRST_MENU_ITEM;
+
+                    SetKeyDelay();
+
+                    break;
+
+                case MUSICMENU_SELECTED:
+                    if (Marshmallow_DynamicMusic)
+                    {
+                        HideAllMenus();
+                        musicmenu_on = true;
+
+                        if (!musicmenu_selection)
+                            musicmenu_selection = FIRST_MENU_ITEM;
+                    }
+                    else
+                    {
+                        HideAllMenus();
+                        vanillamusicmenu_on = true;
+
+                        if (!vanillamusicmenu_selection)
+                            vanillamusicmenu_selection = FIRST_MENU_ITEM;
+                    }
+
+                    SetKeyDelay();
+
+                    break;
+
+                case MESSAGESMENU_SELECTED:
+                    HideAllMenus();
+                    msgsmenu_on = true;
+
+                    if (!msgsmenu_selection)
+                    msgsmenu_selection = FIRST_MENU_ITEM;
+
+                    SetKeyDelay();
+
+                    break;
+            }
+        }
+    }
 
 	if (msgsmenu_on)
 	{
@@ -3622,6 +3789,8 @@ void HUDMenuKeyInput()
 			case WEAPONSMENU_SELECTED:
 				optionsmenu_on = false;
 				weaponmenu_on = true;
+
+				if (!weaponmenu_selection)
 				weaponmenu_selection = FIRST_MENU_ITEM;
 				//SetKeyDelay();
 				break;
@@ -3629,6 +3798,8 @@ void HUDMenuKeyInput()
 			case MONSTERSMENU_SELECTED:
 				optionsmenu_on = false;
 				enemymenu_on = true;
+
+				if (!enemymenu_selection)
 				enemymenu_selection = FIRST_MENU_ITEM;
 				//SetKeyDelay();
 				break;
@@ -4674,7 +4845,6 @@ void HUD_InitBotMenu()
 }
 
 
-
 void HUD_InitGameplayMenu()
 {
 // gameplay options menu:			
@@ -4758,6 +4928,25 @@ void HUD_InitGameplayMenu()
 		FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_19, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &optionsmenu_on);
+}
+
+
+void HUD_InitShortcutMenu()
+{
+    HUlib_initSText(&shortcutmenu_gameplay,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_5, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &shortcutmenu_on);
+
+    HUlib_initSText(&shortcutmenu_music,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_6, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &shortcutmenu_on);
+
+    HUlib_initSText(&shortcutmenu_messages,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_7, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &shortcutmenu_on);
 }
 
 
@@ -4977,6 +5166,7 @@ void StartMenuCursor()
 		|| sandboxmenu_on
 		|| enemymenu_on
 		|| weaponmenu_on
+		|| shortcutmenu_on
 		//|| profilescreen_on  // when we do this, the stats vanish
 		)
 	{
@@ -4999,6 +5189,7 @@ void StartMenuCursor()
 		&& !sandboxmenu_on
 		&& !enemymenu_on
 		&& !weaponmenu_on
+		&& !shortcutmenu_on
 		)
 			menus_on = false;  
 }
@@ -5026,7 +5217,8 @@ void HideAllMenus()
 	blacklistmenu_on = false;
 	help_on = false; 
 	profilescreen_on = false;
-	treasure_on = false; 
+	treasure_on = false;
+	shortcutmenu_on = false;
 
 	mainmenu_on = false; 
 	menus_on = false; 
@@ -5434,7 +5626,7 @@ char* ShowThingName()
 		return "NO THING!";
 }
 
-extern boolean ST_Responder (event_t* ev);
+//extern boolean ST_Responder (event_t* ev);
 
 void LaunchInventoryMenu()
 {

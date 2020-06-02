@@ -40,6 +40,7 @@
 #include "SDL_endian.h"
 
 // Prototypes for vanilla doom objects that we'll need:
+void CrispyReplaceColor (char *str, const int cr, const char *col);
 int showMessages;
 void P_KillMobj ( mobj_t*	source, mobj_t*	target );
 //boolean P_GiveAmmo( player_t*	player, ammotype_t	ammo, int		num );

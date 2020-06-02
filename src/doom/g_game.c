@@ -1381,9 +1381,7 @@ void G_PlayerReborn (int player)
 
     // [marshmallow] This respawns the bot
     if ( IsBot(p) )
-    {
         Bot_Reborn(p->bot_number);
-    }
     // [m]
 
     memset (p, 0, sizeof(*p)); 
