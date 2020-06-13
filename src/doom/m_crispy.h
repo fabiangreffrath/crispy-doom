@@ -65,6 +65,7 @@ extern void M_CrispyToggleFullsounds(int choice);
 extern void M_CrispyToggleHires(int choice);
 extern void M_CrispyToggleJumping(int choice);
 extern void M_CrispyToggleLeveltime(int choice);
+extern void M_CrispyToggleLinearsky(int choice);
 extern void M_CrispyToggleMouseLook(int choice);
 extern void M_CrispyToggleNeghealth(int choice);
 extern void M_CrispyToggleOverunder(int choice);

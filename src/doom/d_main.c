@@ -448,6 +448,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_hires",           &crispy->hires);
     M_BindIntVariable("crispy_jump",            &crispy->jump);
     M_BindIntVariable("crispy_leveltime",       &crispy->leveltime);
+    M_BindIntVariable("crispy_linearsky",       &crispy->linearsky);
     M_BindIntVariable("crispy_mouselook",       &crispy->mouselook);
     M_BindIntVariable("crispy_neghealth",       &crispy->neghealth);
     M_BindIntVariable("crispy_overunder",       &crispy->overunder);

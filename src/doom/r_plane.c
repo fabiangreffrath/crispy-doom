@@ -484,7 +484,18 @@ void R_DrawPlanes (void)
 
 		if ((unsigned) dc_yl <= dc_yh) // [crispy] 32-bit integer math
 		{
-		    angle = ((an + xtoviewangle[x])^flip)>>ANGLETOSKYSHIFT;
+			// [crispy] Draw skies horizontally linear.
+			// Taken from GZDoom and refactored for integer math.
+			if (crispy->linearsky) 
+			{
+				angle_t xangle = ((viewwidth / 2 - x) * ((SCREENWIDTH<<6) / viewwidth))
+                                  * (ANG90 / (NONWIDEWIDTH<<6));
+				angle = ((an + xangle)^flip)>>ANGLETOSKYSHIFT;
+			}
+			else
+			{
+				angle = ((an + xtoviewangle[x])^flip)>>ANGLETOSKYSHIFT;
+			}
 		    dc_x = x;
 		    dc_source = R_GetColumn(texture, angle, false);
 		    colfunc ();

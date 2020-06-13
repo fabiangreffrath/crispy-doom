@@ -2084,6 +2084,14 @@ static default_t extra_defaults_list[] =
     //!
     // @game doom
     //
+    // Draw skies horizontally linear.
+    //
+
+    CONFIG_VARIABLE_INT(crispy_linearsky),
+
+    //!
+    // @game doom
+    //
     // Use the mouse to look up and down.
     //
 

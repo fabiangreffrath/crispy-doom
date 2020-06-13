@@ -435,7 +435,6 @@ enum
     crispness_uncapped,
     crispness_vsync,
     crispness_smoothscaling,
-    crispness_sep_rendering_,
 
     crispness_sep_visual,
     crispness_coloredhud,
@@ -444,6 +443,7 @@ enum
     crispness_brightmaps,
     crispness_coloredblood,
     crispness_flipcorpses,
+    crispness_linearsky,
     crispness_sep_visual_,
 
     crispness1_next,
@@ -460,13 +460,13 @@ static menuitem_t Crispness1Menu[]=
     {1,"",	M_CrispyToggleVsync,'v'},
     {1,"",	M_CrispyToggleSmoothScaling,'s'},
     {-1,"",0,'\0'},
-    {-1,"",0,'\0'},
     {1,"",	M_CrispyToggleColoredhud,'c'},
     {1,"",	M_CrispyToggleTranslucency,'e'},
     {1,"",	M_CrispyToggleSmoothLighting,'s'},
     {1,"",	M_CrispyToggleBrightmaps,'b'},
     {1,"",	M_CrispyToggleColoredblood,'c'},
     {1,"",	M_CrispyToggleFlipcorpses,'r'},
+    {1,"",	M_CrispyToggleLinearsky,'r'},
     {-1,"",0,'\0'},
     {1,"",	M_CrispnessNext,'n'},
     {1,"",	M_CrispnessPrev,'p'},
@@ -1492,6 +1492,7 @@ static void M_DrawCrispness1(void)
     M_DrawCrispnessMultiItem(crispness_brightmaps, "Apply Brightmaps to", multiitem_brightmaps, crispy->brightmaps, true);
     M_DrawCrispnessItem(crispness_coloredblood, "Colored Blood and Corpses", crispy->coloredblood, gameversion != exe_chex);
     M_DrawCrispnessItem(crispness_flipcorpses, "Randomly Mirrored Corpses", crispy->flipcorpses, gameversion != exe_chex);
+    M_DrawCrispnessItem(crispness_linearsky, "Horizontally Linear Skies", crispy->linearsky, true);
 
     M_DrawCrispnessGoto(crispness1_next, "Next Page >");
     M_DrawCrispnessGoto(crispness1_prev, "< Last Page");

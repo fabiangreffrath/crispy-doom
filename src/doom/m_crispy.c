@@ -374,6 +374,12 @@ void M_CrispyToggleJumping(int choice)
     CheckCrispySingleplayer(!demorecording && !demoplayback && !netgame);
 }
 
+void M_CrispyToggleLinearsky(int choice)
+{
+    choice = 0;
+    crispy->linearsky = !crispy->linearsky;
+}
+
 void M_CrispyToggleLeveltime(int choice)
 {
     choice = 0;

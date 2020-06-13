@@ -60,6 +60,7 @@ typedef struct
 	int hires;
 	int jump;
 	int leveltime;
+	int linearsky;
 	int mouselook;
 	int neghealth;
 	int overunder;
