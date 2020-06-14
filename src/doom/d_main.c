@@ -1356,7 +1356,7 @@ static void LoadIwadDeh(void)
 
 static void G_CheckDemoStatusAtExit (void)
 {
-    G_CheckDemoStatus();
+    G_CheckDemoStatus(NULL);
 }
 
 //

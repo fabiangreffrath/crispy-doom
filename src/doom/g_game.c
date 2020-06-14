@@ -2210,7 +2210,7 @@ G_DeferedInitNew
     // [crispy] if a new game is started during demo recording, start a new demo
     if (demorecording)
     {
-	G_CheckDemoStatus();
+	G_CheckDemoStatus(NULL);
 	Z_Free(demoname);
 
 	G_RecordDemo(orig_demoname);
@@ -2454,7 +2454,7 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
     if (*demo_p == DEMOMARKER) 
     {
 	// end of demo data stream 
-	G_CheckDemoStatus (); 
+	G_CheckDemoStatus (cmd); 
 	return; 
     } 
 
@@ -2477,7 +2477,7 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 	demobuffer = actualbuffer;
 
 	// [crispy] continue recording
-	G_CheckDemoStatus();
+	G_CheckDemoStatus(cmd);
 	return;
     }
 
@@ -2541,7 +2541,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
     byte *demo_start;
 
     if (gamekeydown[key_demo_quit])           // press q to end demo recording 
-	G_CheckDemoStatus (); 
+	G_CheckDemoStatus (cmd); 
 
     demo_start = demo_p;
 
@@ -2572,7 +2572,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
         if (vanilla_demo_limit)
         {
             // no more space 
-            G_CheckDemoStatus (); 
+            G_CheckDemoStatus (cmd); 
             return; 
         }
         else
@@ -2786,7 +2786,7 @@ void G_DoPlayDemo (void)
     if (lumplength < 0xd)
     {
 	demoplayback = true;
-	G_CheckDemoStatus();
+	G_CheckDemoStatus(NULL);
 	return;
     }
 
@@ -2829,7 +2829,7 @@ void G_DoPlayDemo (void)
                          DemoVersionDescription(demoversion));
 	fprintf(stderr, "\n");
 	demoplayback = true;
-	G_CheckDemoStatus();
+	G_CheckDemoStatus(NULL);
 	return;
         }
     }
@@ -2943,7 +2943,7 @@ void G_TimeDemo (char* name)
 =================== 
 */ 
  
-boolean G_CheckDemoStatus (void) 
+boolean G_CheckDemoStatus (ticcmd_t* cmd) 
 { 
     int             endtime; 
 	 
@@ -2996,6 +2996,10 @@ boolean G_CheckDemoStatus (void)
             {
                 S_Start();
             }
+
+            // [crispy] record demo join
+            if (cmd != NULL)
+                cmd->buttons |= BT_JOIN;
 
             return true;
         }

@@ -64,7 +64,7 @@ static void PlayerQuitGame(player_t *player)
 
     if (demorecording) 
     {
-        G_CheckDemoStatus ();
+        G_CheckDemoStatus (NULL);
     }
 }
 
