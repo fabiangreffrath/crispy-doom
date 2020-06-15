@@ -242,6 +242,9 @@ int		bodyqueslot;
  
 int             vanilla_savegame_limit = 1;
 int             vanilla_demo_limit = 1;
+
+// [crispy] store last cmd to track joins
+static ticcmd_t* last_cmd = NULL;
  
 int G_CmdChecksum (ticcmd_t* cmd) 
 { 
@@ -2210,7 +2213,7 @@ G_DeferedInitNew
     // [crispy] if a new game is started during demo recording, start a new demo
     if (demorecording)
     {
-	G_CheckDemoStatus(NULL);
+	G_CheckDemoStatus();
 	Z_Free(demoname);
 
 	G_RecordDemo(orig_demoname);
@@ -2453,8 +2456,10 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 { 
     if (*demo_p == DEMOMARKER) 
     {
+  last_cmd = cmd; // [crispy] remember last cmd to track joins
+  
 	// end of demo data stream 
-	G_CheckDemoStatus (cmd); 
+	G_CheckDemoStatus (); 
 	return; 
     } 
 
@@ -2476,8 +2481,10 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 	Z_Free(demobuffer);
 	demobuffer = actualbuffer;
 
-	// [crispy] continue recording
-	G_CheckDemoStatus(cmd);
+  last_cmd = cmd; // [crispy] remember last cmd to track joins
+
+  // [crispy] continue recording
+	G_CheckDemoStatus();
 	return;
     }
 
@@ -2541,7 +2548,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
     byte *demo_start;
 
     if (gamekeydown[key_demo_quit])           // press q to end demo recording 
-	G_CheckDemoStatus (cmd); 
+	G_CheckDemoStatus (); 
 
     demo_start = demo_p;
 
@@ -2572,7 +2579,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
         if (vanilla_demo_limit)
         {
             // no more space 
-            G_CheckDemoStatus (cmd); 
+            G_CheckDemoStatus (); 
             return; 
         }
         else
@@ -2786,7 +2793,7 @@ void G_DoPlayDemo (void)
     if (lumplength < 0xd)
     {
 	demoplayback = true;
-	G_CheckDemoStatus(NULL);
+	G_CheckDemoStatus();
 	return;
     }
 
@@ -2829,7 +2836,7 @@ void G_DoPlayDemo (void)
                          DemoVersionDescription(demoversion));
 	fprintf(stderr, "\n");
 	demoplayback = true;
-	G_CheckDemoStatus(NULL);
+	G_CheckDemoStatus();
 	return;
         }
     }
@@ -2943,11 +2950,14 @@ void G_TimeDemo (char* name)
 =================== 
 */ 
  
-// [crispy] pass in cmd to record demo joins
-boolean G_CheckDemoStatus (ticcmd_t* cmd) 
+boolean G_CheckDemoStatus (void) 
 { 
     int             endtime; 
-	 
+    
+    // [crispy] catch the last cmd to track joins
+    ticcmd_t* cmd = last_cmd;
+    last_cmd = NULL;
+
     if (timingdemo) 
     { 
         float fps;
