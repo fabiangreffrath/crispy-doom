@@ -2999,7 +2999,9 @@ boolean G_CheckDemoStatus (ticcmd_t* cmd)
 
             // [crispy] record demo join
             if (cmd != NULL)
+            {
                 cmd->buttons |= BT_JOIN;
+            }
 
             return true;
         }
