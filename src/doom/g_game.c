@@ -2943,6 +2943,7 @@ void G_TimeDemo (char* name)
 =================== 
 */ 
  
+// [crispy] pass in cmd to record demo joins
 boolean G_CheckDemoStatus (ticcmd_t* cmd) 
 { 
     int             endtime; 
