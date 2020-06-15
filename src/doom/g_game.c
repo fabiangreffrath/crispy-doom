@@ -2456,8 +2456,8 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 { 
     if (*demo_p == DEMOMARKER) 
     {
-  last_cmd = cmd; // [crispy] remember last cmd to track joins
-  
+	last_cmd = cmd; // [crispy] remember last cmd to track joins
+
 	// end of demo data stream 
 	G_CheckDemoStatus (); 
 	return; 
@@ -2481,9 +2481,9 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 	Z_Free(demobuffer);
 	demobuffer = actualbuffer;
 
-  last_cmd = cmd; // [crispy] remember last cmd to track joins
+	last_cmd = cmd; // [crispy] remember last cmd to track joins
 
-  // [crispy] continue recording
+	// [crispy] continue recording
 	G_CheckDemoStatus();
 	return;
     }
@@ -2953,7 +2953,7 @@ void G_TimeDemo (char* name)
 boolean G_CheckDemoStatus (void) 
 { 
     int             endtime; 
-    
+
     // [crispy] catch the last cmd to track joins
     ticcmd_t* cmd = last_cmd;
     last_cmd = NULL;
