@@ -604,6 +604,7 @@ enum
     crispness_demotimerdir,
     crispness_demobar,
     crispness_demousetimer,
+    crispness_demoalert,
     crispness_sep_demos_,
 
     crispness4_next,
@@ -625,6 +626,7 @@ static menuitem_t Crispness4Menu[]=
     {1,"",	M_CrispyToggleDemoTimerDir,'a'},
     {1,"",	M_CrispyToggleDemoBar,'w'},
     {1,"",	M_CrispyToggleDemoUseTimer,'u'},
+    {1,"",	M_CrispyToggleDemoAlert,'a'},
     {-1,"",0,'\0'},
     {1,"",	M_CrispnessNext,'n'},
     {1,"",	M_CrispnessPrev,'p'},
@@ -1574,6 +1576,7 @@ static void M_DrawCrispness4(void)
     M_DrawCrispnessMultiItem(crispness_demotimerdir, "Playback Timer Direction", multiitem_demotimerdir, crispy->demotimerdir + 1, crispy->demotimer & DEMOTIMER_PLAYBACK);
     M_DrawCrispnessItem(crispness_demobar, "Show Demo Progress Bar", crispy->demobar, true);
     M_DrawCrispnessItem(crispness_demousetimer, "\"Use\" Button Timer", crispy->btusetimer, true);
+    M_DrawCrispnessItem(crispness_demoalert, "Show Demo Recorded Alert", crispy->demoalert, true);
 
     M_DrawCrispnessGoto(crispness4_next, "First Page >");
     M_DrawCrispnessGoto(crispness4_prev, "< Prev Page");

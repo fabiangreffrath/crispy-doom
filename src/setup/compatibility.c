@@ -70,6 +70,7 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("crispy_crosshairhealth", &crispy->crosshairhealth);
         M_BindIntVariable("crispy_crosshairtarget", &crispy->crosshairtarget);
         M_BindIntVariable("crispy_crosshairtype",   &crispy->crosshairtype);
+        M_BindIntVariable("crispy_demoalert",       &crispy->demoalert);
         M_BindIntVariable("crispy_demobar",         &crispy->demobar);
         M_BindIntVariable("crispy_demotimer",       &crispy->demotimer);
         M_BindIntVariable("crispy_demotimerdir",    &crispy->demotimerdir);

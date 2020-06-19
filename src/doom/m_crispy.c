@@ -240,6 +240,12 @@ void M_CrispyToggleCrosshairtype(int choice)
     }
 }
 
+void M_CrispyToggleDemoAlert(int choice)
+{
+    choice = 0;
+    crispy->demoalert = !crispy->demoalert;
+}
+
 void M_CrispyToggleDemoBar(int choice)
 {
     choice = 0;

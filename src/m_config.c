@@ -1992,6 +1992,14 @@ static default_t extra_defaults_list[] =
     //
 
     CONFIG_VARIABLE_INT(crispy_crosshairtype),
+    
+    //!
+    // @game doom
+    //
+    // Show demo recorded alert.
+    //
+
+    CONFIG_VARIABLE_INT(crispy_demoalert),
 
     //!
     // @game doom

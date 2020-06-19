@@ -3036,7 +3036,7 @@ boolean G_CheckDemoStatus (void)
 	Z_Free (demobuffer); 
 	demorecording = false; 
 	// [crispy] if a new game is started during demo recording, start a new demo
-	if (gameaction != ga_newgame)
+	if (gameaction != ga_newgame && crispy->demoalert)
 	{
 	I_Error ("Demo %s recorded",demoname); 
 	}
