@@ -111,6 +111,7 @@ extern angle_t		clipangle;
 
 extern int		viewangletox[FINEANGLES/2];
 extern angle_t		xtoviewangle[MAXWIDTH+1];
+extern angle_t		linearskyangle[MAXWIDTH+1];
 //extern fixed_t		finetangent[FINEANGLES/2];
 
 extern fixed_t		rw_distance;

@@ -101,6 +101,9 @@ int			viewangletox[FINEANGLES/2];
 // from clipangle to -clipangle.
 angle_t			xtoviewangle[MAXWIDTH+1];
 
+// [crispy] calculate the linear sky angle component here
+angle_t			linearskyangle[MAXWIDTH+1];
+
 // [crispy] parameterized for smooth diminishing lighting
 lighttable_t***		scalelight = NULL;
 lighttable_t**		scalelightfixed = NULL;
@@ -659,6 +662,9 @@ void R_InitTextureMapping (void)
 	while (viewangletox[i]>x)
 	    i++;
 	xtoviewangle[x] = (i<<ANGLETOFINESHIFT)-ANG90;
+	// [crispy] calculate sky angle for drawing horizontally linear skies.
+	// Taken from GZDoom and refactored for integer math.
+	linearskyangle[x] = ((viewwidth / 2 - x) * ((SCREENWIDTH<<6) / viewwidth)) * (ANG90 / (NONWIDEWIDTH<<6));
     }
     
     // Take out the fencepost cases from viewangletox.
