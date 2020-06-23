@@ -294,6 +294,7 @@ extern angle_t clipangle;
 
 extern int viewangletox[FINEANGLES / 2];
 extern angle_t xtoviewangle[MAXWIDTH + 1];
+extern angle_t linearskyangle[MAXWIDTH + 1]; //[crispy]
 
 extern fixed_t rw_distance;
 extern angle_t rw_normalangle;

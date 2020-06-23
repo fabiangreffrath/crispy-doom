@@ -60,6 +60,9 @@ int viewangletox[FINEANGLES / 2];
 // that maps back to x ranges from clipangle to -clipangle
 angle_t xtoviewangle[MAXWIDTH + 1];
 
+// [crispy] calculate the linear sky angle component here
+angle_t linearskyangle[MAXWIDTH+1];
+
 lighttable_t *scalelight[LIGHTLEVELS][MAXLIGHTSCALE];
 lighttable_t *scalelightfixed[MAXLIGHTSCALE];
 lighttable_t *zlight[LIGHTLEVELS][MAXLIGHTZ];
@@ -478,6 +481,11 @@ void R_InitTextureMapping(void)
         while (viewangletox[i] > x)
             i++;
         xtoviewangle[x] = (i << ANGLETOFINESHIFT) - ANG90;
+        // [crispy] calculate sky angle for drawing horizontally linear skies.
+        // Taken from GZDoom and refactored for integer math.
+        // Needs updating if Crispy Heretic gets widescreen rendering, see doom/r_main.cc
+        // Also, Heretic doesn't scale skies properly with reduced view size.
+        linearskyangle[x] = ((viewwidth / 2 - x) * (ANG90 / viewwidth));
     }
 
 //

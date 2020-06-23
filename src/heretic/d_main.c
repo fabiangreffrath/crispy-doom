@@ -810,6 +810,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
     M_BindIntVariable("crispy_automapstats",    &crispy->automapstats);
     M_BindIntVariable("crispy_leveltime",       &crispy->leveltime);
+    M_BindIntVariable("crispy_linearsky",       &crispy->linearsky);
     M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
     M_BindIntVariable("crispy_secretmessage",   &crispy->secretmessage);
     M_BindIntVariable("crispy_uncapped",        &crispy->uncapped);

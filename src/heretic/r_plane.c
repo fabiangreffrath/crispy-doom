@@ -438,7 +438,9 @@ void R_DrawPlanes(void)
                 dc_yh = pl->bottom[x];
                 if ((unsigned) dc_yl <= dc_yh) // [crispy] 32-bit integer math
                 {
-                    angle = (viewangle + xtoviewangle[x]) >> ANGLETOSKYSHIFT;
+                    // [crispy] Optionally draw skies horizontally linear.
+                    angle = (viewangle + (crispy->linearsky ? linearskyangle[x]
+                             : xtoviewangle[x]))>>ANGLETOSKYSHIFT;
                     dc_x = x;
                     dc_source = R_GetColumn(skytexture, angle);
 
