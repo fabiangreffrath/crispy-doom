@@ -249,13 +249,10 @@ boolean P_CheckMissileRange (mobj_t* actor)
 	    return false;	// close for fist attack
     }
 	
-
-    if (actor->type == MT_CYBORG
-	|| actor->type == MT_SPIDER
-	|| actor->type == MT_UNDEAD // [crispy] keep Revenant double missile chance
-	|| actor->type == MT_SKULL)
+    // [crispy] generalize missile chance for Cyb, Spider, Revenant & Lost Soul
+    if (actor->info->missilechancemult != FRACUNIT)
     {
-	dist >>= 1;
+	dist = FixedMul(dist, actor->info->missilechancemult);
     }
     
     // [crispy] generalization of Min Missile Chance values hardcoded in vanilla

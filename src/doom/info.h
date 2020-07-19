@@ -1457,6 +1457,8 @@ typedef struct
     int maxattackrange;
     // [crispy] minimum likelihood of a missile attack (generaliz. for Cyberdemon)
     int minmissilechance;
+    // [crispy] multiplier for likelihood of a missile attack (generaliz. for various)
+    int missilechancemult;
 
 } mobjinfo_t;
 

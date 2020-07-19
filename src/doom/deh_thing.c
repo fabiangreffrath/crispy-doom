@@ -103,6 +103,8 @@ DEH_BEGIN_MAPPING(thing_mapping, mobjinfo_t)
   DEH_MAPPING("Max target range",    maxattackrange)
   // [crispy] Minimum chance for firing a missile
   DEH_MAPPING("Min missile chance",  minmissilechance)
+  // [crispy] Multiplies the chance of firing a missile (65536 = normal chance)
+  DEH_MAPPING("Missile chance multiplier",  missilechancemult)
 DEH_END_MAPPING
 
 static void *DEH_ThingStart(deh_context_t *context, char *line)

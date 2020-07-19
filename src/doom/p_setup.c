@@ -1356,6 +1356,15 @@ static void P_InitThingProperties (void)
 		else
 			mobjinfo[i].minmissilechance = 200;
 
+		// [crispy] multiplier for missile firing chance (generaliz. from vanilla)
+		if (i == MT_CYBORG
+		   || i == MT_SPIDER
+		   || i == MT_UNDEAD
+		   || i == MT_SKULL)
+			mobjinfo[i].missilechancemult = FRACUNIT/2;
+		else
+			mobjinfo[i].missilechancemult = FRACUNIT;
+
 		// [crispy] height of the spawnstate's first sprite in pixels
 		if (!sprdef->numframes || !(mobjinfo[i].flags & (MF_SOLID|MF_SHOOTABLE)))
 		{
