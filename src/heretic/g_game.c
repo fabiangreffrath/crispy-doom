@@ -1568,6 +1568,7 @@ void G_DoCompleted(void)
     int i;
     static int afterSecret[5] = { 7, 5, 5, 5, 4 };
 
+    // [crispy] Write level statistics upon exit
     if (M_ParmExists("-levelstat"))
         G_WriteLevelStat();
 
