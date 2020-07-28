@@ -1525,7 +1525,9 @@ void G_WriteLevelStat(void)
     char levelTimeString[16];
     
     if (fstream == NULL)
+    {
         fstream = fopen("levelstat.txt", "w");
+    }
 
     exitTime = (float) leveltime / 35;
     exitHours = exitTime / 3600;
@@ -1570,7 +1572,9 @@ void G_DoCompleted(void)
 
     // [crispy] Write level statistics upon exit
     if (M_ParmExists("-levelstat"))
+    {
         G_WriteLevelStat();
+    }
 
     gameaction = ga_nothing;
 
