@@ -93,7 +93,7 @@ void	G_DoCompleted (void);
 void	G_DoVictory (void); 
 void	G_DoWorldDone (void); 
 void	G_DoSaveGame (void); 
-
+ 
 // Gamestate the last time G_Ticker was called.
 
 gamestate_t     oldgamestate; 
