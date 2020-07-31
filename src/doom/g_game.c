@@ -93,10 +93,6 @@ void	G_DoCompleted (void);
 void	G_DoVictory (void); 
 void	G_DoWorldDone (void); 
 void	G_DoSaveGame (void); 
- 
-// [crispy] Write level statistics upon exit
-void G_WriteLevelStat(void);
-void G_FormatLevelStatTime(char *str, int tics);
 
 // Gamestate the last time G_Ticker was called.
 
@@ -1655,7 +1651,7 @@ void G_SecretExitLevel (void)
 } 
 
 // [crispy] format time for level statistics
-void G_FormatLevelStatTime(char *str, int tics)
+static void G_FormatLevelStatTime(char *str, int tics)
 {
     int exitHours, exitMinutes;
     float exitTime, exitSeconds;
@@ -1679,7 +1675,7 @@ void G_FormatLevelStatTime(char *str, int tics)
 }
 
 // [crispy] Write level statistics upon exit
-void G_WriteLevelStat(void)
+static void G_WriteLevelStat(void)
 {
     static FILE *fstream = NULL;
 
@@ -1693,6 +1689,12 @@ void G_WriteLevelStat(void)
     if (fstream == NULL)
     {
         fstream = fopen("levelstat.txt", "w");
+
+        if (fstream == NULL)
+        {
+            fprintf(stderr, "Unable to open levelstat.txt for writing!\n");
+            return;
+        }
     }
     
     if (gamemode == commercial)
@@ -1710,7 +1712,10 @@ void G_WriteLevelStat(void)
 
     // Total time ignores centiseconds
     decimal = strchr(totalTimeString, '.');
-    *decimal = '\0';
+    if (decimal != NULL)
+    {
+        *decimal = '\0';
+    }
 
     for (i = 0; i < MAXPLAYERS; i++)
     {
