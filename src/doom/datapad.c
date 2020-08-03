@@ -5,7 +5,9 @@
 /////////////////////////////////////////////////////////
 
 #include "datapad.h"
+#include "pkemeter.h"
 
+//extern void *W_CacheLumpName(const char *name, int tag);
 
 void Draw_DatapadBorders1()
 {
@@ -29,7 +31,7 @@ void Draw_DatapadBorders1()
 }
 
 
-void Draw_Datapad1()   // we should be able to now discard Datapad1 in favor of Datapad2
+void Draw_Datapad1()  // unused
 {
 	Draw_DatapadBorders1();
 
@@ -65,20 +67,63 @@ void SetDatapadBackground()
 	
 }
 
+#define PKE_BLINKTIMER 50
+
+void PKE_BlinkingLight()
+{
+    if (!blink_timer)
+    {
+        int dangerlevel = PKE_Meter.healthpoints_onradar;
+
+        if (dangerlevel <= DANGERLEVEL_LOW)
+        {
+            blink_timer = PKE_BLINKTIMER*5;
+        }
+
+        if (dangerlevel <= DANGERLEVEL_MEDIUM)
+        {
+            blink_timer = PKE_BLINKTIMER*4;
+        }
+
+        if (dangerlevel <= DANGERLEVEL_HIGH)
+        {
+            blink_timer = PKE_BLINKTIMER*3;
+        }
+
+        if (dangerlevel <= DANGERLEVEL_CRITICAL)
+        {
+            blink_timer = PKE_BLINKTIMER*2;
+        }
+
+        if (dangerlevel <= DANGERLEVEL_FUBAR)
+        {
+            blink_timer = PKE_BLINKTIMER*1;
+        }
+    }
+    else
+        blink_timer--;
+
+    if (blink_timer > blink_timer/2)
+        V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(YELLOWLIGHT_TILE), PU_CACHE));
+
+    else if (blink_timer <= blink_timer/2)
+        V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(REDLIGHT_TILE), PU_CACHE));
+}
+
 
 void BlinkingLight()
 {
-	if (!blink_timer) 
-		//blink_timer = GetRandomIntegerInRange( 120, BLINK_TIMER );  // TRYING RANDOM HERE...
-		blink_timer = BLINK_TIMER;
-	else
-		blink_timer--;
+    if (!blink_timer)
+        //blink_timer = GetRandomIntegerInRange( 120, BLINK_TIMER );  // TRYING RANDOM HERE...
+        blink_timer = BLINK_TIMER;
+    else
+        blink_timer--;
 
-	if (blink_timer > BLINK_TIMER/2)
-		V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(YELLOWLIGHT_TILE), PU_CACHE));
+    if (blink_timer > BLINK_TIMER/2)
+        V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(YELLOWLIGHT_TILE), PU_CACHE));
 
-	else if (blink_timer <= BLINK_TIMER/2)
-		V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(BLUELIGHT_TILE), PU_CACHE));
+    else if (blink_timer <= BLINK_TIMER/2)
+        V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(REDLIGHT_TILE), PU_CACHE));
 }
 
 
@@ -98,21 +143,25 @@ void Draw_Datapad2()
 	// screen
 	//V_DrawFilledBox(55, 25, 250, 100, 5);  // now if we could just make this box dark green...
 
-    V_DrawPatchDirect(DATAPAD2_OLDBLUETILE_X, DATAPAD2_OLDBLUETILE_Y, W_CacheLumpName(DEH_String(BLUE_TECHBASE_TEXTURE)/*, PU_CACHE*/));
-    V_DrawPatchDirect(DATAPAD2_OLDBLUETILE_X+64, DATAPAD2_OLDBLUETILE_Y, W_CacheLumpName(DEH_String(BLUE_TECHBASE_TEXTURE)/*, PU_CACHE*/));
+    V_DrawPatchDirect(DATAPAD2_OLDBLUETILE_X, DATAPAD2_OLDBLUETILE_Y, W_CacheLumpName(DEH_String(BLUE_TECHBASE_TEXTURE), PU_CACHE));
+    V_DrawPatchDirect(DATAPAD2_OLDBLUETILE_X+64, DATAPAD2_OLDBLUETILE_Y, W_CacheLumpName(DEH_String(BLUE_TECHBASE_TEXTURE), PU_CACHE));
 	
 	// handles
-    V_DrawPatchDirect(DATAPAD2_LEFTHANDLE, DATAPAD2_Y, W_CacheLumpName(DEH_String(GRAYPANEL_COLUMN_WITHBLUE_LEFT)/*, PU_CACHE*/));
-    V_DrawPatchDirect(DATAPAD2_RIGHTHANDLE, DATAPAD2_Y, W_CacheLumpName(DEH_String(GRAYPANEL_COLUMN_WITHBLUE_RIGHT)/*, PU_CACHE*/));
+    V_DrawPatchDirect(DATAPAD2_LEFTHANDLE, DATAPAD2_Y, W_CacheLumpName(DEH_String(GRAYPANEL_COLUMN_WITHBLUE_LEFT), PU_CACHE));
+    V_DrawPatchDirect(DATAPAD2_RIGHTHANDLE, DATAPAD2_Y, W_CacheLumpName(DEH_String(GRAYPANEL_COLUMN_WITHBLUE_RIGHT), PU_CACHE));
 
 	// buttons
-    V_DrawPatchDirect(DATAPAD2_BUTTON1_X, DATAPAD2_BUTTON1_Y, W_CacheLumpName(DEH_String(BUTTON_TILE)/*, PU_CACHE*/));
-    V_DrawPatchDirect(DATAPAD2_BUTTON2_X, DATAPAD2_BUTTON2_Y, W_CacheLumpName(DEH_String(BUTTON_TILE)/*, PU_CACHE*/));
-    V_DrawPatchDirect(DATAPAD2_BUTTON3_X, DATAPAD2_BUTTON3_Y, W_CacheLumpName(DEH_String(BUTTON_TILE)/*, PU_CACHE*/));
+    V_DrawPatchDirect(DATAPAD2_BUTTON1_X, DATAPAD2_BUTTON1_Y, W_CacheLumpName(DEH_String(BUTTON_TILE), PU_CACHE));
+    V_DrawPatchDirect(DATAPAD2_BUTTON2_X, DATAPAD2_BUTTON2_Y, W_CacheLumpName(DEH_String(BUTTON_TILE), PU_CACHE));
+    V_DrawPatchDirect(DATAPAD2_BUTTON3_X, DATAPAD2_BUTTON3_Y, W_CacheLumpName(DEH_String(BUTTON_TILE), PU_CACHE));
 
 	// lights
 	//V_DrawPatchDirect(DATAPAD2_POWERLED_X+3, DATAPAD2_POWERLED_Y, W_CacheLumpName(DEH_String(REDLIGHT_TILE), PU_CACHE));
-	BlinkingLight();
+
+	//if (pkereadout_on)
+	//    PKE_BlinkingLight();
+	//else
+	    BlinkingLight();
 }
 
 

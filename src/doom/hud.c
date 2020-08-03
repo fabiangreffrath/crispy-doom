@@ -400,17 +400,17 @@ static void DrawInventoryItemIcon()
 	{
 	case RADSUIT_SELECTED:
 
-		V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y+10, W_CacheLumpName(DEH_String("SUITA0")/*, PU_CACHE*/));
+		V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y+10, W_CacheLumpName(DEH_String("SUITA0"), PU_CACHE));
 		break;
 
 	case MEDKIT_SELECTED:
 
-        V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y, W_CacheLumpName(DEH_String("PSTRA0")/*, PU_CACHE*/));
+        V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y, W_CacheLumpName(DEH_String("PSTRA0"), PU_CACHE));
 		break;
 
 	case INVUL_SELECTED:
 
-        V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y, W_CacheLumpName(DEH_String("PINVA0")/*, PU_CACHE*/));
+        V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y, W_CacheLumpName(DEH_String("PINVA0"), PU_CACHE));
 
 		// TODO: animate it
 
@@ -418,7 +418,7 @@ static void DrawInventoryItemIcon()
 
 	case INVIS_SELECTED:
 
-        V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y+10, W_CacheLumpName(DEH_String("PINSA0")/*, PU_CACHE*/));
+        V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y+10, W_CacheLumpName(DEH_String("PINSA0"), PU_CACHE));
 
 		// TODO: animate it
 
@@ -426,7 +426,7 @@ static void DrawInventoryItemIcon()
 
 	case VISOR_SELECTED:
 
-        V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y, W_CacheLumpName(DEH_String("PVISA0")/*, PU_CACHE*/));
+        V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y, W_CacheLumpName(DEH_String("PVISA0"), PU_CACHE));
 
 		// TODO: animate it
 
@@ -676,7 +676,7 @@ void DrawHUDMenu()
 
 	if (pkereadout_on)
 	{
-	Draw_Datapad2();  // make pke its own datapad; maybe change light color
+	//Draw_Datapad2();  // make pke its own datapad; maybe change light color
 
 	HUlib_drawSText(&pkeline1);
 	HUlib_drawSText(&pkeline2);

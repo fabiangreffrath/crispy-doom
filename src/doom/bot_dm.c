@@ -134,7 +134,6 @@ void Deathmatch_Bot_ChooseTarget(int bot)
 		Bot_ChooseTarget(bot);
 }
 
-
 void Bot_Melee(int bot)
 {
     angle_t	angle;
@@ -162,6 +161,8 @@ void Bot_Melee(int bot)
 
     S_StartSound (thisBot_mo, sfx_sawful);  // used to be sfx_sawhit
 	P_SetMobjState(thisBot_mo, thisBot_mo->info->missilestate);  // TESTING
+
+	this_Bot.weapon_switch_delay = WEAPON_SWITCH_DELAY;
 }
 
 
@@ -218,6 +219,16 @@ void Deathmatch_Bot_Attack(int bot)
 	//	Bot_Walk(bot);  // let's try it without this
 	//else
 	//	Bot_Stop(bot);
+
+    if (this_Bot.weapon_switch_delay > 0)
+    {
+        this_Bot.weapon_switch_delay--;
+
+        if (debugmode)
+            SHOW_MESSAGE "CHANGING WEAPONS...";
+
+        return;
+    }
 
 	if (P_CheckMeleeRange(thisBot_mo))
 	{
