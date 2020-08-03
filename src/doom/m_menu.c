@@ -1843,8 +1843,14 @@ static void M_CrispnessPrev(int choice)
 //
 // [marshmallow] Open gameplay menu; replaces "Messages on/off" in options
 //
+
+//extern  gameaction_t    gameaction;
+
 void M_MarshmallowMenu()
 {
+    if (!usergame || gamestate == GS_FINALE)
+        return;
+
     menuactive = false;
     mainmenu_breadcrumb = true;
     shortcutmenu_on = true;
@@ -3353,6 +3359,7 @@ void M_Drawer (void)
 	    // [crispy] shade unavailable menu items
 	    if ((currentMenu == &MainDef && i == savegame && (!usergame || gamestate != GS_LEVEL)) ||
 	        (currentMenu == &OptionsDef && i == endgame && (!usergame || realnetgame)) ||         // [marshmallow] Changed to realnetgame
+	        (currentMenu == &OptionsDef && i == messages && (!usergame || realnetgame)) ||         // [marshmallow] Added this one for our new Marshmallow Options menu
 	        (currentMenu == &MainDef && i == loadgame && (realnetgame && !demoplayback)) ||       // [marshmallow] Changed to realnetgame
 	        (currentMenu == &MainDef && i == newgame && (demorecording || (realnetgame && !demoplayback))))   // [marshmallow] Changed to realnetgame
 	        dp_translation = cr[CR_DARK];
@@ -3389,6 +3396,8 @@ void M_Drawer (void)
 void M_ClearMenus (void)
 {
     menuactive = 0;
+
+    mainmenu_breadcrumb = false;  // [marshmallow]
 
     // [crispy] entering menus while recording demos pauses the game
     if (demorecording && paused)

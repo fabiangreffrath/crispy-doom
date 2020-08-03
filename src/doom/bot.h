@@ -31,7 +31,8 @@ typedef enum {
 	DEFAULT_RESPAWN_DELAY = 50,
 	SIGHTCHECK_TIMEOUT = 20,  // implemented but not in use
 	FIRST_BOT_WEAPON = 2,  // 2 = BOT_MISSILE
-	DEFAULT_BOT_WEAPON = 10 // 10 = BOTMENU_AUTO
+	DEFAULT_BOT_WEAPON = 10, // 10 = BOTMENU_AUTO
+    WEAPON_SWITCH_DELAY = 50 // tics
 
 } bot_defaults_t;
 
@@ -266,6 +267,8 @@ typedef struct marshmallow_bot_s {
 	int				dodge_timer;
 
 	int				usenode_timer;
+
+	int             weapon_switch_delay;
 
 } marshmallow_bot_t;
 

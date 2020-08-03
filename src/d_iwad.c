@@ -31,6 +31,7 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
+extern int WadSelection();   // [marshmallow]
 extern int CheckIfFileExists(const char *filename, const char *mode);   // [marshmallow]
 enum { DOOM1, DOOM2, BOTH, WHICH_GAME };   // [marshmallow]
 
