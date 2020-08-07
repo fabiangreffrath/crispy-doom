@@ -781,6 +781,7 @@ void IN_DrawSingleStats(void)
     {
         IN_DrTextB(DEH_String("TIME"), 85, 150);
         IN_DrawTime(155, 150, hours, minutes, seconds);
+
         // [crispy] Show total time on intermission
         IN_DrTextB(DEH_String("TOTAL"), 85, 170);
         IN_DrawTime(155, 170, totalHours, totalMinutes, totalSeconds);
@@ -790,9 +791,11 @@ void IN_DrawSingleStats(void)
         // [crispy] show the level time for Ep.4 and up
         IN_DrTextB(DEH_String("TIME"), 85, 120);
         IN_DrawTime(155, 120, hours, minutes, seconds);
+
         // [crispy] Show total time on intermission
         IN_DrTextB(DEH_String("TOTAL"), 85, 140);
         IN_DrawTime(155, 140, totalHours, totalMinutes, totalSeconds);
+
         x = 160 - MN_TextAWidth(DEH_String("NOW ENTERING:")) / 2;
         MN_DrTextA(DEH_String("NOW ENTERING:"), x, 160);
         x = 160 - MN_TextBWidth(next_level_name) / 2;
