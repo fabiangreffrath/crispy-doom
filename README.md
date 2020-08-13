@@ -88,7 +88,7 @@ The upcoming version release (which will be the first public build of this new p
 
 ## Contact
 
-Marshmallow Doom is maintained by [Douglas R. Bell](mailto:drbelljazz@removethisgmail.com). (aka JT_Marshmallow)
+Marshmallow Doom is maintained by [Douglas R. Bell](http://douglasbellmusic.com). (aka JT_Marshmallow)  Contact email address: [drbelljazz@gmail.com](mailto:drbelljazz@gmail.com)
 
 Please report any bugs, glitches or crashes that you encounter to the GitHub [Issue Tracker](https://github.com/drbelljazz/marshmallow-doom/issues).
 
