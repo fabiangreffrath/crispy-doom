@@ -140,9 +140,9 @@ void Bot_Melee(int bot)
     int		damage;
     int		slope;
 
-    //if (!player) return; // [crispy] let pspr action pointers get called from mobj states
+    mobj_t* thing = Bots[bot].player->mo;
 
-    damage = 2*(P_Random ()%10+1) * chainsaw_damage_multiplier;  // [marshmallow]
+    damage = /*2**/(P_Random ()%10+1) * chainsaw_damage_multiplier;  // [marshmallow] Lowering the base chainsaw damage for bots
 
     angle = thisBot_mo->angle;
     angle += P_SubRandom() << 18;
@@ -151,7 +151,7 @@ void Bot_Melee(int bot)
     slope = P_AimLineAttack (thisBot_mo, angle, MELEERANGE+1);
     P_LineAttack (thisBot_mo, angle, MELEERANGE+1, slope, damage);
 
-    //A_Recoil (player);
+    A_Recoil (this_Bot.player);
 
     //if (!linetarget)
     //{
@@ -159,10 +159,15 @@ void Bot_Melee(int bot)
 	//return;
    // }
 
-    S_StartSound (thisBot_mo, sfx_sawful);  // used to be sfx_sawhit
-	P_SetMobjState(thisBot_mo, thisBot_mo->info->missilestate);  // TESTING
+    S_StartSound (thing, sfx_sawful);  // used to be sfx_sawhit
+	P_SetMobjState(thing, thing->info->missilestate);
 
-	this_Bot.weapon_switch_delay = WEAPON_SWITCH_DELAY;
+    /*
+    if (this_Bot.player->readyweapon != wp_chainsaw && !this_Bot.weapon_switch_delay)
+        this_Bot.weapon_switch_delay = WEAPON_SWITCH_DELAY;
+    */
+
+    //SetBotReadyWeapon(&this_Bot, wp_chainsaw);
 }
 
 
@@ -219,17 +224,17 @@ void Deathmatch_Bot_Attack(int bot)
 	//	Bot_Walk(bot);  // let's try it without this
 	//else
 	//	Bot_Stop(bot);
-
+#if 0
     if (this_Bot.weapon_switch_delay > 0)
     {
         this_Bot.weapon_switch_delay--;
 
-        if (debugmode)
+        //if (debugmode)
             SHOW_MESSAGE "CHANGING WEAPONS...";
 
         return;
     }
-
+#endif
 	if (P_CheckMeleeRange(thisBot_mo))
 	{
 		S_StartSound (thisBot_mo, sfx_sawful);
@@ -237,7 +242,7 @@ void Deathmatch_Bot_Attack(int bot)
 		if ( gameskill >= sk_medium )
 			skill = skill/2;    // bots were a little too good with the chainsaw
 		
-		if ( PercentChance(skill) ) 
+		if ( PercentChance(skill) )
 			Bot_Melee(bot);
 		
 		return;

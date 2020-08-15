@@ -154,6 +154,7 @@ typedef enum {
 
 // Object dropping
 #define MARSHMALLOW_ITEMDROP_OFFSET 2000000
+#define DROP_FROM_ABOVE_FLOOR 1500000
 #define OBJECT_DROP_DELAY 25
 
 // For red screen flash on berserk pickup
@@ -166,15 +167,10 @@ typedef enum {
 #define MARSHMALLOW_BACKPACK_SHELLS 4
 #define MARSHMALLOW_BACKPACK_MISSILES 1
 #define MARSHMALLOW_BACKPACK_CELLS 20
-#define MARSHMALLOW_BACKPACK_HEALTHPOINTS 5
-#define MARSHMALLOW_BACKPACK_ARMORPOINTS 5
-#define MARSHMALLOW_OBSTACLE_ARMOR_COST 10
-#define MARSHMALLOW_BARREL_MISSILE_COST 2
 
 // Mirror damage penalties based on ammo type
 #define MARSHMALLOW_FF_PENALTY_BULLETS 10
 #define MARSHMALLOW_FF_PENALTY_SHOTGUN 25
-#define MARSHMALLOW_FF_PENALTY_SUPERSHOTGUN 35
 #define MARSHMALLOW_FF_PENALTY_MISSILES 50
 #define MARSHMALLOW_FF_PENALTY_PLASMA 20
 #define MARSHMALLOW_FF_PENALTY_BFG 70
@@ -210,24 +206,16 @@ typedef enum {
 #define MARSHMALLOW_CHEAT_NEXTTRACK "next"
 
 // For an extra line of text on the HUD
-#define		MARSHMALLOW_HU_PREVMSG_Y	HU_MSGY + (HU_MSGHEIGHT*(SHORT(hu_font[0]->height) +1))  // input line was +1, I made it +2 UPDATE: this number might be pixels or something; NOT lines NEW UPDATE: looks like +8 gave us exactly one line
-#define		MARSHMALLOW_HU_INPUTY	HU_MSGY + (HU_MSGHEIGHT*(SHORT(hu_font[0]->height) +8))  // input line was +1, I made it +2 UPDATE: this number might be pixels or something; NOT lines NEW UPDATE: looks like +8 gave us exactly one line
-#define		MARSHMALLOW_HU_MSGTIMEOUT	(4*TICRATE)
+#define		MARSHMALLOW_HU_PREVMSG_Y	HU_MSGY + (HU_MSGHEIGHT*(SHORT(hu_font[0]->height) +1))
+#define		MARSHMALLOW_HU_INPUTY	HU_MSGY + (HU_MSGHEIGHT*(SHORT(hu_font[0]->height) +8))
 
 // Enemy balancing
 #define VILE_Z_SCOPE_LIMIT 100*FRACUNIT
 #define NERFED_CACO_SPAWNHEALTH 100   // default is 400
 #define NERFED_LOSTSOUL_SPAWNHEALTH 25  // default is 100
 #define NERFED_SKELSHOT_SPEED 5*FRACUNIT; // vanilla is 10
-#define NERFED_VILE_DAMAGE 50			 // default is 70
-#define VANILLA_VILE_DAMAGE 70			 
-#define NERFED_DEMON_DAMAGE 2            // default was 4
-#define BOOSTED_BRUISERSHOT_SPEED 20*FRACUNIT;  // vanilla is 15	 NOTE:  clean up the semicolons in these macros!
-#define BOOSTED_TROOPSHOT_SPEED 15*FRACUNIT;   // vanilla is 10
-#define BOOSTED_CACOSHOT_SPEED 12*FRACUNIT;   // vanilla is 10
-#define BOOSTED_ZOMBIEMAN_SPEED 12 // vanilla is 8
-#define NEW_ZOMBIEMAN_REACTIONTIME 4 // vanilla was 8 
-#define NEW_DEMON_REACTIONTIME 4 // vanilla was 8
+#define VANILLA_VILE_DAMAGE 70
+#define KEEN_CORPSE_CEILING_LIMIT 5000000
 
 //  Multiplayer event triggers which are sent covertly over the chat system
 enum {

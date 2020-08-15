@@ -64,62 +64,8 @@
 
 #include "v_trans.h" // [crispy] colored "invert mouse" message
 
-
 // [marshmallow]
-#define MARSHMALLOW_DOOMLOGO_Y_OFFSET 7
-#define MARSHMALLOW_MENU_Y_OFFSET 6
-#define MARSHMALLOW_TITLE_X 112
-#define MARSHMALLOW_TITLE_Y 1
-#define WALLPAPER_TILE "FLOOR5_2"
-int shortcutmenu_selection;
-boolean menus_on;
-boolean mainmenu_breadcrumb;
-boolean shortcutmenu_on;
-boolean optionsmenu_on;
-boolean help_on;
-boolean profilescreen_on;
-boolean pkereadout_on;
-boolean mainmenuhelp_on;
-boolean realnetgame;
-boolean Marshmallow_GradedWeapons;
-int Marshmallow_RandomItems;
-boolean Marshmallow_AlternateUltraViolence;
-boolean Marshmallow_AlternateNightmare;
-boolean Marshmallow_RespawnInNightmare;
-void M_Marshmallow(int choice);
-void M_DrawMarshmallowNewGame(void);
-void M_MarshmallowMenu();
-extern void LaunchHelpWidget();
-extern void ChooseLevel_Next();
-extern void ChooseLevel_Prev();
-extern void Skill_Next();
-extern void Skill_Prev();
-extern void NewgameMode_Up();
-extern void NewgameMode_Down();
-extern void UpgradeChance_Up();
-extern void UpgradeChance_Down();
-extern void HPScale_Up();
-extern void HPScale_Down();
-extern void SkipToLevel();
-extern void SkipToRandomLevel();
-extern void CheckKeyDelay();
-extern char* ShowMapSelection();
-extern char* ShowSkillLevel();
-extern char* ShowMapWeapons();
-extern char* ShowRandomItemsMode();
-extern void  ColorizeMapNames();
-extern char* DisplayValue(int val);
-extern char* DisplayOnOff(boolean option);
-extern char* ShowGameSelection();
-extern void  StripWeapons(int player);
-int upgrade_chance;
-int MonsterHitpointsScale;
-int newgame_mode;
-int newskill;
-int skill_selection;
-extern void SetSpecialSkills();
-extern boolean organic_levelchange;
-// [m]
+#include "marshmenu.h"
 
 extern patch_t*		hu_font[HU_FONTSIZE];
 extern boolean		message_dontfuckwithme;
@@ -1124,6 +1070,12 @@ void M_SaveSelect(int choice)
 //
 void M_SaveGame (int choice)
 {
+    if (netgame && !realnetgame)  // [marshmallow] Don't allow save in bot games
+        return;
+
+    if (deathmatch)  // [marshmallow]
+        return;
+
     if (!usergame)
     {
 	M_StartMessage(DEH_String(SAVEDEAD),NULL,false);
@@ -1205,7 +1157,7 @@ void M_QuickLoad(void)
     char *savegamestring;
 
     // [crispy] allow quickloading game while multiplayer demo playback
-    if (realnetgame && !demoplayback)  // [marshmallow] Changed to realnetgame
+    if (netgame && !demoplayback)
     {
 	M_StartMessage(DEH_String(QLOADNET),NULL,false);
 	return;
@@ -1362,18 +1314,11 @@ static void M_DrawMarshmallowBackground(void)
 
 void M_DrawMarshmallowNewGame(void)
 {
-    char string1[4];   // these four are only for upgrade on menu
+    char string1[4];   // These four are only for upgrade on menu
     char string2[4];
     char* skill = ShowSkillLevel();
     int scale = MonsterHitpointsScale;
     int upgrade = upgrade_chance;
-
-    if (skill_selection == 5)
-        upgrade = 60; // use macro
-    else if (skill_selection == 6)
-        upgrade = 90; // use macro
-    //else
-    //upgrade = 0;
 
     M_DrawMarshmallowBackground();
 
@@ -1382,11 +1327,14 @@ void M_DrawMarshmallowNewGame(void)
     ColorizeMapNames();
     CrispyReplaceColor(skill, CR_GOLD, skill);
     CrispyReplaceColor(LINE8, CR_GREEN, LINE8);
-    CrispyReplaceColor("% chance", CR_DARK, "% chance");
-    CrispyReplaceColor("x", CR_DARK, "x");
+    CrispyReplaceColor("%", CR_GREEN, "%");
+    CrispyReplaceColor("x", CR_GREEN, "x");
 
     sprintf( string1, "%d", upgrade );
     sprintf( string2, "%d", scale );
+
+    CrispyReplaceColor(string1, CR_GREEN, string1);
+    CrispyReplaceColor(string2, CR_GREEN, string2);
 
     M_WriteText(currentMenu->x, currentMenu->y, DEH_String(LINE1));
     M_WriteText(currentMenu->x+100, currentMenu->y, DEH_String( ShowGameSelection() ));
@@ -1408,7 +1356,7 @@ void M_DrawMarshmallowNewGame(void)
     if (upgrade > 0)
     {
         M_WriteText(currentMenu->x+128, currentMenu->y+LINEHEIGHT*5, DEH_String( string1 ));
-        M_WriteText(currentMenu->x+150, currentMenu->y+LINEHEIGHT*5, DEH_String( "% chance" ));
+        M_WriteText(currentMenu->x+150, currentMenu->y+LINEHEIGHT*5, DEH_String( "%" ));
     }
     else
     {
@@ -1420,7 +1368,7 @@ void M_DrawMarshmallowNewGame(void)
     if (MonsterHitpointsScale > 1)
     {
         M_WriteText(currentMenu->x+195, currentMenu->y+LINEHEIGHT*6, DEH_String( string2 ));
-        M_WriteText(currentMenu->x+210, currentMenu->y+LINEHEIGHT*6, DEH_String( "x" ));
+        M_WriteText(currentMenu->x+205, currentMenu->y+LINEHEIGHT*6, DEH_String( "x" ));
     }
     else
     {
@@ -1849,12 +1797,23 @@ static void M_CrispnessPrev(int choice)
 void M_MarshmallowMenu()
 {
     if (!usergame || gamestate == GS_FINALE)
+    {
+        M_StartMessage(DEH_String("START A GAME TO USE MARSHMALLOW OPTIONS.\n\n(PRESS ANY KEY TO CONTINUE.)"),NULL,false);
         return;
+    }
 
     menuactive = false;
     mainmenu_breadcrumb = true;
     shortcutmenu_on = true;
     menus_on = true;
+
+    // Our datapad menus are in the playloop,
+    // so they cannot be used while the game is paused
+    if (crispy->singleplayer)
+    {
+        CrispyReplaceColor(UNPAUSED, CR_GOLD, "UNPAUSED");
+        players[consoleplayer].message = DEH_String(UNPAUSED);
+    }
 
     if (!shortcutmenu_selection)
         shortcutmenu_selection = 1;
@@ -2027,6 +1986,8 @@ void M_QuitDOOM(int choice)
                  DEH_String(M_SelectEndMessage()));
 
     M_StartMessage(endstring,M_QuitResponse,true);
+
+    HideAllMenus();   // [marshmallow]
 }
 
 
@@ -3003,7 +2964,7 @@ boolean M_Responder (event_t* ev)
 	}
 	return true;
     }
-    else if (key == key_menu_right)
+    else if (key == key_menu_right)   // [marshmallow] Added enter key (forward)
     {
         // [marshmallow]
         if (currentMenu == &MarshmallowNewGameDef)
@@ -3065,10 +3026,38 @@ boolean M_Responder (event_t* ev)
         {
             switch (itemOn)
             {
-                //case newgame_random:
-                //	SkipToRandomLevel();
-                //	M_ClearMenus ();
-                //	return true;
+                case newgame_type:
+                    NewgameMode_Up();
+                    return true;
+
+                case newgame_skip:
+                    ChooseLevel_Next();
+                    return true;
+
+                case newgame_skill:
+                    Skill_Next();
+                    return true;
+
+                case newgame_weapons:
+                    Marshmallow_GradedWeapons = !Marshmallow_GradedWeapons;
+                    return true;
+
+                case newgame_upgrade:
+                    UpgradeChance_Up();
+                    return true;
+
+                case newgame_hitpoints:
+                    HPScale_Up();
+                    return true;
+
+                case newgame_randomitems:
+                    //Marshmallow_RandomItems = !Marshmallow_RandomItems;
+                    Marshmallow_RandomItems++;
+
+                    if (Marshmallow_RandomItems > 2)
+                        Marshmallow_RandomItems = 0;
+
+                    return true;
 
                 case newgame_start:
 
@@ -3328,7 +3317,18 @@ void M_Drawer (void)
 
     // [marshmallow]
     if ( currentMenu == &MainDef )
+    {
+        // Draw "Marshmallow" above the Doom logo
         M_WriteText(MARSHMALLOW_TITLE_X, MARSHMALLOW_TITLE_Y, DEH_String("Marshmallow"));
+
+        // Draw the version number and keyboard help info
+        CrispyReplaceColor(MENUHELP1, CR_GOLD, MENUHELP1);
+        M_WriteText(TITLEHELP_LINE1_X, TITLEHELP_LINE1_Y, DEH_String(MENUHELP1));
+        CrispyReplaceColor(MENUHELP2, CR_GREEN, "'H'");
+        M_WriteText(TITLEHELP_LINE2_X, TITLEHELP_LINE2_Y, DEH_String(MENUHELP2));
+        CrispyReplaceColor(MENUHELP3, CR_DARK, "Keyboard");
+        M_WriteText(TITLEHELP_LINE3_X, TITLEHELP_LINE3_Y, DEH_String(MENUHELP3));
+    }
     // [m]
     
     // DRAW MENU

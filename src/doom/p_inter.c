@@ -396,7 +396,7 @@ P_TouchSpecialThing
         {
             toucher->player->touching_barrel = true;
             toucher->player->current_barrel = special;
-            toucher->player->barrel_timeout = 30;
+            //toucher->player->barrel_timeout = 30;
         }
 
         return;
@@ -421,7 +421,7 @@ P_TouchSpecialThing
 
           toucher->player->touching_barrel = true;
           toucher->player->current_barrel = special;
-          toucher->player->barrel_timeout = 30;
+          //toucher->player->barrel_timeout = 30;
 
           return;
 
@@ -1355,8 +1355,8 @@ P_KillMobj
     mobj_t*	mo;
 
     // [marshmallow] For gibs
-    int negative_spawnhealth = target->info->spawnhealth * -1;
-    gibmode_t gibmode = Marshmallow_GibMode;
+//    int negative_spawnhealth = target->info->spawnhealth * -1;
+//    gibmode_t gibmode = Marshmallow_GibMode;
 
     // [marshmallow] Kill stuff
     if (Marshmallow_Sandbox)
@@ -1451,34 +1451,8 @@ P_KillMobj
         target->flags |= MF_TRANSLUCENT;
 
     // [marshmallow]
-    if (gibmode == BRUTAL_GIBS)
-        negative_spawnhealth = negative_spawnhealth / 2;  // Make xdeath animation more probable if we are in BRUTAL mode
-
-    if (IsPlayer(source) && source->player->readyweapon == wp_pistol) // If we're using pistol, don't do any gib stuff
-    {
+    if ( !DoSpecialDeaths(target, source) )
         P_SetMobjState (target, target->info->deathstate);
-    }
-    else
-    {
-        if (target->health < negative_spawnhealth
-            && target->info->xdeathstate)
-        {
-            if (gibmode == BRUTAL_GIBS
-                && target->type != MT_SKULL)
-            {
-                BrutalSplat(target);
-            }
-
-            P_SetMobjState (target, target->info->xdeathstate);
-        }
-        else
-        {
-            P_SetMobjState (target, target->info->deathstate);
-        }
-
-        GibFactory(target, source);
-    }
-    // [m]
 
     // [crispy] randomly flip corpse, blood and death animation sprites
     if (target->flags & MF_FLIPPABLE)
@@ -1488,11 +1462,8 @@ P_KillMobj
 
     if (target->tics < 1)
 	target->tics = 1;
-		
-    //	I_StartSound (&actor->r, actor->info->deathsound);
 
     // In Chex Quest, monsters don't drop items.
-
     if (gameversion == exe_chex)
     {
         return;
@@ -1615,7 +1586,7 @@ P_DamageMobj
 		
 	thrust = damage*(FRACUNIT>>3)*100/target->info->mass;
 
-    if ( physics_mode && !IsPlayer(target) )
+    if ( physics_mode && !IsPlayer(target) && !PhysicsExempt(target))
         thrust *= thrust_multiplier[ physics_mode ];      // [marshmallow] Increasing thrust/inertia
 
 	// make fall forwards sometimes
@@ -1623,7 +1594,7 @@ P_DamageMobj
 	     && damage > target->health
 	     && target->z - inflictor->z > 64*FRACUNIT
 	     && (P_Random ()&1)
-	     && physics_mode )  // [marshmallow] Don't fall forward when using alternate physics modes
+	     && !physics_mode )  // [marshmallow] Don't fall forward when using alternate physics modes
     {
 	    ang += ANG180;
 	    thrust *= 4;
@@ -1636,7 +1607,8 @@ P_DamageMobj
 
     SetPlayerTarget(source, target);  // [marshmallow]
 
-    HandleChainsawBlood(target, inflictor);  // [marshmallow]
+    DoChainsawBlood(target, inflictor);  // [marshmallow]
+    DoCriticalHitBlood(target); // [marshmallow]
     
     // player specific
     if (player)

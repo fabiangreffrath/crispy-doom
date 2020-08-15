@@ -13,6 +13,15 @@
 #define MENU_RESTART "Restart Level"
 #define MENU_MUSIC "Doom DJ"
 
+#define PKEHINT_RADIUS "RADIUS: "
+#define PKEHINT_SMALL "LOW"
+#define PKEHINT_MEDIUM "MED"
+#define PKEHINT_LARGE "HIGH"
+
+#define PKERADIUS_STRING1 "SEARCH RADIUS SET TO SMALL."
+#define PKERADIUS_STRING2 "SEARCH RADIUS SET TO MEDIUM."
+#define PKERADIUS_STRING3 "SEARCH RADIUS SET TO LARGE."
+
 #define ORDERS  "ORDERS: "
 #define COVER "FOLLOWING"
 #define SEEK "CLEAN HOUSE"
@@ -277,18 +286,17 @@
 #define RESETBUTTON "     RESET"
 #define WHICHMAP "    Choose Map:  "
 
-#define MENUHELP1 " ver. 0.78m"
-#define MENUHELP2 " Press 'H' for" 
-#define MENUHELP3 "Keyboard Ref."
-
 #define HELPTITLE "* KEYBOARD REFERENCE *"
 #define HELPLINE1 "'M' - Datapad"
 #define HELPLINE2 "'V' - Inventory"
 #define HELPLINE3 "'P' - PKE Meter"
-//#define HELPLINE3 " "
 #define HELPLINE4 "'F' - Squad: Regroup"
 #define HELPLINE5 "'T' - Squad: Assign Target"
 #define HELPLINE6 "Hold USE for Squad Command Menu"
+#define HELPLINE_RANGE "'R' - Radar Range"
+
+#define SPAWNINGOBJECT "SPAWNING OBJECT."
+#define WAITDIPSHIT "WAIT A MOMENT TO PLACE ANOTHER..."
 
 #define TIP "   TIP: "
 
@@ -319,12 +327,12 @@
 #define CHAINGUNLABEL "    CHAINGUN"
 #define SHOTGUNLABEL "    SHOTGUN"
 
-#define TREASURENORMAL "    NORMAL"
-#define TREASUREFULL  "    FULL"
+#define TREASURENORMAL "    SCARCE"
+#define TREASUREFULL  "    ABUNDANT"
 
 #define MODECOOP "COOPERATIVE"
 #define MODEDM "DEATHMATCH"
-#define MODESP "SINGLEPLAYER"
+#define MODESP "SOLO PLAY"
 #define MODESBOX "SANDBOX"
 
 #define SHORTER "    SHORTER"

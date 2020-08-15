@@ -768,15 +768,15 @@ void P_RespawnSpecials (void)
 
     // only respawn items in deathmatch
     // AX: deathmatch 3 is a Crispy-specific change
-    if (deathmatch != 2 && deathmatch != 3)
-	return;	// 
+    if (deathmatch != 2 && deathmatch != 3 && !Marshmallow_Sandbox)
+	return;
 
     // nothing left to respawn?
     if (iquehead == iquetail)
 	return;		
 
     // wait at least 30 seconds
-    if (leveltime - itemrespawntime[iquetail] < 30*TICRATE)
+    if (leveltime - itemrespawntime[iquetail] < itemrespawn_delay*TICRATE)  // [marshmallow] Item respawn delay is adjustable by the user
 	return;			
 
     mthing = &itemrespawnque[iquetail];
@@ -795,6 +795,10 @@ void P_RespawnSpecials (void)
 	if (mthing->type == mobjinfo[i].doomednum)
 	    break;
     }
+
+    // [marshmallow] If random items option is on, randomize it now
+    if (Marshmallow_RandomItems)
+        i = RandomizeItem(i);
 
     if (i >= NUMMOBJTYPES)
     {
@@ -1019,7 +1023,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
     // don't spawn keycards and players in deathmatch
     if (deathmatch && mobjinfo[i].flags & MF_NOTDMATCH)
     {
-        if (!Marshmallow_TreasureMode)
+        //if (!Marshmallow_TreasureMode)  // removed 8-7-2020
             return;
     }
 		
@@ -1103,12 +1107,8 @@ void P_SpawnMapThing (mapthing_t* mthing)
     }
 
     // Generate random items if needed
-    if (Marshmallow_Sandbox)
+    if (Marshmallow_RandomItems || Marshmallow_Sandbox)
     {
-        i = PlaceSandboxItem(i);
-    }
-    else
-    if (Marshmallow_RandomItems) {
         i = RandomizeItem(i);
     }
     // [m]
@@ -1117,8 +1117,6 @@ void P_SpawnMapThing (mapthing_t* mthing)
     mobj->spawnpoint = *mthing;
 
     // [marshmallow]
-    mthing->type = i; // Save item type so we can respawn it later
-
     if (is_treasure)
     {
         mobj->flags |= MF_TREASURE;
@@ -1134,6 +1132,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
 
         BuildObjList();
     }
+    // [m]
 
     if (mobj->tics > 0)
 	mobj->tics = 1 + (P_Random () % mobj->tics);

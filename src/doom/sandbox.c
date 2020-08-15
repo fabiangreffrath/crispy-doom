@@ -8,46 +8,6 @@
 #include "pkemeter.h"
 
 
-// TODO: rename and move to tweaks.c; maybe keep this function as a wrapper for our new random item function
-int PlaceSandboxItem(int i)
-{  
-	switch (i)
-	{
-	case MT_CLIP:
-	case MT_SHELLS:
-	case MT_ROCKET:
-	case MT_CELL:
-				
-		i = GetRandomBonusItem(AMMO);
-		return i;
-
-	case MT_SHOTGUN:
-	case MT_SUPERSHOTGUN:
-	case MT_CHAINGUN:
-	case MT_RPG:
-	case MT_PLASMA_RIFLE:
-	case MT_BFG9000:
-
-		i = GetRandomBonusItem(WEAPON);
-		return i;
-
-	case MT_HEALTH_BONUS:    
-
-		i = GetRandomBonusItem(AMMO);
-		
-		return i;
-
-	case MT_ARMOR_BONUS:
-
-		i = GetRandomBonusItem(WEAPON);
-		return i;
-
-	default:
-		return i;
-	}
-}
-
-
 static void SandboxVictory()
 {
 	sandbox.design_mode = true;
@@ -75,7 +35,7 @@ void CheckSandboxStatus()
 	{
 		int i = 0;
 
-		if (!MAIN_PLAYER.cards[i]) // if we don't have any keys, give all keys for sandbox mode
+		if (!MAIN_PLAYER.cards[i])
 		{
 			for (i=0 ; i<NUMCARDS ; i++)
 				MAIN_PLAYER.cards[i] = true;
@@ -102,8 +62,8 @@ void ChangeThingType(int player, direction_t direction)
 		{
 			p->sandbox_object--;
 
-			if (p->sandbox_object == MT_BARREL - 1)	// used to go only go to MT_KEEN
-				p->sandbox_object -= 5;   // was 1 for MT_KEEN
+			if (p->sandbox_object == MT_BARREL - 1)
+				p->sandbox_object -= 5;
 			else if (p->sandbox_object == MT_BRUISERSHOT)	
 				p->sandbox_object -= 1;   
 			else if (p->sandbox_object == MT_FATSHOT)	
@@ -118,12 +78,12 @@ void ChangeThingType(int player, direction_t direction)
 
 	case FORWARD:
 
-		if (p->sandbox_object < MT_BARREL)	// used to only go to MT_KEEN
+		if (p->sandbox_object < MT_BARREL)
 		{
 			p->sandbox_object++;
 
 			if (p->sandbox_object == MT_BOSSBRAIN)	
-				p->sandbox_object += 5;      // was 1 for MT_KEEN
+				p->sandbox_object += 5;
 			else if (p->sandbox_object == MT_BRUISERSHOT)	
 				p->sandbox_object += 1;   
 			else if (p->sandbox_object == MT_FATSHOT)	
@@ -164,18 +124,28 @@ static boolean CheckThingType(mobjtype_t thing)
 			return true;
 	}
 
-	return true;  // added 1-21-20 because this was returning zero in release builds
+	if (gamevariant == bfgedition)
+    {
+        if ( thing == MT_WOLFSS )
+        {
+            SHOW_MESSAGE "NOT AVAILABLE IN BFG EDITION WAD!";
+            return false;
+        }
+    }
+
+	return true;
 }
 
 
 void CancelSandbox()
 {
-	memset (&sandbox, 0, sizeof(sandbox));  // Clear out saved sandbox info
+    // Clear out saved sandbox info
+	memset (&sandbox, 0, sizeof(sandbox));
 
 	Marshmallow_Sandbox = false;
 	sandbox.design_mode = false;
 	sandboxhelp_on = false;
-	Marshmallow_CoopItemRespawn = false;
+	//Marshmallow_CoopItemRespawn = false;
 
 	Doom1SSG_Level = DEFAULT_SSG_LEVEL;
 }
@@ -183,8 +153,8 @@ void CancelSandbox()
 
 void InitSandbox()
 {
-	if (!netgame && gamemap == saved_sandbox.map)  // added map check on 3-9-19
-		RestoreSavedSandbox();   // in single player sandbox, this is called every time player dies and map is reloaded
+	if (!netgame && gamemap == saved_sandbox.map && !menuactive)
+		RestoreSavedSandbox();  // In single player sandbox, this is called every time player dies and map is reloaded
 	else
 		memset (&sandbox, 0, sizeof(sandbox)); 
 
@@ -193,7 +163,7 @@ void InitSandbox()
 	Marshmallow_Sandbox = true;
 	sandbox.design_mode = true;
 	sandboxhelp_on = true;
-	Marshmallow_CoopItemRespawn = true;
+	//Marshmallow_CoopItemRespawn = true;
 }
 
 
@@ -201,13 +171,13 @@ void ResetSandbox()
 {
 	int i;
 
-	if (sandbox.design_mode == false)
+	if (Marshmallow_Sandbox && sandbox.design_mode == false)
 	{
 		SHOW_MESSAGE "CANNOT RESET DURING BATTLE!";  
 		return;
 	}
 
-	for (i = 1; i <= sandbox.count; i++)   // starting at 1 because we don't use slot 0 in sandbox.monster array
+	for (i = 1; i <= sandbox.count; i++)   // Starting at 1 because we don't use index zero in sandbox.monster array
 		P_RemoveMobj(sandbox.monster[i]);
 
 	memset (&sandbox, 0, sizeof(sandbox)); 
@@ -234,11 +204,11 @@ void UnleashTheHordes()
 
 	S_StartSound(NULL, sfx_sgcock); 
 
-	saved_sandbox.count = sandbox.count;  // NEW
+	saved_sandbox.count = sandbox.count;
 
 	for (i = 0; i <= max; i++)  
 	{
-		if (!sandbox.monster[i])   // need this because currently we leave the zero index empty
+		if (!sandbox.monster[i])   // Required because currently we leave the zero index empty
 			continue;
 
 		//saved_sandbox.monster[i] = sandbox.monster[i];
@@ -246,28 +216,25 @@ void UnleashTheHordes()
 		saved_sandbox.monster_x[i] = sandbox.monster_x[i];
 		saved_sandbox.monster_y[i] = sandbox.monster_y[i];
 
-		saved_sandbox.monster_angle[i] = sandbox.monster_angle[i];  // testing
+		saved_sandbox.monster_angle[i] = sandbox.monster_angle[i];
 
-		saved_sandbox.map = gamemap;  // added 3-9-19
+		saved_sandbox.map = gamemap;
 		
-		if (!realnetgame)  // only because for some reason we can't unset this flag in realnetgame
-		sandbox.monster[i]->flags ^= MF_TRANSLUCENT;   // WTF: why doesn't this operation work in realnetgame?
+		if (!realnetgame)  // For some reason we can't unset this flag in realnetgame
+		sandbox.monster[i]->flags ^= MF_TRANSLUCENT;
 		
 		sandbox.monster[i]->flags |= MF_SHOOTABLE;	
 
-		if (sandbox.monster[i]->type != MT_KEEN)  // NOTE: keens are no longer in this list
-		sandbox.monster[i]->flags |= MF_SOLID;	  
+		if (sandbox.monster[i]->type != MT_KEEN)
+		sandbox.monster[i]->flags |= MF_SOLID;
 	}
-
-	// NOTE: ditching any sound effect for now
-	//S_StartSound(NULL, sfx_metal);   
 
 	if (Marshmallow_DynamicMusic)
 		DJ_StartPlaylist(INTENSE);
 }
 
 
-void RestoreSavedSandbox()  // seems that we keep coming in here twice in a row  (called from both SkipToLevel() and InitSandbox()
+void RestoreSavedSandbox()
 {
 	if (!Marshmallow_Sandbox)
 		return;
@@ -283,9 +250,12 @@ void RestoreSavedSandbox()  // seems that we keep coming in here twice in a row 
 			y = saved_sandbox.monster_y[i];
 			type = saved_sandbox.monster_type[i];
 
-			sandbox.monster[i] = P_SpawnMobj (x, y, ONFLOORZ, type);  // ONFLOORZ?
+            if (type == MT_PLAYER)
+                continue;
 
-			sandbox.monster[i]->angle = saved_sandbox.monster_angle[i];  // NEW testing
+			sandbox.monster[i] = P_SpawnMobj (x, y, ONFLOORZ, type);
+
+			sandbox.monster[i]->angle = saved_sandbox.monster_angle[i];
 			
 			sandbox.monster[i]->flags &= MF_SOLID;	  
 			sandbox.monster[i]->flags &= MF_SHOOTABLE;	
@@ -311,7 +281,7 @@ void PlaceMonster(mobj_t* actor)
 
 	if (actor->player->DropObjectDelay)  
 	{
-		actor->player->message = "WAIT A MOMENT TO PLACE ANOTHER.";
+		actor->player->message = DEH_String(WAITDIPSHIT);
 		return;
 	}
 	else
@@ -323,7 +293,9 @@ void PlaceMonster(mobj_t* actor)
 
 	if ( !CheckThingType(item_type) )  
 	{
-		SHOW_MESSAGE "CHECKTHINGTYPE FAILED!";
+		if (debugmode)
+		    SHOW_MESSAGE "CHECKTHINGTYPE FAILED!";
+
 		return;
 	}
 
@@ -339,7 +311,7 @@ void PlaceMonster(mobj_t* actor)
 		mobj = P_SpawnMobj (x, y, z, item_type);
 		mobj->flags ^= MF_SOLID; 
 
-		return;   // don't count keens in our sandbox enemy list
+		return;   // Don't count keens in our sandbox enemy list
 	}
 	
 	// Monsters only:
@@ -352,9 +324,8 @@ void PlaceMonster(mobj_t* actor)
 	sandbox.monster_x [ sandbox.count ] = x;
 	sandbox.monster_y [ sandbox.count ] = y;
 	sandbox.monster_type [ sandbox.count ] = item_type;
-	//sandbox.monster[ sandbox.count ]->angle = actor->angle+ANG180;
-	sandbox.monster[ sandbox.count ]->angle = actor->angle+ANG180;  // testing
-	sandbox.monster_angle[ sandbox.count ] = actor->angle+ANG180;  // testing
+	sandbox.monster[ sandbox.count ]->angle = actor->angle+ANG180;
+	sandbox.monster_angle[ sandbox.count ] = actor->angle+ANG180;
 	
 	sandbox.monster[sandbox.count]->flags &= MF_SOLID;	  
 	sandbox.monster[sandbox.count]->flags &= MF_SHOOTABLE;	
@@ -363,9 +334,9 @@ void PlaceMonster(mobj_t* actor)
 	sandbox.monster[sandbox.count]->flags |= MF_TRANSLUCENT;
 
 	if (item_type == MT_BARREL)
-		sandbox.monster[sandbox.count]->flags |= MF_SPECIAL;  // so we can push barrels
+		sandbox.monster[sandbox.count]->flags |= MF_SPECIAL;  // MF_SPECIAL flag allows us to push barrels
 
-	actor->player->message = "SPAWNING OBJECT.";
+	actor->player->message = DEH_String(SPAWNINGOBJECT);
 }
 
 

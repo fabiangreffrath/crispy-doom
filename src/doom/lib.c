@@ -5,7 +5,7 @@
 //////////////////////////
 
 #include "marshmallow.h"
-
+#include "pkemeter.h"
 
 void Advance_M_Tics()
 {
@@ -449,7 +449,7 @@ static void SetDoom1Level()
 
 static void SetNewGameSettings()
 {
-	if (menuactive)  // only if coming from main menu
+	if (menuactive)  // Only if coming from main menu
 	switch (newgame_mode)
 	{
 		case SINGLEPLAYER:
@@ -465,18 +465,17 @@ static void SetNewGameSettings()
 			Marshmallow_DeathmatchWeapons = false;
 			
 			CancelSandbox();
+
 			break;
 
 		case COOP:
 
-			if (menuactive)
-			{
-				Bot_RemoveBots();  
-				already_spawned_bots = false;
-				BotsInGame = 2;  // was 1 for a while
-			}
+			already_spawned_bots = false;
 
-			netgame = true;
+            Bot_RemoveBots();
+            BotsInGame = 2;
+
+            netgame = true;
 			deathmatch = 0;
 			nomonsters = false;
 			
@@ -484,21 +483,22 @@ static void SetNewGameSettings()
 			Marshmallow_DeathmatchWeapons = false;
 			
 			CancelSandbox();
+
+            Bot_SpawnBots();
+
 			break;
 
 		case DEATHMATCH:
 
-			if (menuactive)
-			{
-				Bot_RemoveBots(); 
-				already_spawned_bots = false;
-				BotsInGame = 3;
-			}
+			already_spawned_bots = false;
 
-			netgame = true;
+            Bot_RemoveBots();
+            BotsInGame = 3;
+
+            netgame = true;
 			deathmatch = 3;
 
-			if (M_CheckParm("-dmm"))  // NEW
+			if (M_CheckParm("-dmm"))
 				nomonsters = false;
 			else
 				nomonsters = true;
@@ -506,15 +506,18 @@ static void SetNewGameSettings()
 			Marshmallow_DeathmatchWeapons = true;
 			
 			CancelSandbox();
+
+            Bot_SpawnBots();
+
 			break;
 
 		case SANDBOX:
-			
-			if (menuactive)
-				Bot_RemoveBots(); 
+
+			Bot_RemoveBots();
 
 			deathmatch = 0;
 			InitSandbox();
+
 			break;
 	}
 
@@ -1362,7 +1365,7 @@ static void GameplayKeyInput()
 			}
 
 			SHOW_MESSAGE DEH_String(ORDERMSGPATROL);
-			Bot_PlayRadioNoise();
+            PlayRadioNoise();
 		}
 
 		SetKeyDelay();
@@ -1385,7 +1388,7 @@ static void GameplayKeyInput()
 		{
 			Bot_HoldPosition();
 			SHOW_MESSAGE DEH_String(ORDERMSGHOLD);
-			Bot_PlayRadioNoise();
+            PlayRadioNoise();
 		}
 	}
 
@@ -1815,8 +1818,7 @@ void ResetBarrel()
 			if (!players[p].touching_barrel)
 				return;
 
-			if (!P_CheckMeleeRange(players[p].current_barrel)
-				|| !players[p].barrel_timeout)
+			if (!P_CheckMeleeRange(players[p].current_barrel))
 			{
 				players[p].touching_barrel = false;
 				players[p].current_barrel = NULL;
@@ -2010,7 +2012,7 @@ void AutoUse()
 
 	weapon_x = target->x + FixedMul (24*FRACUNIT, finecosine[an]) +  MARSHMALLOW_ITEMDROP_OFFSET;  
 	weapon_y = target->y + FixedMul (24*FRACUNIT, finesine[an]) + MARSHMALLOW_ITEMDROP_OFFSET;
-	weapon_z = ONFLOORZ;
+	weapon_z = target->z + DROP_FROM_ABOVE_FLOOR;
 
 	mo = P_SpawnMobj (weapon_x,weapon_y,weapon_z, player_weapon);   // Player will drop the gun they had
 	mo->flags |= MF_DROPPED;	
@@ -2116,7 +2118,7 @@ void Marshmallow_NewDropItemsRoutine(mobj_t* target)
 		case MT_CYBORG:
 		case MT_SPIDER:
 			if ( gamemode == commercial)
-				item = MT_MEGA;		  // Drop a megasphere in Doom II
+				item = MT_MEGA;		  // Drop a Megasphere in Doom II
 			else
 				item = MT_SOULSPHERE; // Drop a Soulsphere in Doom
 			break;
@@ -2142,9 +2144,9 @@ void Marshmallow_NewDropItemsRoutine(mobj_t* target)
 	
 	an = target->angle >> ANGLETOFINESHIFT;
 
-	x = target->x;   // If monsters are dropping the item, spawn it exaclty where they died. 
+	x = target->x;   // If monsters are dropping the item, spawn it exactly where they died.
 	y = target->y;
-	z = target->z;
+	z = target->z + DROP_FROM_ABOVE_FLOOR;
 
 	mo = P_SpawnMobj (x,y,z, item);
 	mo->flags |= MF_DROPPED;
@@ -2606,6 +2608,49 @@ void GiveAllItems()
 }
 
 
+boolean PhysicsExempt(mobj_t* thing)
+{
+    switch (thing->type)
+    {
+        case MT_CYBORG:
+        case MT_SPIDER:
+        case MT_KNIGHT:
+        case MT_BRUISER:
+        case MT_BABY:
+            return true;
+
+        default:
+            return false;
+    }
+}
+
+
+boolean EnemyInRange(mobj_t* enemy)
+{
+    fixed_t distance;
+    fixed_t range_limit = PKE_Meter.search_radius;
+
+    mobj_t* player = players[consoleplayer].mo;
+
+    if (!enemy)
+        return false;
+
+    distance = P_AproxDistance (player->x - enemy->x,
+                            player->y - enemy->y);
+
+    if (distance < range_limit)
+    {
+        //SHOW_MESSAGE "ENEMY IN RANGE!";
+        return true;
+    }
+    else
+    {
+        //SHOW_MESSAGE "ENEMY OUT OF RANGE!";
+        return false;
+    }
+}
+
+
 ///////////////////
 //
 //	Randomization  
@@ -2686,4 +2731,37 @@ int RandomEpisode()
 	episode = GetRandomIntegerInRange(1, 4 + sigil); 
 
 	return episode;
+}
+
+
+void SetSkills()
+{
+    if (Marshmallow_AlternateUltraViolence)   // Check for our new skills first
+        skill_selection = newskill = 5;
+
+    else if (Marshmallow_AlternateNightmare)
+        skill_selection = newskill = 6;
+
+    else {  // Otherwise, check for the usual skills
+
+        switch (gameskill)
+        {
+            case sk_baby:
+                skill_selection = newskill = sk_baby;
+                break;
+            case sk_easy:
+                skill_selection = newskill = sk_easy;
+                break;
+            case sk_medium:
+                skill_selection = newskill = sk_medium;
+                break;
+            case sk_hard:
+                skill_selection = newskill = sk_hard;
+                break;
+            case sk_nightmare:
+                skill_selection = newskill = sk_nightmare;
+                Marshmallow_RespawnInNightmare = false;
+                break;
+        }
+    }
 }

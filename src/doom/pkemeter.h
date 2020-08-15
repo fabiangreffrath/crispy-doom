@@ -5,20 +5,45 @@
 
 extern void CrispyReplaceColor (char *str, const int cr, const char *col);
 
-#define MAXOBJECTS 1000  // more than enough?
+#define MAXOBJECTS 1000  // More than enough?
 #define DRAW_DELAY 25
-#define PKE_RECALC_DELAY 25   // so we aren't spamming all of our scanning stuff every single tic
-#define THIS_MOBJ_HP (mobjinfo[ monster->type ].spawnhealth * MonsterHitpointsScale)  // TODO: try using real-time monster.health instead of spawnhealth
-#define THIS_MOBJ_CURRENTHP monster.health  // not used yet; possible alternative to the macro above
+#define PKE_RECALC_DELAY 25   // So we aren't spamming all of our scanning stuff every single tic
+#define THIS_MOBJ_HP (mobjinfo[ monster->type ].spawnhealth * MonsterHitpointsScale)  // TODO: Try using real-time monster.health instead of spawnhealth
+#define THIS_MOBJ_CURRENTHP monster.health  // Not used yet; possible alternative to the macro above
+
+#define ZERO_STRING "O"
+#define POSITIVE_COLOR CR_GREEN
+#define NULL_COLOR CR_DARK
 
 typedef enum {
 
-	PKE_RADIUS_SMALL = (MISSILERANGE/6) ,  // approx. same room
-	PKE_RADIUS_MEDIUM = (MISSILERANGE/4), // approx. one room away
-	PKE_RADIUS_LARGE = (MISSILERANGE) , // approx. most of the map
-
+	PKE_RADIUS_SMALL = (MISSILERANGE/6) ,  // Approx. same room
+	PKE_RADIUS_MEDIUM = (MISSILERANGE/2), // Approx. one room away
+	PKE_RADIUS_LARGE = (MISSILERANGE),   // Approx. most of the map
 } pke_radius_t;
 
+typedef enum {
+
+    DANGERLEVEL_LOW = 100,
+    DANGERLEVEL_MEDIUM = 1000,
+    DANGERLEVEL_HIGH = 4000,
+    DANGERLEVEL_CRITICAL = 10000,
+    DANGERLEVEL_FUBAR = 50000,
+
+} danger_threshold_t;
+
+void PKE_Activate();
+void PKE_Reset();
+void PKE_Scanner();
+void BuildObjList();
+void PKE_KillBoss();
+int PKE_GetDangerLevel();
+int PKE_MonstersInArea();
+void PKE_HUDisplay();
+void PKE_ShowInfo();
+void PKE_Readout();
+void AllKills_Achievement();
+void PKE_KillEntity(mobj_t* entity);
 
 typedef struct pkemeter_s {
 
@@ -33,7 +58,6 @@ typedef struct pkemeter_s {
 	int healthpoints_detected;
 	int monsters_detected;
 	mobj_t* monsters[MAXOBJECTS];
-	mobj_t* temp;  // was monster in old struct; now rename to entity_detected or something
 
 	int monsters_onradar;
 	int healthpoints_onradar;
@@ -50,43 +74,7 @@ typedef struct pkemeter_s {
 
 } pkemeter_t;
 
-pkemeter_t PKE_Meter;  
-
-
-void PKE_Activate();
-void PKE_Reset();
-void PKE_Sensor();
-void PKE_Scanner();
-//void PKE_CheckIfAllKills();  // NOTE: this might have to move to a stat-related method when we implement a stat system
-void BuildObjList(); 
-void PKE_KillStaypuft();
-void PKE_GetAttacker(mobj_t* actor);
-void PKE_KillEntity(mobj_t* target);  // rename input
-void PKE_StayPuft();
-void PKE_HUDisplay();
-void PKE_ShowInfo();
-void PKE_Readout();
-int PKE_GetDangerLevel();
-void AllKills_Achievement();
-//boolean MonstersInArea(); 
-int PKE_MonstersInArea();
-
-//void RemoveMonsterFromRadar(mobj_t* monster); // static
-//void AddMonsterToRadar(mobj_t* monster); // static
-//void AddMonsterToList(mobj_t* monster);  // static
-//boolean PKE_Heartbeat(); // static
-//boolean PKE_Analyze(mobj_t* entity);  // static
-
-
-typedef enum {
-
-	DANGERLEVEL_LOW = 100, 
-	DANGERLEVEL_MEDIUM = 1000, 
-	DANGERLEVEL_HIGH = 4000, 
-	DANGERLEVEL_CRITICAL = 10000, 
-	DANGERLEVEL_FUBAR = 50000,
-
-} danger_threshold_t;  
+pkemeter_t PKE_Meter;
 
 
 #endif

@@ -53,11 +53,25 @@ boolean targethp_on;
 // For gameplay options shortcut in main menu
 boolean mainmenu_breadcrumb;
 
+// Strings for skill selection menu
+#define SKILLS_BABY "BABY MODE"
+#define SKILLS_EASY "EASY"
+#define SKILLS_NORMAL "NORMAL"
+#define SKILLS_HARD "HARD"
+#define SKILLS_NM "NIGHTMARE"
+#define SKILLS_NM2 "NM 2.0"  // longer string gets cut off
+#define SKILLS_UV2 "UV 2.0"  // longer string gets cut off
+#define SKILLS_NONE "NONE"
+
+// Coordinates for version number shown at title screen
+#define TITLEHELP_LINE1_X 229
+#define TITLEHELP_LINE2_X 222
+#define TITLEHELP_LINE3_X 222
+
 // Functions for hud.c
+char* DisplayPKERadius();
 char* DisplayPhysicsMode();
 char* DisplayLightingMode();
-char* DisplayMedkitRemaining();
-char* DisplayValue(int val);             // these have been moved, just need to make them static and re-position in file
 char* DisplayOnOff(boolean option);
 char* DisplaySongStatus(boolean option);
 char* DisplayMusicMode();
@@ -76,7 +90,6 @@ char* ShowSkillLevel();
 char* ShowGameType();
 char* ShowSongLength();
 char* ShowBotWeapon(int bot);
-
 void HUD_InitHelp();
 void HUD_InitEnemyMenu();
 void HUD_InitWeaponMenu();
@@ -143,10 +156,11 @@ enum {
 	BULDMG_SELECTED,
 	INFAMMO_SELECTED,
 	SGUNDMG_SELECTED,
+
+    MAX_WEAPONTWEAKS,  // Excluding the following options for the time being
+
 	PLSLOW_SELECTED,
 	BFGWAVE_SELECTED,
-
-	MAX_WEAPONTWEAKS,
 };
 
 // Monster tweaks menu
@@ -210,7 +224,7 @@ enum {
 	NO_MUSIC_SELECTION,
 
 	MODE_SELECTED,
-	SKIP_SELECTED, // now used for song title; TODO: rename
+	SKIP_SELECTED, 
 	DJMSGS_SELECTED,
 	LENGTH_SELECTED,
 	FASTCHANGES_SELECTED,
@@ -233,9 +247,10 @@ enum {
 	BOSSALERTS_SELECTED,
 	INFIGHT_SELECTED,
 	EXTENDEDMSG_SELECTED,
-	EXTRALINE_SELECTED,
 
-	MAX_MSGMENU_ITEMS,
+    MAX_MSGMENU_ITEMS,  // Excluding the below option for the time being
+
+	EXTRALINE_SELECTED,
 };
 
 // Skill selection in change map menu
@@ -495,6 +510,8 @@ hu_stext_t skipmenu_upgrade;
 hu_stext_t skipmenu_scalehp;
 hu_stext_t skipmenu_itemspawns;
 hu_stext_t skipmenu_go;
+hu_stext_t skipmenu_percent;
+hu_stext_t skipmenu_multiplier;
 
 hu_stext_t weaponmenu_bersred;
 hu_stext_t weaponmenu_bersauto;
@@ -526,12 +543,14 @@ hu_stext_t sandboxmenu_cancel;
 
 hu_stext_t missilelock_text;
 
+hu_stext_t help_pkehint;
 hu_stext_t help_titlehelp_line1;
 hu_stext_t help_titlehelp_line2;
 hu_stext_t help_titlehelp_line3;
 hu_stext_t help_title;
 hu_stext_t help_mainmenu;
 hu_stext_t help_pkemeter;
+hu_stext_t help_pkerange;
 hu_stext_t help_inventory;
 hu_stext_t help_scroll;
 hu_stext_t help_select;

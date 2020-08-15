@@ -13,7 +13,7 @@ void NET_WriteMarshmallowSettings(net_packet_t *packet, net_gamesettings_t *sett
     NET_WriteInt8(packet, settings->MarshmallowSettings.SelfDamage);
     NET_WriteInt8(packet, settings->MarshmallowSettings.DropGoodies);
     NET_WriteInt8(packet, settings->MarshmallowSettings.DropBackpack);
-    NET_WriteInt8(packet, settings->MarshmallowSettings.CoopItemRespawn);
+    NET_WriteInt8(packet, settings->MarshmallowSettings.ItemRespawn);
 
     NET_WriteInt8(packet, settings->MarshmallowSettings.ConservePowerups);
 	NET_WriteInt8(packet, settings->MarshmallowSettings.KeepWeapons);
@@ -99,7 +99,7 @@ boolean NET_ReadMarshmallowSettings(net_packet_t *packet, net_gamesettings_t *se
 	&& NET_ReadInt8(packet, (unsigned int *) &settings->MarshmallowSettings.SelfDamage)
 	&& NET_ReadInt8(packet, (unsigned int *) &settings->MarshmallowSettings.DropGoodies)
 	&& NET_ReadInt8(packet, (unsigned int *) &settings->MarshmallowSettings.DropBackpack)
-	&& NET_ReadInt8(packet, (unsigned int *) &settings->MarshmallowSettings.CoopItemRespawn)
+	&& NET_ReadInt8(packet, (unsigned int *) &settings->MarshmallowSettings.ItemRespawn)
 
 	&& NET_ReadInt8(packet, (unsigned int *) &settings->MarshmallowSettings.ConservePowerups)
 	&& NET_ReadInt8(packet, (unsigned int *) &settings->MarshmallowSettings.KeepWeapons)

@@ -3,14 +3,28 @@
 
 #include "marshmallow.h"
 
+#define SONG_LENGTH_SAMEPLAYLIST Doom_DJ.song_length
+#define AREA_CLEAR_THRESHOLD 0.10f
+#define SAFETY_THRESHOLD 8
+#define	NUMSONGS 88
+
 typedef int	songlist_t;
+char*	songnames[NUMSONGS];
+
+enum {
+    SONGLENGTH_SHORT = 2500,
+    SONGLENGTH_LONG = 3500,
+    SONGLENGTH_INTENSE = 1100,
+    SONGLENGTH_MINIMUM = 475,
+    SONGLENGTH_D1VICTORY = 300,
+    SONGLENGTH_D2VICTORY = 550,
+};
 
 typedef enum
 {
 	TRACK_1,  
 	SONGLIST_SIZE = 128,
-} track_t;  
-
+} track_t;
 
 typedef enum
 {
@@ -23,9 +37,8 @@ typedef enum
 	VICTORY,    
 } musicstyle_t;
 
-
-enum {  
-
+enum
+{
 	BLACKLIST_RUNNIN,
 	BLACKLIST_E1M1,
 	BLACKLIST_D1INTER,
@@ -34,67 +47,22 @@ enum {
 	BLACKLIST_SIZE
 };
 
-boolean song_blacklist[BLACKLIST_SIZE];  
-
-#define SONG_LENGTH_SAMEPLAYLIST Doom_DJ.song_length  
-
-#define SHORT_SONG_LENGTH 2500 
-#define LONG_SONG_LENGTH 3500 
-#define INTENSE_SONG_LENGTH 1100
-#define SONG_MINIMUM_LENGTH 475 
-#define DOOM1_VICTORY_SONG_LENGTH 300 
-#define DOOM2_VICTORY_SONG_LENGTH 550
-
-#define AREA_CLEAR_THRESHOLD 0.10f 
-#define SAFETY_THRESHOLD 8
-
-#define	NUMSONGS 88
-
-// TODO: switch to using the below enum (includes new names)
-
-/*
-enum {
-
-	SONGLENGTH_SHORT = 2500,
-	SONGLENGTH_LONG = 3500,
-	SONGLENGTH_INTENSE = 1100,
-	SONGLENGTH_MINIMUM = 420,
-	SONGLENGTH_D1VICTORY = 300,
-	SONGLENGTH_D2VICTORY = 550,
-	//SONGLENGTH_SAMEMOOD  couldn't do this one
-
-};
-*/
-
-// TODO: switch to using the below enum (includes new names)
-
-#define MUSIC_THRESHOLD_SKILL1 250
-#define MUSIC_THRESHOLD_SKILL2 325
-#define MUSIC_THRESHOLD_SKILL3 375 
-#define MUSIC_THRESHOLD_SKILL4 500  
-#define MUSIC_THRESHOLD_SKILL5 500  
-
-/*
 typedef enum {
 
 	MUSICTHRESHOLD_SKILL1 = 200,
-	MUSICTHRESHOLD_SKILL2 = 300,
-	MUSICTHRESHOLD_SKILL3 = 420,
+	MUSICTHRESHOLD_SKILL2 = 325,
+	MUSICTHRESHOLD_SKILL3 = 375,
 	MUSICTHRESHOLD_SKILL4 = 500,
 	MUSICTHRESHOLD_SKILL5 = 500,
 
 } music_threshold_t;
-*/
+
 
 int GetNextTrackNum();
 int RandomizeTrack();
 int CheckForDuplicateSong(int next_song, int last_song);
 void DJ_ImportPlaylist(songlist_t *songlist);
 void DJ_StartPlaylist(musicstyle_t style);
-
-//void DJ_MusicStates();  // static
-void DJ_DoFadeout();
-void DJ_StartFadeout();
 void DJ_NextTrack();
 void DJ_ShowInfo();
 void InitDynamicMusic();
@@ -109,9 +77,7 @@ boolean LowDanger();
 boolean AreaClear();
 boolean DJ_Sandbox();
 boolean DJ_SongMinimum();
-
-char*				songnames[NUMSONGS]; 
-char*				plut_songnames[NUMSONGS]; 
+boolean song_blacklist[BLACKLIST_SIZE];
 
 struct
 {
@@ -127,7 +93,7 @@ struct
 
     int	            current_song;  // Used for displaying song name in menus
 	
-	int				song[SONGLIST_SIZE];  // TODO: maybe rename to songlist or playlist
+	int				playlist[SONGLIST_SIZE];
 	int				default_song;
 
 	boolean			init;

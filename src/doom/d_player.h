@@ -213,7 +213,7 @@ typedef struct player_s
     // [marshmallow] For barrel pushing
     boolean touching_barrel;
     mobj_t* current_barrel;
-    int		barrel_timeout;
+    //int		barrel_timeout;
 
     // [marshmallow] Sandbox object selection
     mobjtype_t sandbox_object;

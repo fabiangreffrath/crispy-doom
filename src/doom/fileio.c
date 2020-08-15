@@ -5,7 +5,7 @@
 ////////////////////////////////////////////////
 
 #include "marshmallow.h"
-
+#include "pkemeter.h"
 
 static void ReadServerSettings(FILE *f)
 {
@@ -78,6 +78,8 @@ static void ReadServerSettings(FILE *f)
 
 	fscanf(f, "BarrelPushing %d \n", &Marshmallow_BarrelPushing);
 	fscanf(f, "DangerousBFG %d \n", &Marshmallow_DangerousBFG);
+
+    fscanf(f, "PKE_SearchRadius %d \n", &PKE_SavedSearchRadius);
 }
 
 
@@ -190,6 +192,8 @@ static void WritePreferences()
 	fprintf(f, "DangerousBFG %d \n", Marshmallow_DangerousBFG);
 	fprintf(f, "DM_AllowExit %d \n", Marshmallow_AllowExit);
 	fprintf(f, "DM_KillOnExit %d \n", Marshmallow_KillOnExit);
+
+    fprintf(f, "PKE_SearchRadius %d \n", PKE_Meter.search_radius);
 
 	fclose(f);
 }

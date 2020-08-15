@@ -39,7 +39,7 @@ static void DJ_MusicStates()
 
 		case INTENSE:
 
-			if (song_tic > INTENSE_SONG_LENGTH / 2)
+			if (song_tic > SONGLENGTH_INTENSE / 2)
 				DJ_StartPlaylist(AMBIENT);
 
 			break;
@@ -54,9 +54,9 @@ static void DJ_MusicStates()
 	}
 
 	// Trigger INTENSE playlist during high-danger monster encounters
-	else if ( HighDanger() ) 
+	else if ( HighDanger() )
 	{
-		if ( PlayerIsDead() || spawntics < 100 )
+		if ( PlayerIsDead() || spawntics < 100 || AreaClear() )
 			return;
 
 		if (PLAYING_DOOM1)
@@ -95,7 +95,7 @@ static void DJ_MusicStates()
 
 		case INTENSE:
 
-			if (song_tic > INTENSE_SONG_LENGTH)
+			if (song_tic > SONGLENGTH_INTENSE)
 				DJ_StartPlaylist(SUSPENSEFUL);
 
 			break;
@@ -202,7 +202,7 @@ void DJ_StartPlaylist(musicstyle_t style)
 
 	// Choose the next track number in our playlist
 	Doom_DJ.track_playing = GetNextTrackNum();
-	next_song = Doom_DJ.song[ Doom_DJ.track_playing ];
+	next_song = Doom_DJ.playlist[ Doom_DJ.track_playing ];
 
 	// Make sure we didn't pick the same INTENSE song twice in a row 
 	if (style == INTENSE)
@@ -310,27 +310,27 @@ void SetMusicThresholds()
 	if (upgrade_chance)
 	    modifier = upgrade_chance * 0.01;
 
-    // If upgrading monster healthpoints, multiply our high danger threshold by the same amount
-	modifier += MonsterHitpointsScale;
-
 	switch (gameskill)
 	{
 	case sk_baby:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL1 * modifier;
+		PKE_Meter.highdanger_threshold = MUSICTHRESHOLD_SKILL1 + (MUSICTHRESHOLD_SKILL1*modifier);
 		break;
 	case sk_easy:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL2 * modifier;
+		PKE_Meter.highdanger_threshold = MUSICTHRESHOLD_SKILL2 + (MUSICTHRESHOLD_SKILL2*modifier);
 		break;
 	case sk_medium:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL3 * modifier;
+		PKE_Meter.highdanger_threshold = MUSICTHRESHOLD_SKILL3 + (MUSICTHRESHOLD_SKILL3*modifier);
 		break;
 	case sk_hard:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL4 * modifier;
+		PKE_Meter.highdanger_threshold = MUSICTHRESHOLD_SKILL4 + (MUSICTHRESHOLD_SKILL4*modifier);
 		break;
 	case sk_nightmare:
-		PKE_Meter.highdanger_threshold = MUSIC_THRESHOLD_SKILL5 * modifier;
+		PKE_Meter.highdanger_threshold = MUSICTHRESHOLD_SKILL5 + (MUSICTHRESHOLD_SKILL5*modifier);
 		break;
 	}
+
+    // If upgrading monster healthpoints, multiply our high danger threshold by the same amount
+    PKE_Meter.highdanger_threshold *= MonsterHitpointsScale;
 }
 
 
@@ -389,9 +389,9 @@ boolean DJ_Victory()
 	musicstyle_t music_state = Doom_DJ.music_state;
 
 	if ( GetGameType() == DOOM2 )
-		length = DOOM2_VICTORY_SONG_LENGTH;
+		length = SONGLENGTH_D2VICTORY;
 	else
-		length = DOOM1_VICTORY_SONG_LENGTH;
+		length = SONGLENGTH_D1VICTORY;
 
 	if (music_state == VICTORY)
 	{
@@ -427,7 +427,7 @@ boolean DJ_SongMinimum()
 	if (Marshmallow_FastMusicChanges)
 		return false;
 
-	if (song_tic < SONG_MINIMUM_LENGTH)   
+	if (song_tic < SONGLENGTH_MINIMUM)
 		return true;  // Aborting calling function			
 	else
 		return false;  // Continuing through calling function
@@ -474,7 +474,7 @@ void DJ_NextTrack()
 		    SHOW_MESSAGE DEH_String(NEXTSONG);
 	}
 
-	new_song = Doom_DJ.song[ Doom_DJ.track_playing ];
+	new_song = Doom_DJ.playlist[ Doom_DJ.track_playing ];
 
 	S_ChangeMusic(new_song, true);   // Looping in case the song is shorter than our SONG_LENGTH
 }
@@ -490,7 +490,7 @@ int GetReplacementSong()
 		RefreshShuffledTracks(); 
 		Doom_DJ.track_playing = RandomizeTrack();		
 
-		randomsong = Doom_DJ.song[ Doom_DJ.track_playing ];
+		randomsong = Doom_DJ.playlist[ Doom_DJ.track_playing ];
 	}
 	else
 	{
@@ -670,7 +670,7 @@ void DJ_ImportPlaylist(songlist_t *songlist)
 			break;
 		}
 
-		Doom_DJ.song[i] = songlist[i];
+		Doom_DJ.playlist[i] = songlist[i];
 	}
 }
 
@@ -801,10 +801,10 @@ void HandleMusicOnRespawn()
 
 void ChangeSongLength()
 {
-	if (Doom_DJ.song_length == SHORT_SONG_LENGTH)
-		Doom_DJ.song_length = LONG_SONG_LENGTH;
+	if (Doom_DJ.song_length == SONGLENGTH_SHORT)
+		Doom_DJ.song_length = SONGLENGTH_LONG;
 	else
-		Doom_DJ.song_length = SHORT_SONG_LENGTH;
+		Doom_DJ.song_length = SONGLENGTH_SHORT;
 }
 
 
@@ -835,7 +835,7 @@ void DJ_ShowInfo()
 	AddToInfoReadout("music_tic: ", Doom_DJ.musictic, 4);
 	AddToInfoReadout("marshmallow_tic: ", marshmallow_tic, 5);
     AddToInfoReadout("last_intense_song: ", Doom_DJ.last_intense_song, 6);
-    AddToInfoReadout("track_playing: ", Doom_DJ.song[ Doom_DJ.track_playing ], 7);
+    AddToInfoReadout("track_playing: ", Doom_DJ.playlist[ Doom_DJ.track_playing ], 7);
     AddToInfoReadout("bossfight: ", PKE_Meter.bossfight, 8);
 }
 

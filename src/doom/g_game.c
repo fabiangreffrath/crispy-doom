@@ -1209,7 +1209,7 @@ void G_Ticker (void)
                 turbodetected[i] = false;
             }
 
-	    if (netgame && !netdemo && !(gametic%ticdup) ) 
+	    if (realnetgame && !netdemo && !(gametic%ticdup) )  // [marshmallow] Only build consistency byte in real network games
 	    { 
 		if (gametic > BACKUPTICS 
 		    && consistancy[i][buf] != cmd->consistancy) 

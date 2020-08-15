@@ -40,18 +40,18 @@
 #include "SDL_endian.h"
 
 // Prototypes for vanilla doom objects that we'll need:
-//void *W_CacheLumpName(const char *name, int tag);
+void *W_CacheLumpName(const char *name, int tag);
 void CrispyReplaceColor (char *str, const int cr, const char *col);
 
 int showMessages;
 void P_KillMobj ( mobj_t*	source, mobj_t*	target );
-//boolean P_GiveAmmo( player_t*	player, ammotype_t	ammo, int		num );
+boolean P_GiveAmmo ( player_t*	player, ammotype_t	ammo, int num, boolean	dropped );
 //mobj_t* P_SpawnMobj ( fixed_t	x, fixed_t	y, fixed_t	z, mobjtype_t	type );
 void HU_queueChatChar(char c);
 boolean P_GiveBody ( player_t*	player, int		num );
 boolean P_GiveWeapon( player_t*	player,  weapontype_t	weapon,  boolean	dropped );
 void P_GiveCard( player_t*	player,  card_t	card );
-//void S_StartSound(void *origin_p, int sfx_id);
+void S_StartSound(void *origin_p, int sfx_id);
 //extern const char *player_names[4];
 //extern int M_snprintf(char *buf, size_t buf_len, const char *s, ...);
 //extern void PlayerQuitGame(player_t *player);

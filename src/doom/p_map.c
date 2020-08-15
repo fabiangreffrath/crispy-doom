@@ -1453,7 +1453,7 @@ boolean PIT_RadiusAttack (mobj_t* thing)
     fixed_t	dy;
     fixed_t	dist;
 
-    // [marshmallow] For gibbing corpses and corpse decorations
+    // [marshmallow] For gibbing monster corpses and corpse decorations
     if (!(thing->flags & MF_SHOOTABLE) && !IsGibbableThing(thing))
         return true;
 
@@ -1560,8 +1560,16 @@ boolean PIT_ChangeSector (mobj_t*	thing)
 	// TODO: Add a check for DEHACKED states
 	P_SetMobjState (thing, (thing->flags & MF_NOBLOOD) ? S_NULL : S_GIBS);
 
+	// [marshmallow] Blood splat when corpses are crushed by doors and elevators
+	if ( Marshmallow_GibMode > 0 )
+    {
+	    BrutalSplat(thing);
+        PlaySlopSound(thing);  // Make it sound nice and sloppy
+    }
+
     if (gameversion > exe_doom_1_2)
 	    thing->flags &= ~MF_SOLID;
+
 	thing->height = 0;
 	thing->radius = 0;
 

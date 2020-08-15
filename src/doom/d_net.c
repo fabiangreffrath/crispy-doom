@@ -132,7 +132,7 @@ static void LoadGameSettings(net_gamesettings_t *settings)
     Marshmallow_SelfDamage = settings->MarshmallowSettings.SelfDamage;
     Marshmallow_DropGoodies = settings->MarshmallowSettings.DropGoodies;
     Marshmallow_DropBackpack = settings->MarshmallowSettings.DropBackpack;
-    Marshmallow_CoopItemRespawn = settings->MarshmallowSettings.CoopItemRespawn;
+    Marshmallow_ItemRespawn = settings->MarshmallowSettings.ItemRespawn;
 
     Marshmallow_ConservePowerups = settings->MarshmallowSettings.ConservePowerups;
     Marshmallow_KeepWeapons = settings->MarshmallowSettings.KeepWeapons;
@@ -239,7 +239,7 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     settings->MarshmallowSettings.SelfDamage = Marshmallow_SelfDamage;
     settings->MarshmallowSettings.DropGoodies = Marshmallow_DropGoodies;
     settings->MarshmallowSettings.DropBackpack = Marshmallow_DropBackpack;
-    settings->MarshmallowSettings.CoopItemRespawn = Marshmallow_CoopItemRespawn;
+    settings->MarshmallowSettings.ItemRespawn = Marshmallow_ItemRespawn;
 
     settings->MarshmallowSettings.ConservePowerups = Marshmallow_ConservePowerups;
     settings->MarshmallowSettings.KeepWeapons = Marshmallow_KeepWeapons;

@@ -7,7 +7,7 @@
 #include "hud.h"
 #include "bot.h"  
 #include "dj.h"
-
+#include "pkemeter.h"
 
 //  The info readout allows us to watch variables on-screen during gameplay
 void UpdateInfoReadout()
@@ -31,6 +31,15 @@ void UpdateInfoReadout()
 
 void SetMarshmallowColors()
 {
+
+    CrispyReplaceColor( PKEHINT_SMALL, CR_BLUE, PKEHINT_SMALL);
+    CrispyReplaceColor( PKEHINT_MEDIUM, CR_GREEN, PKEHINT_MEDIUM);
+    CrispyReplaceColor( PKEHINT_LARGE, CR_GOLD, PKEHINT_LARGE);
+
+    CrispyReplaceColor( PKERADIUS_STRING1, CR_BLUE, "SMALL");
+    CrispyReplaceColor( PKERADIUS_STRING2, CR_GREEN, "MEDIUM");
+    CrispyReplaceColor( PKERADIUS_STRING3, CR_GOLD, "LARGE");
+
 	CrispyReplaceColor( "BOT 1: ", CR_GRAY, "BOT 1: ");
 	CrispyReplaceColor( "BOT 2: ", CR_GOLD, "BOT 2: ");
 	CrispyReplaceColor( "BOT 3: ", CR_DARK, "BOT 3: ");
@@ -171,6 +180,10 @@ void SetMarshmallowColors()
 	CrispyReplaceColor( HELPLINE3, CR_GREEN, "'P'");
 	CrispyReplaceColor( HELPLINE4, CR_GREEN, "'F'");
 	CrispyReplaceColor( HELPLINE5, CR_GREEN, "'T'");
+    CrispyReplaceColor( HELPLINE_RANGE, CR_GREEN, "'R'");
+
+    CrispyReplaceColor( WAITDIPSHIT, CR_DARK, "WAIT");
+    CrispyReplaceColor( SPAWNINGOBJECT, CR_GREEN, "SPAWNING");
 
 	CrispyReplaceColor( TIP, CR_GRAY, "TIP:");
 
@@ -183,10 +196,6 @@ void SetMarshmallowColors()
 	//CrispyReplaceColor( HELPLINE_SLASH, CR_GREEN, "'\\'");
 	CrispyReplaceColor( HELPLINE_INSERT, CR_GREEN, "INSERT");
 	CrispyReplaceColor( HELPLINE_M, CR_GREEN, "'M'");
-
-	CrispyReplaceColor( MENUHELP1, CR_GOLD, MENUHELP1);
-	CrispyReplaceColor( MENUHELP2, CR_GREEN, "'H'"); 
-	CrispyReplaceColor( MENUHELP3, CR_DARK, "Keyboard");
 
 	CrispyReplaceColor( AMBIENTSONGS, CR_GREEN, "DOOM DJ:");
 	CrispyReplaceColor( INTENSESONGS, CR_GREEN,"DOOM DJ:");
@@ -224,13 +233,15 @@ void SetMarshmallowColors()
 
 	CrispyReplaceColor( ROAM, CR_GOLD, "ROAMING");
 
-	CrispyReplaceColor( TREASURENORMAL, CR_GRAY, "NORMAL");
-	CrispyReplaceColor( TREASUREFULL, CR_GOLD, "FULL");
+	CrispyReplaceColor( TREASURENORMAL, CR_GRAY, "SCARCE");
+	CrispyReplaceColor( TREASUREFULL, CR_GOLD, "ABUNDANT");
 
 	CrispyReplaceColor( MODECOOP, CR_GREEN, "COOPERATIVE");
 	CrispyReplaceColor( MODEDM, CR_GOLD, "DEATHMATCH");
-	//CrispyReplaceColor( MODESP, CR_BLUE, "SINGLEPLAYER");
+	CrispyReplaceColor( MODESP, CR_DARK, "SOLO PLAY");
 	CrispyReplaceColor( MODESBOX, CR_GRAY, "SANDBOX");
+
+    CrispyReplaceColor( "OFF", CR_DARK, "OFF");
 
 	CrispyReplaceColor( BOT1LABEL, CR_GRAY, "BOT1:");
 	CrispyReplaceColor( BOT2LABEL, CR_GOLD, "BOT2:");
@@ -358,9 +369,6 @@ void SetMarshmallowColors()
 	CrispyReplaceColor( ORDERSMSGTAKE, CR_GREEN, "ORDER:");
 	CrispyReplaceColor( ORDERSMSGASSIGN, CR_GREEN, "ORDER:");
 
-	CrispyReplaceColor( "     Hitpoints Scale-up [ 1-9 ]: ", CR_GRAY, "1-9");
-	CrispyReplaceColor( "     Monster Upgrade [ % ]: ", CR_GRAY, "%");
-
 	CrispyReplaceColor( "  Player Name:  ", CR_GREEN, "Player Name");
 
 	CrispyReplaceColor( STATSOK, CR_GREEN, "SAVED");
@@ -391,6 +399,9 @@ void SetMarshmallowColors()
 	CrispyReplaceColor( "    FAST", CR_GOLD, "FAST");
 	CrispyReplaceColor( "    MODERATE", CR_GREEN, "MODERATE");
 	CrispyReplaceColor( "    CAREFUL", CR_GRAY, "CAREFUL");
+
+    CrispyReplaceColor( "FULL RANDOM", CR_GOLD, "FULL RANDOM");
+    CrispyReplaceColor( "BY TYPE", CR_GRAY, "BY TYPE");
 }
 
 
@@ -661,7 +672,7 @@ void InitHUDMenuText()
 
 
 extern void PKE_HUDisplay();   // Oh?
-extern void Draw_Datapad2();
+extern void Draw_Datapad();
 extern void Draw_Wallpaper(char* tile);
 
 void DrawHUDMenu()
@@ -676,17 +687,19 @@ void DrawHUDMenu()
 
 	if (pkereadout_on)
 	{
-	//Draw_Datapad2();  // make pke its own datapad; maybe change light color
+	//if (Marshmallow_DrawPKEGraphics)  // TODO: Marshmallow_DrawPKEGraphics option
+        Draw_Datapad();
 
 	HUlib_drawSText(&pkeline1);
 	HUlib_drawSText(&pkeline2);
 	HUlib_drawSText(&pkeline3);
 	HUlib_drawSText(&pkeline4);
+	HUlib_drawSText(&pkeline8);
 	}
 
 	if (mainmenu_on)
 	{
-		Draw_Datapad2();  // first so anything below draws over it
+        Draw_Datapad();  // first so anything below draws over it
 	}
 	else if (menus_on)
 	{
@@ -767,11 +780,15 @@ void DrawHUDMenu()
 	{
 		int i;
 
+        // Don't show when main menu is up
+		if (menuactive)
+		    return;
+
 		for (i = 0;i<MAX_INFOLINES;i++)
 			HUlib_drawSText(&miscreadout_output[i]); 
 	}
 
-	if (ShowBotStates && !miscreadout_on)
+	if (ShowBotStates && !miscreadout_on && !menus_on)
 	{
 		if (BotsInGame >= 1)
 		HUlib_drawSText(&miscreadout_output[5]);
@@ -783,20 +800,14 @@ void DrawHUDMenu()
 		HUlib_drawSText(&miscreadout_output[7]);
 	}
 
-	if (menuactive)
-	{
-		HUlib_drawSText(&help_titlehelp_line1); 
-		HUlib_drawSText(&help_titlehelp_line2); 
-		HUlib_drawSText(&help_titlehelp_line3); 
-	}
-
 	if (/*menus_on || */help_on)
 	{
 		HUlib_drawSText(&help_title); 
 		HUlib_drawSText(&help_mainmenu); 
 		HUlib_drawSText(&help_inventory); 
-		HUlib_drawSText(&help_pkemeter); 
-		HUlib_drawSText(&help_botfollow); 
+		HUlib_drawSText(&help_pkemeter);
+        HUlib_drawSText(&help_pkerange);
+        HUlib_drawSText(&help_botfollow);
 		HUlib_drawSText(&help_botassign); 
 		HUlib_drawSText(&help_botusekey); 
 		HUlib_drawSText(&help_botshiftkey); 
@@ -852,8 +863,8 @@ void DrawHUDMenu()
 		HUlib_drawSText(&weaponmenu_bullet); 
 		HUlib_drawSText(&weaponmenu_infammo); 
 		HUlib_drawSText(&weaponmenu_shotgun); 
-		HUlib_drawSText(&weaponmenu_plasma); 
-		HUlib_drawSText(&weaponmenu_bfg); 
+		//HUlib_drawSText(&weaponmenu_plasma);
+		//HUlib_drawSText(&weaponmenu_bfg);
 	}
 
 	if (sandboxmenu_on)
@@ -871,22 +882,16 @@ void DrawHUDMenu()
 
 	if (mainmenu_on)					
 	{
-//		HUlib_drawSText(&mainmenu_title); 
-//		HUlib_drawSText(&mainmenu_blank); 
+        // TODO: draw "Send Message" at bottom
 
-		//if (!realnetgame)
-		//{
 		HUlib_drawSText(&mainmenu_profile); 
 		HUlib_drawSText(&mainmenu_options); 
 		HUlib_drawSText(&mainmenu_botmenu); 
-		HUlib_drawSText(&mainmenu_nextmap); 
-		//}
-		//else
-		// TODO: draw "Send Message" at bottom
+		HUlib_drawSText(&mainmenu_nextmap);
 		HUlib_drawSText(&mainmenu_sandbox); 
 		HUlib_drawSText(&mainmenu_music); 
 		HUlib_drawSText(&mainmenu_messages);
-		//HUlib_drawSText(&mainmenu_suicide);   // TEMP hidden
+		//HUlib_drawSText(&mainmenu_suicide);   // No room for this at the moment
 	}
 
 	if (skipmenu_on)
@@ -899,25 +904,30 @@ void DrawHUDMenu()
 		HUlib_drawSText(&skipmenu_weapons); 
 		HUlib_drawSText(&skipmenu_upgrade); 
 		HUlib_drawSText(&skipmenu_scalehp); 
-		HUlib_drawSText(&skipmenu_itemspawns); 
+		HUlib_drawSText(&skipmenu_itemspawns);
 
-	//	if (skip_to_level)
-			HUlib_drawSText(&skipmenu_go); 
+        //	if (skip_to_level)
+			HUlib_drawSText(&skipmenu_go);
+
+        if (upgrade_chance > 0)
+            HUlib_drawSText(&skipmenu_percent);
+
+        if (MonsterHitpointsScale > 1)
+            HUlib_drawSText(&skipmenu_multiplier);
 	}
 
-	if (vanillamusicmenu_on)  // displayed when dynamic music is disabled
+	if (vanillamusicmenu_on)  // Displayed when dynamic music is disabled
 	{
 		HUlib_drawSText(&musicmode_vanilla); 
 		HUlib_drawSText(&songblacklist_vanilla); 	
 	}
 	
-	if (musicmenu_on)   // displayed when dynamic music is enabled
+	if (musicmenu_on)   // Displayed when dynamic music is enabled
 	{
 		if (Marshmallow_DynamicMusic)
 		{
 			HUlib_drawSText(&musicmenu_mode); 
-			HUlib_drawSText(&musicmenu_skip); 
-			//HUlib_drawSText(&musicmenu_shuffle); 
+			HUlib_drawSText(&musicmenu_skip);
 			HUlib_drawSText(&musicmenu_playlist); 	
 			HUlib_drawSText(&musicmenu_msgs); 
 			HUlib_drawSText(&musicmenu_length); 
@@ -973,11 +983,11 @@ void DrawHUDMenu()
 		HUlib_drawSText(&messagesmenu_danger); 
 		HUlib_drawSText(&messagesmenu_targethp); 
 		HUlib_drawSText(&messagesmenu_missile); 
-		HUlib_drawSText(&messagesmenu_extraline); 
+		//HUlib_drawSText(&messagesmenu_extraline);
 		HUlib_drawSText(&messagesmenu_pickupmsg); 
 		HUlib_drawSText(&messagesmenu_deathmsg); 		
 		//HUlib_drawSText(&messagesmenu_damagemsg); 
-		HUlib_drawSText(&messagesmenu_extendedmsg); 
+		HUlib_drawSText(&messagesmenu_extendedmsg);
 		HUlib_drawSText(&messagesmenu_infightmsg); 
 		HUlib_drawSText(&messagesmenu_bossmsg); 
 	}
@@ -1080,12 +1090,9 @@ void DrawHUDMenu()
 }
 
 
-boolean cursor_on;
-int cursor_blink;
-
-void HUDMenuTicker()   // add an if (thismenu_on) to each of these blocks?
+void HUDMenuTicker()
 {
-	char string1[4];   // these four are only for upgrade on menu
+	char string1[4];
 	char string2[4];
 	int upgrade = upgrade_chance;
 	int scale = MonsterHitpointsScale;
@@ -1116,8 +1123,7 @@ void HUDMenuTicker()   // add an if (thismenu_on) to each of these blocks?
 
 	miscreadout_on = true; // temporary
 
-	//if (Marshmallow_InfoReadout)
-		UpdateInfoReadout();
+	UpdateInfoReadout();
 
 	TreasureReadout();
 	SandboxReadout();
@@ -1130,31 +1136,14 @@ void HUDMenuTicker()   // add an if (thismenu_on) to each of these blocks?
 // cursor
 	CalculateCursorPosition();
 
-	//if (cursor_on)
-	//{
-		HUlib_addMessageToSText(&menu_cursor, 0, DEH_String(MENU_CURSOR)); 
+	HUlib_addMessageToSText(&menu_cursor, 0, DEH_String(MENU_CURSOR));
 
-	//	if ( !DoDelay(&cursor_blink, 150) );
-	//		cursor_on = false;
-	//}
-	//else
-	//{
-	//	HUlib_addMessageToSText(&menu_cursor, 0, DEH_String(" ")); 
-
-	//	if ( !DoDelay(&cursor_blink, 150) );
-	//		cursor_on = true;
-	//}
-
-// main menu
-
-	//HUlib_addMessageToSText(&mainmenu_title, DEH_String(MENU_TITLE1), DEH_String(MENU_TITLE2));
 	
 	HUlib_addMessageToSText(&mainmenu_profile, 0, "Profile");
 	HUlib_addMessageToSText(&mainmenu_options, 0, DEH_String("GAMEPLAY") /*, DisplayOnOff(Marshmallow_DynamicMusic)*/);
 	HUlib_addMessageToSText(&mainmenu_botmenu, 0, DEH_String(MENU_BOTS));
 	HUlib_addMessageToSText(&mainmenu_sandbox, 0, DEH_String("Sandbox"));
 	HUlib_addMessageToSText(&mainmenu_nextmap, 0, DEH_String(MENU_SKIP));
-	//HUlib_addMessageToSText(&mainmenu_changeskill, 0, DEH_String(MENU_SKILL));
 	
 	HUlib_addMessageToSText(&mainmenu_music, 0, DEH_String(MENU_MUSIC) /*, DisplayOnOff(Marshmallow_DynamicMusic)*/);
 	HUlib_addMessageToSText(&mainmenu_messages, 0, DEH_String(MENU_MSGS));
@@ -1165,8 +1154,6 @@ void HUDMenuTicker()   // add an if (thismenu_on) to each of these blocks?
 	HUlib_addMessageToSText(&sandboxmenu_map, DEH_String(WHICHMAP), ShowMapSelection() );
 	HUlib_addMessageToSText(&sandboxmenu_go, 0, DEH_String(GOBUTTON) );
 	HUlib_addMessageToSText(&sandboxmenu_reset, 0, DEH_String(RESETBUTTON) );
-	//HUlib_addMessageToSText(&sandboxmenu_cancel, 0, DEH_String("     EXIT SANDBOX MODE") );
-	
 	
 // skip level menu
 
@@ -1175,30 +1162,38 @@ void HUDMenuTicker()   // add an if (thismenu_on) to each of these blocks?
 	HUlib_addMessageToSText(&skipmenu_random, 0, DEH_String(RANDOMLEVEL));
 
 	if ( skipmenu_on || sandboxmenu_on) 
-		ColorizeMapNames();   // moved here so we're only calling it while menu is up
+		ColorizeMapNames();
 
 	HUlib_addMessageToSText(&skipmenu_jump, "    Skip To Level:  ", ShowMapSelection() );
 
 	HUlib_addMessageToSText(&skipmenu_weapons, "    Starting Arsenal: ", ShowMapWeapons() );
 
-	// TODO: move this out of this temporary block
-	{  
-	char* skill;
-	skill = ShowSkillLevel();
-	CrispyReplaceColor(skill, CR_GOLD, skill);  // well, it flickers red when doing the colorization this method
-
-	HUlib_addMessageToSText(&skipmenu_skill, "    Skill Level: ", skill );  // ...move label to middle arg  and we need ShowSkillLevel()
-	}
+	HUlib_addMessageToSText(&skipmenu_skill, "    Skill Level: ", ShowSkillLevel() );
 
 	upgrade = upgrade_chance;
+
+    CrispyReplaceColor("x", CR_GREEN, "x");
+    CrispyReplaceColor("%", CR_GREEN, "%");
+
+    HUlib_addMessageToSText(&skipmenu_multiplier, 0, DEH_String( "x" ) );
+    HUlib_addMessageToSText(&skipmenu_percent, 0, DEH_String("%") );
 	
 	sprintf( string1, "%d", upgrade );
 	sprintf( string2, "%d", scale );
-	//CrispyReplaceColor(string1, CR_GOLD, string1);  
-	//CrispyReplaceColor(string2, CR_GOLD, string2);  // REMOVED for now as we need to cut down on colorized numbers
 
-	HUlib_addMessageToSText(&skipmenu_upgrade, DEH_String("    Monster Upgrade [ % ]: "), string1 );  
-	HUlib_addMessageToSText(&skipmenu_scalehp, DEH_String("    Hitpoints Scale-up [ 1-9 ]: "), string2 ); 
+	// Color the numbers green
+	CrispyReplaceColor(string1, CR_GREEN, string1);
+	CrispyReplaceColor(string2, CR_GREEN, string2);
+
+	if (upgrade > 0)
+	    HUlib_addMessageToSText(&skipmenu_upgrade, DEH_String("    Monster Upgrade Chance: "), DEH_String(string1) );
+    else
+        HUlib_addMessageToSText(&skipmenu_upgrade, DEH_String("    Monster Upgrade Chance: "), DEH_String("OFF") );
+
+	if (scale > 1)
+	    HUlib_addMessageToSText(&skipmenu_scalehp, DEH_String("    Monster Hitpoints Multiplier: "), DEH_String(string2) );
+    else
+        HUlib_addMessageToSText(&skipmenu_scalehp, DEH_String("    Monster Hitpoints Multiplier: "), DEH_String("OFF") );
 
 	HUlib_addMessageToSText(&skipmenu_itemspawns, "    Random Item Pickups:   ", ShowRandomItemsMode());
 
@@ -1371,22 +1366,14 @@ void HUDMenuTicker()   // add an if (thismenu_on) to each of these blocks?
 	HUlib_addMessageToSText(&enemymenu_paindeath, "    NO PAIN ELEMENTAL DEATH SPAWNS", DisplayOnOff(Marshmallow_AltPainDeath));
 	HUlib_addMessageToSText(&enemymenu_vilepain, "    ARCHVILE PAINCHANCE NERF", DisplayOnOff(Marshmallow_NerfPC_Archvile));     
 	HUlib_addMessageToSText(&enemymenu_vilez, "    ARCHVILE Z SCOPE LIMIT", DisplayOnOff(Marshmallow_VileZScopeLimit));     
-	
-	
+
 // help
-	/*
-	HUlib_addMessageToSText(&help_titlehelp_line1, 0, DEH_String(MENUHELP1));
-	HUlib_addMessageToSText(&help_titlehelp_line2, 0, DEH_String(MENUHELP2));
-	HUlib_addMessageToSText(&help_titlehelp_line3, 0, DEH_String(MENUHELP3));*/
 
 	HUlib_addMessageToSText(&help_title, 0, DEH_String(HELPTITLE));
 
-	HUlib_addMessageToSText(&help_titlehelp_line1, 0, DEH_String(MENUHELP1));
-	HUlib_addMessageToSText(&help_titlehelp_line2, 0, DEH_String(MENUHELP2));
-	HUlib_addMessageToSText(&help_titlehelp_line3, 0, DEH_String(MENUHELP3));
-
 	HUlib_addMessageToSText(&help_mainmenu, 0, DEH_String(HELPLINE1));
 	HUlib_addMessageToSText(&help_pkemeter, 0, DEH_String(HELPLINE3));
+    HUlib_addMessageToSText(&help_pkerange, 0, DEH_String(HELPLINE_RANGE));
 	HUlib_addMessageToSText(&help_inventory, 0, DEH_String(HELPLINE2));
 	
 	HUlib_addMessageToSText(&help_botfollow, 0, DEH_String(HELPLINE4));
@@ -1396,7 +1383,7 @@ void HUDMenuTicker()   // add an if (thismenu_on) to each of these blocks?
 
 	//HUlib_addMessageToSText(&help_dropgift, 0, DEH_String(HELPLINE7));
 
-	HUlib_addMessageToSText(&help_togglehelp, 0, DEH_String(HELPLINE9));
+	//HUlib_addMessageToSText(&help_togglehelp, 0, DEH_String(HELPLINE9));
 	
 
 // additional HUD reminders/functions:
@@ -1962,6 +1949,12 @@ static void Bot_ChangeWeapon(int bot, direction_t dir)
 	if (!bot_in_game[bot])
 		return;
 
+	if (deathmatch)
+    {
+        SHOW_MESSAGE "NOT AVAILABLE IN DEATHMATCH.";
+        return;
+    }
+
 	if (dir == FORWARD)
 	{
 		Bots[bot].weaponmenu_selection++; 
@@ -1979,39 +1972,11 @@ static void Bot_ChangeWeapon(int bot, direction_t dir)
 }
 
 
-// TODO:  This pile of garbage needs to be completely reworked with switch statements
-//        Should be: switch (gamekeydown) { case key_useitem:  } 
 void HUDMenuKeyInput()	
 {
-	//if (gamekeydown[key_enter] && profilescreen_on)
-	//{
-	//	if (CheckKeyDelay()) 
-	//		return;		
-
-	//	if (!changing_name)
-	//	{
-	//		SHOW_MESSAGE "ENTER NEW NAME: ";
-
-	//		changing_name = true;
-	//		chat_on = true;	
-	//	}
-	//	else 
-	//	{
-	//		SaveStats();
-	//		GetProfile();
-	//		PrepareProfileData();
-	//		changing_name = false;
-	//		chat_on = false;
-	//	}
-	//}
-
-	if (changing_name) // for now
-		return;
-
+#if 0
 	if (gamekeydown[key_l])
 	{
-	    return;   // no more flashlight
-
 		if (CheckKeyDelay())
 			return;		
 
@@ -2023,7 +1988,7 @@ void HUDMenuKeyInput()
 			flashlight_on = true;
 			A_Light1(NULL, &MAIN_PLAYER, NULL);
 			CrispyReplaceColor("FLASHLIGHT ON.", CR_GREEN, "ON");
-			//SHOW_MESSAGE DEH_String("FLASHLIGHT ON.");
+
 			S_StartSound(0, sfx_tink);
 		}
 		else
@@ -2031,11 +1996,11 @@ void HUDMenuKeyInput()
 			flashlight_on = false;
 			A_Light0(NULL, &MAIN_PLAYER, NULL);
 			CrispyReplaceColor("FLASHLIGHT OFF.", CR_DARK, "OFF");
-			//SHOW_MESSAGE DEH_String("FLASHLIGHT OFF.");
+
 			S_StartSound(0, sfx_tink);
 		}
 	}
-
+#endif
 
 	if (gamekeydown[key_p])
 	{
@@ -2273,6 +2238,12 @@ void HUDMenuKeyInput()
                     break;
 
                 case MUSICMENU_SELECTED:
+                    if (M_CheckParm("-nomusic"))
+                    {
+                        SHOW_MESSAGE "MUSIC IS DISABLED.";
+                        break;
+                    }
+
                     if (Marshmallow_DynamicMusic)
                     {
                         HideAllMenus();
@@ -2817,7 +2788,7 @@ void HUDMenuKeyInput()
 			if (CheckKeyDelay())
 			return;
 
-			S_StartSound(MAIN_PLAYER.mo, sfx_stnmov);			// TODO: make #define for this sound
+			S_StartSound(MAIN_PLAYER.mo, sfx_stnmov);
 				
 			mainmenu_selection--;
 
@@ -2931,34 +2902,7 @@ void HUDMenuKeyInput()
 				if (!skipmenu_selection)
 					skipmenu_selection = FIRST_MENU_ITEM; 
 
-				if (Marshmallow_AlternateUltraViolence)   // Check for our new skills first
-					skill_selection = newskill = 5; 
-
-				else if (Marshmallow_AlternateNightmare)
-					skill_selection = newskill = 6; 
-
-				else {  // Otherwise, check for the usual skills
-
-					switch (gameskill)
-					{
-					case sk_baby:
-						skill_selection = newskill = sk_baby; 
-						break;
-					case sk_easy:
-						skill_selection = newskill = sk_easy; 
-						break;
-					case sk_medium:
-						skill_selection = newskill = sk_medium; 
-						break;
-					case sk_hard:
-						skill_selection = newskill = sk_hard; 
-						break;
-					case sk_nightmare:
-						skill_selection = newskill = sk_nightmare; 
-						Marshmallow_RespawnInNightmare = false;
-						break;
-					}
-				}
+				SetSkills();
 				
 				mainmenu_on = false;
 				skipmenu_on = true;
@@ -3282,6 +3226,7 @@ void HUDMenuKeyInput()
 		}
 	}
 
+
 	if (skipmenu_on)
 	{
 		//int offset;
@@ -3317,7 +3262,7 @@ void HUDMenuKeyInput()
 				//skipmenu_selection--;
 		}
 
-		if (MENUKEY_LEFTARROW) 
+		if (MENUKEY_LEFTARROW)
 		{
 			if (CheckKeyDelay())
 			return;
@@ -3353,7 +3298,7 @@ void HUDMenuKeyInput()
 			}		
 		}
 
-		if (MENUKEY_RIGHTARROW)  
+		if (MENUKEY_RIGHTARROW)
 		{
 			if (CheckKeyDelay())
 			return;
@@ -3445,21 +3390,23 @@ void HUDMenuKeyInput()
 			case MAPSKIPWEAPONS_SELECTED:
 
 				Marshmallow_GradedWeapons = !Marshmallow_GradedWeapons;
-
 				break;
 
-			//case MAPSKILL_SELECTED:
+            case SKIPTOMAP_SELECTED:
+                ChooseLevel_Next();
+                break;
 
-			//	skill_selection++;
-			//	newskill++;  
-			//	
-			//	if (skill_selection == MAX_SKILLMENU_ITEMS)
-			//		skill_selection = 0;
+            case MAPSKILL_SELECTED:
+                Skill_Next();
+                break;
 
-			//	if (newskill == MAX_SKILLMENU_ITEMS)
-			//		newskill = 0;
+            case UPGRADE_SELECTED:
+                UpgradeChance_Up();
+                break;
 
-			//	break;
+            case SCALEHP_SELECTED:
+                HPScale_Up();
+                break;
 
 			case ITEMSPAWNS_SELECTED:
 
@@ -3472,7 +3419,6 @@ void HUDMenuKeyInput()
 
 				break;
 
-			case SKIPTOMAP_SELECTED:  // also do this on map selection line
 			case GOSKIP_SELECTED:
 
 				DisableStats();  // cheater...
@@ -3513,7 +3459,7 @@ void HUDMenuKeyInput()
 				vanillamusicmenu_selection--;
 		}
 
-		if (MENUKEY_SELECT)
+		if (MENUKEY_SELECT || MENUKEY_LEFTARROW || MENUKEY_RIGHTARROW)
 		{
 			if (CheckKeyDelay())
 			return;
@@ -3591,7 +3537,7 @@ void HUDMenuKeyInput()
 				musicmenu_selection--;
 		}
 
-		if (MENUKEY_SELECT)
+		if (MENUKEY_SELECT || MENUKEY_LEFTARROW || MENUKEY_RIGHTARROW)
 		{
 			if (CheckKeyDelay())
 			return;
@@ -3607,6 +3553,9 @@ void HUDMenuKeyInput()
 				break;
 
 			case SKIP_SELECTED:
+			    if (MENUKEY_LEFTARROW || MENUKEY_RIGHTARROW)
+			        break;
+
 				S_StartSound(NULL, sfx_tink);
 
 				if (Marshmallow_DynamicMusic)
@@ -3638,6 +3587,9 @@ void HUDMenuKeyInput()
 				break;
 
 			case PLAYLIST_SELECTED:
+                if (MENUKEY_LEFTARROW || MENUKEY_RIGHTARROW)
+                    break;
+
 				S_StartSound(NULL, sfx_tink);
 				// if (Marshmallow_DynamicMusic)
 				ForcePlaylist();
@@ -3650,8 +3602,8 @@ void HUDMenuKeyInput()
 
 			case MM_BLACKLIST_SELECTED:
 
-				//SHOW_MESSAGE "COMING SOON!";  // TEMPORARY
-				//break;
+                if (MENUKEY_LEFTARROW)
+                    break;
 
 				musicmenu_on = false;
 				blacklistmenu_on = true;
@@ -3751,7 +3703,94 @@ void HUDMenuKeyInput()
 				options_selection--;
 		}
 
-		if (MENUKEY_SELECT)
+		if (MENUKEY_LEFTARROW)
+		{
+            if (CheckKeyDelay())
+                return;
+
+            switch (options_selection)
+            {
+                case TREASURE_SELECTED:
+                    if (Marshmallow_Sandbox)
+                    {
+                        SHOW_MESSAGE "TREASURE NOT AVAILABLE IN SANDBOX!";
+                        break;
+                    }
+
+                    Marshmallow_TreasureMode--;
+                    if (Marshmallow_TreasureMode < 0)
+                        Marshmallow_TreasureMode = 2;
+
+                    SHOW_MESSAGE DEH_String(CHANGEFFECT);
+
+                    break;
+
+                case LUDICROUS_SELECTED:
+                    Marshmallow_GibMode--;
+                    if (Marshmallow_GibMode < 0)
+                        Marshmallow_GibMode = 3;
+
+                    if (Marshmallow_GibMode == BRUTAL_GIBS)
+                        S_StartSound(NULL, sfx_slop);
+
+                    break;
+
+                case PHYSICS_SELECTED:
+
+                    physics_mode--;
+
+                    if (physics_mode < 0)
+                        physics_mode = NUMPHYSICSMODES - 1;
+
+                    break;
+
+                case LIGHTING_SELECTED:
+
+                    Marshmallow_AlternateLighting--;
+
+                    if (Marshmallow_AlternateLighting < 0)
+                        Marshmallow_AlternateLighting = NUMLIGHTLEVELS - 1;
+
+                    SHOW_MESSAGE DEH_String(CHANGEFFECT);
+
+                    break;
+
+                case KEEPITEMS_SELECTED:
+                    Marshmallow_SaveItems = !Marshmallow_SaveItems;
+                    break;
+
+                case CONSERVE_SELECTED:
+                    Marshmallow_ConservePowerups = !Marshmallow_ConservePowerups;
+                    break;
+
+                case AUTOUSE_SELECTED:
+                    Marshmallow_AutoUse = !Marshmallow_AutoUse;
+                    break;
+
+                case SELFDMG_SELECTED:
+                    Marshmallow_SelfDamage = !Marshmallow_SelfDamage;
+                    break;
+
+                case KEEPWEAPONS_SELECTED:
+                    Marshmallow_KeepWeapons = !Marshmallow_KeepWeapons;
+                    break;
+
+                case KEEPKEYS_SELECTED:
+                    Marshmallow_KeepKeys = !Marshmallow_KeepKeys;
+                    break;
+
+                case WEAPONSSTAY_SELECTED:
+                    Marshmallow_WeaponsStay = !Marshmallow_WeaponsStay;
+                    break;
+
+                case GOODIES_SELECTED:
+                    ToggleGoodiesMode();
+
+                    break;
+            }
+        }
+
+		if (MENUKEY_SELECT || MENUKEY_RIGHTARROW)
 		{
 			if (CheckKeyDelay())
 			return;
@@ -3857,121 +3896,6 @@ void HUDMenuKeyInput()
 		}
 	}
 
-
-	//if (skillmenu_on)
-	//{
-	//	int offset;
-
-	//	if (gameskill < sk_nightmare)
-	//		offset = 2;
-	//	else
-	//		offset = 1;
-
-	//	if (MENUKEY_NEXT)
-	//	{
-	//		if (CheckKeyDelay())
-	//		return;
-
-	//		//if (skill_selection < MUSIC_SELECTED) 
-	//		//{
-	//		//S_StartSound(MAIN_PLAYER.mo, sfx_hoof);
-	//		if (skill_selection == MAX_SKILLMENU_ITEMS - offset)
-	//			skill_selection = FIRST_MENU_ITEM;
-	//		else
-	//			skill_selection++;
-	//		//}		
-	//	}
-
-	//	if (MENUKEY_PREVIOUS)
-	//	{
-	//		if (CheckKeyDelay())
-	//		return;
-
-	//		//if (skill_selection > 0) 
-	//		//{
-	//			//S_StartSound(MAIN_PLAYER.mo, sfx_hoof);
-	//			if (skill_selection == 1)
-	//				skill_selection = MAX_SKILLMENU_ITEMS - offset;
-	//			else
-	//				skill_selection--;
-	//		//}		
-	//	}
-
-	//	if (MENUKEY_SELECT)
-	//	{
-	//		if (CheckKeyDelay())
-	//		return;
-
-	//		switch (skill_selection)
-	//		{
-	//		case ITYTD_SELECTED:
-	//			gameskill = sk_baby;
-	//			MAIN_PLAYER.message = DEH_String(SKILL1);
-	//			if (Marshmallow_AlternateNightmare)
-	//				Marshmallow_AlternateNightmare = false;
-	//			break;
-
-	//		case HNTR_SELECTED:
-	//			gameskill = sk_easy;
-	//			MAIN_PLAYER.message = DEH_String(SKILL2);
-	//			if (Marshmallow_AlternateNightmare)
-	//				Marshmallow_AlternateNightmare = false;
-	//			break;
-
-	//		case HMP_SELECTED:
-	//			gameskill = sk_medium;
-	//			MAIN_PLAYER.message = DEH_String(SKILL3);
-	//			if (Marshmallow_AlternateNightmare)
-	//				Marshmallow_AlternateNightmare = false;
-	//			break;
-
-	//		case UV_SELECTED:
-	//			gameskill = sk_hard;
-	//			MAIN_PLAYER.message = DEH_String(SKILL4);
-	//			if (Marshmallow_AlternateNightmare)
-	//				Marshmallow_AlternateNightmare = false;
-	//			break;
-
-	//		case NM_SELECTED:
-	//			gameskill = sk_nightmare;
-	//			MAIN_PLAYER.message = DEH_String(SKILL5);
-	//			if (Marshmallow_AlternateNightmare)
-	//				Marshmallow_AlternateNightmare = false;
-	//			break;
-
-	//		case NM2_SELECTED:
-	//			if (Marshmallow_AlternateNightmare)
-	//			{
-	//				MAIN_PLAYER.message = DEH_String(NM2AL);
-	//					return;
-	//			}
-	//			else
-	//			{
-	//				MAIN_PLAYER.message = DEH_String(NM2NEXT);
-	//				Marshmallow_InitAltNightmare();
-	//			}
-
-	//			break;
-
-	//		//case NMRESPAWN_SELECTED:
-	//		//	if (Marshmallow_RespawnInNightmare)
-	//		//	{
-	//		//		SHOW_MESSAGE DEH_String(NMROFF);
-	//		//		Marshmallow_RespawnInNightmare = false;
-	//		//	}
-	//		//	else
-	//		//	{
-	//		//		SHOW_MESSAGE DEH_String(NMRON);
-	//		//		Marshmallow_RespawnInNightmare = true;
-	//		//	}
-
-	//		//	break;
-	//		//}
-
-	//		//skillmenu_on = false;  // let's leave the menu up
-	//	}
-	//}
-
 	if (gamekeydown[key_r] && offer_radsuit && offertimeout_radsuit)  // move into below block?
 	{
 		MAIN_PLAYER.message = DEH_String(USINGRADSUIT);
@@ -3986,6 +3910,33 @@ void HUDMenuKeyInput()
 	{
 		UsePortableMedkit();	
 	}
+
+	// Take key input for our range selection option when PKE meter is on screen
+	if (gamekeydown[key_r] && pkereadout_on)
+    {
+        if ( CheckKeyDelay() )
+        return;
+
+        switch (PKE_Meter.search_radius)
+        {
+            case PKE_RADIUS_SMALL:
+                SHOW_MESSAGE DEH_String(PKERADIUS_STRING2);
+                PKE_Meter.search_radius = PKE_RADIUS_MEDIUM;
+            break;
+
+            case PKE_RADIUS_MEDIUM:
+                SHOW_MESSAGE DEH_String(PKERADIUS_STRING3);
+                PKE_Meter.search_radius = PKE_RADIUS_LARGE;
+            break;
+
+            case PKE_RADIUS_LARGE:
+                SHOW_MESSAGE DEH_String(PKERADIUS_STRING1);
+                PKE_Meter.search_radius = PKE_RADIUS_SMALL;
+            break;
+        }
+
+        PlayRadioNoise();
+    }
 
 	if (gamekeydown[key_inventory]) 
 	{
@@ -4066,13 +4017,9 @@ void HUDMenuKeyInput()
 }
 
 
-#define TITLEHELP_LINE1_X 229
-#define TITLEHELP_LINE2_X 222
-#define TITLEHELP_LINE3_X 222
-
 void HUD_InitHelp()
 {
-// keyboard help display    
+    // Keyboard help display
 
 	HUlib_initSText(&help_titlehelp_line1,
 		TITLEHELP_LINE1_X, INV_HU_Y_2, HU_MSGHEIGHT,  
@@ -4104,37 +4051,42 @@ void HUD_InitHelp()
 		hu_font,
 		HU_FONTSTART, &help_on);
 
+    HUlib_initSText(&help_pkerange,
+        HELP_DISPLAY_X, INV_HU_Y_9, HU_MSGHEIGHT,
+        hu_font,
+        HU_FONTSTART, &help_on);
+
 	HUlib_initSText(&help_inventory,
-		HELP_DISPLAY_X, INV_HU_Y_10, HU_MSGHEIGHT,
+		HELP_DISPLAY_X, INV_HU_Y_11, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &help_on);
 
 	HUlib_initSText(&help_botfollow,
-		HELP_DISPLAY_X, INV_HU_Y_12, HU_MSGHEIGHT,  
-		hu_font,
-		HU_FONTSTART, &help_on);
-
-	HUlib_initSText(&help_botassign,
 		HELP_DISPLAY_X, INV_HU_Y_13, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &help_on);
 
-	HUlib_initSText(&help_botusekey,
-		HELP_DISPLAY_X, INV_HU_Y_15, HU_MSGHEIGHT,
+	HUlib_initSText(&help_botassign,
+		HELP_DISPLAY_X, INV_HU_Y_14, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &help_on);
 
-	HUlib_initSText(&help_botshiftkey,
+	HUlib_initSText(&help_botusekey,
 		HELP_DISPLAY_X, INV_HU_Y_16, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &help_on);
 
-	HUlib_initSText(&help_togglehelp,
-		HELP_DISPLAY_X, INV_HU_Y_19, HU_MSGHEIGHT,
+	HUlib_initSText(&help_botshiftkey,
+		HELP_DISPLAY_X, INV_HU_Y_17, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &help_on);
 
-		// sandbox design mode readout
+	HUlib_initSText(&help_togglehelp,
+		HELP_DISPLAY_X, INV_HU_Y_20, HU_MSGHEIGHT,
+		hu_font,
+		HU_FONTSTART, &help_on);
+
+	// Sandbox design mode readout
 
 	HUlib_initSText(&help_sandbox_object,
 		SANDBOX_HELP_THING_X, INV_HU_Y_3 + INFOREADOUT_Y_OFFSET, HU_MSGHEIGHT,  
@@ -4273,6 +4225,7 @@ void HUD_InitWeaponMenu()
 		HU_FONTSTART, &weaponmenu_on);
 }
 
+
 void HUD_InitSandboxMenu()
 {
 // sandbox menu							
@@ -4297,7 +4250,6 @@ void HUD_InitSandboxMenu()
 		hu_font,
 		HU_FONTSTART, &sandboxmenu_on);
 }
-
 
 
 void HUD_InitMessagesMenu()
@@ -4338,11 +4290,6 @@ void HUD_InitMessagesMenu()
 		FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_7, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &msgsmenu_on);
-
-	//HUlib_initSText(&messagesmenu_damagemsg,
-	//	HU_MSGX, INV_HU_Y_8, HU_MSGHEIGHT,
-	//	hu_font,
-	//	HU_FONTSTART, &msgsmenu_on);	
 
 	HUlib_initSText(&messagesmenu_bossmsg,
 		FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_8, HU_MSGHEIGHT,
@@ -4473,6 +4420,16 @@ void HUD_InitSkipLevelMenu()
 		FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_19, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &skipmenu_on);
+
+    HUlib_initSText(&skipmenu_multiplier,
+        FULLSCREEN_MENU_X_OFFSET+234, INV_HU_Y_14, HU_MSGHEIGHT,
+        hu_font,
+        HU_FONTSTART, &skipmenu_on);
+
+    HUlib_initSText(&skipmenu_percent,
+        FULLSCREEN_MENU_X_OFFSET+215, INV_HU_Y_13, HU_MSGHEIGHT,
+        hu_font,
+        HU_FONTSTART, &skipmenu_on);
 }
 
 void HUD_InitMusicMenu()
@@ -4598,52 +4555,36 @@ void HUD_InitMiscText()
 	// Full PKE readout on datapad:
 
 	HUlib_initSText(&pkeline1,
-		MENU_X-PKE_X_OFFSET, INV_HU_Y_4, HU_MSGHEIGHT,
+		MENU_X-PKE_X_OFFSET, INV_HU_Y_3, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &pkereadout_on);
 
 	HUlib_initSText(&pkeline2,
-		MENU_X-PKE_X_OFFSET, INV_HU_Y_5, HU_MSGHEIGHT,
+		MENU_X-PKE_X_OFFSET, INV_HU_Y_4, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &pkereadout_on);
 
 	HUlib_initSText(&pkeline3,
-		MENU_X-PKE_X_OFFSET, INV_HU_Y_7, HU_MSGHEIGHT,
+		MENU_X-PKE_X_OFFSET, INV_HU_Y_6, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &pkereadout_on);
 
 	HUlib_initSText(&pkeline4,
-		MENU_X-PKE_X_OFFSET, INV_HU_Y_8, HU_MSGHEIGHT,
+		MENU_X-PKE_X_OFFSET, INV_HU_Y_7, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &pkereadout_on);
 
-	//HUlib_initSText(&pkeline5,
-	//	HELLSCAPE_TEXT_X, INV_HU_Y_3, HU_MSGHEIGHT,
-	//	hu_font,
-	//	HU_FONTSTART, &hellscape_on);
+	HUlib_initSText(&pkeline8,
+	    MENU_X, INV_HU_Y_9, HU_MSGHEIGHT,
+		hu_font,
+		HU_FONTSTART, &hellscape_on);
 
-	//HUlib_initSText(&pkeline6,
-	//	HELLSCAPE_TEXT_X, INV_HU_Y_3, HU_MSGHEIGHT,
-	//	hu_font,
-	//	HU_FONTSTART, &hellscape_on);
-
-	//HUlib_initSText(&pkeline7,
-	//	HELLSCAPE_TEXT_X, INV_HU_Y_3, HU_MSGHEIGHT,
-	//	hu_font,
-	//	HU_FONTSTART, &hellscape_on);
-
-	//HUlib_initSText(&pkeline8,
-	//	HELLSCAPE_TEXT_X, INV_HU_Y_3, HU_MSGHEIGHT,
-	//	hu_font,
-	//	HU_FONTSTART, &hellscape_on);
-
-	// Hellscape Index:
+	// PKE_Widget (used to be called the "Hellscape Index")
 
 	HUlib_initSText(&hellscape_text,
 		HELLSCAPE_TEXT_X, HU_MSGY, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &hellscape_on);
-
 
 	// for extra line of text:
 
@@ -4658,7 +4599,6 @@ void HUD_InitMiscText()
 		MISSILELOCK_X, MISSILELOCK_Y, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &missilelock_on);
-
 
 	// default inits for menu cursor position:
 
@@ -5487,15 +5427,6 @@ void ShowTargetHP()
 }
 
 
-#define SKILLS_BABY "BABY MODE"
-#define SKILLS_EASY "EASY"
-#define SKILLS_NORMAL "NORMAL"
-#define SKILLS_HARD "HARD"
-#define SKILLS_NM "NIGHTMARE"
-#define SKILLS_NM2 "NM 2.0"  // longer string got cut off
-#define SKILLS_UV2 "UV 2.0"  // longer string got cut off
-#define SKILLS_NONE "NONE"
-
 char* ShowSkillLevel()
 {
 	switch (skill_selection)
@@ -5550,9 +5481,9 @@ char* ShowRandomItemsMode()
 	case 0:  // macro?
 		return DEH_String("OFF");
 	case 1:  
-		return DEH_String("NORMAL");  // already colored white from skill level selection
+		return DEH_String("BY TYPE");
 	case 2:
-		return DEH_String("EXTREME");
+		return DEH_String("FULL RANDOM");
 	}
 }
 
@@ -5626,7 +5557,6 @@ char* ShowThingName()
 		return "NO THING!";
 }
 
-//extern boolean ST_Responder (event_t* ev);
 
 void LaunchInventoryMenu()
 {
@@ -5681,9 +5611,6 @@ void LaunchInventoryMenu()
 }
 
 
-
-
-
 char* ShowBotWeapon(int bot)
 {
 	if (!playeringame[bot])  // if bot doesn't exist
@@ -5719,7 +5646,6 @@ char* ShowBotWeapon(int bot)
 }
 
 
-
 static int SetCursorToSkill()
 {
 	if (gameskill == sk_baby)
@@ -5737,9 +5663,6 @@ static int SetCursorToSkill()
 }
 
 
-
-
-
 int ShowScore(int player)
 {
 	int score = 0;
@@ -5751,7 +5674,6 @@ int ShowScore(int player)
 
 	return score;
 }
-
 
 
 char* ShowGameType()
@@ -5805,25 +5727,13 @@ char* DisplayGibMode()
 }
 
 
-#if 0
-char* ShowGameMode()
-{
-	if (game_type == 0)
-		return DEH_String(MODECOOP);
-
-	if (game_type == 1)
-		return DEH_String(MODEDM);
-}
-#endif
-
-
 char* ShowSongLength()
 {
 	switch (Doom_DJ.song_length)
 	{
-		case SHORT_SONG_LENGTH:
+		case SONGLENGTH_SHORT:
 			return DEH_String(SHORTER);
-		case LONG_SONG_LENGTH:
+		case SONGLENGTH_LONG:
 			return DEH_String(LONGER);
 		default:
 			return DEH_String("NONE");
@@ -5892,4 +5802,20 @@ char* DisplayLightingMode()
 	default:
 		return DEH_String("NONE");
 	}
+}
+
+
+char* DisplayPKERadius()
+{
+    switch (PKE_Meter.search_radius)
+    {
+        case PKE_RADIUS_SMALL:
+            return DEH_String(PKEHINT_SMALL);
+        case PKE_RADIUS_MEDIUM:
+            return DEH_String(PKEHINT_MEDIUM);
+        case PKE_RADIUS_LARGE:
+            return DEH_String(PKEHINT_LARGE);
+        default:
+            return DEH_String(" ");
+    }
 }

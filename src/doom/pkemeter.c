@@ -147,6 +147,10 @@ static void PKE_CalculateDanger()
 		
 		if ( P_CheckSight( monster, MAIN_PLAYER.mo ) )  
 		{
+            // Don't count attackers far away
+            if ( !EnemyInRange(monster) )
+                continue;
+
 			attackers++;
 			attackers_hp += THIS_MOBJ_HP;  
 		}
@@ -196,16 +200,8 @@ static void AddMonsterToList(mobj_t* monster)
 static boolean PKE_CheckDistance(mobj_t* thing) 
 {
 	int distance;
-	int radius;
+	int radius = PKE_Meter.search_radius;;
 	mobj_t* player = MAIN_PLAYER.mo;
-
-	switch ( PKE_Meter.search_radius )
-	{
-	case PKE_RADIUS_LARGE:
-	case PKE_RADIUS_MEDIUM:
-	case PKE_RADIUS_SMALL:
-		radius = PKE_Meter.search_radius;
-	}
 
 	distance = P_AproxDistance (player->x - thing->x, 
  					player->y - thing->y);
@@ -218,18 +214,6 @@ static boolean PKE_CheckDistance(mobj_t* thing)
 	{
 		return true;
 	}
-}
-
-
-// Register a monster that has started attacking player
-void PKE_GetAttacker(mobj_t* actor)  
-{
-	if ( actor->attacking_player
-		|| !(actor->flags & MF_COUNTKILL)
-		/*|| actor->target->player->player_number != consoleplayer*/ )  // ignore monster attacks on other players in coop
-		return;
-	
-	actor->attacking_player = true;
 }
 
 
@@ -280,7 +264,7 @@ static void ScanArea()
 }
 
 
-void PKE_KillStaypuft()  // rename
+void PKE_KillBoss()
 {
 	if (!PKE_Meter.bossfight)  
 		return;  // Only come in here once
@@ -291,30 +275,16 @@ void PKE_KillStaypuft()  // rename
 }
 
 
-void DoSharewareBossDeath()  // unused now
-{
-	line_t junk;
-	junk.tag = 666;
-
-	EV_DoFloor (&junk, lowerFloorToLowest);
-
-	PKE_KillStaypuft(); 
-
-	if (Marshmallow_DynamicMusic)
-		S_ChangeMusic(mus_e1m8, true);   // Force the default e1m8 song on boss death
-}
-
-
 static boolean PKE_CheckBoss()     
 {
-	if (!modifiedgame && E1M8)  // added 3.14.20 to try and prevent E1M8 bosses triggering bossfight twice
+	if (!modifiedgame && E1M8)  // Prevent E1M8 bosses triggering bossfight twice
 		return true;
 
 	if (PKE_Meter.boss)
 	{
 		if (PKE_Meter.boss->health <= 0)
 		{
-			PKE_KillStaypuft();
+			PKE_KillBoss();
 			return false;
 		}
 
@@ -369,7 +339,7 @@ static boolean PKE_DrawDelay()
 	else
 	{
 		PKE_Meter.draw_delay = DRAW_DELAY;
-		return false; // Continue in calling function
+		return false; // Continue through calling function
 	}
 }
 
@@ -423,7 +393,8 @@ void PKE_Reset()
 
 void PKE_Activate()
 {
-	PKE_Meter.search_radius = PKE_RADIUS_MEDIUM;  
+    // Default to medium since we haven't yet read our saved setting from cfg file
+	PKE_Meter.search_radius = PKE_RADIUS_MEDIUM;
 }
 
 
@@ -435,7 +406,7 @@ void AllKills_Achievement()
 	if (gameskill == sk_nightmare && Marshmallow_RespawnInNightmare) 
 		return;    
 
-	if (Marshmallow_Sandbox)
+	if (Marshmallow_Sandbox || deathmatch)
 		return;
 
 	PlayBonusSound(LONGBLIP);
@@ -468,10 +439,6 @@ void PKE_ShowInfo()
 	//AddToInfoReadout("monsters_remaining: ", pke->monsters_remaining, 8);
 }
 
-
-#define ZERO_STRING "O"
-#define POSITIVE_COLOR CR_GREEN
-#define NULL_COLOR CR_DARK
 
 void PKE_Readout()
 {
@@ -541,6 +508,10 @@ void PKE_Readout()
 	
 	CrispyReplaceColor(string, color, string);
 	HUlib_addMessageToSText(&pkeline4, "Danger: ", DEH_String(string) );
+
+    // Show range/radius selection at the bottom
+    HUlib_addMessageToSText(&pkeline8, DEH_String(PKEHINT_RADIUS), DisplayPKERadius() );
+    CrispyReplaceColor(PKEHINT_RADIUS, CR_GRAY, PKEHINT_RADIUS);
 }
 
 

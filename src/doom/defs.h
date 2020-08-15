@@ -10,7 +10,7 @@ typedef struct {
     int SelfDamage;
     int DropGoodies;
     int DropBackpack;
-    int CoopItemRespawn;
+    int ItemRespawn;
 
     int ConservePowerups;
     int KeepWeapons;
@@ -80,8 +80,7 @@ struct {
 	boolean FriendlyFire;    
 	boolean SelfDamage;      
 	boolean DropGoodies;    
-	boolean DropBackpack;   
-	boolean CoopItemRespawn;   
+	boolean DropBackpack;
 	boolean EndMapNowCheat;  
 	boolean GiftDropping; 
 	boolean SuicideCheat; 

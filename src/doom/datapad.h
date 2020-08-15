@@ -1,61 +1,24 @@
 #include "marshmallow.h"
 
-void Draw_Datapad1();  
-void Draw_Datapad2();
-void Draw_Tiles(int x, int y, char* tile, int num);  // datapad
-void Draw_Wallpaper(char* tile);  // datapad, hud
-
-#define TILE_UPPERLEFT_X 31
-#define TILE_UPPERLEFT_Y 59
-#define TILE_LOWERLEFT_X 31
-#define TILE_LOWERLEFT_Y 163
-#define VERTICAL_TILE_LIMIT 3
 #define HORIZONTAL_TILE_LIMIT 5
 
 #define BLUE_TECHBASE_TEXTURE "COMP03_1"
+#define GRAYPANEL_TILE_WIDTH 64
+#define GRAYPANEL_COLUMN_WITHBLUE_LEFT "COMP03_7"
+#define GRAYPANEL_COLUMN_WITHBLUE_RIGHT "COMP03_6"
 #define GRAYPANEL_WITH_VENT "COMP04_7"
 #define GRAYPANEL_WITH_YELLOWSTRIPE "COMP04_8"
-#define GRAYPANEL_TILE_WIDTH 64
-
 #define GRAYPANEL_COLUMN "COMP03_4"
 #define GRAYPANEL_COLUMN_VENT "COMP03_8"
 #define GRAYPANEL_COLUMN_WIDTH 32
-
-#define GRAYPANEL_COLUMN_WITHBLUE_LEFT "COMP03_7"
-#define GRAYPANEL_COLUMN_WITHBLUE_RIGHT "COMP03_6"
-
 #define GRAYPANEL_WITH_SCREEN1 "COMP02_4"
 #define GRAYPANEL_WITH_SCREEN2 "COMP02_6"
 #define WHITEPANEL_TERMINAL "COMP1B_4"
-
 #define BORDER_TILE "COMP03_4"
 #define BUTTON_TILE "EXIT2"
 
 #define X_START 31
-#define Y_TOCLEAR_STATUSBAR 54 // 54 is too short, 55 is too long
-#define Y_TOCLEAR_TOPOFSCREEN 59
-
-#define DATAPAD_TOP1_X 50 
-#define DATAPAD_TOP_Y 70 // 65 for a thick looking one
-#define DATAPAD_BOTTOM_Y 155 // 160 for a thick looking one
-#define DATAPAD_TOP_TILESIZE 64
-
-#define DATAPAD1_LINE1_Y 80
-#define DATAPAD1_LINE1_LEFT_X 50
-#define DATAPAD1_LINE1_RIGHT_X 242
-#define DATAPAD1_LINE1_SCREEN_TILE1_X 98
-#define DATAPAD1_LINE1_SCREEN_TILE2_X 159
-#define DATAPAD1_LINE1_SCREEN_TILE3_X 202
-
-#define DATAPAD1_LINE2_Y 144
-#define DATAPAD1_LINE2_LEFT_X 50
-#define DATAPAD1_LINE2_RIGHT_X 242
-#define DATAPAD1_LINE2_SCREEN_TILE1_X 98
-#define DATAPAD1_LINE2_SCREEN_TILE2_X 159
-#define DATAPAD1_LINE2_SCREEN_TILE3_X 202
-
-#define MAX_COLUMNS 7
-
+#define Y_TOCLEAR_STATUSBAR 54 // 54 is too short, 55 is too long...
 
 #define NEW_X_OFFSET 42
 #define NEW_Y_OFFSET 24
@@ -75,9 +38,7 @@ void Draw_Wallpaper(char* tile);  // datapad, hud
 #define DATAPAD2_BUTTON3_X DATAPAD_DECORATIONS_RIGHT_SIDE
 #define DATAPAD2_BUTTON3_Y 66 +2
 
-//
-// POSSIBLE DECORATIONS
-//
+// USABLE TEXTURES AS DECORATIONS:
 
 // BLUE = W46_37
 // YELLOW = W46_39
@@ -90,20 +51,17 @@ void Draw_Wallpaper(char* tile);  // datapad, hud
 #define YELLOWLIGHT_TILE "W46_39"
 #define REDLIGHT_TILE "W46_38"
 #define BLUELIGHT_TILE "W46_37"
-#define DATAPAD2_DISKLED_X DATAPAD_DECORATIONS_RIGHT_SIDE //-NEW_X_OFFSET
+#define DATAPAD2_DISKLED_X DATAPAD_DECORATIONS_RIGHT_SIDE // -NEW_X_OFFSET
 #define DATAPAD2_DISKLED_Y 28
-#define DATAPAD2_POWERLED_X DATAPAD_DECORATIONS_RIGHT_SIDE
-#define DATAPAD2_POWERLED_Y 27
 
-#define GREENLIGHT_TILE "SW4S1"  // green light was a bit too big; maybe save it for a larger datapad/console design
-#define DATAPAD2_GREENLIGHT_X DATAPAD_DECORATIONS_LEFT_SIDE-8//-NEW_X_OFFSET
-#define DATAPAD2_GREENLIGHT_Y 40-NEW_Y_OFFSET
-
-
-#define BLINK_TIMER 1000 // was 160
+#define PKE_BLINKTIMER 50
+#define BLINK_TIMER 1000
 char* blinking_light;
 int blink_timer;
+
 void BlinkingLight();
+void Draw_Datapad();
+void Draw_Wallpaper(char* tile);
 
 char* background;
 #define DOOM2_SUBSTITUTE "RW33_4"
@@ -116,9 +74,7 @@ void V_DrawHorizLine(int x, int y, int w, int c);
 #define DATAPAD2_DISK_X 15 +130
 #define DATAPAD2_DISK_Y 8
 
-#define DATAPAD2_SCREEN_TILE "STFB0"// was BLUE_TECHBASE_TEXTURE
-
-#define DATAPAD2_OLDBLUETILE_X DATAPAD2_X -2 // second half of the screen was +64 
+#define DATAPAD2_OLDBLUETILE_X DATAPAD2_X -2 // Second half of the screen was +64
 #define DATAPAD2_OLDBLUETILE_Y DATAPAD2_Y
 
 
