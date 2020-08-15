@@ -208,7 +208,7 @@ typedef struct
     int loadgame;
     int random;  // [Strife only]
 
-    //[marshmallow]
+    // [marshmallow]
     marshmallow_netgame_flags MarshmallowSettings;
 
     // These fields are only used by the server when sending a game

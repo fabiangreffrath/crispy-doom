@@ -19,8 +19,12 @@ void Bot_Shoot(int bot)
 	actor = players[bot].mo;
 	plr = &players[bot];
 
+	//if (plr->readyweapon == wp_chainsaw)
+    //    this_Bot.weapon_switch_delay = WEAPON_SWITCH_DELAY;
+
 	// slow down rate of fire a bit
-	if (this_Bot.firingDelay)					
+	if (this_Bot.firingDelay
+	    && this_Bot.player->readyweapon != wp_chainsaw)  // TESTING 2020
 	{
 		this_Bot.firingDelay--;
 		return;
@@ -38,19 +42,22 @@ void Bot_Shoot(int bot)
 	case BOT_PISTOL:
 		A_FirePistol(NULL, plr, NULL);
 		S_StartSound (actor, sfx_pistol);
-		this_Bot.firingDelay = BOT_FIRINGDELAY_PISTOL; 
+		this_Bot.firingDelay = BOT_FIRINGDELAY_PISTOL;
+		this_Bot.player->readyweapon = wp_pistol;
 		break;
 
 	case BOT_SHOTGUN:
 		A_FireShotgun(NULL, plr, NULL);
 		S_StartSound (actor, sfx_shotgn);
-		this_Bot.firingDelay = BOT_FIRINGDELAY_SHOTGUN; 
+		this_Bot.firingDelay = BOT_FIRINGDELAY_SHOTGUN;
+		this_Bot.player->readyweapon = wp_shotgun;
 		break;
 
 	case BOT_SUPERSHOTGUN:
 		A_FireShotgun2(NULL, plr, NULL);
-		// sound?
-		this_Bot.firingDelay = BOT_FIRINGDELAY_SUPERSHOTGUN; 
+		S_StartSound (actor, sfx_dshtgn);
+		this_Bot.firingDelay = BOT_FIRINGDELAY_SUPERSHOTGUN;
+		this_Bot.player->readyweapon = wp_supershotgun;
 		break;
 
 	case BOT_CHAINGUN:
@@ -61,35 +68,37 @@ void Bot_Shoot(int bot)
 		A_Recoil (plr);
 
 		S_StartSound (actor, sfx_pistol);
-		this_Bot.firingDelay = BOT_FIRINGDELAY_CHAINGUN; 
+		this_Bot.firingDelay = BOT_FIRINGDELAY_CHAINGUN;
+            this_Bot.player->readyweapon = wp_chaingun;
 		break;
 
 	case BOT_MISSILE:
-		P_SetMobjState (actor, S_PLAY_ATK2); 
-		// sound?
+		P_SetMobjState (actor, S_PLAY_ATK2);
 		P_SpawnPlayerMissile (actor, MT_ROCKET); 
-		this_Bot.firingDelay = BOT_FIRINGDELAY_MISSILE; 
+		this_Bot.firingDelay = BOT_FIRINGDELAY_MISSILE;
+		this_Bot.player->readyweapon = wp_missile;
 		break;
 
 	case BOT_PLASMA:
-		P_SetMobjState (actor, S_PLAY_ATK2); 
-		// sound?
+		P_SetMobjState (actor, S_PLAY_ATK2);
 		P_SpawnPlayerMissile (actor, MT_PLASMA);
-		this_Bot.firingDelay = BOT_FIRINGDELAY_PLASMA; 
+		this_Bot.firingDelay = BOT_FIRINGDELAY_PLASMA;
+		this_Bot.player->readyweapon = wp_plasma;
 		break;
 
 	case BOT_GREENPLASMA:
-		P_SetMobjState (actor, S_PLAY_ATK2); 
-		// sound?
+		P_SetMobjState (actor, S_PLAY_ATK2);
 		P_SpawnPlayerMissile (actor, MT_ARACHPLAZ);
-		this_Bot.firingDelay = BOT_FIRINGDELAY_PLASMA;   
+		this_Bot.firingDelay = BOT_FIRINGDELAY_PLASMA;
+		this_Bot.player->readyweapon = wp_plasma;
 		break; 
 
 	case BOT_BFG:
 		P_SetMobjState (actor, S_PLAY_ATK2); 
 		S_StartSound (actor, sfx_bfg);
 		P_SpawnPlayerMissile (actor, MT_BFG);
-		this_Bot.firingDelay = BOT_FIRINGDELAY_BFG;  
+		this_Bot.firingDelay = BOT_FIRINGDELAY_BFG;
+		this_Bot.player->readyweapon = wp_bfg;
 		break;
 	}
 }
@@ -181,7 +190,7 @@ void Bot_CycleOrders()
 	else
 		menu_key_delay = 7;   // should be ResetKeyDelay()
 
-	Bot_PlayRadioNoise();
+    PlayRadioNoise();
 
 	Bots[viewingbot].orders++;
 
@@ -236,7 +245,7 @@ void Bot_AssignTargetToAll()
 	}
 
 	SHOW_MESSAGE DEH_String(ORDERSMSGASSIGN);
-	Bot_PlayRadioNoise();
+    PlayRadioNoise();
 }
 
 
@@ -249,7 +258,7 @@ void Bot_AssignSingleBotTarget()
 	//else
 	//	menu_key_delay = 7; 
 
-	Bot_PlayRadioNoise();
+    PlayRadioNoise();
 
 	if (!botcursor_on)
 	{
@@ -984,7 +993,7 @@ void Bot_DeathThink (int bot)
 
 	if (deathmatch || Marshmallow_Sandbox)
 	{
-		this_Bot.weapon = Bot_GetRandomWeapon(0);	// excluding BFG in deathmatch
+        this_Bot.weapon = Bot_GetRandomWeapon(0);	// excluding BFG in deathmatch
 	}
 	else
 	{
@@ -1185,9 +1194,7 @@ void Bot_RemoveBots()
 }
 
 
-#define RADIONOISE_DELAY 505
-
-void Bot_PlayRadioNoise()  // rename without Bot_
+void PlayRadioNoise()
 {
 	if ( gamemode == commercial || Marshmallow_WadStealing)  
 	     S_StartSound(0, sfx_radio);
@@ -1287,7 +1294,7 @@ void SquadRegroup()
 		}
 	}
 
-	Bot_PlayRadioNoise();
+    PlayRadioNoise();
 	SHOW_MESSAGE DEH_String(REGROUPSQUAD);
 }
 
@@ -1300,6 +1307,43 @@ void Bot_Reborn(int bot)
 	Bot_SetState(JUST_SPAWNED, bot);
 
 	Bot_Stop(bot); 
+}
+
+
+void SetBotReadyWeapon(player_t* bot, int new_weapon)
+{
+    int botnumber = bot->bot_number;
+
+    if (new_weapon)
+    {
+        bot->readyweapon = new_weapon;
+        return;
+    }
+
+    switch (Bots[botnumber].weapon)
+    {
+        case BOT_PISTOL:
+            bot->readyweapon = wp_pistol;
+            break;
+        case BOT_SHOTGUN:
+            bot->readyweapon = wp_shotgun;
+            break;
+        case BOT_SUPERSHOTGUN:
+            bot->readyweapon = wp_supershotgun;
+            break;
+        case BOT_CHAINGUN:
+            bot->readyweapon = wp_chaingun;
+            break;
+        case BOT_MISSILE:
+            bot->readyweapon = wp_missile;
+            break;
+        case BOT_PLASMA:
+            bot->readyweapon = wp_plasma;
+            break;
+        case BOT_BFG:
+            bot->readyweapon = wp_bfg;
+            break;
+    }
 }
 
 
@@ -1348,6 +1392,8 @@ void CreateBot(int bot)
 	{
 		this_Bot.weaponmenu_selection = BOTMENU_RANDNOBFG;
 		this_Bot.weapon	= Bot_GetRandomWeapon(0);
+
+		SetBotReadyWeapon(Bots[bot].player, NULL);
 
 		// For deathmatch only; set bot skill levels for deathmatch
 		switch (bot)

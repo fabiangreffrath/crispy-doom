@@ -41,6 +41,7 @@
 
 // [marshmallow]
 #include "marshmallow.h"
+#include "pkemeter.h"
 int thrust_multiplier[NUMPHYSICSMODES] = { DEFAULT_THRUST, MEDIUM_THRUST_MULTIPLIER, HIGH_THRUST_MULTIPLIER };
 
 #define BONUSADD	6
@@ -350,7 +351,8 @@ P_GivePower
     
     if (power == pw_strength)
     {
-	P_GiveBody (player, 100);
+    if (!Marshmallow_SaveItems)  // [marshmallow] Don't give health immediately since it's a portable medkit
+	    P_GiveBody (player, 100);
 	player->powers[power] = 1;
 	return true;
     }
@@ -429,7 +431,12 @@ P_TouchSpecialThing
 
             // armor
       case SPR_ARM1:
-	if (!P_GiveArmor (player, deh_green_armor_class))
+
+    // [marshmallow] If we don't need it, don't pick it up
+    if (Marshmallow_ConservePowerups && player->armorpoints >= 200)
+        return;
+
+    if (!P_GiveArmor (player, deh_green_armor_class))
 	    return;
 
 	if (Marshmallow_PickupMessages)   // [marshmallow]
@@ -437,6 +444,11 @@ P_TouchSpecialThing
 	break;
 		
       case SPR_ARM2:
+
+    // [marshmallow] If we don't need it, don't pick it up
+    if (Marshmallow_ConservePowerups && player->armorpoints >= 200)
+        return;
+
 	if (!P_GiveArmor (player, deh_blue_armor_class))
 	    return;
 
@@ -446,6 +458,11 @@ P_TouchSpecialThing
 	
 	// bonus items
       case SPR_BON1:
+
+    // [marshmallow] If we don't need it, don't pick it up
+    if (Marshmallow_ConservePowerups && player->health >= 200)
+        return;
+
 	player->health++;		// can go over 100%
 	if (player->health > deh_max_health)
 	    player->health = deh_max_health;
@@ -456,6 +473,11 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_BON2:
+
+    // [marshmallow] If we don't need it, don't pick it up
+    if (Marshmallow_ConservePowerups && player->armorpoints >= 200)
+        return;
+
 	player->armorpoints++;		// can go over 100%
 	if (player->armorpoints > deh_max_armor && gameversion > exe_doom_1_2)
 	    player->armorpoints = deh_max_armor;
@@ -469,6 +491,50 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_SOUL:
+
+      // [marshmallow]
+      if (Marshmallow_ConservePowerups)
+      {
+          int playerwillget;
+          int newremaining;
+
+          if (player->health >= 200)
+              return;  // leave the item
+
+          if (!special->remaining)      // If not touched yet, init to full capacity
+              special->remaining = 100;
+
+          toucher->player->message = DEH_String(SOULSPHEREHEALS);
+          S_StartSound(special, sfx_getpow);
+          player->bonuscount += BONUSADD;
+
+          if (player->health + special->remaining <= 200)
+          {
+              player->health += special->remaining;
+              player->mo->health += special->remaining;
+
+              break;  //  Do P_RemoveMobj()
+          }
+
+          if (player->health + special->remaining > 200)
+          {
+              playerwillget = player->health + special->remaining - 200;
+
+              player->health = 200;
+              player->mo->health = 200;
+
+              newremaining = special->remaining - playerwillget;
+
+              special->remaining = newremaining;
+
+              if (special->remaining <= 0)
+                  break;  //  Do P_RemoveMobj()
+              else
+                  return; // leave the item
+          }
+      }
+      // [m]
+
 	player->health += deh_soulsphere_health;
 	if (player->health > deh_max_soulsphere)
 	    player->health = deh_max_soulsphere;
@@ -483,6 +549,58 @@ P_TouchSpecialThing
       case SPR_MEGA:
 	if (gamemode != commercial)
 	    return;
+
+	// [marshmallow]
+    if (Marshmallow_ConservePowerups)
+    {
+        int playerwillget;
+
+        if (player->health >= 200 &&
+            player->armorpoints >= 200)
+            return;  // leave the item if full armor and health
+
+        if (!special->remaining &&
+            !special->armor)      // If not touched yet, init to full capacity
+        {
+            special->remaining = 200;
+            special->armor = 200;
+        }
+
+        toucher->player->message = DEH_String(MEGAHEALS);
+        S_StartSound(special, sfx_getpow);
+
+        player->bonuscount += BONUSADD;
+
+        if (player->health < 200 && special->remaining > 0)
+        {
+            playerwillget = (200 - player->health);
+            if (special->remaining < playerwillget)
+                playerwillget = special->remaining;
+
+            player->health+=playerwillget;
+            player->mo->health+=playerwillget;
+
+            special->remaining -= playerwillget;
+        }
+
+        if (player->armorpoints < 200 && special->armor > 0)
+        {
+            playerwillget = (200 - player->armorpoints);
+            if (special->armor < playerwillget)
+                playerwillget = special->armor;
+
+            player->armorpoints+=playerwillget;
+
+            special->armor -= playerwillget;
+        }
+
+        if (special->remaining <= 0 && special->armor <= 0)
+            break;  //  Do P_RemoveMobj()
+        else
+            return; // leave the item
+    }
+    // [m]
+
 	player->health = deh_megasphere_health;
 	player->mo->health = player->health;
         // We always give armor type 2 for the megasphere; dehacked only 
@@ -583,6 +701,51 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_MEDI:
+
+      // [marshmallow]
+      if (Marshmallow_ConservePowerups)
+      {
+          int used;
+          int newremaining;
+
+          if (!special->remaining)
+              special->remaining = 25;
+
+          if (toucher->health >= 100)
+              return;
+
+          if (toucher->health <= 100 - special->remaining)
+          {
+              P_GiveBody (player, special->remaining);
+
+              if (Marshmallow_PickupMessages)
+              {
+                  player->message = DEH_String(USEDMEDICAL);
+                  player->bonuscount += BONUSADD;
+              }
+
+              break;
+          }
+
+          newremaining = toucher->health + special->remaining - 100;
+          used = special->remaining - newremaining;
+
+          player->health += used;
+          player->mo->health += used;
+
+          player->message = DEH_String(USEDMEDICAL);
+
+          player->bonuscount += BONUSADD;
+
+          if (newremaining <= 0)
+              break;	 // Do P_RemoveMobj()
+          else
+              special->remaining = newremaining;
+
+          return;
+      }
+      // [m]
+
 	if (!P_GiveBody (player, 25))
 	    return;
 
@@ -596,6 +759,28 @@ P_TouchSpecialThing
 	
 	// power ups
       case SPR_PINV:
+
+      // [marshmallow]
+      if (Marshmallow_SaveItems)
+      {
+          if (toucher->player->extra_powers[ITEM_INVUL])
+          {
+              player->message = DEH_String(HAVEINVUL);
+              return;
+          }
+
+          toucher->player->extra_powers[ITEM_INVUL] = true;
+
+          player->message = DEH_String(ADDEDINVUL);
+          sound = sfx_getpow;
+
+          if (invmenu_on)
+              invmenu_selection = INVUL_SELECTED;
+
+          break;
+      }
+      // [m]
+
 	if (!P_GivePower (player, pw_invulnerability))
 	    return;
 
@@ -606,9 +791,51 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_PSTR:
+
+      // [marshmallow]
+      if (Marshmallow_SaveItems)
+      {
+          if (toucher->player->extra_powers[ITEM_MEDKIT])
+          {
+              if (!player->powers[pw_strength])
+              {
+                  P_GivePower (player, pw_strength);  // Give berserk anyway if we don't have it
+                  if (Marshmallow_BerserkAutoSwitch)
+                  {
+                      if (player->readyweapon != wp_fist)
+                          player->pendingweapon = wp_fist;
+                  }
+              }
+
+              return;  // Avoid doing P_RemoveMobj() so we can leave item on the ground
+          }
+
+          toucher->player->extra_powers[ITEM_MEDKIT] = true;
+          toucher->player->medkit_remaining = 100;
+
+          player->message = DEH_String(ADDEDMEDKIT);
+          sound = sfx_getpow;
+
+          if (invmenu_on)
+              invmenu_selection = MEDKIT_SELECTED;
+
+          P_GivePower (player, pw_strength);  // Give regular berserk in addition to the portable medkit
+          if (Marshmallow_BerserkAutoSwitch)
+          {
+              if (player->readyweapon != wp_fist)
+                  player->pendingweapon = wp_fist;
+          }
+          break;
+      }
+      // [m]
+
 	if (!P_GivePower (player, pw_strength))
 	    return;
-	player->message = DEH_String(GOTBERSERK);
+
+    if (!Marshmallow_SaveItems && Marshmallow_PickupMessages)  // [marshmallow]
+	    player->message = DEH_String(GOTBERSERK);
+
+    if (Marshmallow_BerserkAutoSwitch)	// [marshmallow]
 	if (player->readyweapon != wp_fist)
 	    player->pendingweapon = wp_fist;
 	if (gameversion > exe_doom_1_2)
@@ -616,6 +843,77 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_PINS:
+
+      // [marshmallow]
+      if (special->flags & MF_DROPPED && toucher->player)
+      {
+          if (Marshmallow_ConservePowerups)
+          {
+              int playerwillget;
+              int newremaining;
+
+              if (player->health >= 200
+                  || player->mo->health >= 200)
+                  return;  // leave the item
+
+              toucher->player->message = DEH_String(DEMONSPHEREHEALS);
+              S_StartSound(special, sfx_getpow);
+              player->bonuscount += BONUSADD;
+
+              if (player->health + special->remaining <= 200)
+              {
+                  player->health += special->remaining;
+                  player->mo->health += special->remaining;
+
+                  break;  //  Do P_RemoveMobj()
+              }
+
+              if (player->health + special->remaining > 200)
+              {
+                  playerwillget = player->health + special->remaining - 200;
+
+                  player->health = 200;
+                  player->mo->health = 200;
+
+                  newremaining = special->remaining - playerwillget;
+
+                  special->remaining = newremaining;
+
+                  if (special->remaining <= 0)
+                      break;  //  Do P_RemoveMobj()
+                  else
+                      return; // leave the item
+              }
+          }
+
+          if ( !Marshmallow_GiveNewInvisPowerup(toucher, special) )
+              return;  // leave the item
+          else
+              break;
+
+          break;
+      }
+
+      if (Marshmallow_SaveItems)
+      {
+          if (toucher->player->extra_powers[ITEM_INVIS])
+          {
+              player->message = DEH_String(HAVEINVIS);
+              return;
+          }
+
+          toucher->player->extra_powers[ITEM_INVIS] = true;
+
+          player->message = DEH_String(ADDEDINVIS);
+          sound = sfx_getpow;
+
+          if (invmenu_on)
+              invmenu_selection = INVIS_SELECTED;
+
+          break;
+      }
+      // [m]
+
 	if (!P_GivePower (player, pw_invisibility))
 	    return;
 	if (Marshmallow_PickupMessages)   // [marshmallow]
@@ -625,6 +923,28 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_SUIT:
+
+      // [marshmallow]
+      if (Marshmallow_SaveItems)
+      {
+          if (toucher->player->extra_powers[ITEM_RADSUIT])
+          {
+              player->message = DEH_String(HAVERADSUIT);
+              return;
+          }
+
+          toucher->player->extra_powers[ITEM_RADSUIT] = true;
+
+          player->message = DEH_String(ADDEDRADSUIT);
+          sound = sfx_getpow;
+
+          if (invmenu_on)
+              invmenu_selection = RADSUIT_SELECTED;
+
+          break;
+      }
+      // [m]
+
 	if (!P_GivePower (player, pw_ironfeet))
 	    return;
 	if (Marshmallow_PickupMessages)   // [marshmallow]
@@ -643,6 +963,28 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_PVIS:
+
+      // [marshmallow]
+      if (Marshmallow_SaveItems)
+      {
+          if (toucher->player->extra_powers[ITEM_VISOR])
+          {
+              player->message = DEH_String(HAVEVISOR);
+              return;
+          }
+
+          toucher->player->extra_powers[ITEM_VISOR] = true;
+
+          player->message = DEH_String(ADDEDVISOR);
+          sound = sfx_getpow;
+
+          if (invmenu_on)
+              invmenu_selection = VISOR_SELECTED;
+
+          break;
+      }
+      // [m]
+
 	if (!P_GivePower (player, pw_infrared))
 	    return;
 	if (Marshmallow_PickupMessages)   // [marshmallow]
@@ -673,6 +1015,42 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_AMMO:
+
+      // [marshmallow]
+      if (Marshmallow_ConservePowerups)
+      {
+          int playerwillget;
+          int newremaining;
+
+          if (player->ammo[am_clip] >= player->maxammo[am_clip])
+              return;  // leave the item
+
+          if (!special->remaining)
+              special->remaining = 50;
+
+          if (Marshmallow_PickupMessages)
+              toucher->player->message = DEH_String(FOUNDBULL);
+
+          player->bonuscount += BONUSADD;
+
+          if (player->ammo[am_clip] + special->remaining > player->maxammo[am_clip])
+          {
+              playerwillget = player->maxammo[am_clip] - player->ammo[am_clip];
+
+              player->ammo[am_clip] = player->maxammo[am_clip];
+
+              newremaining = special->remaining - playerwillget;
+
+              special->remaining = newremaining;
+
+              if (special->remaining <= 0)
+                  break;  //  do P_RemoveMobj()
+              else
+                  return; // leave the item
+          }
+      }
+      // [m]
+
 	if (!P_GiveAmmo (player, am_clip,5,dropped))
 	    return;
 	if (Marshmallow_PickupMessages)   // [marshmallow]
@@ -687,6 +1065,42 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_BROK:
+
+      // [marshmallow]
+      if (Marshmallow_ConservePowerups)
+      {
+          int playerwillget;
+          int newremaining;
+
+          if (player->ammo[am_misl] >= player->maxammo[am_misl])
+              return;  // leave the item
+
+          if (!special->remaining)
+              special->remaining = 5;
+
+          if (Marshmallow_PickupMessages)
+              toucher->player->message = DEH_String(FOUNDROCK);
+
+          player->bonuscount += BONUSADD;
+
+          playerwillget = player->maxammo[am_misl] - player->ammo[am_misl];
+
+          if (player->ammo[am_misl] + special->remaining > player->maxammo[am_misl])
+          {
+              player->ammo[am_misl] = player->maxammo[am_misl];
+
+              newremaining = special->remaining - playerwillget;
+
+              special->remaining = newremaining;
+
+              if (special->remaining <= 0)
+                  break;  //  Do P_RemoveMobj()
+              else
+                  return; // leave the item
+          }
+      }
+      // [m]
+
 	if (!P_GiveAmmo (player, am_misl,5,dropped))
 	    return;
 	if (Marshmallow_PickupMessages)   // [marshmallow]
@@ -701,6 +1115,42 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_CELP:
+
+      // [marshmallow]
+      if (Marshmallow_ConservePowerups)
+      {
+          int playerwillget;
+          int newremaining;
+
+          if (player->ammo[am_cell] >= player->maxammo[am_cell])
+              return;  // leave the item
+
+          if (!special->remaining)
+              special->remaining = 100;
+
+          if (Marshmallow_PickupMessages)
+              toucher->player->message = DEH_String(FOUNDCELL);
+
+          player->bonuscount += BONUSADD;
+
+          if (player->ammo[am_cell] + special->remaining > player->maxammo[am_cell])
+          {
+              playerwillget = player->maxammo[am_cell] - player->ammo[am_cell];
+
+              player->ammo[am_cell] = player->maxammo[am_cell];
+
+              newremaining = special->remaining - playerwillget;
+
+              special->remaining = newremaining;
+
+              if (special->remaining <= 0)
+                  break;  // Do P_RemoveMobj()
+              else
+                  return; // leave the item
+          }
+      }
+      // [m]
+
 	if (!P_GiveAmmo (player, am_cell,5,dropped))
 	    return;
 	if (Marshmallow_PickupMessages)   // [marshmallow]
@@ -715,6 +1165,42 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_SBOX:
+
+      // [marshmallow]
+      if (Marshmallow_ConservePowerups)
+      {
+          int playerwillget;
+          int newremaining;
+
+          if (player->ammo[am_shell] >= player->maxammo[am_shell])
+              return;  // leave the item
+
+          if (!special->remaining)
+              special->remaining = 20;
+
+          if (Marshmallow_PickupMessages)
+              toucher->player->message = DEH_String(FOUNDBUCK);
+
+          player->bonuscount += BONUSADD;
+
+          playerwillget = player->maxammo[am_shell] - player->ammo[am_shell];
+
+          if (player->ammo[am_shell] + special->remaining > player->maxammo[am_shell])
+          {
+              player->ammo[am_shell] = player->maxammo[am_shell];
+
+              newremaining = special->remaining - playerwillget;
+
+              special->remaining = newremaining;
+
+              if (special->remaining <= 0)
+                  break;  // Do P_RemoveMobj()
+              else
+                  return; // leave the item
+          }
+      }
+      // [m]
+
 	if (!P_GiveAmmo (player, am_shell,5,dropped))
 	    return;
 	if (Marshmallow_PickupMessages)   // [marshmallow]
@@ -722,6 +1208,31 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_BPAK:
+
+    // [marshmallow] If this was a backpack with the MF_DROPPED flag, use our new inventory backpack functionality
+    if (special->flags & MF_DROPPED && toucher->player->playerstate == PST_LIVE )
+    {
+        if ( deathmatch || special->is_gift )
+        {
+            if (special->owner == toucher->player->player_number && !deathmatch)
+                return;
+
+            if ( !Marshmallow_GimmeThatPhatLoot(toucher, special) )  // Basic ammo bonus backpack
+            {
+                toucher->player->message = "YOU CANNOT CARRY ANY MORE AMMO.";
+                return;  // Ammo is full, so leave it on the ground
+            }
+        }
+        else
+        {
+            if ( special->owner != toucher->player->player_number )  // Only the player that dropped it can pick it up
+                return;
+
+            RecoverInventoryFromBackpack(toucher, special);  // Entire player inventory backpack
+        }
+    }
+    // [m]
+
 	if (!player->backpack)
 	{
 	    for (i=0 ; i<NUMAMMO ; i++)
@@ -843,7 +1354,11 @@ P_KillMobj
     mobjtype_t	item;
     mobj_t*	mo;
 
-    // [marshmallow]  Kill stuff
+    // [marshmallow] For gibs
+//    int negative_spawnhealth = target->info->spawnhealth * -1;
+//    gibmode_t gibmode = Marshmallow_GibMode;
+
+    // [marshmallow] Kill stuff
     if (Marshmallow_Sandbox)
     {
         if ( IsMonster(target)
@@ -935,14 +1450,9 @@ P_KillMobj
         target->type == MT_BARREL)
         target->flags |= MF_TRANSLUCENT;
 
-    if (target->health < -target->info->spawnhealth 
-	&& target->info->xdeathstate)
-    {
-	P_SetMobjState (target, target->info->xdeathstate);
-    }
-    else
-	P_SetMobjState (target, target->info->deathstate);
-    target->tics -= P_Random()&3;
+    // [marshmallow]
+    if ( !DoSpecialDeaths(target, source) )
+        P_SetMobjState (target, target->info->deathstate);
 
     // [crispy] randomly flip corpse, blood and death animation sprites
     if (target->flags & MF_FLIPPABLE)
@@ -977,16 +1487,6 @@ P_KillMobj
     // Drop stuff.
     // This determines the kind of object spawned
     // during the death frame of a thing.
-
-     /* [m] Excluded code from rebase:
-    if (target->info->droppeditem != MT_NULL) // [crispy] drop generalization
-    {
-        item = target->info->droppeditem;
-    }
-    else
-        return;
-    */
-
     switch (target->type)
     {
       case MT_WOLFSS:
@@ -1018,7 +1518,7 @@ P_KillMobj
         }
         return;
     // [m]
-
+	
       default:
 	return;
     }

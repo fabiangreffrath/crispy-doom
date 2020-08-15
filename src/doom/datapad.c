@@ -7,107 +7,43 @@
 #include "datapad.h"
 #include "pkemeter.h"
 
-//extern void *W_CacheLumpName(const char *name, int tag);
-
-void Draw_DatapadBorders1()
-{
-	int k, offset = 0;
-
-	// top border
-	for ( k=0; k<MAX_COLUMNS; k++)
-	{
-		V_DrawPatchDirect(DATAPAD_TOP1_X+offset, DATAPAD_TOP_Y, W_CacheLumpName(DEH_String(BORDER_TILE), PU_CACHE));
-		offset += GRAYPANEL_COLUMN_WIDTH;
-	}
-
-	// bottom border
-	offset = 0;
-
-	for ( k=0; k<MAX_COLUMNS; k++)
-	{
-		V_DrawPatchDirect(DATAPAD_TOP1_X+offset, DATAPAD_BOTTOM_Y, W_CacheLumpName(DEH_String(BORDER_TILE), PU_CACHE));
-		offset += GRAYPANEL_COLUMN_WIDTH;
-	}
-}
-
-
-void Draw_Datapad1()  // unused
-{
-	Draw_DatapadBorders1();
-
-	// the "screen" - top half
-	V_DrawPatchDirect(DATAPAD1_LINE1_SCREEN_TILE1_X, DATAPAD1_LINE1_Y, W_CacheLumpName(DEH_String(BLUE_TECHBASE_TEXTURE), PU_CACHE));
-	V_DrawPatchDirect(DATAPAD1_LINE1_SCREEN_TILE2_X, DATAPAD1_LINE1_Y, W_CacheLumpName(DEH_String(BLUE_TECHBASE_TEXTURE), PU_CACHE));
-	V_DrawPatchDirect(DATAPAD1_LINE1_SCREEN_TILE3_X, DATAPAD1_LINE1_Y, W_CacheLumpName(DEH_String(BLUE_TECHBASE_TEXTURE), PU_CACHE));
-
-	// the "screen" - bottom half
-	V_DrawPatchDirect(DATAPAD1_LINE2_SCREEN_TILE1_X, DATAPAD1_LINE2_Y, W_CacheLumpName(DEH_String(BLUE_TECHBASE_TEXTURE), PU_CACHE));
-	V_DrawPatchDirect(DATAPAD1_LINE2_SCREEN_TILE2_X, DATAPAD1_LINE2_Y, W_CacheLumpName(DEH_String(BLUE_TECHBASE_TEXTURE), PU_CACHE));
-	V_DrawPatchDirect(DATAPAD1_LINE2_SCREEN_TILE3_X, DATAPAD1_LINE2_Y, W_CacheLumpName(DEH_String(BLUE_TECHBASE_TEXTURE), PU_CACHE));
-
-	// handle - top half
-	V_DrawPatchDirect(DATAPAD1_LINE1_LEFT_X, DATAPAD1_LINE1_Y, W_CacheLumpName(DEH_String(GRAYPANEL_COLUMN_WITHBLUE_LEFT), PU_CACHE));
-	V_DrawPatchDirect(DATAPAD1_LINE1_RIGHT_X, DATAPAD1_LINE1_Y, W_CacheLumpName(DEH_String(GRAYPANEL_COLUMN_WITHBLUE_RIGHT), PU_CACHE));
-
-	// handle - bottom half
-	V_DrawPatchDirect(DATAPAD1_LINE2_LEFT_X, DATAPAD1_LINE2_Y, W_CacheLumpName(DEH_String(GRAYPANEL_COLUMN_WITHBLUE_LEFT), PU_CACHE));
-	V_DrawPatchDirect(DATAPAD1_LINE2_RIGHT_X, DATAPAD1_LINE2_Y, W_CacheLumpName(DEH_String(GRAYPANEL_COLUMN_WITHBLUE_RIGHT), PU_CACHE));
-}
-
-
-void SetDatapadBackground()
-{
-	if (gamemode == commercial)
-		background = DOOM2_SUBSTITUTE;
-	else
-		background = BLUE_TECHBASE_TEXTURE;
-
-	if (Marshmallow_WadStealing)
-		background = BLUE_TECHBASE_TEXTURE;
-	
-}
-
-#define PKE_BLINKTIMER 50
 
 void PKE_BlinkingLight()
 {
+    int dangerlevel = PKE_Meter.healthpoints_onradar;
+
     if (!blink_timer)
     {
-        int dangerlevel = PKE_Meter.healthpoints_onradar;
+        blink_timer = PKE_BLINKTIMER;
 
-        if (dangerlevel <= DANGERLEVEL_LOW)
-        {
-            blink_timer = PKE_BLINKTIMER*5;
-        }
+        V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y,
+                          W_CacheLumpName(DEH_String(BLUELIGHT_TILE), PU_CACHE));
+    }
 
-        if (dangerlevel <= DANGERLEVEL_MEDIUM)
-        {
-            blink_timer = PKE_BLINKTIMER*4;
-        }
-
-        if (dangerlevel <= DANGERLEVEL_HIGH)
-        {
-            blink_timer = PKE_BLINKTIMER*3;
-        }
-
-        if (dangerlevel <= DANGERLEVEL_CRITICAL)
-        {
-            blink_timer = PKE_BLINKTIMER*2;
-        }
-
-        if (dangerlevel <= DANGERLEVEL_FUBAR)
-        {
-            blink_timer = PKE_BLINKTIMER*1;
-        }
+    if (blink_timer > PKE_BLINKTIMER/2) {
+        V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y,
+                          W_CacheLumpName(DEH_String(BLUELIGHT_TILE), PU_CACHE));
+        blink_timer--;
     }
     else
-        blink_timer--;
+    if (blink_timer <= PKE_BLINKTIMER/2)
+    {
+        if (dangerlevel > DANGERLEVEL_MEDIUM)
+        {
+            V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(REDLIGHT_TILE), PU_CACHE));
+            blink_timer--;
+            return;
+        }
 
-    if (blink_timer > blink_timer/2)
-        V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(YELLOWLIGHT_TILE), PU_CACHE));
+        if (dangerlevel > 0)
+            V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(YELLOWLIGHT_TILE), PU_CACHE));
+        else
+            V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(BLUELIGHT_TILE), PU_CACHE));
 
-    else if (blink_timer <= blink_timer/2)
-        V_DrawPatchDirect(DATAPAD2_DISKLED_X, DATAPAD2_DISKLED_Y, W_CacheLumpName(DEH_String(REDLIGHT_TILE), PU_CACHE));
+            blink_timer--;
+    }
+
+
 }
 
 
@@ -127,7 +63,7 @@ void BlinkingLight()
 }
 
 
-void Draw_Datapad2()
+void Draw_Datapad()
 {
 	if ( GetGameType() == DOOM2 
 		|| gameversion == exe_chex)
@@ -158,10 +94,8 @@ void Draw_Datapad2()
 	// lights
 	//V_DrawPatchDirect(DATAPAD2_POWERLED_X+3, DATAPAD2_POWERLED_Y, W_CacheLumpName(DEH_String(REDLIGHT_TILE), PU_CACHE));
 
-	//if (pkereadout_on)
-	//    PKE_BlinkingLight();
-	//else
-	    BlinkingLight();
+	//BlinkingLight();
+	PKE_BlinkingLight();
 }
 
 
@@ -183,7 +117,7 @@ void Draw_Wallpaper(char* tile)
 {
 	int x, y, i, k = 0;
 
-	if ( !Marshmallow_DrawWallpaper )
+	if ( !Marshmallow_DrawWallpaper || shortcutmenu_on)
 		return;
 
 	x = X_START;
@@ -216,8 +150,11 @@ void Draw_Wallpaper(char* tile)
 	Draw_WallpaperBorders();
 
 	// These two lines will fill-in the gap we have between our wallpaper and status bar
-	V_DrawHorizLine(0, 334, 640, 0);
-	V_DrawHorizLine(0, 335, 640, 0);
+	//if ( STATUS BAR VISIBLE )  // TODO: What's the variable for status bar/screen size?
+	//{
+        V_DrawHorizLine(108, 334, 640, 111); // 111 = Dark grey
+        V_DrawHorizLine(108, 335, 640, 111);
+    //}
 }
 
 
@@ -229,4 +166,17 @@ void Draw_Tiles(int x, int y, char* tile, int num)
 	{
 		V_DrawPatchDirect(x, y, W_CacheLumpName(DEH_String(tile), PU_CACHE));
 	}
+}
+
+
+void SetDatapadBackground()
+{
+    if (gamemode == commercial)
+        background = DOOM2_SUBSTITUTE;
+    else
+        background = BLUE_TECHBASE_TEXTURE;
+
+    if (Marshmallow_WadStealing)
+        background = BLUE_TECHBASE_TEXTURE;
+
 }

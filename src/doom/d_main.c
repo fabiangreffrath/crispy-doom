@@ -2042,7 +2042,7 @@ void D_DoomMain (void)
 
     if (p)
     {
-	startskill = myargv[p+1][0]-'1';
+	startskill = myargv[p+1][0]-'1'; 
 	autostart = true;
     }
 
@@ -2130,8 +2130,8 @@ void D_DoomMain (void)
     }
 
     // [marshmallow] If we got "-sigil" from command line with no warp level specified, make sure we start at episode 5
-    if ( M_CheckParm("-sigil") )
-        startepisode = 5;
+    //if ( M_CheckParm("-sigil") )
+    //    startepisode = 5;
 
     // Undocumented:
     // Invoked by setup to test the controls.

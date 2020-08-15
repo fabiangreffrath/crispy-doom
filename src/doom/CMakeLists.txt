@@ -102,7 +102,7 @@ add_library(doom STATIC
             imports.h
             macros.h
             strings.h
-        )
+            marshmenu.h)
 
 target_include_directories(doom PRIVATE "../" "${CMAKE_CURRENT_BINARY_DIR}/../../")
 target_link_libraries(doom SDL2::SDL2 SDL2::mixer SDL2::net)

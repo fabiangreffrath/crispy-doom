@@ -35,9 +35,11 @@
 #define DOOM2_TITLEPIC 612
 #define DOOM1_TITLEPIC 700
 #define DOOM2_LOGO 781
+#define DOOM2BFG_LOGO 748
 #define DOOM1_LOGO 877
 
 extern int gamemode;  // [marshmallow]
+extern int gamevariant;  // [marshmallow]
 extern boolean Marshmallow_WadStealing;
 
 typedef enum 
@@ -524,8 +526,17 @@ static void DoMerge(void)
                 if (i == DOOM2_TITLEPIC)
                     continue;
 
-                if (i == DOOM2_LOGO)
-                    continue;
+                // Detect BFG Edition wad so we can reference the correct lump number
+                if (W_CheckNumForName("DMENUPIC") >= 0)
+                {
+                    if (i == DOOM2BFG_LOGO)
+                        continue;
+                }
+                else
+                {
+                    if (i == DOOM2_LOGO)
+                        continue;
+                }
             }
         }
 

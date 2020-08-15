@@ -122,15 +122,15 @@ boolean Marshmallow_GimmeThatPhatLoot(mobj_t* toucher, mobj_t* special)
 	if (!deathmatch)
 		toucher->player->message = DEH_String(FOUNDBACKPACK);
 	  
-	P_GiveAmmo (toucher->player, am_clip, Marshmallow_LootMultiplier); // TODO: condense all of this to a for loop
+	P_GiveAmmo (toucher->player, am_clip, Marshmallow_LootMultiplier, false); // TODO: condense all of this to a for loop
 
 	if ( deathmatch )  // In deathmatch, give ammo for all weapons
 	{
-		P_GiveAmmo (toucher->player, am_shell, Marshmallow_LootMultiplier);
-		P_GiveAmmo (toucher->player, am_shell, Marshmallow_LootMultiplier);
-		P_GiveAmmo (toucher->player, am_misl, Marshmallow_LootMultiplier);
-		P_GiveAmmo (toucher->player, am_cell, Marshmallow_LootMultiplier);
-		P_GiveAmmo (toucher->player, am_cell, Marshmallow_LootMultiplier);
+		P_GiveAmmo (toucher->player, am_shell, Marshmallow_LootMultiplier, false);
+		P_GiveAmmo (toucher->player, am_shell, Marshmallow_LootMultiplier, false);
+		P_GiveAmmo (toucher->player, am_misl, Marshmallow_LootMultiplier, false);
+		P_GiveAmmo (toucher->player, am_cell, Marshmallow_LootMultiplier, false);
+		P_GiveAmmo (toucher->player, am_cell, Marshmallow_LootMultiplier, false);
 
 		return true;
 	}
@@ -138,19 +138,19 @@ boolean Marshmallow_GimmeThatPhatLoot(mobj_t* toucher, mobj_t* special)
 	// Otherwise, only give ammo for weapons we have
 
 	if (toucher->player->weaponowned[wp_shotgun])
-		P_GiveAmmo (toucher->player, am_shell, Marshmallow_LootMultiplier);
+		P_GiveAmmo (toucher->player, am_shell, Marshmallow_LootMultiplier, false);
 
 	if (toucher->player->weaponowned[wp_supershotgun])
-		P_GiveAmmo (toucher->player, am_shell, Marshmallow_LootMultiplier);
+		P_GiveAmmo (toucher->player, am_shell, Marshmallow_LootMultiplier, false);
 
 	if (toucher->player->weaponowned[wp_missile])
-		P_GiveAmmo (toucher->player, am_misl, Marshmallow_LootMultiplier);
+		P_GiveAmmo (toucher->player, am_misl, Marshmallow_LootMultiplier, false);
 
 	if (toucher->player->weaponowned[wp_plasma])
-		P_GiveAmmo (toucher->player, am_cell, Marshmallow_LootMultiplier);
+		P_GiveAmmo (toucher->player, am_cell, Marshmallow_LootMultiplier, false);
 
 	if (toucher->player->weaponowned[wp_bfg])
-		P_GiveAmmo (toucher->player, am_cell, Marshmallow_LootMultiplier);
+		P_GiveAmmo (toucher->player, am_cell, Marshmallow_LootMultiplier, false);
 
 	return true;
 }
@@ -216,7 +216,7 @@ mobj_t* CreateBackpack(mobj_t* target, boolean is_inventory)
 
 	backpack_x = target->x - FixedMul (24*FRACUNIT, finecosine[an]) - offset; 
 	backpack_y = target->y - FixedMul (24*FRACUNIT, finesine[an]) - offset;
-	backpack_z = target->z;
+	backpack_z = target->z + DROP_FROM_ABOVE_FLOOR;
 
 	mo = P_SpawnMobj (backpack_x, backpack_y, backpack_z, MARSHMALLOW_BACKPACK);
 	mo->flags |= MF_DROPPED;
@@ -246,7 +246,7 @@ void DropBackpackForAFriend(mobj_t* actor)
 	if (actor->player->DropObjectDelay)
 	{
 		if (debugmode)
-		actor->player->message = "WAIT A MOMENT TO DROP ANOTHER...";
+		actor->player->message = DEH_String(WAITDIPSHIT);
 		return;
 	}
 	else

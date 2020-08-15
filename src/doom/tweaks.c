@@ -300,13 +300,12 @@ int UpgradeMonsters(int i)
 	return monster;
 }
 
-// TODO: move into header
+
 #define VILECHANCE 88
 #define BRUISERCHANCE 75
 #define KNIGHTCHANCE 50
 #define UNDEADCHANCE 25
 #define CHAINGUYCHANCE 10
-
 
 int GetRandomDoom2Monster(int i)
 {
@@ -326,13 +325,12 @@ int GetRandomDoom2Monster(int i)
 		return MT_SHOTGUY;
 }
 
-// move into header
+
 //#define BRUISERCHANCE 88
 #define CACOCHANCE 75
 #define SPECTRECHANCE 50
 #define DEMONCHANCE 25
 #define IMPCHANCE 10
-
 
 int GetRandomDoom1Monster(int i)
 {
@@ -469,39 +467,6 @@ void NerfSkelMissile(boolean option_on)
 	SHOW_MESSAGE DEH_String(CHANGEFFECT);
 }
 
-boolean Marshmallow_BoostHP_Spiderboss; // move
-
-void NerfHP_BoostHP_Spiderboss(boolean option_on)  // not used yet
-{
-	if (option_on)
-	{
-		Marshmallow_BoostHP_Spiderboss = true;
-		mobjinfo[MT_SPIDER].spawnhealth = 4000;  // vanilla is 3000
-	}
-	else
-	{
-		Marshmallow_BoostHP_Spiderboss = false;
-		mobjinfo[MT_SPIDER].spawnhealth = 3000;
-	}
-}
-
-/*
-void BoostHP_Chainguy(boolean option_on)
-{
-	if (option_on)
-	{
-		Marshmallow_BoostHP_Chainguy = true;
-		mobjinfo[MT_CHAINGUY].spawnhealth *= 1.5;  // NEW!
-	}
-	else
-	{
-		Marshmallow_BoostHP_Chainguy = false;
-		mobjinfo[MT_CHAINGUY].spawnhealth = 70;
-	}
-
-	SHOW_MESSAGE DEH_String(CHANGEFFECT);
-}
-*/
 
 void FixChainguySound(boolean option_on)
 {
@@ -548,16 +513,16 @@ mobjtype_t RandomAmmo[NUM_AMMO] = {
 
 mobjtype_t RandomMedkit[2] = {
 
-	//MT_MISC11,  // large medkit
+	MT_MISC11,  // large medkit
 	MT_MISC10,  // small medkit
-	MT_HEALTH_BONUS,
+	//MT_HEALTH_BONUS,
 };
 
 mobjtype_t RandomArmor[2] = {
 
 	MT_MISC0,  // green armor
-	//MT_MISC1,  // megaarmor (blue)
-	MT_ARMOR_BONUS,
+	MT_MISC1,  // megaarmor (blue)
+	//MT_ARMOR_BONUS,
 };
 
 mobjtype_t RandomPowerup[3] = {
@@ -571,7 +536,7 @@ mobjtype_t RandomPowerup[3] = {
 int RandomizeItem(int i)
 {
 	// Full random mode, agnostic of input item type:
-	if ( Marshmallow_RandomItems == 2 )  
+	if ( Marshmallow_RandomItems == 2 || Marshmallow_Sandbox )  // Always use full random items mode in sandbox games
 	{
 		switch (i)
 		{
@@ -592,8 +557,6 @@ int RandomizeItem(int i)
 		case MT_BFG9000:
 		case MT_HEALTH_BONUS:    
 		case MT_ARMOR_BONUS:
-		case MT_MISC11:  // large medkit
-		case MT_MISC10:  // stimpack
 		case MT_GREENARMOR:   
 		case MT_BLUEARMOR:   
 			return GenerateRandomBonusItem();
@@ -602,6 +565,13 @@ int RandomizeItem(int i)
 		case MT_INVISIBILITY:
 		case MT_BERSERK:
 			return GetRandomBonusItem(POWERUP);
+
+		case MT_MISC11:  // large medkit
+        case MT_MISC10:  // Stimpack
+            //if ( PercentChance(50) )
+            //    return GetRandomBonusItem(MEDKIT);
+            //else
+                return GenerateRandomBonusItem();
 
 		default:
 			return i;  
@@ -679,8 +649,9 @@ mobjtype_t GetRandomBonusItem(int category)
 
 		if ( GetGameType() == DOOM1 )
 		{
+            // Replace SSG with chaingun in Doom1
 			if ( RandomWeapons[weapon] == MT_SUPERSHOTGUN )
-				weapon++;  // replace SSG with chaingun in Doom1
+				weapon++;
 		}
 	
 		return RandomWeapons[weapon];
@@ -892,6 +863,45 @@ void SetOptionsFromCfg()
 
 	//if (Marshmallow_AlternateLighting)
 	//	Marshmallow_LightLevel = CRT_LIGHTLEVEL;
+}
+
+// Deprecated function for randomizing item pickups in sandbox mode
+int PlaceSandboxItem(int i)
+{
+    switch (i)
+    {
+        case MT_CLIP:
+        case MT_SHELLS:
+        case MT_ROCKET:
+        case MT_CELL:
+
+            i = GetRandomBonusItem(AMMO);
+            return i;
+
+        case MT_SHOTGUN:
+        case MT_SUPERSHOTGUN:
+        case MT_CHAINGUN:
+        case MT_RPG:
+        case MT_PLASMA_RIFLE:
+        case MT_BFG9000:
+
+            i = GetRandomBonusItem(WEAPON);
+            return i;
+
+        case MT_HEALTH_BONUS:
+
+            i = GetRandomBonusItem(AMMO);
+
+            return i;
+
+        case MT_ARMOR_BONUS:
+
+            i = GetRandomBonusItem(WEAPON);
+            return i;
+
+        default:
+            return i;
+    }
 }
 
 #if 0

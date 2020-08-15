@@ -17,15 +17,12 @@ void Marshmallow_InitVariables()
 
 	SetCrispyOptions();
 
+	itemrespawn_delay = DEFAULT_ITEMRESPAWN_DELAY;
+
 	Marshmallow_AllowExit = false;
 	Marshmallow_KillOnExit = true;
 
 	Marshmallow_BarrelPushing = true;
-
-    // TODO: move this to after we read settings from cfg, so it doesn't get set if option off; maybe move it to when the barrel is spawned in SpawnMapThing()
-    mobjinfo[MT_BARREL].flags |= MF_SPECIAL;
-
-//	Marshmallow_PlayerCollision = true;
 
 	Marshmallow_GibMode = DUKE_GIBS;   
 
@@ -35,7 +32,7 @@ void Marshmallow_InitVariables()
 
 	newgame_mode = SINGLEPLAYER;
 
-	Doom_DJ.song_length = LONG_SONG_LENGTH;  
+	Doom_DJ.song_length = SONGLENGTH_LONG;
 
 	newskill = skill_selection = HMP_SELECTED;
 
@@ -92,7 +89,7 @@ void Marshmallow_InitVariables()
 	NerfPC_Archvile(ON);	
 	FixChainguySound(ON);
 
-	vile_damage = VANILLA_VILE_DAMAGE;  // never made an option for this, so set to default
+	vile_damage = VANILLA_VILE_DAMAGE;
 	Marshmallow_VileZScopeLimit = true; 
 
 	e3m8_caco_upgrade = false;
@@ -101,14 +98,14 @@ void Marshmallow_InitVariables()
 
 	physics_mode = 0;  
 
-	Marshmallow_DropBackpack = true;  // We need this on for our dropped items backpack
+	Marshmallow_DropBackpack = true;
 
 	dm_timelimit = 10;
 	dm_fraglimit = 50;
 
 	Marshmallow_PlasmaSlowdown = true;
 
-	Marshmallow_KeepFreeAmmo = true;   // WIP
+	Marshmallow_KeepFreeAmmo = true;
 
 	Marshmallow_ResizeMonsters = true;
 
@@ -117,10 +114,10 @@ void Marshmallow_InitVariables()
 	specialnodes = false;
 	barrel_fx = true;
 
-	Marshmallow_TrueRandomDamage = false;  // off by default for now
+	Marshmallow_TrueRandomDamage = false;
 
-	ShowBotStates = true;  // new
-	default_bot_speed = BOTS_WALK;  // new
+	ShowBotStates = true;
+	default_bot_speed = BOTS_WALK;
 
 	botstate[BOT_1] = " ";
 	botstate[BOT_2] = " ";
@@ -130,7 +127,7 @@ void Marshmallow_InitVariables()
 
 	Marshmallow_KeepKeys = true;   
 	Marshmallow_KeepWeapons = true; 
-	Marshmallow_WeaponsStay = true;  // test
+	Marshmallow_WeaponsStay = true;
 
 	if ( !realnetgame && !M_CheckParm("-solo-net") )
 	{
@@ -145,17 +142,22 @@ void Marshmallow_InitVariables()
 		// Defaults for real network games
 
 		Marshmallow_SaveItems = false;
-		Marshmallow_DynamicMusic = false;  // dynamic music is still giving us consistency crashes
-		Marshmallow_PlasmaSlowdown = false;  // firingdelay would need to be player-specific for this to work
+		Marshmallow_DynamicMusic = false;
+		Marshmallow_PlasmaSlowdown = false;
 		Marshmallow_GiftDropping = true;  
 
-		if ( M_CheckParm("-server") || M_CheckParm("-solo-net"))  // trying this here instead of d_net.c
+		if ( M_CheckParm("-server") || M_CheckParm("-solo-net"))
 			CheckForServerCfgFile();
 	}
 
 	// Change the invis sprite to appear with MF_SHADOW effect
 	if (Marshmallow_DropGoodies)
 		ChangeInvis(ON);
+
+    // This should work better after we read settings from cfg,
+    // so it doesn't get set if option is disabled
+    if (Marshmallow_BarrelPushing)
+        mobjinfo[MT_BARREL].flags |= MF_SPECIAL;
 }
 
 
@@ -163,7 +165,7 @@ void Marshmallow_CheckCommandLineArgs()
 {
 	int p, n;
 
-	// for upgrades we take an input of 1-9
+	// For upgrades we take an input of 1-9
 	if ((p = M_CheckParmWithArgs("-upgrade", 1))
 		|| (p = M_CheckParmWithArgs("-ug", 1)))   
 	{
@@ -171,14 +173,10 @@ void Marshmallow_CheckCommandLineArgs()
 
 		upgrade_chance = n*10;
 
-		if ( upgrade_chance < 10 || upgrade_chance > 90 )  // if we get junk input, default to 50
+		if ( upgrade_chance < 10 || upgrade_chance > 90 )  // If we get junk input, default to 50
 			upgrade_chance = 50; 
 	}
-	//else if (M_CheckParm("-upgrade"))   // if we didn't get a number, default to 100
-	//{
-	//	upgrade_chance = 100;
-	//}
-	else   // otherwise, upgrading is disabled
+	else   // Otherwise, upgrading is disabled
 	{
 		upgrade_chance = NULL;
 	}
@@ -197,26 +195,16 @@ void Marshmallow_CheckCommandLineArgs()
 		dm_fraglimit = n;
 	}
 
-	if (M_CheckParm("-ri"))  
+	if (M_CheckParm("-ri")
+	    || M_CheckParm("-rbt"))
 		Marshmallow_RandomItems = 1;
 
-	if (M_CheckParm("-rie"))  
+	if (M_CheckParm("-rie")
+        || M_CheckParm("-rfr"))
 		Marshmallow_RandomItems = 2;
 
 	if (M_CheckParm("-debug"))
 		debugmode = true;
-
-	//if (M_CheckParm("-cl"))
-	//	Marshmallow_ColoredLighting = true;
-
-	//if (M_CheckParm("-vpc"))
-	//	mobjinfo[MT_VILE].painchance = 100;  
-
-	//if (M_CheckParm("-spc"))
-	//	mobjinfo[MT_SPIDER].painchance = 100;  
-
-	//if (M_CheckParm ("-ekg"))
-	//	Marshmallow_GibMode = true;
 
 	if (p = M_CheckParmWithArgs("-gibs", 1))
 	{
@@ -252,20 +240,9 @@ void Marshmallow_CheckCommandLineArgs()
 		autostart = true;
 		InitSandbox();
 	}
-	
-	//if (M_CheckParm ("-dj"))
-	//{
-	//	Marshmallow_DynamicMusic = true;
-	//	Doom_DJ.autostart = true;
-	//}
 
-	if (M_CheckParm ("-ps"))  // changed from -gw; we're leaving graded weapons on by default, and we can disable it with -ps (short for pistol start)
+	if (M_CheckParm ("-ps"))
 		Marshmallow_GradedWeapons = false;
-
-	//if (M_CheckParm ("-keepitems"))  // TODO: this is on by default now; change this to a disable option instead
-	//	Marshmallow_SaveItems = true;
-
-	// VERIFY: do we need autostart = true in these too?
 
 	if (M_CheckParm ("-itytd"))
 	{
@@ -299,7 +276,7 @@ void Marshmallow_CheckCommandLineArgs()
 
 	if (M_CheckParm ("-nm2"))
 	{
-		autostart = true;  // so it functions like -skill 
+		autostart = true;
 		Marshmallow_InitAltNightmare();
 	}
 
@@ -316,31 +293,19 @@ void Marshmallow_CheckCommandLineArgs()
 		startskill = sk_hard;
 		Marshmallow_InitAltUltraViolence();
 	}
-   
-	if (M_CheckParm ("-itemrespawn"))  // both coop and singleplayer?
-		Marshmallow_CoopItemRespawn = true;
 
-	//if (M_CheckParm ("-goodies"))  // TODO: this is on by default now, so make this -nogoodies instead?
-	//	Marshmallow_DropGoodies = true; // TODO: if using nogoodies, explicitly set to false
+	if (M_CheckParm ("-ir") || M_CheckParm ("-itemrespawn"))
+		Marshmallow_ItemRespawn = true;
 
-	//if (M_CheckParm ("-conserve"))  // both coop and singleplayer?   // TODO: this is on by default now, so make this -noconserve instead?
-	//	Marshmallow_ConservePowerups = true;
-
-	if (M_CheckParm ("-ff"))  // TODO: decide if these should explicitly set true or false
+	if (M_CheckParm ("-ff"))
 		Marshmallow_FriendlyFire = true;
 
-	if (M_CheckParm ("-mirror"))  // TODO: decide if these should explicitly set true or false
+	if (M_CheckParm ("-mirror"))
 		Marshmallow_MirrorDamage = true;
 
-	if (M_CheckParm ("-self"))  // TODO: decide if these should explicitly set true or false
+	if (M_CheckParm ("-self"))
 		Marshmallow_SelfDamage = true;
 
-	//if (M_CheckParm ("-keepguns"))  // TODO: this is on by default now, so make this -nokeepguns instead?
-	//	Marshmallow_KeepWeapons = true;
-
-	//if (M_CheckParm ("-keepkeys"))   // TODO: this is on by default now, so make this -nokeepkeys instead?
-	//	Marshmallow_KeepKeys = true;
-	
 	if ((p = M_CheckParmWithArgs("-delayssg", 1)))
 	{
 		SSG_Level = myargv[p+1][0]-'0';
@@ -351,7 +316,7 @@ void Marshmallow_CheckCommandLineArgs()
 		Marshmallow_WitholdSSG = true;
 	}
 
-    if (M_CheckParm("-delayssg"))   // if no level number is specified, default to MAP04
+    if (M_CheckParm("-delayssg"))   // If no level number is specified, default to MAP04
     {
         if (!SSG_Level)
             SSG_Level = DEFAULT_SSG_LEVEL;
@@ -359,10 +324,10 @@ void Marshmallow_CheckCommandLineArgs()
         Marshmallow_WitholdSSG = true;
     }
 
-	if ((p = M_CheckParmWithArgs("-d1ssg", 1)))  // NOTE: probably pointless since Crispy already does this
+	if ((p = M_CheckParmWithArgs("-d1ssg", 1)))
 	{
-		// TODO: act like -delayssg above
-		// we can just change Marshmallow_Doom1SSG to int type and use that
+        // TODO: act like -delayssg above
+        // we can just change Marshmallow_Doom1SSG to int type and use that
 
 		Marshmallow_Doom1SSG = true;
 	}
@@ -379,7 +344,7 @@ void Marshmallow_CheckCommandLineArgs()
 	if (M_CheckParm ("-dmw"))   
 		Marshmallow_DeathmatchWeapons = true;
 
-	if (M_CheckParm ("-dmm"))   // NEW
+	if (M_CheckParm ("-dmm"))
 		nomonsters = false;
 
 	if (M_CheckParm ("-tr"))
@@ -398,18 +363,7 @@ void Marshmallow_CheckCommandLineArgs()
 		crispy->demowarp = startmap;
 	}
 
-	//if (M_CheckParm ("-djmsg"))
-	//	Marshmallow_DJMessages = true;
-
-	//if (M_CheckParm("-d3l"))
-	//	Marshmallow_AlternateLighting = D3_LIGHTING;
-	//else if (M_CheckParm("-crt"))
-	//	Marshmallow_AlternateLighting = CRT_LIGHTING;
-
-	//if (M_CheckParm("-clip"))
-	//	Marshmallow_PlayerCollision = false;
-
-	if (M_CheckParm("-flip"))  // NEW
+	if (M_CheckParm("-flip"))
 		crispy->fliplevels = !crispy->fliplevels;
 
 	if (deathmatch) 
@@ -467,6 +421,9 @@ void Marshmallow_CheckCheats(event_t* ev)
 {
 	if (cht_CheckCheat(&Marshmallow_NextTrackCheatString, ev->data2) && !realnetgame)
 	{
+	    if (M_CheckParm("-nomusic"))
+	        return;
+
 		if (Marshmallow_DynamicMusic)
 		{
 			DJ_NextTrack();
@@ -536,7 +493,7 @@ void Marshmallow_CheckCheats(event_t* ev)
 		ToggleFastMonsters();
 	}
 	
-	if (cht_CheckCheat(&Marshmallow_BotMove, ev->data2) && !realnetgame)
+	if (cht_CheckCheat(&Marshmallow_BotMove, ev->data2) && !realnetgame && BotsInGame)
 	{
 		bot_t bot;
 
@@ -547,15 +504,15 @@ void Marshmallow_CheckCheats(event_t* ev)
 			HideAllMenus();  // since the 'M' and 'V' launch menus
 		}
 
-		Bot_PlayRadioNoise();
+        PlayRadioNoise();
 		SHOW_MESSAGE DEH_String(ORDERMSGPATROL);
 
 		return;
 	}
 
-	if (cht_CheckCheat(&Marshmallow_BotWait, ev->data2) && !realnetgame)
+	if (cht_CheckCheat(&Marshmallow_BotWait, ev->data2) && !realnetgame && BotsInGame)
 	{
-		Bot_PlayRadioNoise();
+        PlayRadioNoise();
 		SHOW_MESSAGE DEH_String(ORDERMSGHOLD);
 
 		Bot_HoldPosition();
@@ -619,13 +576,6 @@ void Marshmallow_CheckCheats(event_t* ev)
 		return;
 	}
 
-	if (cht_CheckCheat(&Marshmallow_GamemodeCheatString, ev->data2) && !realnetgame)    // TODO: Type 'gamemode' to see (SINGLEPLAYER/NETGAME/REALNETGAME and COOP/DM)
-	{
-		// TODO ...
-
-		return;
-	}
-
 	if (cht_CheckCheat(&Marshmallow_ShowInfoCheatString, ev->data2) && !realnetgame)    // Type 'showinfo' to see our info readout for watching variables in-game
 	{
 		Marshmallow_InfoReadout = !Marshmallow_InfoReadout;
@@ -638,25 +588,6 @@ void Marshmallow_CheckCheats(event_t* ev)
 	if (cht_CheckCheat(&Marshmallow_FriendlyFireCheatString, ev->data2) && !realnetgame)    // Type 'friendlyfire' to toggle friendly fire during netgame
 	{
 		ToggleFriendlyFire();
-
-		return;
-	}
-
-	if (cht_CheckCheat(&Marshmallow_EKGCheatString, ev->data2) && !realnetgame)    // Type 'ludicrous' to enable EKG mode for extra blood effects
-	{
-		return;  // Disabled for now
-
-		if (!Marshmallow_GibMode)
-		{
-			SHOW_MESSAGE DEH_String(EKGON);
-			S_StartSound(NULL, sfx_slop);
-			Marshmallow_GibMode = true;
-		}
-		else
-		{
-			SHOW_MESSAGE DEH_String(EKGOFF);
-			Marshmallow_GibMode = false;
-		}
 
 		return;
 	}
@@ -675,7 +606,7 @@ void Marshmallow_CheckCheats(event_t* ev)
 		return;
 	}
 
-	if (cht_CheckCheat(&Marshmallow_DipstickCheatString, ev->data2)    // Type 'chojin' for god mode and all weapons/items (like the 'chojin' cheat from Rise of the Triad)
+	if (cht_CheckCheat(&Marshmallow_DipstickCheatString, ev->data2)
 		&& !realnetgame)
 	{
 		int i, p;
@@ -890,6 +821,10 @@ void DoWadStealing()
 		Marshmallow_Doom1SSG = true;
 	
 	W_MergeFile(filename);
+
+    // Detect BFG edition wad
+    if (W_CheckNumForName("DMENUPIC") >= 0)
+        gamevariant = bfgedition;
 }
 
 

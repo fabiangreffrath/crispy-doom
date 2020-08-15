@@ -586,6 +586,18 @@ void A_KeenDie (mobj_t* mo)
     line_t	junk;
 
     A_Fall (mo);
+
+    // [marshmallow] Determine if this is a Keen from MAP32 or a sandbox game
+    if (!MAP32)
+    {
+        int roomheight = mo->subsector->sector->ceilingheight - mo->subsector->sector->floorheight;
+
+        // [marshmallow] Remove the corpse because the rope hanging in mid-air looks bad
+        if (roomheight > KEEN_CORPSE_CEILING_LIMIT)
+            P_RemoveMobj(mo);
+
+        return;
+    }
     
     // scan the remaining thinkers
     // to see if all Keens are dead
@@ -1635,7 +1647,6 @@ void A_PainAttack (mobj_t* actor)
 	return;
 
     A_FaceTarget (actor);
-    A_PainShootSkull (actor, actor->angle);
 
     // [marshmallow] The Pain Elemental deals a melee attack in sandbox games
     if (Marshmallow_Sandbox)
@@ -1643,6 +1654,8 @@ void A_PainAttack (mobj_t* actor)
         A_HeadAttack(actor);
         return;
     }
+    else
+        A_PainShootSkull (actor, actor->angle);
 }
 
 
@@ -1800,7 +1813,8 @@ void A_BossDeath (mobj_t* mo)
     line_t	junk;
     int		i;
 
-    if (Marshmallow_Sandbox)   // [marshmallow] Do not trigger any boss death events in sandbox games
+    // [marshmallow] Do not trigger any boss death events in sandbox or deathmatch games
+    if (Marshmallow_Sandbox || deathmatch)
         return;
 		
     if ( gamemode == commercial)
@@ -1878,7 +1892,7 @@ void A_BossDeath (mobj_t* mo)
 	    EV_DoFloor (&junk, lowerFloorToLowest);
 
         // [marshmallow]
-	    PKE_KillStaypuft();
+	    PKE_KillBoss();
 
         if (Marshmallow_DynamicMusic)
             S_ChangeMusic(mus_e1m8, true);   // Force the default e1m8 song on boss death

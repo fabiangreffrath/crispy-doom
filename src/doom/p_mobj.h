@@ -324,6 +324,12 @@ typedef struct mobj_s
     // [marshmallow] For player corpse cleanup
     int		   death_tic;
 
+    // [marshmallow] For extra blood and gore
+    boolean     critical_injury;
+
+    // [marshmallow] For respawning random items
+    int         random_item;
+
 } mobj_t;
 
 

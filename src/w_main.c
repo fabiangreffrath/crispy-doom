@@ -28,7 +28,7 @@
 #include "w_wad.h"
 #include "z_zone.h"
 
-extern Marshmallow_PlayingSigil;  // [marshmallow]
+extern boolean Marshmallow_PlayingSigil;  // [marshmallow]
 
 // Parse the command line, merging WAD files that are sppecified.
 // Returns true if at least one file was added.
@@ -68,7 +68,7 @@ boolean W_ParseCommandLine(void)
             filename = D_TryFindWADByName(myargv[p]);
 
             // [marshmallow] Just in case the user does "-merge" to load Sigil.wad
-            if ( !strcmp(filename, sigil) || !strcmp(filename, sigil_compat))  // CRASH HERE
+            if ( !strcmp(filename, sigil) || !strcmp(filename, sigil_compat))
                 Marshmallow_PlayingSigil = true;
             // [m]
 

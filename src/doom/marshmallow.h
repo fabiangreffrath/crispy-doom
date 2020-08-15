@@ -29,7 +29,7 @@ boolean Marshmallow_MirrorDamage;
 boolean Marshmallow_SelfDamage;     
 boolean Marshmallow_DropGoodies;     
 boolean Marshmallow_DropBackpack;
-boolean Marshmallow_CoopItemRespawn;     
+boolean Marshmallow_ItemRespawn;
 boolean Marshmallow_ConservePowerups;    
 boolean Marshmallow_KeepWeapons;  
 boolean Marshmallow_KeepKeys;    
@@ -139,6 +139,7 @@ mobj_t* Marshmallow_InitScaledMonster(mobj_t* monster);
 boolean IsWeapon(mobj_t* mo);
 boolean IsMonster(mobj_t* actor);
 boolean IsPlayer(mobj_t* actor);
+boolean IsBarrel(mobj_t* actor);
 boolean IsConsoleplayer(mobj_t* actor);
 boolean PlayerIsDead();
 boolean Marshmallow_GiveNewInvisPowerup(mobj_t* toucher, mobj_t* special);
@@ -155,6 +156,7 @@ void GiveAllItems();
 void SetPunchSound();
 void ToggleFriendlyFire();
 int RandomEpisode();
+void SetSkills();
 void SetOptionsFromCfg();
 int skip_to_level;  // Map # we're skipping to
 void SkipToLevel();
@@ -183,6 +185,8 @@ void HandleNetgameEvents();
 void Player_Actions();
 void Game_Actions();
 void Game_Init();
+boolean PhysicsExempt(mobj_t* thing);
+boolean EnemyInRange(mobj_t* enemy);
 
 // Network stuff
 boolean netgamesignal;
@@ -208,6 +212,7 @@ void DisableStats();
 void ResetStats();
 void DrawProfile(); 
 boolean LaunchProfileScreen();
+int PKE_SavedSearchRadius;
 
 // Profile and stats
 int CalculateAccuracy(int shots, int hit);
@@ -229,7 +234,7 @@ typedef enum {
 
 // Alternate lighting modes
 enum { NORMAL_LIGHTING, CRT_LIGHTING, D3_LIGHTING };
-boolean Marshmallow_AlternateLighting;
+int Marshmallow_AlternateLighting;
 #define NORMAL_LIGHTLEVEL 1.0
 #define DOOM3_LIGHTLEVEL 0.86
 #define CRT_LIGHTLEVEL 0.94
@@ -294,6 +299,7 @@ hu_stext_t pkeline1;
 hu_stext_t pkeline2;
 hu_stext_t pkeline3;
 hu_stext_t pkeline4;
+hu_stext_t pkeline8;
 
 // Missile-lock widget
 int missilelock_delay;
@@ -384,9 +390,9 @@ boolean F_Key_BotFollow;
 int Marshmallow_GibMode;
 boolean Marshmallow_EpicBossDeaths;
 boolean barrel_fx;  // TODO: rename
-void DropSlopProp(mobj_t* thing);
+void PlaySlopSound(mobj_t* target);
 boolean IsGibbableThing(mobj_t* thing);
-void GibFactory(mobj_t* target, mobj_t* source);
+void GibActor(mobj_t* target, mobj_t* source);
 void CorpseGib(mobj_t *actor);
 void BrutalSplat(mobj_t *actor);
 void ParticleFX_EXPBloodSplat(mobj_t *actor);
@@ -394,18 +400,23 @@ void ParticleFX_ChainsawBloodSplat(mobj_t *actor);
 void ParticleFX_SmokeBlast(mobj_t *actor);
 void ParticleFX_SpiderDeath(mobj_t *actor);
 void ParticleFX_CyberdemonDeath(mobj_t *actor);
-void ParticleFX_BossDeaths(mobj_t* actor);
+void DoBossExplosions(mobj_t* actor);
 void ParticleFX_BloodSplat(mobj_t *actor);
 void ParticleFX_SmallBloodSplat(mobj_t *actor);
+void ParticleFX_TinyBloodSplat(mobj_t *actor);
 void ParticleFX_Nuclear(mobj_t *actor);
 void ParticleFX_HorizontalBlast(mobj_t *actor);
 void ParticleFX_SaucerBlast(mobj_t *actor);
+void ParticleFX_BabyDeath(mobj_t *actor);
 void ParticleFX_Test(mobj_t *actor);
 void BarrelFX_Test(mobj_t *actor);
 void ParticleFX_XDeath(mobj_t *actor);
 void BFG_MegaBlast(mobj_t *actor);
-void HandleChainsawBlood(mobj_t* target, mobj_t* inflictor);
-#define BRUTAL_GIBCHANCE 60
+void DoChainsawBlood(mobj_t* target, mobj_t* inflictor);
+void DoCriticalHitBlood(mobj_t* target);
+boolean DoSpecialDeaths(mobj_t* target, mobj_t* source);
+#define GIB_CHANCE 60
+#define CRITICALHIT_THRESHOLD target->info->spawnhealth/4
 
 // Monster tweaks
 int chaingunguy_attack_sound;
@@ -498,6 +509,8 @@ mobjtype_t GetRandomBonusItem(int category);
 mobjtype_t GenerateRandomBonusItem();
 int GetRandomDoom2Monster(int i);
 int GetRandomDoom1Monster(int i);
+int itemrespawn_delay;
+#define DEFAULT_ITEMRESPAWN_DELAY 30
 
 // Auto-use
 #define DEFAULT_AUTO_USE_DELAY 32
