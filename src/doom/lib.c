@@ -239,10 +239,10 @@ void InfightAlert(mobj_t* actor)
         if ( PlayerIsDead() )
             return;
 
-        //SHOW_MESSAGE DEH_String(MONSTERFIGHT);
-
         HUlib_addMessageToSText(&second_extraline, 0, DEH_String(MONSTERFIGHT));
-        second_extraline_timeout = SHORT_EXTRALINE_TIMEOUT;
+
+        if (!second_extraline_timeout)
+            second_extraline_timeout = SHORT_EXTRALINE_TIMEOUT;
     }
     else
     {
@@ -286,9 +286,10 @@ void OfferRadsuit(player_t* player)
 	offer_radsuit = true;
 	offertimeout_radsuit = DEFAULT_OFFER_TIMEOUT;
 
-	//player->message = DEH_String(PROMPTRADSUIT);
 	HUlib_addMessageToSText(&first_extraline, 0, DEH_String(PROMPTRADSUIT));
-	first_extraline_timeout = DEFAULT_EXTRALINE_TIMEOUT;
+
+	if (!first_extraline_timeout)
+	    first_extraline_timeout = DEFAULT_EXTRALINE_TIMEOUT;
 	}
 }
 
@@ -308,9 +309,10 @@ void LowHealthWarning()
 		offer_medkit = true;
 		offertimeout_medkit = DEFAULT_OFFER_TIMEOUT;
 
-		//MAIN_PLAYER.message = DEH_String(PROMPTMEDKIT);
         HUlib_addMessageToSText(&first_extraline, 0, DEH_String(PROMPTMEDKIT));
-        first_extraline_timeout = DEFAULT_EXTRALINE_TIMEOUT;
+
+        if (!first_extraline_timeout)
+            first_extraline_timeout = DEFAULT_EXTRALINE_TIMEOUT;
 	}
 }
 
@@ -886,7 +888,7 @@ void DoTimeouts()
     if (second_extraline_timeout)
     {
         second_extraline_on = true;
-        first_extraline_timeout--;
+        second_extraline_timeout--;
     }
     else
         second_extraline_on = false;

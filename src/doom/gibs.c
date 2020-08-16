@@ -294,7 +294,10 @@ boolean DoSpecialDeaths(mobj_t* target, mobj_t* source)
             if (target->health <= negative_spawnhealth/2
                 || P_CheckMeleeRange(target))
             {
-                if (weapon < wp_missile)
+                if (weapon < wp_missile && weapon != wp_fist)
+                    return false;
+
+                if (IsPlayer(target) && !IsBot(target->player))
                     return false;
 
                 BrutalDeath(target);
@@ -307,7 +310,10 @@ boolean DoSpecialDeaths(mobj_t* target, mobj_t* source)
         case ROTT_GIBS:
         case DUKE_GIBS:
 
-            if (weapon != wp_missile)
+            if (weapon != wp_missile && weapon != wp_fist)
+                return false;
+
+            if (IsPlayer(target) && !IsBot(target->player))
                 return false;
 
             ApogeeDeath(target);

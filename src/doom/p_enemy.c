@@ -830,10 +830,12 @@ void A_FaceTarget (mobj_t* actor)
     if (!actor->target)
 	return;
 
-    InfightAlert(actor);  // [marshmallow]
-
-    if ( !IsBot( actor->player ) )  // [marshmallow] Don't do this to bots
+    // [marshmallow] Don't do these functions for bots
+    if ( !IsBot( actor->player ) )
+    {
+        InfightAlert(actor);
         actor->flags &= ~MF_AMBUSH;
+    }
     
     actor->flags &= ~MF_AMBUSH;
 	
@@ -842,7 +844,8 @@ void A_FaceTarget (mobj_t* actor)
 				    actor->target->x,
 				    actor->target->y);
 
-    if ( IsBot( actor->player ) ) // [marshmallow] So the bots don't "jitter" when aiming at spectres
+    // [marshmallow] So the bots don't "jitter" when aiming at spectres
+    if ( IsBot( actor->player ) )
         return;
 
     if (actor->target->flags & MF_SHADOW)
