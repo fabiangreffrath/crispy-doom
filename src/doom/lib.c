@@ -236,7 +236,13 @@ void InfightAlert(mobj_t* actor)
         && IsMonster(actor->target)
         && Marshmallow_InfightAlert )
     {
-        SHOW_MESSAGE DEH_String(MONSTERFIGHT);
+        if ( PlayerIsDead() )
+            return;
+
+        //SHOW_MESSAGE DEH_String(MONSTERFIGHT);
+
+        HUlib_addMessageToSText(&second_extraline, 0, DEH_String(MONSTERFIGHT));
+        second_extraline_timeout = SHORT_EXTRALINE_TIMEOUT;
     }
     else
     {
@@ -274,12 +280,15 @@ void OfferRadsuit(player_t* player)
 	&& player->extra_powers[ITEM_RADSUIT]
 	&& !offer_medkit)
 	{
-		if (MAIN_PLAYER.playerstate != PST_LIVE)
-		return;
+        if ( PlayerIsDead() )
+            return;
 
 	offer_radsuit = true;
 	offertimeout_radsuit = DEFAULT_OFFER_TIMEOUT;
-	player->message = DEH_String(PROMPTRADSUIT);
+
+	//player->message = DEH_String(PROMPTRADSUIT);
+	HUlib_addMessageToSText(&first_extraline, 0, DEH_String(PROMPTRADSUIT));
+	first_extraline_timeout = DEFAULT_EXTRALINE_TIMEOUT;
 	}
 }
 
@@ -287,7 +296,7 @@ void OfferRadsuit(player_t* player)
 void LowHealthWarning()
 {
 	if (MAIN_PLAYER.extra_powers[ITEM_MEDKIT] == false
-		|| MAIN_PLAYER.playerstate != PST_LIVE)
+		|| PlayerIsDead() )
 	return;
 
 	if (MAIN_PLAYER.health <= 33   // medkit overrides radsuit if health is low
@@ -299,7 +308,9 @@ void LowHealthWarning()
 		offer_medkit = true;
 		offertimeout_medkit = DEFAULT_OFFER_TIMEOUT;
 
-		MAIN_PLAYER.message = DEH_String(PROMPTMEDKIT);
+		//MAIN_PLAYER.message = DEH_String(PROMPTMEDKIT);
+        HUlib_addMessageToSText(&first_extraline, 0, DEH_String(PROMPTMEDKIT));
+        first_extraline_timeout = DEFAULT_EXTRALINE_TIMEOUT;
 	}
 }
 
@@ -309,53 +320,23 @@ void BerserkReminder()
 	if (!Marshmallow_BerserkReminder)
 		return;
 
+    if ( PlayerIsDead() )
+        return;
+
 	if (MAIN_PLAYER.pendingweapon == wp_fist
 		&& MAIN_PLAYER.powers[pw_strength])
-		SHOW_MESSAGE DEH_String(YOUBERSERK);
+	{
+        SHOW_MESSAGE DEH_String(YOUBERSERK);
+    }
 }
 
 
-void CheckCurrentSkill()
-{
-	if (deathmatch && realnetgame)
-	{
-	//SHOW_MESSAGE "PLAYING DEATHMATCH!";
-	return;
-	}
-
-	switch (gameskill)
-	{
-		case sk_baby:
-			SHOW_MESSAGE DEH_String(SKILL_ITYTD);
-			break;
-		case sk_easy:
-			SHOW_MESSAGE DEH_String(SKILL_HNTR);
-			break;
-		case sk_medium:
-			SHOW_MESSAGE DEH_String(SKILL_HMP);
-			break;
-		case sk_hard:
-			SHOW_MESSAGE DEH_String(SKILL_UV);
-			break;
-		case sk_nightmare:
-			SHOW_MESSAGE DEH_String(SKILL_NM);
-			break;
-	}
-	
-	if (Marshmallow_AlternateNightmare)
-		SHOW_MESSAGE DEH_String(ALTNM);
-
-	if (Marshmallow_AlternateUltraViolence)
-		SHOW_MESSAGE DEH_String(ALTUV);
-}
-
-
-#define MENU_KEYPRESS_DELAY 7 // was 10 for a while
+#define MENU_KEYPRESS_DELAY 7
 
 boolean CheckKeyDelay()  // TODO: could move the sound effect in here so it's only called in one spot 
 {
 	if (menu_key_delay)
-		return true;		// true means we will be aborting the calling function
+		return true;		// aborting calling function
 
 	SetKeyDelay();
 
@@ -385,17 +366,6 @@ char* ShowIntAsChar(int val, int color)
 	char string[16];
 
 	sprintf( string, "%d", val );
-	//CrispyReplaceColor( string, color, string);
-
-	return DEH_String( string );
-}
-
-
-char* ShowFloatAsChar(float val, int color)  // doesn't actually apply the color yet
-{
-	char string[16];
-
-	sprintf( string, "%f", val );
 	//CrispyReplaceColor( string, color, string);
 
 	return DEH_String( string );
@@ -644,8 +614,6 @@ void SetSkillUpgrades()
 		break;
 	
 	default:
-		//upgrade_chance = 0;  // needed?  let's try without it 3-21-19
-
 		Marshmallow_AlternateUltraViolence = false;
 		Marshmallow_AlternateNightmare = false;
 		Marshmallow_RespawnInNightmare = true;
@@ -785,7 +753,6 @@ void CheckDuplicateLine()
 	if (!strcmp(buf1, buf2))
 	{
 		MAIN_PLAYER.message = " ";
-		//SHOW_MESSAGE "STRCMP";
 		extra_textline_on = false;   
 	}
 }
@@ -906,9 +873,25 @@ void DoTimeouts()
 
 	if (MAIN_PLAYER.victim 
 		&& MAIN_PLAYER.victim->target_timeout)
-		   MAIN_PLAYER.victim->target_timeout--;   
+		   MAIN_PLAYER.victim->target_timeout--;
 
-	if (offertimeout_suicide)
+	if (first_extraline_timeout)
+	{
+	    first_extraline_on = true;
+        first_extraline_timeout--;
+    }
+    else
+        first_extraline_on = false;
+
+    if (second_extraline_timeout)
+    {
+        second_extraline_on = true;
+        first_extraline_timeout--;
+    }
+    else
+        second_extraline_on = false;
+
+    if (offertimeout_suicide)
 		offertimeout_suicide--;
 	else
 		offer_suicide = false;
@@ -929,7 +912,7 @@ void DoTimeouts()
 	if (menu_key_delay)  
 		menu_key_delay--;
 
-	for (p=0; p<MAXPLAYERS; p++)  // new for loop here 1-24-20
+	for (p=0; p<MAXPLAYERS; p++)
 	{
 		if ( !playeringame[p] )
 			continue;
@@ -945,7 +928,7 @@ void DoTimeouts()
 	|| MAIN_PLAYER.playerstate != PST_LIVE)
 		missilelock_on = false;
 
-	if (!usedelay)  // moved here from Bot_UseStuff()
+	if (!usedelay)
 	{
 		usedelay = BOT_USE_DELAY;   
 		Bots[BOT_1].waiting_for_door = false;
@@ -962,7 +945,6 @@ void DoTimeouts()
 
 	if (BotsInGame && !deathmatch)
 	{
-		//if (MAIN_PLAYER.cmd.buttons == BT_USE)
 		if (gamekeydown[key_use])
 		{
 			usetimer++;
@@ -988,7 +970,7 @@ void DoTimeouts()
 		}
 	}
 	
-	spawntics++;
+	spawntics++;  // spawntics is the same as leveltime
 
 	HandleSprint();
 }
@@ -1002,7 +984,7 @@ void BFG_MegaBlast(mobj_t *actor)
   fixed_t misc2 = actor->state->misc2 ? actor->state->misc2 : FRACUNIT/2;
 
   if (!Marshmallow_BFGBlastWave || realnetgame)  // This creates too much lag in netgames
-  return;
+    return;
 
   for (i = -n; i <= n; i += 8)   
   {
@@ -1024,11 +1006,9 @@ void BFG_MegaBlast(mobj_t *actor)
 }
 
 
-mobj_t* Marshmallow_InitScaledMonster(mobj_t* monster)
+void Marshmallow_InitScaledMonster(mobj_t* monster)
 {
 	monster->health *= MonsterHitpointsScale;
-
-	//return monster;  // this should fix compiler warning
 }
 
 
@@ -1101,9 +1081,6 @@ void Marshmallow_SetupLevel()
 	flashlight_on = false;
 
 	marshmallow_tic = NULL;
-
-	//if (realnetgame)
-	//	M_ClearRandom();
 }
 
 
@@ -1304,7 +1281,7 @@ boolean Marshmallow_CheckForMultiplayerEvent()
 		}
 	}
 
-	return false;  // without this it returns true every time
+	return false;
 }
 
 
@@ -1535,16 +1512,6 @@ static void GameplayKeyInput()
 
 		MightyFistEngaged();
 	}
-
-	if (gamekeydown[key_q])  
-	{                   
-		return;  // Sprint disabled for now
-
-	    if (!Marshmallow_AllowSprint)
-			return;
-
-		PlatformingSprint();
-	}
 }
 
 
@@ -1555,7 +1522,7 @@ void Marshmallow_Controls()
 }
 
 
-void LaunchHelpWidget()   // now only handled in M_Responder()
+void LaunchHelpWidget()
 {
 	if (botcommandmenu_on)
 		return;
@@ -1566,12 +1533,10 @@ void LaunchHelpWidget()   // now only handled in M_Responder()
 	S_StartSound(NULL, sfx_tink);
 		
 	if (menus_on)
-		HideAllMenus();  // NEW testing....
+		HideAllMenus();
 
 	if (pkereadout_on)
 		pkereadout_on = false;
-	
-	//mainmenu_on = false; 
 	
 	if (help_on)
 		help_on = false;
@@ -1582,14 +1547,14 @@ void LaunchHelpWidget()   // now only handled in M_Responder()
 
 void PlayBonusSound(blipsound_t length)
 {
-	// If Keen sounds aren't available, just play getpow
+	// If Keen sounds aren't available, just play sfx_getpow
 	if ( GetGameType() == DOOM1 ) 
 	{
 		S_StartSound( NULL, sfx_getpow );
 		return;
 	}
 
-	// Otherwise, play the "blippy" Keen sounds
+	// Otherwise, play the Keen sounds
 	if ( length == SHORTBLIP )
 		S_StartSound( NULL, sfx_keenpn );
 	
@@ -1635,7 +1600,7 @@ void LowAmmoWarning()
 }
 
 
-boolean IsPlayer(mobj_t* actor)   // maybe make this only check if MAIN_PLAYER, since we already have IsBot()
+boolean IsPlayer(mobj_t* actor)
 {
 	if (!actor)
 		return false;
@@ -1789,7 +1754,7 @@ void PushBarrel()
 
 	int p;
 
-	if (!Marshmallow_BarrelPushing)  // 3-6-2020 testing.........
+	if (!Marshmallow_BarrelPushing)
 		return;
 
 	for (p=0; p<MAXPLAYERS; p++)
@@ -1825,38 +1790,6 @@ void ResetBarrel()
 			}
 		}
 	}
-}
-
-
-void PlatformingSprint()   
-{
-	boolean onground;
-	onground = (MAIN_PLAYER.mo->z <= MAIN_PLAYER.mo->floorz);
-
-	if (realnetgame)  // until we get it working in multiplayer
-		return;
-
-	if (deathmatch)
-		return;
-
-	if ( MAIN_PLAYER.cmd.forwardmove == 0 )  // dont' do anything unless we're moving forward
-		return;
-
-	if (MAIN_PLAYER.playerstate != PST_LIVE)
-		return;
-
-	if (sprint_timeout > 0 && !too_tired_to_sprint)
-	{
-		sprint_timeout--;
-		sprint_recharge -= 3;
-	}
-	else 
-		return;
-
-	if (onground)  // need this or else player is "launched" when going up/down stairs
-		P_Thrust(&MAIN_PLAYER, MAIN_PLAYER.mo->angle, SPRINT_SPEED);  // teleport freeze not happening when sprinting into one
-	//else
-	//	sprint_timeout = DEFAULT_SPRINT_TIMEOUT;
 }
 
 
@@ -1910,21 +1843,18 @@ void MightyFistEngaged()
 
 void AutoUse() 
 {
-//	int dist;
-	
 	if (!Marshmallow_AutoUse)
 		return;
 
     if (gamekeydown[key_use])
-        AutoUseDelay = DEFAULT_AUTO_USE_DELAY;   // [marshmallow] reset autouse timer so it's not re-triggering stuff we already opened manually
+        AutoUseDelay = DEFAULT_AUTO_USE_DELAY;   // Reset autouse timer so it's not re-triggering doors we already opened manually
 
-	if ( realnetgame )  // until we get it working in multiplayer
+	if ( realnetgame )
 	return;
 
 	if (!AutoUseDelay)
 	{
 		P_UseLines(&players[consoleplayer]);
-		MAIN_PLAYER.cmd.buttons |= BT_USE;   // untested
 		AutoUseDelay = DEFAULT_AUTO_USE_DELAY;
 	}
 	else
@@ -1932,7 +1862,8 @@ void AutoUse()
 }
 
 
-/*static*/ void DropWeaponOnPlayerDeath(mobj_t* target)
+// Players drop their readyweapon at time of death
+void DropWeaponOnPlayerDeath(mobj_t* target)
 {
 	int weapon_x, weapon_y, weapon_z;
 	unsigned an;
@@ -1942,66 +1873,67 @@ void AutoUse()
 
 	bot_t bot;
 
-	if ( bot = IsBot(target->player) )  // bot weapon drop
+    // Bot weapon drop
+	if ( bot = IsBot(target->player) )
 	{
 		switch (this_Bot.weapon)
 		{
 		case BOT_SHOTGUN:
-			player_weapon =  MT_SHOTGUN;
+			player_weapon = MT_SHOTGUN;
 			break;
 
 		case BOT_SUPERSHOTGUN:
-			player_weapon =  MT_SUPERSHOTGUN;
+			player_weapon = MT_SUPERSHOTGUN;
 			break;
 
 		case BOT_CHAINGUN:
-			player_weapon =  MT_CHAINGUN;
+			player_weapon = MT_CHAINGUN;
 			break;
 
 		case BOT_MISSILE:
-			player_weapon =  MT_MISC27;
+			player_weapon = MT_MISC27;
 			break;
 
 		case BOT_PLASMA:
-			player_weapon =  MT_MISC28;
+			player_weapon = MT_MISC28;
 			break;
 
 		case BOT_GREENPLASMA:
-			player_weapon =  MT_MISC28;
+			player_weapon = MT_MISC28;
 			break; 
 
 		case BOT_BFG:
-			player_weapon =  MT_MISC25;
+			player_weapon = MT_MISC25;
 			break;
 		
 		default:
 			return;
 		}
 	}
-	else  // player weapon drop
+	else  // Player weapon drop
 	{
  		switch (target->player->readyweapon)
 		{
 			case wp_chainsaw:
-				player_weapon =  MT_MISC26;
+				player_weapon = MT_MISC26;
 				break;
 			case wp_shotgun:
-				player_weapon =  MT_SHOTGUN;
+				player_weapon = MT_SHOTGUN;
 				break;
 			case wp_supershotgun:
-				player_weapon =  MT_SUPERSHOTGUN;
+				player_weapon = MT_SUPERSHOTGUN;
 				break;
 			case wp_chaingun:
-				player_weapon =  MT_CHAINGUN;
+				player_weapon = MT_CHAINGUN;
 				break;
 			case wp_missile:
-				player_weapon =  MT_MISC27;
+				player_weapon = MT_MISC27;
 				break;
 			case wp_plasma:
-				player_weapon =  MT_MISC28;
+				player_weapon = MT_MISC28;
 				break;
 			case wp_bfg:
-				player_weapon =  MT_MISC25;
+				player_weapon = MT_MISC25;
 				break;
 			default:
 				return;
@@ -2014,7 +1946,7 @@ void AutoUse()
 	weapon_y = target->y + FixedMul (24*FRACUNIT, finesine[an]) + MARSHMALLOW_ITEMDROP_OFFSET;
 	weapon_z = target->z + DROP_FROM_ABOVE_FLOOR;
 
-	mo = P_SpawnMobj (weapon_x,weapon_y,weapon_z, player_weapon);   // Player will drop the gun they had
+	mo = P_SpawnMobj (weapon_x,weapon_y,weapon_z, player_weapon);
 	mo->flags |= MF_DROPPED;	
 
 	if ( deathmatch )

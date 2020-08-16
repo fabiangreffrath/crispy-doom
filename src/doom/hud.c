@@ -647,6 +647,7 @@ void ScoreboardReadout()
 
 void InitHUDMenuText()							
 {
+    HUD_InitExtraLines();
 	HUD_InitHelp();
 	HUD_InitEnemyMenu();
 	HUD_InitWeaponMenu();
@@ -677,8 +678,8 @@ extern void Draw_Wallpaper(char* tile);
 
 void DrawHUDMenu()
 {
-	//if ( gamestate != GS_LEVEL )  // TESTING to prevent datapad crash
-	//	return;
+    HUlib_drawSText(&first_extraline);
+    HUlib_drawSText(&second_extraline);
 	
 	if ( profilescreen_on )
 		DrawProfile();
@@ -1121,7 +1122,7 @@ void HUDMenuTicker()
 
 // info readouts
 
-	miscreadout_on = true; // temporary
+	//miscreadout_on = true; // temporary
 
 	UpdateInfoReadout();
 
@@ -4014,6 +4015,20 @@ void HUDMenuKeyInput()
 			}
 		}
 	}
+}
+
+
+void HUD_InitExtraLines()
+{
+    HUlib_initSText(&first_extraline,
+                    0, 10, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &first_extraline_on);
+
+    HUlib_initSText(&second_extraline,
+                    0, 20, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &second_extraline_on);
 }
 
 

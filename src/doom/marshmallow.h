@@ -135,7 +135,7 @@ int CheckForOtherIWAD();
 int CheckIfFileExists(const char *filename, const char *mode);
 void OfferRadsuit(player_t* player);
 mobjtype_t RandomTreasureItem(int i, int probability);
-mobj_t* Marshmallow_InitScaledMonster(mobj_t* monster);
+void Marshmallow_InitScaledMonster(mobj_t* monster);
 boolean IsWeapon(mobj_t* mo);
 boolean IsMonster(mobj_t* actor);
 boolean IsPlayer(mobj_t* actor);
@@ -338,6 +338,12 @@ boolean botcommandmenu_on;
 boolean offer_suicide;
 boolean offer_radsuit;
 boolean offer_medkit;
+boolean first_extraline_on;
+boolean second_extraline_on;
+int first_extraline_timeout;
+int second_extraline_timeout;
+#define DEFAULT_EXTRALINE_TIMEOUT 250 // tics
+#define SHORT_EXTRALINE_TIMEOUT 100
 
 // Inventory menu
 int invmenu_selection;

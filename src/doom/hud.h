@@ -90,6 +90,7 @@ char* ShowSkillLevel();
 char* ShowGameType();
 char* ShowSongLength();
 char* ShowBotWeapon(int bot);
+void HUD_InitExtraLines();
 void HUD_InitHelp();
 void HUD_InitEnemyMenu();
 void HUD_InitWeaponMenu();
@@ -601,5 +602,7 @@ hu_stext_t profile_treasurered;
 hu_stext_t profile_alltreasure;
 hu_stext_t profile_allkills;
 
+hu_stext_t first_extraline;
+hu_stext_t second_extraline;
 
 #endif
