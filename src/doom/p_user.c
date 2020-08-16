@@ -109,7 +109,6 @@ void P_CalcHeight (player_t* player)
     angle = (FINEANGLES/20*leveltime)&FINEMASK;
     bob = FixedMul ( player->bob2/2, finesine[angle]); // [crispy] variable player view bob
 
-    
     // move viewheight
     if (player->playerstate == PST_LIVE)
     {

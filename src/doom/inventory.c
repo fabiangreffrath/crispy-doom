@@ -35,6 +35,7 @@ void UsePortableMedkit()
 					
 	MAIN_PLAYER.message = DEH_String(USINGMEDKIT);
 	
+	first_extraline_timeout = 0;
 	invmenu_on = false;
 	offer_medkit = false;
 	offertimeout_medkit = 0;
