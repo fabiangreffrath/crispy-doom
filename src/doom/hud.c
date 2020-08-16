@@ -1122,7 +1122,7 @@ void HUDMenuTicker()
 
 // info readouts
 
-	//miscreadout_on = true; // temporary
+	miscreadout_on = true; // Hack so our squad command menu works
 
 	UpdateInfoReadout();
 
@@ -2858,20 +2858,6 @@ void HUDMenuKeyInput()
 				SetKeyDelay();
 				break;
 
-			//case CHANGESKILL_SELECTED:
-			//	mainmenu_on = false;
-			//	skillmenu_on = true;
-			//	skill_selection = SetCursorToSkill() + 1;
-			//	CheckCurrentSkill();
-			//	SetKeyDelay();
-			//	break;
-
-			//case INVMENU_SELECTED:
-			//	LaunchInventoryMenu();
-
-			//	mainmenu_on = false;
-			//	break;
-
 			case SUICIDE_SELECTED:
 				if (!offer_suicide)
 				{
@@ -2884,7 +2870,6 @@ void HUDMenuKeyInput()
 					if (!netgame)
 						PlayerKillsHimself(MAIN_PLAYER.mo);
 					else
-					//	MarshmallowEvents.suicide = 1;  // experiment 2018
 						Marshmallow_SendMultiplayerEvent(MARSHMALLOW_SOMEONE_KILLED_THEMSELF);
 					mainmenu_on = false;
 					offer_suicide = false;
@@ -3100,11 +3085,9 @@ void HUDMenuKeyInput()
 				break;
 			case PLSLOW_SELECTED:
 				Marshmallow_PlasmaSlowdown = !Marshmallow_PlasmaSlowdown;
-				// no switcher funciton needed for this one
 				break;
 			case BFGWAVE_SELECTED:
 				Marshmallow_BFGBlastWave = !Marshmallow_BFGBlastWave;
-				// no switcher funciton needed for this one
 				break;
 			}
 		}
@@ -3133,7 +3116,7 @@ void HUDMenuKeyInput()
 
 	if (sandboxmenu_on)
 	{
-		if (gamekeydown[key_left])  // NEW: left arrow key for map selection
+		if (gamekeydown[key_left])
 		{
 			if (CheckKeyDelay())
 			return;
@@ -3144,7 +3127,7 @@ void HUDMenuKeyInput()
 			}
 		}
 
-		if (gamekeydown[key_right])  // NEW: left arrow key for map selection
+		if (gamekeydown[key_right])
 		{
 			if (CheckKeyDelay())
 			return;
@@ -3359,12 +3342,6 @@ void HUDMenuKeyInput()
 
 			case RESTARTMAP_SELECTED:
 
-				//if (netgame)   // at least until we add a CmdEvent for it to work in netgame UPDATE: this menu will be disabled in netgame anyway
-				//{
-				//	MAIN_PLAYER.message = "FEATURE CURRENTLY DISALBED IN NETGAME";
-				//	return;
-				//}
-
 				mainmenu_on = false;
 
 				RestartMap();
@@ -3377,16 +3354,9 @@ void HUDMenuKeyInput()
 			
 				SkipToRandomLevel();
 
-				//mainmenu_on = false;
 				gaveweapons = false;
 
 				break;
-
-			//case SKIPTOMAP_SELECTED:
-
-			//	ChooseLevel();
-
-			//	break;
 
 			case MAPSKIPWEAPONS_SELECTED:
 
@@ -3469,12 +3439,6 @@ void HUDMenuKeyInput()
 			{
 			case MODE_VANILLA_SELECTED:
 
-				//if ( Marshmallow_PlayingSigil )
-				//{
-					//SHOW_MESSAGE "SIGIL SONGS ONLY AVAILABLE IN VANILLA MODE.";
-					//break;
-				//}
-
 				S_StartSound(NULL, sfx_hoof);
 				ChangeMusicMode();
 				vanillamusicmenu_on = false;
@@ -3516,8 +3480,8 @@ void HUDMenuKeyInput()
 			if (!Marshmallow_DynamicMusic)
 				return;
 
-			//S_StartSound(MAIN_PLAYER.mo, sfx_hoof);
-			if (musicmenu_selection == MAX_MUSICMENU_ITEMS - offset)   // account for "GAME" line not always being there
+            // Must account for "GAME" line not always being there
+			if (musicmenu_selection == MAX_MUSICMENU_ITEMS - offset)
 				musicmenu_selection = FIRST_MENU_ITEM;
 			else
 				musicmenu_selection++;
@@ -3531,7 +3495,6 @@ void HUDMenuKeyInput()
 			if (!Marshmallow_DynamicMusic)
 				return;
 
-			//S_StartSound(MAIN_PLAYER.mo, sfx_hoof);
 			if (musicmenu_selection == 1)
 				musicmenu_selection = MAX_MUSICMENU_ITEMS - offset;
 			else
@@ -3563,17 +3526,6 @@ void HUDMenuKeyInput()
 					DJ_NextTrack();
 
 				break;
-
-			//case SHUFFLE_SELECTED:
-			//	S_StartSound(NULL, sfx_hoof);
-
-			//	Doom_DJ.shuffle = !Doom_DJ.shuffle;
-
-			//	//DJ_StartFadeout();
-			//	//I_StopSong();
-			//	//if (Marshmallow_DynamicMusic)
-			//	//	DJ_PrevTrack();
-			//	break;
 
 			case DJMSGS_SELECTED:
 				Marshmallow_DJMessages = !Marshmallow_DJMessages;
@@ -3612,7 +3564,6 @@ void HUDMenuKeyInput()
 				if (!blacklistmenu_selection)
 					blacklistmenu_selection = FIRST_MENU_ITEM;
 
-				//SetKeyDelay();
 				break;
 			}
 		}
@@ -3685,7 +3636,6 @@ void HUDMenuKeyInput()
 			if (CheckKeyDelay())
 			return;
 
-			//S_StartSound(MAIN_PLAYER.mo, sfx_hoof);
 			if (options_selection == MAX_GAMEPLAY_OPTIONS - offset)
 				options_selection = FIRST_MENU_ITEM;
 			else
@@ -3697,7 +3647,6 @@ void HUDMenuKeyInput()
 			if (CheckKeyDelay())
 			return;
 
-			//S_StartSound(MAIN_PLAYER.mo, sfx_hoof);
 			if (options_selection == 1)
 				options_selection = MAX_GAMEPLAY_OPTIONS - offset;
 			else

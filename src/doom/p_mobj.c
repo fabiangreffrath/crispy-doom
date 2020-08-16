@@ -1154,7 +1154,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
     if ( IsMonster(mobj) )
     {
         if (MonsterHitpointsScale)
-            mobj = Marshmallow_InitScaledMonster(mobj);
+            /*mobj = */Marshmallow_InitScaledMonster(mobj);
 
         BuildObjList();
     }

@@ -135,7 +135,8 @@ boolean GetProfile()
 // Called when any cheat or level skipping occurs
 void DisableStats()
 {
-	if ( we_got_a_cheater )  // only come in here the first time
+    // Only come in here the first time
+	if ( we_got_a_cheater )
 		return;
 
 	we_got_a_cheater = true;
@@ -154,7 +155,8 @@ int CalculateAccuracy(int shots, int hit)
 	float f_acc; 
 	int acc;
 
-	if (shots && hit)  // only calculate if both are above zero
+    // Only calculate if both are above zero
+	if (shots && hit)
 	{
 		f_acc = (float)hit / (float)shots; 
 		acc = f_acc * 100;
