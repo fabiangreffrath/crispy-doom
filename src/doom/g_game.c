@@ -16,7 +16,7 @@
 //
 
 #include "marshmallow.h"  // [marshmallow]
-//#include "pkemeter.h"    // [marshmallow]  only for PKE_Reset?????
+
 extern void PKE_Reset();
 
 #include <string.h>

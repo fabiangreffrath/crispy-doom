@@ -157,6 +157,9 @@ void SetPunchSound();
 void ToggleFriendlyFire();
 int RandomEpisode();
 void SetSkills();
+void WriteToSecondConsoleLine(char* string, int timeout);
+void WriteToThirdConsoleLine(char* string, int timeout);
+void WriteToFourthConsoleLine(char* string, int timeout);
 void SetOptionsFromCfg();
 int skip_to_level;  // Map # we're skipping to
 void SkipToLevel();
@@ -175,7 +178,7 @@ void ToggleSong_Runnin();
 void ToggleSong_E1M1();
 void ToggleSong_DoomInter();
 void ToggleSong_Doom2Inter();
-void AddToInfoReadout(char* label, int val, int line);
+void AddIntegerToInfoReadout(char* label, int val, int line);
 void AddStringsToInfoReadout(char* label, char* output, int line);
 void ShowTargetHP();
 void PKE_Readout();
@@ -301,16 +304,6 @@ hu_stext_t pkeline3;
 hu_stext_t pkeline4;
 hu_stext_t pkeline8;
 
-// Missile-lock widget
-int missilelock_delay;
-#define MISSILE_LOCK_TIMEOUT 25
-#define MISSILELOCK_X 200
-#define MISSILELOCK_Y 15
-
-// Info readout widget
-void PKE_ShowInfo();
-void EraseInfoReadout();
-
 // On/off flags for every submenu
 boolean shortcutmenu_on;
 boolean pkereadout_on;
@@ -338,12 +331,14 @@ boolean botcommandmenu_on;
 boolean offer_suicide;
 boolean offer_radsuit;
 boolean offer_medkit;
-boolean first_extraline_on;
-boolean second_extraline_on;
-int first_extraline_timeout;
-int second_extraline_timeout;
-#define DEFAULT_EXTRALINE_TIMEOUT 250 // tics
-#define SHORT_EXTRALINE_TIMEOUT 100
+boolean second_consoleline_on;
+boolean third_consoleline_on;
+boolean fourth_consoleline_on;
+int second_consoleline_timeout;
+int third_consoleline_timeout;
+int fourth_consoleline_timeout;
+#define DEFAULT_EXTRALINE_TIMEOUT 250
+#define SHORT_EXTRALINE_TIMEOUT 150
 
 // Inventory menu
 int invmenu_selection;

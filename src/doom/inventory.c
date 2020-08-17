@@ -34,13 +34,13 @@ void UsePortableMedkit()
 	}
 					
 	MAIN_PLAYER.message = DEH_String(USINGMEDKIT);
-	
-	first_extraline_timeout = 0;
+
+    second_consoleline_timeout = 0;
 	invmenu_on = false;
 	offer_medkit = false;
 	offertimeout_medkit = 0;
 
-	MAIN_PLAYER.bonuscount += BONUSADD;  // HACK... just for screen flash...
+	MAIN_PLAYER.bonuscount += BONUSADD;  // Just for screen flash...
 }
 
 
@@ -88,15 +88,17 @@ void RecoverInventoryFromBackpack(mobj_t* toucher, mobj_t* special)
 		
 		toucher->player->ammo[i] += mo->dropped_backpack.ammo[i];
 
+        // Remove the free ammo we respawned with
 		if ( !Marshmallow_KeepFreeAmmo
-			&& toucher->player->ammo[i] - free_respawn_ammo[i] > 0 )  // Remove the free ammo we respawned with
+			&& toucher->player->ammo[i] - free_respawn_ammo[i] > 0 )
 		{
-			//if ( mo->dropped_backpack.ammo[i] >= free_respawn_ammo[i] )  // TESTING THIS LINE
+			//if ( mo->dropped_backpack.ammo[i] >= free_respawn_ammo[i] )
 			//if ( toucher->player->ammo[i] > free_respawn_ammo[i] * 2 )
 				toucher->player->ammo[i] -= free_respawn_ammo[i];
 		}
 
-		if ( toucher->player->ammo[i] > toucher->player->maxammo[i] )  // Don't let us go over maxammo
+        // Don't let us go over maxammo
+		if ( toucher->player->ammo[i] > toucher->player->maxammo[i] )
 			toucher->player->ammo[i] = toucher->player->maxammo[i];
 	}
 
@@ -125,7 +127,8 @@ boolean Marshmallow_GimmeThatPhatLoot(mobj_t* toucher, mobj_t* special)
 	  
 	P_GiveAmmo (toucher->player, am_clip, Marshmallow_LootMultiplier, false); // TODO: condense all of this to a for loop
 
-	if ( deathmatch )  // In deathmatch, give ammo for all weapons
+    // In deathmatch, give ammo for all weapons
+	if ( deathmatch )
 	{
 		P_GiveAmmo (toucher->player, am_shell, Marshmallow_LootMultiplier, false);
 		P_GiveAmmo (toucher->player, am_shell, Marshmallow_LootMultiplier, false);

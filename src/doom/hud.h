@@ -37,7 +37,7 @@ boolean miscreadout_on;  // move text inits back to hud.c, then this can be loca
 // TargetHP widget
 hu_stext_t targethp_readout;
 #define TARGETHP_X 200
-#define TARGETHP_Y 30
+#define TARGETHP_Y 60
 boolean targethp_on;
 
 // Help widget
@@ -49,6 +49,16 @@ boolean targethp_on;
 
 // Wallpaper/background tile graphic for datapad submenus
 #define MENU_WALLPAPER "COMP03_1"
+
+// Missile-lock widget
+int missilelock_delay;
+#define MISSILE_LOCK_TIMEOUT 25
+#define MISSILELOCK_X 200
+#define MISSILELOCK_Y 35
+
+// Info readout widget
+void PKE_ShowInfo();
+void EraseInfoReadout();
 
 // For gameplay options shortcut in main menu
 boolean mainmenu_breadcrumb;
@@ -602,7 +612,8 @@ hu_stext_t profile_treasurered;
 hu_stext_t profile_alltreasure;
 hu_stext_t profile_allkills;
 
-hu_stext_t first_extraline;
-hu_stext_t second_extraline;
+hu_stext_t second_consoleline;
+hu_stext_t third_consoleline;
+hu_stext_t fourth_consoleline;
 
 #endif

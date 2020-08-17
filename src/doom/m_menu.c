@@ -3324,10 +3324,15 @@ void M_Drawer (void)
         // Draw the version number and keyboard help info
         CrispyReplaceColor(MENUHELP1, CR_GOLD, MENUHELP1);
         M_WriteText(TITLEHELP_LINE1_X, TITLEHELP_LINE1_Y, DEH_String(MENUHELP1));
-        CrispyReplaceColor(MENUHELP2, CR_GREEN, "'H'");
-        M_WriteText(TITLEHELP_LINE2_X, TITLEHELP_LINE2_Y, DEH_String(MENUHELP2));
-        CrispyReplaceColor(MENUHELP3, CR_DARK, "Keyboard");
-        M_WriteText(TITLEHELP_LINE3_X, TITLEHELP_LINE3_Y, DEH_String(MENUHELP3));
+
+        // Only show help screen hint while a game is in progress because our help screen is in the playloop
+        if (usergame)
+        {
+            CrispyReplaceColor(MENUHELP2, CR_GREEN, "'H'");
+            M_WriteText(TITLEHELP_LINE2_X, TITLEHELP_LINE2_Y, DEH_String(MENUHELP2));
+            CrispyReplaceColor(MENUHELP3, CR_DARK, "Keyboard");
+            M_WriteText(TITLEHELP_LINE3_X, TITLEHELP_LINE3_Y, DEH_String(MENUHELP3));
+        }
     }
     // [m]
     

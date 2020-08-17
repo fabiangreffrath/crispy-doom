@@ -18,9 +18,9 @@ void UpdateInfoReadout()
 	}
 	else
 	{
-        //AddToInfoReadout("MonsterHitpointsScale: ", MonsterHitpointsScale, 5);
-        //AddToInfoReadout("marshmallow_rndindex: ", marshmallow_rndindex, 7);
-        //AddToInfoReadout("prndindex: ", prndindex, 8);
+        //AddIntegerToInfoReadout("MonsterHitpointsScale: ", MonsterHitpointsScale, 5);
+        //AddIntegerToInfoReadout("marshmallow_rndindex: ", marshmallow_rndindex, 7);
+        //AddIntegerToInfoReadout("prndindex: ", prndindex, 8);
 
 		DJ_ShowInfo();
 		
@@ -548,12 +548,12 @@ void BotCommandMenu()
 
 void ScoreboardReadout()
 {
-	//AddToInfoReadout("Player1: ", players[0].cmd.chatchar, 3);
-	//AddToInfoReadout("Player2: ", players[1].cmd.chatchar, 4);
-	//AddToInfoReadout("Player3: ", players[2].cmd.chatchar, 5);
-	//AddToInfoReadout("Player4: ", players[3].cmd.chatchar, 6);	
+	//AddIntegerToInfoReadout("Player1: ", players[0].cmd.chatchar, 3);
+	//AddIntegerToInfoReadout("Player2: ", players[1].cmd.chatchar, 4);
+	//AddIntegerToInfoReadout("Player3: ", players[2].cmd.chatchar, 5);
+	//AddIntegerToInfoReadout("Player4: ", players[3].cmd.chatchar, 6);
 
-	//AddToInfoReadout("netgamesignal: ", netgamesignal, 8);
+	//AddIntegerToInfoReadout("netgamesignal: ", netgamesignal, 8);
 	
 	if (menus_on || profilescreen_on || !BotsInGame || botcommandmenu_on)
 		return;
@@ -563,17 +563,17 @@ void ScoreboardReadout()
 		// TODO: we need our own hu_stext objects for these three score lines
 
 		if (BotsInGame >= 1)
-			AddToInfoReadout(DEH_String(BOT1LABEL), ShowScore(BOT_1), 6);
+            AddIntegerToInfoReadout(DEH_String(BOT1LABEL), ShowScore(BOT_1), 6);
 		//else
 		//	AddStringsToInfoReadout("", "", 6);
 
 		if (BotsInGame >= 2)
-			AddToInfoReadout(DEH_String(BOT2LABEL), ShowScore(BOT_2), 7);
+            AddIntegerToInfoReadout(DEH_String(BOT2LABEL), ShowScore(BOT_2), 7);
 		//else
 		//	AddStringsToInfoReadout("", "", 7);
 
 		if (BotsInGame >= 3)
-			AddToInfoReadout(DEH_String(BOT3LABEL), ShowScore(BOT_3), 8);
+            AddIntegerToInfoReadout(DEH_String(BOT3LABEL), ShowScore(BOT_3), 8);
 		//else
 		//	AddStringsToInfoReadout("", "", 8);
 	}	
@@ -598,21 +598,21 @@ void ScoreboardReadout()
 			AddToInfoReadout("BOT_2 node: ", Bots[BOT_2].player->mo->current_node, 2);   // TEMP
 		
 		if (BotsInGame >= 3 && Bots[BOT_3].player->mo)
-			AddToInfoReadout("BOT_3 node: ", Bots[BOT_3].player->mo->current_node, 3);   // TEMP
+			AddIntegerToInfoReadout("BOT_3 node: ", Bots[BOT_3].player->mo->current_node, 3);   // TEMP
 		*/
-		//AddToInfoReadout("total_nodes: ", main_path.total_nodes, 4);   // TEMP
+		//AddIntegerToInfoReadout("total_nodes: ", main_path.total_nodes, 4);   // TEMP
 		
-		//AddToInfoReadout("targetingTimeout: ", Bots[BOT_1].targetingTimeout, 3);
-		//AddToInfoReadout("stuck_timeout: ", Bots[BOT_1].stuck_timeout, 4);
+		//AddIntegerToInfoReadout("targetingTimeout: ", Bots[BOT_1].targetingTimeout, 3);
+		//AddIntegerToInfoReadout("stuck_timeout: ", Bots[BOT_1].stuck_timeout, 4);
 
 
 		}
 
 		//if (BotsInGame >= 2 && Bots[BOT_2].player->mo)
-		//AddToInfoReadout("BOT_2 node: ", Bots[BOT_2].player->mo->current_node, 2);   // TEMP
+		//AddIntegerToInfoReadout("BOT_2 node: ", Bots[BOT_2].player->mo->current_node, 2);   // TEMP
 
 		//if (BotsInGame >= 3 && Bots[BOT_3].player->mo)
-		//AddToInfoReadout("BOT_3 node: ", Bots[BOT_3].player->mo->current_node, 3);   // TEMP
+		//AddIntegerToInfoReadout("BOT_3 node: ", Bots[BOT_3].player->mo->current_node, 3);   // TEMP
 
 		
 
@@ -678,8 +678,9 @@ extern void Draw_Wallpaper(char* tile);
 
 void DrawHUDMenu()
 {
-    HUlib_drawSText(&first_extraline);
-    HUlib_drawSText(&second_extraline);
+    HUlib_drawSText(&second_consoleline);
+    HUlib_drawSText(&third_consoleline);
+    HUlib_drawSText(&fourth_consoleline);
 	
 	if ( profilescreen_on )
 		DrawProfile();
@@ -3969,15 +3970,20 @@ void HUDMenuKeyInput()
 
 void HUD_InitExtraLines()
 {
-    HUlib_initSText(&first_extraline,
+    HUlib_initSText(&second_consoleline,
                     0, 10, HU_MSGHEIGHT,
                     hu_font,
-                    HU_FONTSTART, &first_extraline_on);
+                    HU_FONTSTART, &second_consoleline_on);
 
-    HUlib_initSText(&second_extraline,
+    HUlib_initSText(&third_consoleline,
                     0, 20, HU_MSGHEIGHT,
                     hu_font,
-                    HU_FONTSTART, &second_extraline_on);
+                    HU_FONTSTART, &third_consoleline_on);
+
+    HUlib_initSText(&fourth_consoleline,
+                    0, 30, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &fourth_consoleline_on);
 }
 
 
