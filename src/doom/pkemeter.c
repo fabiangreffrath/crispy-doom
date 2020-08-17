@@ -427,16 +427,16 @@ void PKE_ShowInfo()
 
 	// TODO: color
 
-	AddToInfoReadout("on_radar: ", pke->monsters_onradar, 2);
-	AddToInfoReadout("healthpoints_onradar: ", pke->healthpoints_onradar,3);
+    AddIntegerToInfoReadout("on_radar: ", pke->monsters_onradar, 2);
+    AddIntegerToInfoReadout("healthpoints_onradar: ", pke->healthpoints_onradar, 3);
 
-	AddToInfoReadout("attackers_total: ", pke->attackers_total, 5);
-	AddToInfoReadout("attackers_hp: ", pke->attackers_hp, 6);
+    AddIntegerToInfoReadout("attackers_total: ", pke->attackers_total, 5);
+    AddIntegerToInfoReadout("attackers_hp: ", pke->attackers_hp, 6);
 
-	AddToInfoReadout("highdanger_threshold: ", pke->highdanger_threshold, 8);
+    AddIntegerToInfoReadout("highdanger_threshold: ", pke->highdanger_threshold, 8);
 
-	//AddToInfoReadout("monsters_in_level: ", pke->monsters_in_level, 7);
-	//AddToInfoReadout("monsters_remaining: ", pke->monsters_remaining, 8);
+	//AddIntegerToInfoReadout("monsters_in_level: ", pke->monsters_in_level, 7);
+	//AddIntegerToInfoReadout("monsters_remaining: ", pke->monsters_remaining, 8);
 }
 
 

@@ -1261,7 +1261,8 @@ void Founders_ParticleSystem_Baseline1031(mobj_t *actor)
 	particlesystem_args_t args;
 
 	initParticleSystemArgs(&args);
-	args.is_random_offset = false;				//  NEW
+	args.num_particles = 64;  // Decreased particles to improve performance
+	args.is_random_offset = false;
 	args.type = MT_PARTICLE_FATSHOT;
 	Founders_ParticleCloud1031(actor, &args);
 }

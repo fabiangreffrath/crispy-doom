@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CMakeWorkspace" PROJECT_DIR="$PROJECT_DIR$" />
+  <component name="CidrRootsConfiguration">
+    <excludeRoots>
+      <file path="$PROJECT_DIR$/src/heretic" />
+      <file path="$PROJECT_DIR$/src/hexen" />
+      <file path="$PROJECT_DIR$/src/setup" />
+      <file path="$PROJECT_DIR$/src/strife" />
+      <file path="$PROJECT_DIR$/textscreen" />
+    </excludeRoots>
+  </component>
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="ES6" />
   </component>

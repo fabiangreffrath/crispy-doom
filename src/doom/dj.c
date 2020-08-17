@@ -829,14 +829,14 @@ boolean DJ_Msg_On()
 void DJ_ShowInfo()
 {
 
-	AddToInfoReadout("music_threshold: ", PKE_Meter.highdanger_threshold, 1);
-    AddToInfoReadout("danger: ", PKE_Meter.attackers_hp, 2);
-	AddToInfoReadout("safety_time: ", PKE_Meter.safety_time, 3);
-	AddToInfoReadout("music_tic: ", Doom_DJ.musictic, 4);
-	AddToInfoReadout("marshmallow_tic: ", marshmallow_tic, 5);
-    AddToInfoReadout("last_intense_song: ", Doom_DJ.last_intense_song, 6);
-    AddToInfoReadout("track_playing: ", Doom_DJ.playlist[ Doom_DJ.track_playing ], 7);
-    AddToInfoReadout("bossfight: ", PKE_Meter.bossfight, 8);
+    AddIntegerToInfoReadout("music_threshold: ", PKE_Meter.highdanger_threshold, 1);
+    AddIntegerToInfoReadout("danger: ", PKE_Meter.attackers_hp, 2);
+    AddIntegerToInfoReadout("safety_time: ", PKE_Meter.safety_time, 3);
+    AddIntegerToInfoReadout("music_tic: ", Doom_DJ.musictic, 4);
+    AddIntegerToInfoReadout("marshmallow_tic: ", marshmallow_tic, 5);
+    AddIntegerToInfoReadout("last_intense_song: ", Doom_DJ.last_intense_song, 6);
+    AddIntegerToInfoReadout("track_playing: ", Doom_DJ.playlist[Doom_DJ.track_playing], 7);
+    AddIntegerToInfoReadout("bossfight: ", PKE_Meter.bossfight, 8);
 }
 
 

@@ -239,10 +239,7 @@ void InfightAlert(mobj_t* actor)
         if ( PlayerIsDead() )
             return;
 
-        HUlib_addMessageToSText(&second_extraline, 0, DEH_String(MONSTERFIGHT));
-
-        if (!second_extraline_timeout)
-            second_extraline_timeout = SHORT_EXTRALINE_TIMEOUT;
+        WriteToFourthConsoleLine(MONSTERFIGHT, SHORT_EXTRALINE_TIMEOUT);
     }
     else
     {
@@ -283,13 +280,10 @@ void OfferRadsuit(player_t* player)
         if ( PlayerIsDead() )
             return;
 
-	offer_radsuit = true;
-	offertimeout_radsuit = DEFAULT_OFFER_TIMEOUT;
+        offer_radsuit = true;
+        offertimeout_radsuit = DEFAULT_OFFER_TIMEOUT;
 
-	HUlib_addMessageToSText(&first_extraline, 0, DEH_String(PROMPTRADSUIT));
-
-	if (!first_extraline_timeout)
-	    first_extraline_timeout = DEFAULT_EXTRALINE_TIMEOUT;
+        WriteToSecondConsoleLine(PROMPTRADSUIT, DEFAULT_EXTRALINE_TIMEOUT);
 	}
 }
 
@@ -309,10 +303,7 @@ void LowHealthWarning()
 		offer_medkit = true;
 		offertimeout_medkit = DEFAULT_OFFER_TIMEOUT;
 
-        HUlib_addMessageToSText(&first_extraline, 0, DEH_String(PROMPTMEDKIT));
-
-        if (!first_extraline_timeout)
-            first_extraline_timeout = DEFAULT_EXTRALINE_TIMEOUT;
+        WriteToSecondConsoleLine(PROMPTMEDKIT, DEFAULT_EXTRALINE_TIMEOUT);
 	}
 }
 
@@ -328,7 +319,8 @@ void BerserkReminder()
 	if (MAIN_PLAYER.pendingweapon == wp_fist
 		&& MAIN_PLAYER.powers[pw_strength])
 	{
-        SHOW_MESSAGE DEH_String(YOUBERSERK);
+        //SHOW_MESSAGE DEH_String(YOUBERSERK);
+        WriteToSecondConsoleLine(YOUBERSERK, SHORT_EXTRALINE_TIMEOUT);
     }
 }
 
@@ -352,10 +344,9 @@ void SetKeyDelay()
 }
 
 
-void AddToInfoReadout(char* label, int val, int line)  // rename to AddIntToInfoReadout()
+void AddIntegerToInfoReadout(char* label, int val, int line)
 {
 	char output[16];
-	//int  i;   // yes, we used to have a for loop here... and one day, we will again
 
 	sprintf(output, "%d", val);
 
@@ -869,6 +860,40 @@ void NotifyMissileLock(mobj_t* target)
 }
 
 
+static void DoConsoleTimeouts()
+{
+    if (second_consoleline_timeout)
+    {
+        second_consoleline_on = true;
+        second_consoleline_timeout--;
+    }
+    else
+    {
+        second_consoleline_on = false;
+    }
+
+    if (third_consoleline_timeout)
+    {
+        third_consoleline_on = true;
+        third_consoleline_timeout--;
+    }
+    else
+    {
+        third_consoleline_on = false;
+    }
+
+    if (fourth_consoleline_timeout)
+    {
+        fourth_consoleline_on = true;
+        fourth_consoleline_timeout--;
+    }
+    else
+    {
+        fourth_consoleline_on = false;
+    }
+}
+
+
 void DoTimeouts()
 {
 	int p;
@@ -877,21 +902,7 @@ void DoTimeouts()
 		&& MAIN_PLAYER.victim->target_timeout)
 		   MAIN_PLAYER.victim->target_timeout--;
 
-	if (first_extraline_timeout)
-	{
-	    first_extraline_on = true;
-        first_extraline_timeout--;
-    }
-    else
-        first_extraline_on = false;
-
-    if (second_extraline_timeout)
-    {
-        second_extraline_on = true;
-        second_extraline_timeout--;
-    }
-    else
-        second_extraline_on = false;
+    DoConsoleTimeouts();
 
     if (offertimeout_suicide)
 		offertimeout_suicide--;
@@ -972,7 +983,7 @@ void DoTimeouts()
 		}
 	}
 	
-	spawntics++;  // spawntics is the same as leveltime
+	spawntics++;  // Spawntics is the same as leveltime
 
 	HandleSprint();
 }
@@ -1708,21 +1719,24 @@ boolean IsMonster(mobj_t* actor)
 void AnnounceMostDangerousMonsters(mobj_t* actor)
 {
 	if (!Marshmallow_BossAlert)
-	return;
+	    return;
 
 	switch (actor->type)
 	{
-	case MT_VILE:
-		actor->target->player->message = DEH_String(VILESPOT);
-		break;
+        case MT_VILE:
+            WriteToThirdConsoleLine(VILESPOT, SHORT_EXTRALINE_TIMEOUT);
+            //actor->target->player->message = DEH_String(VILESPOT);
+            break;
 
-	case MT_CYBORG:
-		actor->target->player->message = DEH_String(CYBERSPOT);
-		break;
+        case MT_CYBORG:
+            WriteToThirdConsoleLine(CYBERSPOT, SHORT_EXTRALINE_TIMEOUT);
+            //actor->target->player->message = DEH_String(CYBERSPOT);
+            break;
 
-	case MT_SPIDER:
-		actor->target->player->message = DEH_String(SPIDERSPOT);
-		break;
+        case MT_SPIDER:
+            WriteToThirdConsoleLine(SPIDERSPOT, SHORT_EXTRALINE_TIMEOUT);
+            //actor->target->player->message = DEH_String(SPIDERSPOT);
+            break;
 	}
 }
 
@@ -1730,21 +1744,24 @@ void AnnounceMostDangerousMonsters(mobj_t* actor)
 void AnnounceMostDangerousMonstersDeath(mobj_t* actor)
 {
 	if (!Marshmallow_BossAlert) 
-	return;
+	    return;
 
 	switch (actor->type)
 	{
-	case MT_VILE:
-		SHOW_MESSAGE DEH_String(VILEDEAD);
-		break;
+        case MT_VILE:
+            //WriteToThirdConsoleLine(VILEDEAD, SHORT_EXTRALINE_TIMEOUT);
+            SHOW_MESSAGE DEH_String(VILEDEAD);
+            break;
 
-	case MT_CYBORG:
-		SHOW_MESSAGE DEH_String(CYBERDEAD);
-		break;
+        case MT_CYBORG:
+            //WriteToThirdConsoleLine(CYBERDEAD, SHORT_EXTRALINE_TIMEOUT);
+            SHOW_MESSAGE DEH_String(CYBERDEAD);
+            break;
 
-	case MT_SPIDER:
-		SHOW_MESSAGE DEH_String(SPIDERDEAD);
-		break;
+        case MT_SPIDER:
+            //WriteToThirdConsoleLine(SPIDERDEAD, SHORT_EXTRALINE_TIMEOUT);
+            SHOW_MESSAGE DEH_String(SPIDERDEAD);
+            break;
 	}
 }
 
@@ -1804,22 +1821,18 @@ void MightyFistEngaged()
 	mobj_t* actor;
 	actor = MAIN_PLAYER.mo;
 
-	if ( realnetgame
-		|| MAIN_PLAYER.playerstate != PST_LIVE)  // until we get it working in multiplayer
+	if ( realnetgame || MAIN_PLAYER.playerstate != PST_LIVE)
 	return;
 
 	if (mightyfist_delay)
 		return;
 	else
-		mightyfist_delay = 20; // magic number
+		mightyfist_delay = 20;
 		
 	angle = actor->angle;
 	slope = P_AimLineAttack (actor, angle, MELEERANGE);
 
-	//if (GetGameType() == DOOM1)
-		S_StartSound (actor, sfx_punch); // lo-fi sounding punch sound in Doom1
-	//else
-	//	S_StartSound (actor, sfx_skepch);  // might as well use the more hi-fi punch sound in Doom2 if available
+	S_StartSound (actor, sfx_punch); // lo-fi sounding punch sound in Doom1
 																				
 	angle += P_SubRandom() << 20;
 	damage = (P_Random ()%10+1)<<1 /** BOOSTED_FIST_DAMAGE*/;   // fixed damage for this punch
@@ -1827,19 +1840,14 @@ void MightyFistEngaged()
     if (MAIN_PLAYER.powers[pw_strength])	// apply berserk if we have it
 	damage *= 10;
 
-	//if ( IsBot(shootthing->player) && !deathmatch )  // don't hurt bots when kicked  (didn't work...)
-		P_LineAttack (actor, angle, MELEERANGE, slope, damage);
+	P_LineAttack (actor, angle, MELEERANGE, slope, damage);
 
-	//P_UseLines(&MAIN_PLAYER);  // counts as a "use"
+    // NOTE: not currently using player attack state animation for this melee attack
 
 	if (debugmode)
-	MAIN_PLAYER.message = DEH_String(FOOTENG);
+	    MAIN_PLAYER.message = DEH_String(FOOTENG);
 
 	P_NoiseAlert (actor, actor);  // To remain consistent with how regular fist works
-
-	//level_stats.shots_fired++;
-
-	// NOTE: not currently using player attack state animation for this melee attack
 }
 
 
@@ -2698,4 +2706,25 @@ void SetSkills()
                 break;
         }
     }
+}
+
+
+void WriteToSecondConsoleLine(char* string, int timeout)
+{
+    HUlib_addMessageToSText(&second_consoleline, 0, DEH_String(string));
+    second_consoleline_timeout = timeout;
+}
+
+
+void WriteToThirdConsoleLine(char* string, int timeout)
+{
+    HUlib_addMessageToSText(&third_consoleline, 0, DEH_String(string));
+    third_consoleline_timeout = timeout;
+}
+
+
+void WriteToFourthConsoleLine(char* string, int timeout)
+{
+    HUlib_addMessageToSText(&fourth_consoleline, 0, DEH_String(string));
+    fourth_consoleline_timeout = timeout;
 }

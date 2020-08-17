@@ -14,8 +14,6 @@
 // Reading and writing various structures into packets
 //
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
 #include "doomtype.h"
@@ -25,7 +23,6 @@
 #include "net_structrw.h"
 
 // [marshmallow]
-#include "doom/defs.h"
 extern boolean NET_ReadMarshmallowSettings(net_packet_t *packet, net_gamesettings_t *settings);
 extern void NET_WriteMarshmallowSettings(net_packet_t *packet, net_gamesettings_t *settings);
 
