@@ -36,8 +36,7 @@ boolean Marshmallow_KeepKeys;
 boolean Marshmallow_SaveItems;     
 boolean Marshmallow_GradedWeapons;     
 boolean Marshmallow_DeathmatchWeapons;    
-boolean Marshmallow_WeaponsStay;     
-boolean Marshmallow_DrawWallpaper;     
+boolean Marshmallow_WeaponsStay;
 boolean Marshmallow_AllowSprint;
 boolean Marshmallow_TrueInvisibility;
 boolean Marshmallow_AlternateNightmare;
@@ -64,8 +63,12 @@ boolean Marshmallow_ShowBotReadout;
 boolean Marshmallow_ExtendedMessages;    
 boolean Marshmallow_DeathMessages;    
 boolean Marshmallow_DamageMessages;   
-boolean Marshmallow_BerserkReminder;  
-boolean Marshmallow_ExtraTextLines;   
+boolean Marshmallow_BerserkReminder;
+boolean Marshmallow_DrawWallpaper;
+boolean Marshmallow_DatapadGraphics;
+boolean Marshmallow_PKEGraphics;
+boolean Marshmallow_DatapadSounds;
+boolean Marshmallow_PKESounds;
 boolean Marshmallow_PickupMessages;  
 boolean Marshmallow_DJMessages;     
 boolean Marshmallow_FastMusicChanges;
@@ -190,6 +193,7 @@ void Game_Actions();
 void Game_Init();
 boolean PhysicsExempt(mobj_t* thing);
 boolean EnemyInRange(mobj_t* enemy);
+void PlayMenuSound(int sound);
 
 // Network stuff
 boolean netgamesignal;
@@ -341,6 +345,7 @@ int fourth_consoleline_timeout;
 #define SHORT_EXTRALINE_TIMEOUT 150
 
 // Inventory menu
+boolean WeHaveItem(invitem_t item);
 int invmenu_selection;
 
 enum {
@@ -417,7 +422,7 @@ void DoChainsawBlood(mobj_t* target, mobj_t* inflictor);
 void DoCriticalHitBlood(mobj_t* target);
 boolean DoSpecialDeaths(mobj_t* target, mobj_t* source);
 #define GIB_CHANCE 60
-#define CRITICALHIT_THRESHOLD target->info->spawnhealth/4
+#define CRITICALHIT_THRESHOLD (target->info->spawnhealth/4)
 
 // Monster tweaks
 int chaingunguy_attack_sound;

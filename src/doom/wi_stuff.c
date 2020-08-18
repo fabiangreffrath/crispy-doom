@@ -49,6 +49,8 @@
 
 // [marshmallow]
 extern boolean song_blacklist[4];
+extern boolean Marshmallow_Sandbox;
+extern boolean Marshmallow_DynamicMusic;
 #define BLACKLIST_D1INTER 2
 #define BLACKLIST_D2INTER 3
 // [m]
@@ -1662,7 +1664,7 @@ void WI_checkForAccelerate(void)
     }
 }
 
-
+extern int GetGameType();
 
 // Updates stuff each tick
 void WI_Ticker(void)
@@ -1675,16 +1677,20 @@ void WI_Ticker(void)
 	// intermission music
   	if ( gamemode == commercial )
   	{
-      if (!song_blacklist[BLACKLIST_D2INTER])   // [marshmallow] If song is blacklisted, don't start a new song
+      if (!song_blacklist[BLACKLIST_D2INTER])   // [marshmallow]
           S_ChangeMusic(mus_dm2int, true);
+      else if (!Marshmallow_Sandbox)
+          S_ChangeMusic(mus_betwee, true);
     }
 	// [crispy] Sigil
 	else if (crispy->haved1e5 && wbs->epsd == 4 && W_CheckNumForName(DEH_String("D_SIGINT")) != -1)
 	  S_ChangeMusic(mus_sigint, true);
 	else
 	{
-      if (!song_blacklist[BLACKLIST_D1INTER])   // [marshmallow] If song is blacklisted, don't start a new song
+      if (!song_blacklist[BLACKLIST_D1INTER])   // [marshmallow]
           S_ChangeMusic(mus_inter, true);
+      else if (GetGameType() > 0 && !Marshmallow_Sandbox)  // [marshmallow] If we have the Doom 2 song "Between Levels" available, play that instead
+          S_ChangeMusic(mus_betwee, true);
     }
     }
 

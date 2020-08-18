@@ -1542,8 +1542,8 @@ void LaunchHelpWidget()
 
 	if (realnetgame) 
 		return;
-	
-	S_StartSound(NULL, sfx_tink);
+
+    PlayMenuSound(sfx_tink);
 		
 	if (menus_on)
 		HideAllMenus();

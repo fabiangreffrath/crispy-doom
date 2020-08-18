@@ -175,6 +175,13 @@ static void ApogeeDeath(mobj_t* target)
 {
     ParticleFX_XDeath(target);  // TODO: RandomLargeSplat (rename RandomSplat to RandomSmallSplat)
 
+    // Don't do P_RemoveMobj() to player corpses
+    if ( IsPlayer(target) )
+    {
+        P_SetMobjState (target, target->info->xdeathstate);
+        return;
+    }
+
     DropSlopProp(target, false);
 
     P_RemoveMobj(target);
@@ -297,9 +304,6 @@ boolean DoSpecialDeaths(mobj_t* target, mobj_t* source)
                 if (weapon < wp_missile && weapon != wp_fist)
                     return false;
 
-                if (IsPlayer(target) && !IsBot(target->player))
-                    return false;
-
                 BrutalDeath(target);
 
                 return true;
@@ -311,9 +315,6 @@ boolean DoSpecialDeaths(mobj_t* target, mobj_t* source)
         case DUKE_GIBS:
 
             if (weapon != wp_missile && weapon != wp_fist)
-                return false;
-
-            if (IsPlayer(target) && !IsBot(target->player))
                 return false;
 
             ApogeeDeath(target);
@@ -343,7 +344,7 @@ void DoCriticalHitBlood(mobj_t* target)
 {
     int sound = target->info->painsound;
     int health = target->health;
-    int lowhealth_threshold = (CRITICALHIT_THRESHOLD);
+    int lowhealth_threshold = CRITICALHIT_THRESHOLD;
 
     // Barrels dont bleed
     if ( IsBarrel(target) )
@@ -367,9 +368,22 @@ void DoCriticalHitBlood(mobj_t* target)
 
     // Check if we've already done this
     if (target->critical_injury)
-        return;
+    {
+        switch (target->type)
+        {
+            // Exceptions for boss monsters
+            case MT_SPIDER:
+            case MT_CYBORG:
+            case MT_BRUISER:
+                //break;
 
-    // Set our "critical injury" flag so that we know to only come in here once
+            default:
+                return;
+        }
+    }
+
+    // Set our "critical injury" flag so that we know
+    // to only come in here once for most enemies
     target->critical_injury = true;
 
     // Don't do this every time

@@ -43,8 +43,7 @@ static void ReadServerSettings(FILE *f)
 	fscanf(f, "ExtendedMessages %d \n", &Marshmallow_ExtendedMessages);
 	fscanf(f, "DeathMessages %d \n", &Marshmallow_DeathMessages);
 	fscanf(f, "DamageMessages %d \n", &Marshmallow_DamageMessages);
-	fscanf(f, "BerserkReminder %d \n", &Marshmallow_BerserkReminder);  
-	fscanf(f, "ExtraTextLines %d \n", &Marshmallow_ExtraTextLines);
+	fscanf(f, "BerserkReminder %d \n", &Marshmallow_BerserkReminder);
 	fscanf(f, "PickupMessages %d \n", &Marshmallow_PickupMessages);
 	fscanf(f, "BossAlert %d \n", &Marshmallow_BossAlert);
 	fscanf(f, "InfightAlert %d \n", &Marshmallow_InfightAlert);
@@ -61,6 +60,11 @@ static void ReadServerSettings(FILE *f)
 	fscanf(f, "TreasureMode %d \n", &Marshmallow_TreasureMode);
 
 	fscanf(f, "DrawWallpaper %d \n", &Marshmallow_DrawWallpaper);
+    //fscanf(f, "DatapadGraphics %d \n", &Marshmallow_DatapadGraphics);
+    //fscanf(f, "PKEGraphics %d \n", &Marshmallow_PKEGraphics);
+    //fscanf(f, "DatapadSounds %d \n", &Marshmallow_DatapadSounds);
+    //fscanf(f, "PKESounds %d \n", &Marshmallow_PKESounds);
+
 	fscanf(f, "dm_fraglimit %d \n", &dm_fraglimit);
 	fscanf(f, "dm_timelimit %d \n", &dm_timelimit);
 	fscanf(f, "physics_mode %d \n", &physics_mode);
@@ -154,8 +158,7 @@ static void WritePreferences()
 	fprintf(f, "ExtendedMessages %d \n", Marshmallow_ExtendedMessages);
 	fprintf(f, "DeathMessages %d \n", Marshmallow_DeathMessages);
 	fprintf(f, "DamageMessages %d \n", Marshmallow_DamageMessages);
-	fprintf(f, "BerserkReminder %d \n", Marshmallow_BerserkReminder);  
-	fprintf(f, "ExtraTextLines %d \n", Marshmallow_ExtraTextLines);
+	fprintf(f, "BerserkReminder %d \n", Marshmallow_BerserkReminder);
 	fprintf(f, "PickupMessages %d \n", Marshmallow_PickupMessages);
 	fprintf(f, "BossAlert %d \n", Marshmallow_BossAlert);
 	fprintf(f, "InfightAlert %d \n", Marshmallow_InfightAlert);
@@ -171,6 +174,11 @@ static void WritePreferences()
 	fprintf(f, "FastMusicChanges %d \n", Marshmallow_FastMusicChanges);
 
 	fprintf(f, "DrawWallpaper %d \n", Marshmallow_DrawWallpaper);
+    fprintf(f, "DatapadGraphics %d \n", Marshmallow_DatapadGraphics);
+    fprintf(f, "PKEGraphics %d \n", Marshmallow_PKEGraphics);
+    fprintf(f, "DatapadSounds %d \n", Marshmallow_DatapadSounds);
+    fprintf(f, "PKESounds %d \n", Marshmallow_PKESounds);
+
 	fprintf(f, "dm_fraglimit %d \n", dm_fraglimit);
 	fprintf(f, "dm_timelimit %d \n", dm_timelimit);
 	fprintf(f, "physics_mode %d \n", physics_mode);
@@ -211,7 +219,6 @@ static void LoadPreferences(FILE *f)
 	fscanf(f, "KeepWeapons %d \n", &Marshmallow_KeepWeapons);
 	fscanf(f, "WeaponsStay %d \n", &Marshmallow_WeaponsStay);
 
-
 	fscanf(f, "DynamicMusic %d \n", &Marshmallow_DynamicMusic);	
 	fscanf(f, "DJMessages %d \n", &Marshmallow_DJMessages);
 	fscanf(f, "SongLength %d \n", &Doom_DJ.song_length);
@@ -247,8 +254,7 @@ static void LoadPreferences(FILE *f)
 	fscanf(f, "ExtendedMessages %d \n", &Marshmallow_ExtendedMessages);
 	fscanf(f, "DeathMessages %d \n", &Marshmallow_DeathMessages);
 	fscanf(f, "DamageMessages %d \n", &Marshmallow_DamageMessages);
-	fscanf(f, "BerserkReminder %d \n", &Marshmallow_BerserkReminder);  
-	fscanf(f, "ExtraTextLines %d \n", &Marshmallow_ExtraTextLines);
+	fscanf(f, "BerserkReminder %d \n", &Marshmallow_BerserkReminder);
 	fscanf(f, "PickupMessages %d \n", &Marshmallow_PickupMessages);
 	fscanf(f, "BossAlert %d \n", &Marshmallow_BossAlert);
 	fscanf(f, "InfightAlert %d \n", &Marshmallow_InfightAlert);
@@ -269,6 +275,11 @@ static void LoadPreferences(FILE *f)
 	fscanf(f, "FastMusicChanges %d \n", &Marshmallow_FastMusicChanges);
 
 	fscanf(f, "DrawWallpaper %d \n", &Marshmallow_DrawWallpaper);
+    fscanf(f, "DatapadGraphics %d \n", &Marshmallow_DatapadGraphics);
+    fscanf(f, "PKEGraphics %d \n", &Marshmallow_PKEGraphics);
+    fscanf(f, "DatapadSounds %d \n", &Marshmallow_DatapadSounds);
+    fscanf(f, "PKESounds %d \n", &Marshmallow_PKESounds);
+
 	fscanf(f, "dm_fraglimit %d \n", &dm_fraglimit);
 	fscanf(f, "dm_timelimit %d \n", &dm_timelimit);
 	fscanf(f, "physics_mode %d \n", &physics_mode);

@@ -1392,7 +1392,7 @@ void Founders_ParticleSystem_Smoke_Column1031(mobj_t *actor)
 	// THIS REQUIRES THAT mo's speed = 2*FRACUNIT, mass = 1 (info.c)
 
 	initParticleSystemArgs(&args);
-	args.num_particles		= GetRandomIntegerInRange(8, 32);
+	args.num_particles		= 16;
 	args.type				= MT_PARTICLE_SMOKE;
 	args.scale_size			= 0.5;
 	args.scale_mom.z		*= 0.5;

@@ -5,9 +5,8 @@
 //////////////////////////////////////
 
 #include "hud.h"
-#include "bot.h"  
-#include "dj.h"
 #include "pkemeter.h"
+
 
 //  The info readout allows us to watch variables on-screen during gameplay
 void UpdateInfoReadout()
@@ -31,7 +30,6 @@ void UpdateInfoReadout()
 
 void SetMarshmallowColors()
 {
-
     CrispyReplaceColor( PKEHINT_SMALL, CR_BLUE, PKEHINT_SMALL);
     CrispyReplaceColor( PKEHINT_MEDIUM, CR_GREEN, PKEHINT_MEDIUM);
     CrispyReplaceColor( PKEHINT_LARGE, CR_GOLD, PKEHINT_LARGE);
@@ -46,9 +44,9 @@ void SetMarshmallowColors()
 
 	CrispyReplaceColor( MENU_CURSOR, CR_GREEN, MENU_CURSOR);
 
-    CrispyReplaceColor( "    Gameplay options...", CR_GRAY, "...");
-    CrispyReplaceColor( "    Music options...", CR_GRAY, "...");
-    CrispyReplaceColor( "    MESSAGES options...", CR_GRAY, "...");
+    CrispyReplaceColor( MAINMENU_GAMEPLAY, CR_GRAY, "...");
+    CrispyReplaceColor( MAINMENU_MUSIC, CR_GRAY, "...");
+    CrispyReplaceColor( MAINMENU_INTERFACE, CR_GRAY, "...");
 
 	CrispyReplaceColor( MENU_TITLE1, CR_GRAY, MENU_TITLE1);
 	CrispyReplaceColor( MENU_TITLE2, CR_GOLD, MENU_TITLE2);
@@ -77,13 +75,13 @@ void SetMarshmallowColors()
 	CrispyReplaceColor( COVER, CR_GREEN, COVER);
 	CrispyReplaceColor( USING, CR_BLUE, USING);
 
-	CrispyReplaceColor( REGROUP, CR_DARK, REGROUP);
+	CrispyReplaceColor( REGROUP, CR_BLUE, REGROUP);
 	CrispyReplaceColor( REGROUPSQUAD, CR_GREEN, "ORDER: ");
 
 	CrispyReplaceColor( TAKEPOINT, CR_GOLD, TAKEPOINT);
 
 	CrispyReplaceColor( STAY, CR_BLUE, STAY);
-	CrispyReplaceColor( ATTACK, CR_RED, ATTACK);
+	CrispyReplaceColor( ATTACK, CR_DARK, ATTACK);
 	CrispyReplaceColor( WAIT, CR_BLUE, WAIT);
 	
 	CrispyReplaceColor( NAZIKILL, CR_GOLD, "STORMTROOPER");
@@ -579,7 +577,7 @@ void ScoreboardReadout()
 	}	
 	else
 	{
-		if (!ShowBotStates)
+		if (!ShowBotStates || help_on)
 		{
 			AddStringsToInfoReadout("", "", 6);
 			AddStringsToInfoReadout("", "", 7);
@@ -643,8 +641,6 @@ void ScoreboardReadout()
 }
 
 
-
-
 void InitHUDMenuText()							
 {
     HUD_InitExtraLines();
@@ -670,17 +666,18 @@ void InitHUDMenuText()
 	mainmenu_selection = FIRST_MENU_ITEM;
 }
 
-
-
 extern void PKE_HUDisplay();   // Oh?
 extern void Draw_Datapad();
 extern void Draw_Wallpaper(char* tile);
 
 void DrawHUDMenu()
 {
-    HUlib_drawSText(&second_consoleline);
-    HUlib_drawSText(&third_consoleline);
-    HUlib_drawSText(&fourth_consoleline);
+    if (!menus_on && !invmenu_on && !help_on && !pkereadout_on)
+    {
+        HUlib_drawSText(&second_consoleline);
+        HUlib_drawSText(&third_consoleline);
+        HUlib_drawSText(&fourth_consoleline);
+    }
 	
 	if ( profilescreen_on )
 		DrawProfile();
@@ -689,17 +686,17 @@ void DrawHUDMenu()
 
 	if (pkereadout_on)
 	{
-	//if (Marshmallow_DrawPKEGraphics)  // TODO: Marshmallow_DrawPKEGraphics option
-        Draw_Datapad();
+        if (Marshmallow_PKEGraphics)
+            Draw_Datapad();
 
-	HUlib_drawSText(&pkeline1);
-	HUlib_drawSText(&pkeline2);
-	HUlib_drawSText(&pkeline3);
-	HUlib_drawSText(&pkeline4);
-	HUlib_drawSText(&pkeline8);
+        HUlib_drawSText(&pkeline1);
+        HUlib_drawSText(&pkeline2);
+        HUlib_drawSText(&pkeline3);
+        HUlib_drawSText(&pkeline4);
+        HUlib_drawSText(&pkeline8);
 	}
 
-	if (mainmenu_on)
+	if (mainmenu_on && Marshmallow_DatapadGraphics)
 	{
         Draw_Datapad();  // first so anything below draws over it
 	}
@@ -984,14 +981,20 @@ void DrawHUDMenu()
 		HUlib_drawSText(&messagesmenu_blank); 
 		HUlib_drawSText(&messagesmenu_danger); 
 		HUlib_drawSText(&messagesmenu_targethp); 
-		HUlib_drawSText(&messagesmenu_missile); 
-		//HUlib_drawSText(&messagesmenu_extraline);
+		HUlib_drawSText(&messagesmenu_missile);
 		HUlib_drawSText(&messagesmenu_pickupmsg); 
-		HUlib_drawSText(&messagesmenu_deathmsg); 		
-		//HUlib_drawSText(&messagesmenu_damagemsg); 
+		HUlib_drawSText(&messagesmenu_deathmsg);
 		HUlib_drawSText(&messagesmenu_extendedmsg);
-		HUlib_drawSText(&messagesmenu_infightmsg); 
-		HUlib_drawSText(&messagesmenu_bossmsg); 
+        HUlib_drawSText(&messagesmenu_infightmsg);
+        HUlib_drawSText(&messagesmenu_bossmsg);
+
+        HUlib_drawSText(&messagesmenu_menuwallpaper);
+        HUlib_drawSText(&messagesmenu_datapadgraphics);
+        HUlib_drawSText(&messagesmenu_pkemetergraphics);
+        HUlib_drawSText(&messagesmenu_datapadsounds);
+        HUlib_drawSText(&messagesmenu_pkesounds);
+        //HUlib_drawSText(&messagesmenu_cursorcolor);
+        //HUlib_drawSText(&messagesmenu_textcolor);
 	}
 
 	if (optionsmenu_on)
@@ -1253,9 +1256,9 @@ void HUDMenuTicker()
 
 // shortcut menu
 
-    HUlib_addMessageToSText(&shortcutmenu_gameplay, NULL, DEH_String("    Gameplay options..."));
-    HUlib_addMessageToSText(&shortcutmenu_music, NULL, DEH_String("    Music options..."));
-    HUlib_addMessageToSText(&shortcutmenu_messages, NULL, DEH_String("    MESSAGES options..."));
+    HUlib_addMessageToSText(&shortcutmenu_gameplay, NULL, DEH_String(MAINMENU_GAMEPLAY));
+    HUlib_addMessageToSText(&shortcutmenu_music, NULL, DEH_String(MAINMENU_MUSIC));
+    HUlib_addMessageToSText(&shortcutmenu_messages, NULL, DEH_String(MAINMENU_INTERFACE));
 
 
 // skill menu
@@ -1278,7 +1281,7 @@ void HUDMenuTicker()
 	HUlib_addMessageToSText(&inv_menu_title, 0, DEH_String(INVENTORYTITLE));
 	HUlib_addMessageToSText(&inv_menu_blank, 0, " ");  // so... what's the point of this again?
 
-	if (!realnetgame)  
+	if (!realnetgame)
 	HUlib_addMessageToSText(&inv_menu_empty, 0, DEH_String(INVEMPTY));
 
 	HUlib_addMessageToSText(&inv_menu_radsuit, 0, DEH_String(INVRADSUIT) );
@@ -1300,11 +1303,17 @@ void HUDMenuTicker()
 	HUlib_addMessageToSText(&messagesmenu_pickupmsg, "    ITEM PICKUP MESSAGES", DisplayOnOff(Marshmallow_PickupMessages));
 	HUlib_addMessageToSText(&messagesmenu_targethp, "    SHOW TARGET HITPOINTS", DisplayTargetHPSetting(Marshmallow_ShowTargetHP)); 
 	HUlib_addMessageToSText(&messagesmenu_deathmsg, "    DEATH MESSAGES", DisplayOnOff(Marshmallow_DeathMessages));
-	//HUlib_addMessageToSText(&messagesmenu_damagemsg, "    DAMAGE MESSAGES", DisplayOnOff(Marshmallow_DamageMessages));
 	HUlib_addMessageToSText(&messagesmenu_extendedmsg, "    POINTLESS MESSAGES", DisplayOnOff(Marshmallow_ExtendedMessages));
-	HUlib_addMessageToSText(&messagesmenu_extraline, "    EXTRA TEXT LINE", DisplayOnOff(Marshmallow_ExtraTextLines));
 	HUlib_addMessageToSText(&messagesmenu_bossmsg, "    BOSS ALERTS", DisplayOnOff(Marshmallow_BossAlert));
 	HUlib_addMessageToSText(&messagesmenu_infightmsg, "    MONSTER INFIGHTING ALERT", DisplayOnOff(Marshmallow_InfightAlert));
+
+    HUlib_addMessageToSText(&messagesmenu_menuwallpaper, "    DRAW WALLPAPER", DisplayOnOff(Marshmallow_DrawWallpaper));
+    HUlib_addMessageToSText(&messagesmenu_datapadgraphics, "    DRAW DATAPAD GRAPHICS", DisplayOnOff(Marshmallow_DatapadGraphics));
+    HUlib_addMessageToSText(&messagesmenu_pkemetergraphics, "    DRAW PKE METER GRAPHICS", DisplayOnOff(Marshmallow_PKEGraphics));
+    HUlib_addMessageToSText(&messagesmenu_datapadsounds, "    DATAPAD SOUNDS", DisplayOnOff(Marshmallow_DatapadSounds));
+    HUlib_addMessageToSText(&messagesmenu_pkesounds, "    PKE METER SOUNDS", DisplayOnOff(Marshmallow_PKESounds));
+    //HUlib_addMessageToSText(&messagesmenu_cursorcolor, "    CURSOR COLOR", DisplayOnOff(cursor_color));
+    //HUlib_addMessageToSText(&messagesmenu_textcolor, "    DATAPAD TEXT COLOR", DisplayOnOff(datapad_textcolor));
 
 // music menu
 
@@ -1733,10 +1742,29 @@ void CalculateCursorPosition()
 			cursor_y = INV_HU_Y_10;
 			break;
 		case 9:
-			cursor_y = INV_HU_Y_11;
+			cursor_y = INV_HU_Y_12;
 			break;
-
-
+        case 10:
+          cursor_y = INV_HU_Y_13;
+          break;
+        case 11:
+          cursor_y = INV_HU_Y_14;
+          break;
+        case 12:
+          cursor_y = INV_HU_Y_15;
+          break;
+        case 13:
+          cursor_y = INV_HU_Y_16;
+          break;
+        case 14:
+          cursor_y = INV_HU_Y_17;
+          break;
+   /*   case 9:
+          cursor_y = INV_HU_Y_18;
+          break;
+      case 9:
+          cursor_y = INV_HU_Y_19;
+          break;*/
 		default:
 			return;
 	  }
@@ -1868,7 +1896,6 @@ void CalculateCursorPosition()
 		}
 	}
 
-
 	HUlib_initSText(&menu_cursor,
 		cursor_x, cursor_y, HU_MSGHEIGHT,     
 		hu_font,
@@ -1876,40 +1903,14 @@ void CalculateCursorPosition()
 }
 
 
-boolean WeHaveItem(invitem_t item);   
-invitem_t OwnedItems[MAX_INV_ITEMS];  // probably no longer needed
-
-static void CalcInvCursorPos(direction_t dir)   // consider having this return value for invmenu_selection
+static void CalcInvCursorPos(direction_t dir)
 {
-	/*
-	// probably no longer needed
-
-	int i;
-	int numitems = 0;
-	int test_index = 0;
-
-	for (i=0; i<MAX_INV_ITEMS; i++)
-	{
-		if ( MAIN_PLAYER.extra_powers[i] )
-		{
-			numitems++;
-
-			OwnedItems[ numitems ] = i;
-		}
-	}
-
-	if (!numitems)
-	{
-		SHOW_MESSAGE "NO ITEMS OWNED.";
-		return;
-	}
-	*/
 	if (dir == FORWARD)
 	{
 		if (invmenu_selection < MAX_INV_ITEMS-1)
 		{
 			int i;
-			
+
 			for (i=invmenu_selection; i<MAX_INV_ITEMS; i++)
 			{
 				if (i==invmenu_selection)
@@ -1929,7 +1930,7 @@ static void CalcInvCursorPos(direction_t dir)   // consider having this return v
 		if (invmenu_selection > FIRST_MENU_ITEM)
 		{
 			int i;
-			
+
 			for (i=invmenu_selection; i>0; i--)
 			{
 				if (i == invmenu_selection)
@@ -1974,36 +1975,13 @@ static void Bot_ChangeWeapon(int bot, direction_t dir)
 }
 
 
-void HUDMenuKeyInput()	
+void HUDMenuKeyInput()
 {
-#if 0
-	if (gamekeydown[key_l])
-	{
-		if (CheckKeyDelay())
-			return;		
+    // Don't take any key input during intermission screens
+    if (gamestate != GS_LEVEL)
+        return;
 
-		if ( realnetgame || !Marshmallow_AlternateLighting || PlayerIsDead() || !Marshmallow_Flashlight)
-			return;
-
-		if (!flashlight_on)
-		{
-			flashlight_on = true;
-			A_Light1(NULL, &MAIN_PLAYER, NULL);
-			CrispyReplaceColor("FLASHLIGHT ON.", CR_GREEN, "ON");
-
-			S_StartSound(0, sfx_tink);
-		}
-		else
-		{
-			flashlight_on = false;
-			A_Light0(NULL, &MAIN_PLAYER, NULL);
-			CrispyReplaceColor("FLASHLIGHT OFF.", CR_DARK, "OFF");
-
-			S_StartSound(0, sfx_tink);
-		}
-	}
-#endif
-
+    // Open/Close PKE meter
 	if (gamekeydown[key_p])
 	{
 		if (CheckKeyDelay())
@@ -2019,14 +1997,14 @@ void HUDMenuKeyInput()
 		
 		if (!pkereadout_on)  
 		{
-			S_StartSound(NULL, sfx_tink);
+            PlayMenuSound(sfx_tink);
 			HideAllMenus();
 			pkereadout_on = true;
 		}
 		else 
 		{
 			HideAllMenus();
-			S_StartSound(NULL, sfx_tink);
+            PlayMenuSound(sfx_tink);
 		}
 	}
 
@@ -2165,14 +2143,14 @@ void HUDMenuKeyInput()
 
 		if (!menus_on)  // opening the datapad
 		{
-			S_StartSound(MAIN_PLAYER.mo, sfx_tink);
+            PlayMenuSound(sfx_tink);
 			HideAllMenus();
 			mainmenu_on = true;
 		}
 		else  // closing the datapad
 		{
 			HideAllMenus();
-			S_StartSound(MAIN_PLAYER.mo, sfx_tink);
+            PlayMenuSound(sfx_tink);
 		}
 	}
 
@@ -2434,22 +2412,45 @@ void HUDMenuKeyInput()
 
 				break;
 
-			case EXTRALINE_SELECTED:
+			case DRAWWALLPAPER_SELECTED:
 				
-				if (Marshmallow_ExtraTextLines)
-				{
-					SHOW_MESSAGE "EXTRA TEXT LINE DISABLED.";
-					Marshmallow_ExtraTextLines = !Marshmallow_ExtraTextLines;
-				}
-				else
-				{
-					SHOW_MESSAGE "EXTRA TEXT LINE ENABLED.";
-					Marshmallow_ExtraTextLines = !Marshmallow_ExtraTextLines;
-				}
+				Marshmallow_DrawWallpaper = !Marshmallow_DrawWallpaper;
 
 				SetKeyDelay();
 
 				break;
+
+            case DRAWDATAPAD_SELECTED:
+
+                Marshmallow_DatapadGraphics = !Marshmallow_DatapadGraphics;
+
+                SetKeyDelay();
+
+                break;
+
+            case DRAWPKE_SELECTED:
+
+                Marshmallow_PKEGraphics = !Marshmallow_PKEGraphics;
+
+                SetKeyDelay();
+
+                break;
+
+            case DATAPADSOUNDS_SELECTED:
+
+                Marshmallow_DatapadSounds = !Marshmallow_DatapadSounds;
+
+                SetKeyDelay();
+
+                break;
+
+            case PKESOUNDS_SELECTED:
+
+                Marshmallow_PKESounds = !Marshmallow_PKESounds;
+
+                SetKeyDelay();
+
+                break;
 
 			case BOSSALERTS_SELECTED:
 				
@@ -2803,7 +2804,7 @@ void HUDMenuKeyInput()
 			if (CheckKeyDelay())
 				return;
 
-			S_StartSound(MAIN_PLAYER.mo, sfx_tink);  // sfx_swtchn is the default menu sound
+            PlayMenuSound(sfx_tink);
 
 			switch (mainmenu_selection)
 			{
@@ -3521,7 +3522,7 @@ void HUDMenuKeyInput()
 			    if (MENUKEY_LEFTARROW || MENUKEY_RIGHTARROW)
 			        break;
 
-				S_StartSound(NULL, sfx_tink);
+			    PlayMenuSound(sfx_tink);
 
 				if (Marshmallow_DynamicMusic)
 					DJ_NextTrack();
@@ -3544,7 +3545,8 @@ void HUDMenuKeyInput()
                 if (MENUKEY_LEFTARROW || MENUKEY_RIGHTARROW)
                     break;
 
-				S_StartSound(NULL, sfx_tink);
+                PlayMenuSound(sfx_tink);
+
 				// if (Marshmallow_DynamicMusic)
 				ForcePlaylist();
 				break;
@@ -3849,6 +3851,7 @@ void HUDMenuKeyInput()
 
 	if (gamekeydown[key_r] && offer_radsuit && offertimeout_radsuit)  // move into below block?
 	{
+		second_consoleline_timeout = 0;
 		MAIN_PLAYER.message = DEH_String(USINGRADSUIT);
 		MAIN_PLAYER.extra_powers[ITEM_RADSUIT] = false;
 		offer_radsuit = false;
@@ -3866,7 +3869,10 @@ void HUDMenuKeyInput()
 	if (gamekeydown[key_r] && pkereadout_on)
     {
         if ( CheckKeyDelay() )
-        return;
+            return;
+
+        if (PlayerIsDead())
+            return;
 
         switch (PKE_Meter.search_radius)
         {
@@ -3886,16 +3892,16 @@ void HUDMenuKeyInput()
             break;
         }
 
-        PlayRadioNoise();
+        if (Marshmallow_PKESounds)
+            PlayRadioNoise();
     }
 
-	if (gamekeydown[key_inventory]) 
+	if (gamekeydown[key_inventory] && !deathmatch)
 	{
-		
 		LaunchInventoryMenu();
 	}
 
-	if (Marshmallow_SaveItems)    // TODO: move this up before the offer_radsuit line?
+	if (Marshmallow_SaveItems && !deathmatch)    // TODO: move this up before the offer_radsuit line?
 	{
 		if (invmenu_on)
 		{
@@ -3904,15 +3910,15 @@ void HUDMenuKeyInput()
 				if (CheckKeyDelay())
 				return;
 
-				CalcInvCursorPos(FORWARD);
+                CalcInvCursorPos(FORWARD);
 			}
 
 			if (MENUKEY_PREVIOUS)
 			{
 				if (CheckKeyDelay())
 				return;
-				
-				CalcInvCursorPos(BACKWARD);
+
+                CalcInvCursorPos(BACKWARD);
 			}
 
 			if (MENUKEY_SELECT && invmenu_selection == RADSUIT_SELECTED && MAIN_PLAYER.extra_powers[ITEM_RADSUIT])
@@ -3920,10 +3926,11 @@ void HUDMenuKeyInput()
 				MAIN_PLAYER.extra_powers[ITEM_RADSUIT] = false;
 				P_GivePower (&MAIN_PLAYER, pw_ironfeet);
 				MAIN_PLAYER.message = DEH_String(USINGRADSUIT);
+                second_consoleline_timeout = 0;
 				offer_radsuit = false;
 				offertimeout_radsuit = 0;
 
-				invmenu_on = false; // NEW!
+				invmenu_on = false;
 			}
 	
 
@@ -4276,10 +4283,40 @@ void HUD_InitMessagesMenu()
 		hu_font,
 		HU_FONTSTART, &msgsmenu_on);
 
-	HUlib_initSText(&messagesmenu_extraline,
-		FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_11, HU_MSGHEIGHT,
-		hu_font,
-		HU_FONTSTART, &msgsmenu_on);	
+    HUlib_initSText(&messagesmenu_menuwallpaper,
+        FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_12, HU_MSGHEIGHT,
+        hu_font,
+        HU_FONTSTART, &msgsmenu_on);
+
+    HUlib_initSText(&messagesmenu_datapadgraphics,
+        FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_13, HU_MSGHEIGHT,
+        hu_font,
+        HU_FONTSTART, &msgsmenu_on);
+
+    HUlib_initSText(&messagesmenu_pkemetergraphics,
+        FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_14, HU_MSGHEIGHT,
+        hu_font,
+        HU_FONTSTART, &msgsmenu_on);
+
+    HUlib_initSText(&messagesmenu_datapadsounds,
+        FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_15, HU_MSGHEIGHT,
+        hu_font,
+        HU_FONTSTART, &msgsmenu_on);
+
+    HUlib_initSText(&messagesmenu_pkesounds,
+        FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_16, HU_MSGHEIGHT,
+        hu_font,
+        HU_FONTSTART, &msgsmenu_on);
+
+    HUlib_initSText(&messagesmenu_cursorcolor,
+        FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_18, HU_MSGHEIGHT,
+        hu_font,
+        HU_FONTSTART, &msgsmenu_on);
+
+    HUlib_initSText(&messagesmenu_textcolor,
+        FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_19, HU_MSGHEIGHT,
+        hu_font,
+        HU_FONTSTART, &msgsmenu_on);
 }
 
 void HUD_InitMainMenu()
@@ -5552,7 +5589,7 @@ void LaunchInventoryMenu()
 			return;
 	}
 
-	S_StartSound(NULL, sfx_tink);
+
 
 	if (invmenu_on)          
 	{
@@ -5561,23 +5598,24 @@ void LaunchInventoryMenu()
 		// TODO: refresh status bar
 	}
 	else
-	{
-		HideAllMenus();
-		invmenu_on = true;
+    {
+        HideAllMenus();
+        invmenu_on = true;
 
-		for (i=0; i<MAX_INV_ITEMS; i++)					// find the first item in our inventory and put the cursor there
-		{
-			if ( WeHaveItem(i) )
-			{
-				invmenu_selection = i;
-				break;
-			}
-			else 
-			{
-				invmenu_selection = NO_SELECTION;
-			}
-		}
-	}
+        // Find the first item in our inventory and put the cursor there
+        for (i=0; i<MAX_INV_ITEMS; i++)
+        {
+            if ( WeHaveItem(i) )
+            {
+                invmenu_selection = i;
+                break;
+            }
+            else
+            {
+                invmenu_selection = NO_SELECTION;
+            }
+        }
+    }
 }
 
 
@@ -5788,4 +5826,13 @@ char* DisplayPKERadius()
         default:
             return DEH_String(" ");
     }
+}
+
+
+void PlayMenuSound(int sound)
+{
+    if (!Marshmallow_DatapadSounds)
+        return;
+
+    S_StartSound(NULL, sound);
 }
