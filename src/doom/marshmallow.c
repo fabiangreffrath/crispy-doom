@@ -19,9 +19,6 @@ void Marshmallow_InitVariables()
 
 	itemrespawn_delay = DEFAULT_ITEMRESPAWN_DELAY;
 
-	Marshmallow_AllowExit = false;
-	Marshmallow_KillOnExit = true;
-
 	Marshmallow_BarrelPushing = true;
 
 	Marshmallow_GibMode = DUKE_GIBS;   
@@ -102,12 +99,31 @@ void Marshmallow_InitVariables()
 
 	Doom1SSG_Level = SSG_Level = DEFAULT_SSG_LEVEL;
 
-	physics_mode = 0;  
+	physics_mode = 0;
+
+    Marshmallow_ReducedRedscreen = true;
 
 	Marshmallow_DropBackpack = true;
 
+	if (!realnetgame)
+    {
+    marshmallow_player_names[0] = "CONSOLEPLAYER";
+    marshmallow_player_names[1] = "INDIGO";
+    marshmallow_player_names[2] = "BROWN";
+    marshmallow_player_names[3] = "RED";
+    }
+
+    Preferred_DM_Mode = 3;
+
 	dm_timelimit = 10;
 	dm_fraglimit = 50;
+
+	dm_scoreboard = 1;
+
+    Marshmallow_AllowExit = false;
+    Marshmallow_KillOnExit = true;
+
+    SetDMFlags();
 
 	Marshmallow_PlasmaSlowdown = true;
 

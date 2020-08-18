@@ -24,7 +24,9 @@
 
 #define MAINMENU_GAMEPLAY "    Gameplay options..."
 #define MAINMENU_MUSIC "    Music options..."
+#define MAINMENU_EFFECTS "Advanced effects..."
 #define MAINMENU_INTERFACE "    Interface options..."
+#define MAINMENU_DM "    Deathmatch options..."
 
 #define ORDERS  "ORDERS: "
 #define COVER "FOLLOWING"
@@ -140,7 +142,7 @@
 #define ALTNM "NIGHTMARE 2.0 SKILL LEVEL!"
 #define ALTUV "UV 2.0 SKILL LEVEL!"
 
-#define CONFIRMSUICIDE "PRESS TO CONFIRM SUICIDE..."
+#define CONFIRMSUICIDE "PRESS USE TO CONFIRM SUICIDE..."
 
 #define FFOFF "FRIENDLY FIRE DISABLED!"
 #define FFON "FRIENDLY FIRE ENABLED!"

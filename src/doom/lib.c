@@ -271,6 +271,13 @@ int GetGameType()
 }
 
 
+void OfferSuicide()
+{
+    offertimeout_suicide = DEFAULT_OFFER_TIMEOUT;
+    SHOW_MESSAGE CONFIRMSUICIDE;
+}
+
+
 void OfferRadsuit(player_t* player)
 {
 	if (!player->powers[pw_ironfeet]     
@@ -459,7 +466,11 @@ static void SetNewGameSettings()
             BotsInGame = 3;
 
             netgame = true;
-			deathmatch = 3;
+
+			//if (!deathmatch)
+			deathmatch = Preferred_DM_Mode;
+
+            SetDMFlags();
 
 			if (M_CheckParm("-dmm"))
 				nomonsters = false;
@@ -1300,6 +1311,11 @@ boolean Marshmallow_CheckForMultiplayerEvent()
 
 static void GameplayKeyInput()
 {
+    if (gamekeydown[key_use] && offertimeout_suicide)
+    {
+        PlayerKillsHimself(players[consoleplayer].mo);
+    }
+
 	if (gamekeydown[key_g] && Marshmallow_GiftDropping)  // Press 'G' to gift some ammo to a friend in realnetgame
 	{
 		if (realnetgame)
@@ -2113,7 +2129,10 @@ void PlayerKillsHimself(mobj_t* actor)
 		actor->player->mo->health = 0;  // so we don't pick up items while dying
 
 		P_KillMobj(NULL, actor->player->mo);	
-		actor->player->message = DEH_String(YOUSEPPUKU);
+
+		if (!crispy->singleplayer)
+		    actor->player->message = DEH_String(YOUSEPPUKU);
+
 		HideAllMenus();
 	}
 }
@@ -2122,7 +2141,7 @@ void PlayerKillsHimself(mobj_t* actor)
 static boolean Marshmallow_CheckForFF(mobj_t* source, mobj_t* target)
 {
 	if (!source)
-	return;
+	    return false;
 
 	if ((source->x != target->x)
 		&& (source->y != target->y)
@@ -2493,7 +2512,7 @@ void AnnounceWhoKilledWhat(mobj_t* source, mobj_t* target, player_t* players)
 		&& IsPlayer(target)  
 		&& Marshmallow_CheckForFF(source,target))
 	{
-		target->player->message = DEH_String(KILLBYPLAYER); 
+		target->player->message = DEH_String(KILLBYPLAYER);
 		source->player->message = DEH_String(KILLPLAYER);
 		return;
 	}
@@ -2705,6 +2724,117 @@ void SetSkills()
                 Marshmallow_RespawnInNightmare = false;
                 break;
         }
+    }
+}
+
+
+void KilledByPlayer(mobj_t* source, mobj_t* target)
+{
+    static char completemessage[80];
+    playerindex_t player;
+    int color;
+
+    if ( IsBot(target) )
+        return;
+
+    if ( IsBot(target) )
+        player = target->player->bot_number;
+    else
+        player = target->player->player_number;
+
+    switch (player)
+    {
+        case 0:
+            color = CR_GREEN;
+            break;
+        case 1:
+            color = CR_GRAY;
+            break;
+        case 2:
+            color = CR_GOLD;
+            break;
+        case 3:
+            color = CR_DARK;
+            break;
+    }
+
+    M_snprintf(completemessage, sizeof(completemessage), "You were killed by %s!", marshmallow_player_names[player]);
+
+    CrispyReplaceColor(completemessage, color, marshmallow_player_names[player]);
+
+    players[consoleplayer].message = DEH_String(completemessage);
+}
+
+
+void KilledPlayer(mobj_t* source, mobj_t* target)
+{
+    static char completemessage[80];
+    playerindex_t player;
+    int color;
+
+    if ( IsBot(source) )
+        return;
+
+    if ( IsBot(target) )
+        player = target->player->bot_number;
+    else
+        player = target->player->player_number;
+
+    switch (player)
+    {
+        case 0:
+            color = CR_GREEN;
+            break;
+        case 1:
+            color = CR_GRAY;
+            break;
+        case 2:
+            color = CR_GOLD;
+            break;
+        case 3:
+            color = CR_DARK;
+            break;
+    }
+
+    M_snprintf(completemessage, sizeof(completemessage), "You killed %s!", marshmallow_player_names[player]);
+
+    CrispyReplaceColor(completemessage, color, marshmallow_player_names[player]);
+
+    players[consoleplayer].message = DEH_String(completemessage);
+}
+
+
+void DisplayMedkitRemaining()
+{
+    static char completemessage[80];
+    int medkit_remaining;
+
+    medkit_remaining = MAIN_PLAYER.medkit_remaining;
+
+    M_snprintf(completemessage, sizeof(completemessage), "Medkit has %d health remaining.", medkit_remaining);
+
+    CrispyReplaceColor(completemessage, CR_GRAY, "Medkit");
+
+    players[consoleplayer].message = DEH_String(completemessage);
+}
+
+
+void SetDMFlags()
+{
+    switch (deathmatch)
+    {
+    case 1:
+        Marshmallow_DeathmatchWeaponsStay = true;
+        Marshmallow_ItemRespawn = false;
+        break;
+    case 2:
+        Marshmallow_DeathmatchWeaponsStay = false;
+        Marshmallow_ItemRespawn = true;
+        break;
+    case 3:
+        Marshmallow_DeathmatchWeaponsStay = true;
+        Marshmallow_ItemRespawn = true;
+        break;
     }
 }
 

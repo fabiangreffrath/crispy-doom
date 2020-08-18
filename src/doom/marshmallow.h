@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>  
-#include <math.h>    
+#include <math.h>
+#include <m_misc.h>
 
 #include <SDL.h> 
 
@@ -30,6 +31,7 @@ boolean Marshmallow_SelfDamage;
 boolean Marshmallow_DropGoodies;     
 boolean Marshmallow_DropBackpack;
 boolean Marshmallow_ItemRespawn;
+boolean Marshmallow_DeathmatchWeaponsStay;
 boolean Marshmallow_ConservePowerups;    
 boolean Marshmallow_KeepWeapons;  
 boolean Marshmallow_KeepKeys;    
@@ -88,6 +90,7 @@ boolean Marshmallow_ResizeMonsters;
 boolean Marshmallow_Flashlight;
 boolean Marshmallow_TrueRandomDamage;
 boolean Marshmallow_BarrelPushing;
+boolean Marshmallow_ReducedRedscreen;
 int Marshmallow_TreasureMode;
 int Marshmallow_ShowTargetHP;
 
@@ -160,6 +163,10 @@ void SetPunchSound();
 void ToggleFriendlyFire();
 int RandomEpisode();
 void SetSkills();
+void DisplayMedkitRemaining();
+void SetDMFlags();
+void KilledByPlayer(mobj_t* source, mobj_t* target);
+void KilledPlayer(mobj_t* source, mobj_t* target);
 void WriteToSecondConsoleLine(char* string, int timeout);
 void WriteToThirdConsoleLine(char* string, int timeout);
 void WriteToFourthConsoleLine(char* string, int timeout);
@@ -196,6 +203,7 @@ boolean EnemyInRange(mobj_t* enemy);
 void PlayMenuSound(int sound);
 
 // Network stuff
+char* marshmallow_player_names[4];
 boolean netgamesignal;
 boolean Marshmallow_CheckForMultiplayerEvent();
 boolean	realnetgame;	// Used to differentiate between bot games and actual network games
@@ -251,7 +259,9 @@ int Marshmallow_AlternateLighting;
 // DM options
 int dm_fraglimit;
 int dm_timelimit;
+int dm_scoreboard;
 int dm_scores[MAXPLAYERS];
+int Preferred_DM_Mode;
 boolean Marshmallow_AllowExit;
 boolean Marshmallow_KillOnExit;
 
@@ -328,6 +338,7 @@ boolean invmenu_on;
 boolean treasure_on;  // Used for realnetgame only
 boolean skillmenu_on;
 boolean optionsmenu_on;
+boolean deathmatchmenu_on;
 boolean botmenu_on;
 boolean msgsmenu_on;
 boolean missilelock_on;

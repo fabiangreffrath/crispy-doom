@@ -402,8 +402,8 @@ menu_t  NewDef =
 //
 enum
 {
-    endgame,
     messages,
+    endgame,
     detail,
     scrnsize,
     option_empty1,
@@ -415,8 +415,8 @@ enum
 
 menuitem_t OptionsMenu[]=
 {
-    {1,"M_ENDGAM",	M_EndGame,'e', "End Game"},
     {1,"M_MESSG",	M_MarshmallowMenu,'m', "MARSHMALLOW Options"},  // [marshmallow] Overwriting Messages on/off with a shortcut to gameplay options
+    {1,"M_ENDGAM",	M_EndGame,'e', "End Game"},
     {1,"M_DETAIL",	M_ChangeDetail,'g', "Graphic Detail: "},
     {2,"M_SCRNSZ",	M_SizeDisplay,'s', "Screen Size"},
     {-1,"",0,'\0'},
