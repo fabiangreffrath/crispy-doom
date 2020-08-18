@@ -1720,6 +1720,14 @@ void A_XScream (mobj_t* actor)
 
 void A_Pain (mobj_t* actor)
 {
+    // [marshmallow] Bots don't make noise when hurt by environmental dangers
+    if (actor->player
+        && IsBot(actor->player)
+        && actor->player->attacker == NULL)
+    {
+        return;
+    }
+
     if (actor->info->painsound)
 	S_StartSound (actor, actor->info->painsound);	
 }
@@ -2106,7 +2114,12 @@ void A_BrainSpit (mobj_t*	mo)
     
     static int	easy = 0;
 
-    if (Marshmallow_Sandbox)  // [marshmallow] Don't spit cubes during sandbox games
+    // [marshmallow] Don't spit cubes during sandbox games
+    if (Marshmallow_Sandbox)
+        return;
+
+    // [marshmallow] In deathmatch, only spit cubes if we have deathmatch monsters enabled
+    if (deathmatch && nomonsters)
         return;
 
     if (!PKE_Meter.bossfight && !deathmatch)

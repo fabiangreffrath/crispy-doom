@@ -18,7 +18,7 @@ enum { WEAPON, AMMO, MEDKIT, ARMOR, POWERUP };
 enum { BOTS_CAREFUL, BOTS_WALK, BOTS_RUN };
 
 // Misc typedefs
-typedef enum {BACKWARD,	FORWARD} direction_t;
+typedef enum {NO_DIRECTION, BACKWARD, FORWARD} direction_t;
 typedef enum { SHORTBLIP, LONGBLIP } blipsound_t;
 typedef enum { BLUE, GOLD, RED } treasure_t;
 

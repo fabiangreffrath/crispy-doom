@@ -247,6 +247,9 @@ enum {
 };
 
 // Messages menu
+int cursor_color;
+int datapad_textcolor;
+
 enum {
 	NO_MSG_SELECTION,
 
@@ -258,6 +261,14 @@ enum {
 	BOSSALERTS_SELECTED,
 	INFIGHT_SELECTED,
 	EXTENDEDMSG_SELECTED,
+
+	DRAWWALLPAPER_SELECTED,
+	DRAWDATAPAD_SELECTED,
+	DRAWPKE_SELECTED,
+	DATAPADSOUNDS_SELECTED,
+	PKESOUNDS_SELECTED,
+	//CURSORCOLOR_SELECTED,
+	//TEXTCOLOR_SELECTED,
 
     MAX_MSGMENU_ITEMS,  // Excluding the below option for the time being
 
@@ -490,6 +501,14 @@ hu_stext_t messagesmenu_infightmsg;
 hu_stext_t messagesmenu_bossmsg;
 hu_stext_t messagesmenu_targethp;
 hu_stext_t messagesmenu_missile;
+
+hu_stext_t messagesmenu_menuwallpaper;
+hu_stext_t messagesmenu_datapadgraphics;
+hu_stext_t messagesmenu_pkemetergraphics;
+hu_stext_t messagesmenu_datapadsounds;
+hu_stext_t messagesmenu_pkesounds;
+hu_stext_t messagesmenu_cursorcolor;
+hu_stext_t messagesmenu_textcolor;
 
 hu_stext_t musicmenu_title;
 hu_stext_t musicmenu_blank;

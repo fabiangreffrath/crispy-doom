@@ -425,8 +425,6 @@ void PKE_ShowInfo()
 	if (!pke)
 		return;
 
-	// TODO: color
-
     AddIntegerToInfoReadout("on_radar: ", pke->monsters_onradar, 2);
     AddIntegerToInfoReadout("healthpoints_onradar: ", pke->healthpoints_onradar, 3);
 

@@ -7,7 +7,7 @@
 #define MENU_SKILL "Change Skill"
 #define MENU_INV "Inventory Menu"
 #define MENU_BOTS "Bots"
-#define MENU_MSGS "Messages"
+#define MENU_MSGS "Interface"
 #define MENU_SEPPUKU "Suicide"
 #define MENU_SKIP "Change Map"
 #define MENU_RESTART "Restart Level"
@@ -21,6 +21,10 @@
 #define PKERADIUS_STRING1 "SEARCH RADIUS SET TO SMALL."
 #define PKERADIUS_STRING2 "SEARCH RADIUS SET TO MEDIUM."
 #define PKERADIUS_STRING3 "SEARCH RADIUS SET TO LARGE."
+
+#define MAINMENU_GAMEPLAY "    Gameplay options..."
+#define MAINMENU_MUSIC "    Music options..."
+#define MAINMENU_INTERFACE "    Interface options..."
 
 #define ORDERS  "ORDERS: "
 #define COVER "FOLLOWING"

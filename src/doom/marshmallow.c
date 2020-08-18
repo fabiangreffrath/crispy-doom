@@ -39,6 +39,12 @@ void Marshmallow_InitVariables()
 	upgrade_chance = 0;
 	MonsterHitpointsScale = 1;  // 1x means default spawnhealth
 
+    Marshmallow_DrawWallpaper = false;
+    Marshmallow_DatapadGraphics = true;
+    Marshmallow_PKEGraphics = true;
+    Marshmallow_DatapadSounds = true;
+    Marshmallow_PKESounds = true;
+
 	Marshmallow_SelfDamage = true; 
 	Marshmallow_EndMapNowCheat = true;  
 	Marshmallow_SuicideCheat = true;   
@@ -593,7 +599,7 @@ void Marshmallow_CheckCheats(event_t* ev)
 	}
 
 	if (cht_CheckCheat(&Marshmallow_AllItemsCheatString, ev->data2)    // Type 'giveall' to receive all inventory items
-		&& !realnetgame)
+		&& !realnetgame && !deathmatch)
 	{
 		SHOW_MESSAGE DEH_String(GIVEALL);
 

@@ -761,7 +761,7 @@ P_TouchSpecialThing
       case SPR_PINV:
 
       // [marshmallow]
-      if (Marshmallow_SaveItems)
+      if (Marshmallow_SaveItems && !deathmatch)
       {
           if (toucher->player->extra_powers[ITEM_INVUL])
           {
@@ -793,7 +793,7 @@ P_TouchSpecialThing
       case SPR_PSTR:
 
       // [marshmallow]
-      if (Marshmallow_SaveItems)
+      if (Marshmallow_SaveItems && !deathmatch)
       {
           if (toucher->player->extra_powers[ITEM_MEDKIT])
           {
@@ -832,8 +832,11 @@ P_TouchSpecialThing
 	if (!P_GivePower (player, pw_strength))
 	    return;
 
-    if (!Marshmallow_SaveItems && Marshmallow_PickupMessages)  // [marshmallow]
-	    player->message = DEH_String(GOTBERSERK);
+    if ((!Marshmallow_SaveItems && Marshmallow_PickupMessages)
+        || deathmatch)  // [marshmallow]
+    {
+        player->message = DEH_String(GOTBERSERK);
+    }
 
     if (Marshmallow_BerserkAutoSwitch)	// [marshmallow]
 	if (player->readyweapon != wp_fist)
@@ -894,7 +897,7 @@ P_TouchSpecialThing
           break;
       }
 
-      if (Marshmallow_SaveItems)
+      if (Marshmallow_SaveItems && !deathmatch)
       {
           if (toucher->player->extra_powers[ITEM_INVIS])
           {
@@ -925,7 +928,7 @@ P_TouchSpecialThing
       case SPR_SUIT:
 
       // [marshmallow]
-      if (Marshmallow_SaveItems)
+      if (Marshmallow_SaveItems && !deathmatch)
       {
           if (toucher->player->extra_powers[ITEM_RADSUIT])
           {
@@ -965,7 +968,7 @@ P_TouchSpecialThing
       case SPR_PVIS:
 
       // [marshmallow]
-      if (Marshmallow_SaveItems)
+      if (Marshmallow_SaveItems && !deathmatch)
       {
           if (toucher->player->extra_powers[ITEM_VISOR])
           {
