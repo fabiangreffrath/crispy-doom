@@ -30,6 +30,10 @@ void UpdateInfoReadout()
 
 void SetMarshmallowColors()
 {
+    CrispyReplaceColor( "1.0", CR_GOLD, "1.0");
+    CrispyReplaceColor( "2.0", CR_GRAY, "2.0");
+    CrispyReplaceColor( "3.0", CR_GREEN, "3.0");
+
     CrispyReplaceColor( PKEHINT_SMALL, CR_BLUE, PKEHINT_SMALL);
     CrispyReplaceColor( PKEHINT_MEDIUM, CR_GREEN, PKEHINT_MEDIUM);
     CrispyReplaceColor( PKEHINT_LARGE, CR_GOLD, PKEHINT_LARGE);
@@ -46,7 +50,9 @@ void SetMarshmallowColors()
 
     CrispyReplaceColor( MAINMENU_GAMEPLAY, CR_GRAY, "...");
     CrispyReplaceColor( MAINMENU_MUSIC, CR_GRAY, "...");
+    //CrispyReplaceColor( MAINMENU_EFFECTS, CR_GRAY, "...");
     CrispyReplaceColor( MAINMENU_INTERFACE, CR_GRAY, "...");
+    CrispyReplaceColor( MAINMENU_DM, CR_GRAY, "...");
 
 	CrispyReplaceColor( MENU_TITLE1, CR_GRAY, MENU_TITLE1);
 	CrispyReplaceColor( MENU_TITLE2, CR_GOLD, MENU_TITLE2);
@@ -100,7 +106,7 @@ void SetMarshmallowColors()
 	CrispyReplaceColor( KNIGHTKILL, CR_GOLD, "HELL KNIGHT");
 	CrispyReplaceColor( BABYKILL, CR_GOLD, "ARACHNOTRON");
 
-	CrispyReplaceColor( CONFIRMSUICIDE, CR_GRAY, "SUICIDE");  // gray makes it pretty noticeable, right?
+	CrispyReplaceColor( CONFIRMSUICIDE, CR_GRAY, "PRESS USE");
 	CrispyReplaceColor( YOUSEPPUKU, CR_DARK, "SEPPUKU");  // which color best represents SUICIDE?!?!?
 
 	CrispyReplaceColor( VILEDEAD, CR_GREEN, "ARCHVILE");
@@ -112,24 +118,24 @@ void SetMarshmallowColors()
 	CrispyReplaceColor( PROMPTMEDKIT, CR_GREEN, "'R'");
 	//CrispyReplaceColor( PROMPTMEDKIT, CR_GRAY, "MEDKIT");  // can't use two different colors in the same line
 
-	CrispyReplaceColor( ADDEDRADSUIT, CR_GRAY, "RAD-SUIT");
-	CrispyReplaceColor( ADDEDMEDKIT, CR_GREEN, "MEDKIT");
+	CrispyReplaceColor( ADDEDRADSUIT, CR_GREEN, "RAD-SUIT");
+	CrispyReplaceColor( ADDEDMEDKIT, CR_GRAY, "MEDKIT");
 	//CrispyReplaceColor( ADDEDINVIS, CR_DARK, "INVISIBILITY");  // not working for some reason
 
 	CrispyReplaceColor( USEDMEDICAL, CR_GRAY, "MEDICAL");
 
-	CrispyReplaceColor( HAVEMEDKIT, CR_GREEN, "MEDKIT");
+	CrispyReplaceColor( HAVEMEDKIT, CR_GRAY, "MEDKIT");
 	CrispyReplaceColor( HAVEINVIS, CR_DARK, "INVISIBILITY");
-	CrispyReplaceColor( HAVERADSUIT, CR_GRAY, "RAD-SUIT");
+	CrispyReplaceColor( HAVERADSUIT, CR_GREEN, "RAD-SUIT");
 
-	CrispyReplaceColor( USINGMEDKIT, CR_GREEN, "MEDKIT");
+	CrispyReplaceColor( USINGMEDKIT, CR_GRAY, "MEDKIT");
 	CrispyReplaceColor( USINGINVIS, CR_DARK, "INVISIBILITY");
-	CrispyReplaceColor( USINGRADSUIT, CR_GRAY, "RAD-SUIT");
+	CrispyReplaceColor( USINGRADSUIT, CR_GREEN, "RAD-SUIT");
 
-	CrispyReplaceColor( INVRADSUIT, CR_GRAY, "RAD-SUIT");
+	CrispyReplaceColor( INVRADSUIT, CR_GREEN, "RAD-SUIT");
 	//CrispyReplaceColor( INVINVUL, CR_RED, "INVULNERABILITY");  // too long to color 
 	CrispyReplaceColor( INVINVIS, CR_DARK, "INVISIBILITY");  
-	CrispyReplaceColor( INVMEDKIT, CR_GREEN, "MEDKIT");
+	CrispyReplaceColor( INVMEDKIT, CR_GRAY, "MEDKIT");
 	CrispyReplaceColor( INVAUTOMAP, CR_GOLD, "AUTO-MAP");
 
 	CrispyReplaceColor( MISSILELOCK1, CR_GOLD, MISSILELOCK1);  // been playing with different colors on this one
@@ -458,16 +464,6 @@ static void DrawInventoryItemIcon()
 }
 
 
-// Still a work in progress... getting junk data when returning buf
-char* ShowIntAsString(int val)
-{
-	char buf[8];
-	sprintf(buf, "%d", val);
-
-	return DEH_String(buf);
-}
-
-
 void TreasureReadout()  
 {
 	char show_number[8];
@@ -553,7 +549,7 @@ void ScoreboardReadout()
 
 	//AddIntegerToInfoReadout("netgamesignal: ", netgamesignal, 8);
 	
-	if (menus_on || profilescreen_on || !BotsInGame || botcommandmenu_on)
+	if (menus_on || profilescreen_on || !BotsInGame || botcommandmenu_on || !dm_scoreboard)
 		return;
 
 	if (deathmatch)  
@@ -661,6 +657,7 @@ void InitHUDMenuText()
 	HUD_InitVanillaMusicMenu();
 	HUD_InitProfileScreen();
     HUD_InitShortcutMenu();
+    HUD_InitDeathmatchMenu();
 
 	// So the cursor isn't stuck on zero at first
 	mainmenu_selection = FIRST_MENU_ITEM;
@@ -887,7 +884,7 @@ void DrawHUDMenu()
 		HUlib_drawSText(&mainmenu_options); 
 		HUlib_drawSText(&mainmenu_botmenu); 
 		HUlib_drawSText(&mainmenu_nextmap);
-		HUlib_drawSText(&mainmenu_sandbox); 
+		HUlib_drawSText(&mainmenu_gamerules);
 		HUlib_drawSText(&mainmenu_music); 
 		HUlib_drawSText(&mainmenu_messages);
 		//HUlib_drawSText(&mainmenu_suicide);   // No room for this at the moment
@@ -1028,7 +1025,22 @@ void DrawHUDMenu()
     {
         HUlib_drawSText(&shortcutmenu_gameplay);
         HUlib_drawSText(&shortcutmenu_music);
+        //HUlib_drawSText(&shortcutmenu_effects);
         HUlib_drawSText(&shortcutmenu_messages);
+        HUlib_drawSText(&shortcutmenu_deathmatch);
+    }
+
+    if (deathmatchmenu_on)
+    {
+        HUlib_drawSText(&dmmenu_rules);
+        HUlib_drawSText(&dmmenu_itemrespawn);
+        HUlib_drawSText(&dmmenu_weaponstay);
+        HUlib_drawSText(&dmmenu_monsters);
+        HUlib_drawSText(&dmmenu_allowexit);
+        HUlib_drawSText(&dmmenu_killonexit);
+        HUlib_drawSText(&dmmenu_timelimit);
+        HUlib_drawSText(&dmmenu_fraglimit);
+        HUlib_drawSText(&dmmenu_scores);
     }
 
 	if (skillmenu_on)
@@ -1147,12 +1159,19 @@ void HUDMenuTicker()
 	HUlib_addMessageToSText(&mainmenu_profile, 0, "Profile");
 	HUlib_addMessageToSText(&mainmenu_options, 0, DEH_String("GAMEPLAY") /*, DisplayOnOff(Marshmallow_DynamicMusic)*/);
 	HUlib_addMessageToSText(&mainmenu_botmenu, 0, DEH_String(MENU_BOTS));
-	HUlib_addMessageToSText(&mainmenu_sandbox, 0, DEH_String("Sandbox"));
 	HUlib_addMessageToSText(&mainmenu_nextmap, 0, DEH_String(MENU_SKIP));
 	
 	HUlib_addMessageToSText(&mainmenu_music, 0, DEH_String(MENU_MUSIC) /*, DisplayOnOff(Marshmallow_DynamicMusic)*/);
 	HUlib_addMessageToSText(&mainmenu_messages, 0, DEH_String(MENU_MSGS));
-	HUlib_addMessageToSText(&mainmenu_suicide, 0, DEH_String(MENU_SEPPUKU));
+
+	if (Marshmallow_Sandbox)
+        HUlib_addMessageToSText(&mainmenu_gamerules, 0, DEH_String("Sandbox"));
+
+    else if (deathmatch)
+        HUlib_addMessageToSText(&mainmenu_gamerules, 0, DEH_String("DM Flags"));
+
+    else
+        HUlib_addMessageToSText(&mainmenu_gamerules, 0, DEH_String("Suicide"));
 
 // sandbox menu
 
@@ -1231,6 +1250,17 @@ void HUDMenuTicker()
 
 	//HUlib_addMessageToSText(&botmenu_gamemode, "    AI Mode: ", ShowGameMode() );
 
+// deathmatch menu
+
+    HUlib_addMessageToSText(&dmmenu_rules, "    Deathmatch Rules:  ", DisplayDeathmatchMode());
+    HUlib_addMessageToSText(&dmmenu_itemrespawn, "      Items Respawn ", DisplayOnOff(Marshmallow_ItemRespawn));
+    HUlib_addMessageToSText(&dmmenu_weaponstay, "      Weapons Stay ", DisplayOnOff(Marshmallow_DeathmatchWeaponsStay));
+    HUlib_addMessageToSText(&dmmenu_monsters, "    Monsters ", DisplayOnOff(!nomonsters)); //  will be a skill selection index
+    HUlib_addMessageToSText(&dmmenu_allowexit, "    Allow Exit ", DisplayOnOff(Marshmallow_AllowExit));
+    HUlib_addMessageToSText(&dmmenu_killonexit, "    Kill On Exit ", DisplayOnOff(Marshmallow_KillOnExit));
+    HUlib_addMessageToSText(&dmmenu_timelimit, "    Time Limit  ", ShowIntAsChar(dm_timelimit));
+    HUlib_addMessageToSText(&dmmenu_fraglimit, "    Frag Limit  ", ShowIntAsChar(dm_fraglimit));
+    HUlib_addMessageToSText(&dmmenu_scores, "    Show Scores ", DisplayOnOff(dm_scoreboard));
 
 // options menu
 
@@ -1258,7 +1288,9 @@ void HUDMenuTicker()
 
     HUlib_addMessageToSText(&shortcutmenu_gameplay, NULL, DEH_String(MAINMENU_GAMEPLAY));
     HUlib_addMessageToSText(&shortcutmenu_music, NULL, DEH_String(MAINMENU_MUSIC));
+    //HUlib_addMessageToSText(&shortcutmenu_effects, NULL, DEH_String(MAINMENU_EFFECTS));
     HUlib_addMessageToSText(&shortcutmenu_messages, NULL, DEH_String(MAINMENU_INTERFACE));
+    HUlib_addMessageToSText(&shortcutmenu_deathmatch, NULL, DEH_String(MAINMENU_DM));
 
 
 // skill menu
@@ -1420,6 +1452,41 @@ void CalculateCursorPosition()
 	}
 	*/
 
+    if (deathmatchmenu_on)
+    {
+        switch (dmmenu_selection)
+        {
+            case 1:
+                cursor_y = INV_HU_Y_3;
+                break;
+            /*case 2:
+                cursor_y = INV_HU_Y_5;
+                break;
+            case 3:
+                cursor_y = INV_HU_Y_6;
+                break;*/
+            case 2:
+                cursor_y = INV_HU_Y_8;
+                break;
+            case 3:
+                cursor_y = INV_HU_Y_9;
+                break;
+            case 4:
+                cursor_y = INV_HU_Y_10;
+                break;
+            case 5:
+                cursor_y = INV_HU_Y_11;
+                break;
+            case 6:
+                cursor_y = INV_HU_Y_12;
+                break;
+            case 7:
+                cursor_y = INV_HU_Y_14;
+                break;
+        }
+    }
+
+
 	if (shortcutmenu_on)
     {
         switch (shortcutmenu_selection)
@@ -1435,6 +1502,14 @@ void CalculateCursorPosition()
             case 3:
                 cursor_y = INV_HU_Y_7;
                 break;
+
+            case 4:
+                cursor_y = INV_HU_Y_8;
+                break;
+/*
+            case 5:
+                cursor_y = INV_HU_Y_7;
+                break;*/
 
             default:
                 return;
@@ -1944,6 +2019,9 @@ static void CalcInvCursorPos(direction_t dir)
 			}
 		}
 	}
+
+	if (invmenu_selection == ITEM_MEDKIT)
+        DisplayMedkitRemaining();
 }
 
 
@@ -2070,6 +2148,19 @@ void HUDMenuKeyInput()
                 mainmenu_on = true;
             }
         }
+        else if ( deathmatchmenu_on )
+        {
+            if (mainmenu_breadcrumb)
+            {
+                HideAllMenus();
+                shortcutmenu_on = true;
+            }
+            else
+            {
+                HideAllMenus();
+                mainmenu_on = true;
+            }
+        }
         else if ( msgsmenu_on )
         {
             if (mainmenu_breadcrumb)
@@ -2175,6 +2266,124 @@ void HUDMenuKeyInput()
 			botmenu_selection = FIRST_MENU_ITEM;
 	}
 
+	if (deathmatchmenu_on)
+    {
+        if (MENUKEY_NEXT)
+        {
+            if (CheckKeyDelay())
+                return;
+
+            dmmenu_selection++;
+
+            if (dmmenu_selection == MAX_DMMENU_ITEMS)
+                dmmenu_selection = FIRST_MENU_ITEM;
+        }
+
+        if (MENUKEY_PREVIOUS)
+        {
+            if (CheckKeyDelay())
+                return;
+
+            dmmenu_selection--;
+
+            if (dmmenu_selection == 0)
+                dmmenu_selection = MAX_DMMENU_ITEMS - 1;
+        }
+
+        if (MENUKEY_SELECT)
+        {
+            if (CheckKeyDelay())
+                return;
+
+            switch (dmmenu_selection)
+            {
+                case DMRULES_SELECTED:
+
+                        Preferred_DM_Mode++;
+                        if (Preferred_DM_Mode > 3)
+                            Preferred_DM_Mode = 1;
+
+                        switch (Preferred_DM_Mode)
+                        {
+                            case 1:
+                                Marshmallow_DeathmatchWeaponsStay = true;
+                                Marshmallow_ItemRespawn = false;
+                                break;
+                            case 2:
+                                Marshmallow_DeathmatchWeaponsStay = false;
+                                Marshmallow_ItemRespawn = true;
+                                break;
+                            case 3:
+                                Marshmallow_DeathmatchWeaponsStay = true;
+                                Marshmallow_ItemRespawn = true;
+                                break;
+                        }
+
+                        if (!deathmatch)
+                            break;
+
+                        deathmatch++;
+
+                        if (deathmatch > 3)
+                            deathmatch = 1;
+
+                        switch (deathmatch)
+                        {
+                            case 1:
+                                Marshmallow_DeathmatchWeaponsStay = true;
+                                Marshmallow_ItemRespawn = false;
+                                break;
+                            case 2:
+                                Marshmallow_DeathmatchWeaponsStay = false;
+                                Marshmallow_ItemRespawn = true;
+                                break;
+                            case 3:
+                                Marshmallow_DeathmatchWeaponsStay = true;
+                                Marshmallow_ItemRespawn = true;
+                                break;
+                        }
+
+                    break;
+/*
+                case ITEMRESPAWN_SELECTED:
+                    Marshmallow_ItemRespawn = !Marshmallow_ItemRespawn;
+                    break;
+
+                case DMWEAPONSSTAY_SELECTED:
+                    Marshmallow_DeathmatchWeaponsStay = !Marshmallow_DeathmatchWeaponsStay;
+                    break;*/
+
+                case DMMONSTERS_SELECTED:
+                    nomonsters = !nomonsters;
+                    break;
+
+                case ALLOWEXIT_SELECTED:
+                    Marshmallow_AllowExit = !Marshmallow_AllowExit;
+                    break;
+
+                case KILLONEXIT_SELECTED:
+                    Marshmallow_KillOnExit = !Marshmallow_KillOnExit;
+                    break;
+
+                case TIMELIMIT_SELECTED:
+                    dm_timelimit+=10;
+                    if (dm_timelimit > 100)
+                        dm_timelimit = 10;
+                    break;
+
+                case FRAGLIMIT_SELECTED:
+                    dm_fraglimit+=10;
+                    if (dm_fraglimit > 100)
+                        dm_fraglimit = 10;
+                    break;
+
+                case SHOWSCORES_SELECTED:
+                    dm_scoreboard = !dm_scoreboard;
+                    break;
+            }
+        }
+    }
+
     if (shortcutmenu_on)
     {
         if (MENUKEY_NEXT)
@@ -2206,6 +2415,14 @@ void HUDMenuKeyInput()
 
             switch (shortcutmenu_selection)
             {
+                case DEATHMATCHMENU_SELECTED:
+                    HideAllMenus();
+                    deathmatchmenu_on = true;
+
+                    if (!dmmenu_selection)
+                        dmmenu_selection = FIRST_MENU_ITEM;
+                    break;
+
                 case GAMEPLAYMENU_SELECTED:
                     HideAllMenus();
                     optionsmenu_on = true;
@@ -2808,28 +3025,30 @@ void HUDMenuKeyInput()
 
 			switch (mainmenu_selection)
 			{
-			case SANDBOX_SELECTED:
+			case GAMERULES_SELECTED:
 
-				if (realnetgame)
+				if (Marshmallow_Sandbox)
 				{
-					SHOW_MESSAGE "NOT AVAILABLE IN NETGAME.";
-					break;
+                    sandboxmenu_on = true;
+                    mainmenu_on = false;
+                    sandboxmenu_selection = FIRST_MENU_ITEM;
 				}
 
-				if (!Marshmallow_Sandbox)
-				{
-					SHOW_MESSAGE "NO SANDBOX GAME IN PROGRESS.";
-					break;				
-				}
+				else if (deathmatch)
+                {
+                    deathmatchmenu_on = true;
+                    mainmenu_on = false;
 
-				sandboxmenu_on = true;
-				mainmenu_on = false;
-				sandboxmenu_selection = FIRST_MENU_ITEM;
-				SetKeyDelay();
+                    if (!dmmenu_selection)
+                        dmmenu_selection = FIRST_MENU_ITEM;
+                }
 
-				// old:
-				// confirm are you sure?  y/n
-				// restart map with no monsters in sandbox mode
+                else
+                {
+                    OfferSuicide();
+                }
+
+                SetKeyDelay();
 
 				break;
 
@@ -2858,25 +3077,6 @@ void HUDMenuKeyInput()
 					skill_selection = newskill;
 				}
 				SetKeyDelay();
-				break;
-
-			case SUICIDE_SELECTED:
-				if (!offer_suicide)
-				{
-					offer_suicide = true;
-					offertimeout_suicide = DEFAULT_OFFER_TIMEOUT;
-					SHOW_MESSAGE DEH_String(CONFIRMSUICIDE);
-				}
-				else if (offertimeout_suicide)
-				{
-					if (!netgame)
-						PlayerKillsHimself(MAIN_PLAYER.mo);
-					else
-						Marshmallow_SendMultiplayerEvent(MARSHMALLOW_SOMEONE_KILLED_THEMSELF);
-					mainmenu_on = false;
-					offer_suicide = false;
-					offertimeout_suicide = 0;
-				}
 				break;
 
 			case SKIPMAP_SELECTED:
@@ -4321,17 +4521,7 @@ void HUD_InitMessagesMenu()
 
 void HUD_InitMainMenu()
 {
-// main marshmallow menu:					
-
-	HUlib_initSText(&MAINMENU_LINE1,
-		MENU_X - 4, INV_HU_Y_1, HU_MSGHEIGHT,   // moving title back a few pixels
-		hu_font,
-		HU_FONTSTART, &mainmenu_on);
-
-	HUlib_initSText(&MAINMENU_LINE2,
-		MENU_X, INV_HU_Y_2, HU_MSGHEIGHT,
-		hu_font,
-		HU_FONTSTART, &mainmenu_on);
+// main marshmallow menu:
 
 	HUlib_initSText(&MAINMENU_LINE3,
 		MENU_X, INV_HU_Y_3, HU_MSGHEIGHT,
@@ -4365,11 +4555,6 @@ void HUD_InitMainMenu()
 
 	HUlib_initSText(&MAINMENU_LINE9,
 		MENU_X, INV_HU_Y_9, HU_MSGHEIGHT,
-		hu_font,
-		HU_FONTSTART, &mainmenu_on);
-
-	HUlib_initSText(&MAINMENU_LINE10,
-		MENU_X, INV_HU_Y_10, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &mainmenu_on);
 }
@@ -4890,12 +5075,70 @@ void HUD_InitShortcutMenu()
                     hu_font,
                     HU_FONTSTART, &shortcutmenu_on);
 
+    /*HUlib_initSText(&shortcutmenu_effects,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_?, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &shortcutmenu_on);*/
+
     HUlib_initSText(&shortcutmenu_messages,
                     FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_7, HU_MSGHEIGHT,
                     hu_font,
                     HU_FONTSTART, &shortcutmenu_on);
+
+    HUlib_initSText(&shortcutmenu_deathmatch,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_8, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &shortcutmenu_on);
 }
 
+
+void HUD_InitDeathmatchMenu()
+{
+    HUlib_initSText(&dmmenu_rules,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_3, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &deathmatchmenu_on);
+
+    HUlib_initSText(&dmmenu_itemrespawn,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_5, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &deathmatchmenu_on);
+
+    HUlib_initSText(&dmmenu_weaponstay,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_6, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &deathmatchmenu_on);
+
+    HUlib_initSText(&dmmenu_monsters,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_8, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &deathmatchmenu_on);
+
+    HUlib_initSText(&dmmenu_allowexit,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_9, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &deathmatchmenu_on);
+
+    HUlib_initSText(&dmmenu_killonexit,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_10, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &deathmatchmenu_on);
+
+    HUlib_initSText(&dmmenu_timelimit,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_11, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &deathmatchmenu_on);
+
+    HUlib_initSText(&dmmenu_fraglimit,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_12, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &deathmatchmenu_on);
+
+    HUlib_initSText(&dmmenu_scores,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_14, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &deathmatchmenu_on);
+}
 
 void HUD_InitInventoryMenu()
 {
@@ -5114,7 +5357,7 @@ void StartMenuCursor()
 		|| enemymenu_on
 		|| weaponmenu_on
 		|| shortcutmenu_on
-		//|| profilescreen_on  // when we do this, the stats vanish
+		|| deathmatchmenu_on
 		)
 	{
 		int i;
@@ -5166,6 +5409,7 @@ void HideAllMenus()
 	profilescreen_on = false;
 	treasure_on = false;
 	shortcutmenu_on = false;
+	deathmatchmenu_on = false;
 
 	mainmenu_on = false; 
 	menus_on = false; 
@@ -5348,22 +5592,6 @@ char* DisplayValue(int val)
 }
 
 
-char* DisplayMedkitRemaining()  // nope... still doesn't work
-{
-	char output[16];
-	int value;
-
-	if (!invmenu_on)
-		return "NONE";
-
-	value = 100; //MAIN_PLAYER.medkit_remaining;
-
-	sprintf(output, "%d", value);
-
-	return DEH_String(output);
-}
-
-
 int ColorizeHealth(mobj_t* actor) 
 {
 	mobjtype_t type;
@@ -5394,7 +5622,6 @@ int ColorizeHealth(mobj_t* actor)
 	return color;
 
 }
-
 
 
 void ShowTargetHP()
@@ -5760,9 +5987,6 @@ char* ShowSongChanges()
 
 char* DisplayPlaylistMode()
 {
-	//if (!musicmenu_on)
-	//	return DEH_String("NONE");
-
 	switch (Doom_DJ.play_mode)
 	{
 	case DYNAMIC:
@@ -5825,6 +6049,22 @@ char* DisplayPKERadius()
             return DEH_String(PKEHINT_LARGE);
         default:
             return DEH_String(" ");
+    }
+}
+
+
+char* DisplayDeathmatchMode()
+{
+    switch (Preferred_DM_Mode)
+    {
+        case 1:
+            return DEH_String("1.0");
+        case 2:
+            return DEH_String("2.0");
+        case 3:
+            return DEH_String("3.0");
+        default:
+            return DEH_String("NONE");
     }
 }
 

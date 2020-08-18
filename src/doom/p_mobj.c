@@ -794,7 +794,7 @@ void P_RespawnSpecials (void)
 
     // only respawn items in deathmatch
     // AX: deathmatch 3 is a Crispy-specific change
-    if (deathmatch != 2 && deathmatch != 3 && !Marshmallow_Sandbox)
+    if (deathmatch != 2 && deathmatch != 3 && !Marshmallow_Sandbox && !Marshmallow_ItemRespawn)
 	return;
 
     // nothing left to respawn?

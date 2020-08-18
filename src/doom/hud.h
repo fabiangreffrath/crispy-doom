@@ -79,6 +79,7 @@ boolean mainmenu_breadcrumb;
 #define TITLEHELP_LINE3_X 222
 
 // Functions for hud.c
+char* DisplayDeathmatchMode();
 char* DisplayPKERadius();
 char* DisplayPhysicsMode();
 char* DisplayLightingMode();
@@ -111,6 +112,7 @@ void HUD_InitMainMenu();
 void HUD_InitMessagesMenu();
 void HUD_InitSkillMenu();
 void HUD_InitInventoryMenu();
+void HUD_InitDeathmatchMenu();
 void HUD_InitShortcutMenu();
 void HUD_InitBotMenu();
 void HUD_InitGameplayMenu();
@@ -123,6 +125,7 @@ void HUD_InitProfileScreen();
 int mainmenu_selection; 
 int skill_selection;
 int options_selection;
+int dmmenu_selection;
 int botmenu_selection;
 int msgsmenu_selection;
 int musicmenu_selection;
@@ -132,7 +135,6 @@ int skipmenu_selection;
 int sandboxmenu_selection;
 int enemymenu_selection;
 int weaponmenu_selection;
-int mapweapons_selection;
 int treasure_selection;
 int shortcutmenu_selection;
 
@@ -141,7 +143,9 @@ enum {
 	NO_OPTIONSMENU_SELECTION,
 	GAMEPLAYMENU_SELECTED,
 	MUSICMENU_SELECTED,
+	//EFFECTSMENU_SELECTED,
 	MESSAGESMENU_SELECTED,
+	DEATHMATCHMENU_SELECTED,
 	MAX_SHORTCUT_OPTIONS,
 };
 
@@ -270,9 +274,7 @@ enum {
 	//CURSORCOLOR_SELECTED,
 	//TEXTCOLOR_SELECTED,
 
-    MAX_MSGMENU_ITEMS,  // Excluding the below option for the time being
-
-	EXTRALINE_SELECTED,
+    MAX_MSGMENU_ITEMS,
 };
 
 // Skill selection in change map menu
@@ -357,11 +359,27 @@ enum {
     BOTMENU_SELECTED,
     MUSIC_SELECTED,
     SKIPMAP_SELECTED,
-    SANDBOX_SELECTED,
     MESSAGES_SELECTED,
+    GAMERULES_SELECTED,
     MAX_MAINMENU_ITEMS,
+};
 
-    SUICIDE_SELECTED,  // removed from datapad menu
+// Deathmatch menu
+enum {
+    NO_DMMENU_SELECTION,
+    DMRULES_SELECTED,
+
+    //ITEMRESPAWN_SELECTED,
+    //DMWEAPONSSTAY_SELECTED,
+
+    DMMONSTERS_SELECTED,
+    ALLOWEXIT_SELECTED,
+    KILLONEXIT_SELECTED,
+    TIMELIMIT_SELECTED,
+    FRAGLIMIT_SELECTED,
+    SHOWSCORES_SELECTED,
+
+    MAX_DMMENU_ITEMS,
 };
 
 // Profile line macros so it's easier to rearrange lines
@@ -383,16 +401,13 @@ enum {
 #define PROFILE_LINE14 profile_sandbox_games_won
 
 // main menu macros so it's easier to rearrange lines
-#define MAINMENU_LINE1	mainmenu_title // unused
-#define MAINMENU_LINE2	mainmenu_blank // unused
 #define MAINMENU_LINE3	mainmenu_profile
 #define MAINMENU_LINE4	mainmenu_options
 #define MAINMENU_LINE5  mainmenu_botmenu
 #define MAINMENU_LINE6  mainmenu_music
 #define MAINMENU_LINE7  mainmenu_nextmap
-#define MAINMENU_LINE8	mainmenu_sandbox
-#define MAINMENU_LINE9	mainmenu_messages
-#define MAINMENU_LINE10 mainmenu_suicide  // removed this line
+#define MAINMENU_LINE8	mainmenu_messages
+#define MAINMENU_LINE9	mainmenu_gamerules
 
 // Macros for the position of every HUD text line
 #define	INV_HU_Y_1	HU_MSGY + (HU_MSGHEIGHT*(SHORT(hu_font[0]->height) +18 -NEW_Y_OFFSET))
@@ -423,14 +438,11 @@ hu_stext_t mainmenu_blank;
 hu_stext_t mainmenu_profile;
 hu_stext_t mainmenu_invmenu;
 hu_stext_t mainmenu_botmenu;
-hu_stext_t mainmenu_suicide;
 hu_stext_t mainmenu_nextmap;
-hu_stext_t mainmenu_redomap;
 hu_stext_t mainmenu_music;
-hu_stext_t mainmenu_hellindex;
 hu_stext_t mainmenu_messages;
 hu_stext_t mainmenu_options;
-hu_stext_t mainmenu_sandbox;
+hu_stext_t mainmenu_gamerules;
 
 hu_stext_t botmenu_title;
 hu_stext_t botmenu_blank;
@@ -442,9 +454,7 @@ hu_stext_t botmenu_kill;
 hu_stext_t botmenu_bot1weapon;
 hu_stext_t botmenu_bot2weapon;
 hu_stext_t botmenu_bot3weapon;
-hu_stext_t botmenu_gamemode;
 hu_stext_t botmenu_friendlyfire;
-hu_stext_t botmenu_collision;
 hu_stext_t botmenu_speed;
 hu_stext_t botmenu_statereadout;
 
@@ -467,7 +477,19 @@ hu_stext_t optionsmenu_physics;
 
 hu_stext_t shortcutmenu_gameplay;
 hu_stext_t shortcutmenu_music;
+hu_stext_t shortcutmenu_effects;
 hu_stext_t shortcutmenu_messages;
+hu_stext_t shortcutmenu_deathmatch;
+
+hu_stext_t dmmenu_rules;
+hu_stext_t dmmenu_itemrespawn;
+hu_stext_t dmmenu_weaponstay;
+hu_stext_t dmmenu_monsters;
+hu_stext_t dmmenu_allowexit;
+hu_stext_t dmmenu_killonexit;
+hu_stext_t dmmenu_timelimit;
+hu_stext_t dmmenu_fraglimit;
+hu_stext_t dmmenu_scores;
 
 hu_stext_t skillmenu_title;
 hu_stext_t skillmenu_blank;

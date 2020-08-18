@@ -1730,6 +1730,10 @@ void ST_doPaletteStuff(void)
 	if (menuactive || paused)
 	    palette >>= 1;
 
+	// [marshmallow] Lower red screen intensity when player is hurt
+	if (Marshmallow_ReducedRedscreen)
+	    palette >>=2;
+
 	palette += STARTREDPALS;
     }
 

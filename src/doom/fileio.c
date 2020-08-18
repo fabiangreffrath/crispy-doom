@@ -203,6 +203,11 @@ static void WritePreferences()
 
     fprintf(f, "PKE_SearchRadius %d \n", PKE_Meter.search_radius);
 
+    //if (Preferred_DM_Mode)
+    fprintf(f, "Preferred_DM_Mode %d \n", Preferred_DM_Mode);
+
+    fprintf(f, "ReducedRedscreen %d \n", Marshmallow_ReducedRedscreen);
+
 	fclose(f);
 }
 
@@ -303,6 +308,11 @@ static void LoadPreferences(FILE *f)
 
 	fscanf(f, "DM_AllowExit %d \n", &Marshmallow_AllowExit);
 	fscanf(f, "DM_KillOnExit %d \n", &Marshmallow_KillOnExit);
+
+    //if (!Preferred_DM_Mode)
+    fscanf(f, "Preferred_DM_Mode %d \n", &Preferred_DM_Mode);
+
+    fscanf(f, "ReducedRedscreen %d \n", &Marshmallow_ReducedRedscreen);
 
 	fclose(f);
 }
