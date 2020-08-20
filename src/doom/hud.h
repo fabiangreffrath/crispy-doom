@@ -101,6 +101,11 @@ char* ShowSkillLevel();
 char* ShowGameType();
 char* ShowSongLength();
 char* ShowBotWeapon(int bot);
+void DecrementGibMode();
+void IncrementGibMode();
+void IncrementPhysicsMode();
+void DecrementPhysicsMode();
+void HUD_InitEffectsMenu();
 void HUD_InitExtraLines();
 void HUD_InitHelp();
 void HUD_InitEnemyMenu();
@@ -137,16 +142,35 @@ int enemymenu_selection;
 int weaponmenu_selection;
 int treasure_selection;
 int shortcutmenu_selection;
+int effectsmenu_selection;
 
 // Shortcut menu from main menu options
 enum {
 	NO_OPTIONSMENU_SELECTION,
 	GAMEPLAYMENU_SELECTED,
 	MUSICMENU_SELECTED,
-	//EFFECTSMENU_SELECTED,
+	EFFECTSMENU_SELECTED,
 	MESSAGESMENU_SELECTED,
 	DEATHMATCHMENU_SELECTED,
 	MAX_SHORTCUT_OPTIONS,
+};
+
+// Effects menu
+enum {
+    NO_FXMENU_SELECTION,
+    REDSCREEN_SELECTED,
+    GIBMODE_SELECTED,
+    //GIBCORPSES_SELECTED,
+    //SPLASHSPLAT_SELECTED,
+    //CRITSPLAT_SELECTED,
+    //SLOPPROP_SELECTED,
+    //XDPOINTBLANK_SELECTED,
+    //CSAWGORE_SELECTED,
+    EPICBOSSDEATHS_SELECTED,
+    BFGSHOCKWAVE_SELECTED,
+    BARRELSMOKE_SELECTED,
+    PHYSICSMODE_SELECTED,
+    MAX_FXMENU_ITEMS,
 };
 
 // Warp weapons options in menu
@@ -171,11 +195,9 @@ enum {
 	BULDMG_SELECTED,
 	INFAMMO_SELECTED,
 	SGUNDMG_SELECTED,
+	BFGSPLASH_SELECTED,
 
-    MAX_WEAPONTWEAKS,  // Excluding the following options for the time being
-
-	PLSLOW_SELECTED,
-	BFGWAVE_SELECTED,
+    MAX_WEAPONTWEAKS,
 };
 
 // Monster tweaks menu
@@ -432,7 +454,7 @@ enum {
 #define	INV_HU_Y_20	HU_MSGY + (HU_MSGHEIGHT*(SHORT(hu_font[0]->height) +170 -NEW_Y_OFFSET))
 #define	INV_HU_Y_21	HU_MSGY + (HU_MSGHEIGHT*(SHORT(hu_font[0]->height) +178 -NEW_Y_OFFSET))
 
-// Objects for every line of HUD text
+// Unique text objects
 hu_stext_t mainmenu_title;
 hu_stext_t mainmenu_blank;
 hu_stext_t mainmenu_profile;
@@ -444,6 +466,27 @@ hu_stext_t mainmenu_messages;
 hu_stext_t mainmenu_options;
 hu_stext_t mainmenu_gamerules;
 
+hu_stext_t second_consoleline;
+hu_stext_t third_consoleline;
+hu_stext_t fourth_consoleline;
+
+hu_stext_t help_sandbox_object;
+hu_stext_t help_sandbox_scroll;
+hu_stext_t help_sandbox_select;
+hu_stext_t help_sandbox_battle;
+hu_stext_t help_sandbox_remaining;
+
+hu_stext_t botreadout_state;
+hu_stext_t botreadout_chat;
+hu_stext_t botreadout_orders;
+hu_stext_t botreadout_health;
+hu_stext_t botreadout_weapon;
+
+hu_stext_t treasureinfo_line1;
+hu_stext_t treasureinfo_line2;
+
+
+// Redundant text objects
 hu_stext_t botmenu_title;
 hu_stext_t botmenu_blank;
 hu_stext_t botmenu_spawn;
@@ -572,7 +615,6 @@ hu_stext_t weaponmenu_fist;
 hu_stext_t weaponmenu_bullet;
 hu_stext_t weaponmenu_infammo;
 hu_stext_t weaponmenu_shotgun;
-hu_stext_t weaponmenu_plasma;
 hu_stext_t weaponmenu_bfg;
 hu_stext_t weaponmenu_truerandom;
 
@@ -614,21 +656,6 @@ hu_stext_t help_botshiftkey;
 hu_stext_t help_dropgift;
 hu_stext_t help_togglehelp;
 
-hu_stext_t help_sandbox_object;
-hu_stext_t help_sandbox_scroll;
-hu_stext_t help_sandbox_select;
-hu_stext_t help_sandbox_battle;
-hu_stext_t help_sandbox_remaining;
-
-hu_stext_t botreadout_state;
-hu_stext_t botreadout_chat;
-hu_stext_t botreadout_orders;
-hu_stext_t botreadout_health;
-hu_stext_t botreadout_weapon;
-
-hu_stext_t treasureinfo_line1;
-hu_stext_t treasureinfo_line2;
-
 hu_stext_t profile_namedisplay;
 hu_stext_t profile_dm_frags;
 hu_stext_t profile_accuracy;
@@ -653,8 +680,18 @@ hu_stext_t profile_treasurered;
 hu_stext_t profile_alltreasure;
 hu_stext_t profile_allkills;
 
-hu_stext_t second_consoleline;
-hu_stext_t third_consoleline;
-hu_stext_t fourth_consoleline;
+hu_stext_t effectsmenu_redscreen;
+hu_stext_t effectsmenu_gibmode;
+hu_stext_t effectsmenu_corpsegib;
+hu_stext_t effectsmenu_splashsplat;
+hu_stext_t effectsmenu_critsplat;
+hu_stext_t effectsmenu_slopprop;
+hu_stext_t effectsmenu_xdpointblank;
+hu_stext_t effectsmenu_chainsawgore;
+
+hu_stext_t effectsmenu_epicbossdeaths;
+hu_stext_t effectsmenu_bfgwave;
+hu_stext_t effectsmenu_barrelsmoke;
+hu_stext_t effectsmenu_physicsmode;
 
 #endif

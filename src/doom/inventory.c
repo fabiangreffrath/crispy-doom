@@ -399,7 +399,7 @@ void GiveGradedWeapons(int player)  // TODO: renaming these to WarpWeapons ?  or
 
 	if (!Marshmallow_GradedWeapons)
 	{
-		//StripWeapons(player);  // TODO: test that this does not mess something else up
+        StripWeapons(player);  // Might cause a problem ... 8-19-2020
 		return;
 	}
 
@@ -414,7 +414,7 @@ void GiveGradedWeapons(int player)  // TODO: renaming these to WarpWeapons ?  or
 	}
 //#endif
 
-	 if ( gamemap >= 2 )  // make defines for these level #'s
+	 if ( gamemap >= 2 )
 	 {
 		p->weaponowned[wp_chainsaw] = true; 
 		p->weaponowned[wp_shotgun] = true; 
@@ -424,14 +424,14 @@ void GiveGradedWeapons(int player)  // TODO: renaming these to WarpWeapons ?  or
 		p->readyweapon = wp_shotgun;
 	 }
 
-	 if ( gamemap >= 3 )  // make defines for these level #'s
+	 if ( gamemap >= 3 )
 	 {
 		p->weaponowned[wp_chaingun] = true; 
 
 		p->readyweapon = wp_chaingun;
 	 }
 
-	 if ( gamemap >= 5 )  // make defines for these level #'s
+	 if ( gamemap >= 5 )
 	 {
 		p->weaponowned[wp_missile] = true; 
 

@@ -274,7 +274,7 @@ int GetGameType()
 void OfferSuicide()
 {
     offertimeout_suicide = DEFAULT_OFFER_TIMEOUT;
-    SHOW_MESSAGE CONFIRMSUICIDE;
+    SHOW_MESSAGE DEH_String(CONFIRMSUICIDE);
 }
 
 
@@ -432,7 +432,7 @@ static void SetNewGameSettings()
 			nomonsters = false;
 			
 			if (!M_CheckParm("-dmw"))
-			Marshmallow_DeathmatchWeapons = false;
+			    Marshmallow_DeathmatchWeapons = false;
 			
 			CancelSandbox();
 
@@ -450,7 +450,7 @@ static void SetNewGameSettings()
 			nomonsters = false;
 			
 			if (!M_CheckParm("-dmw"))
-			Marshmallow_DeathmatchWeapons = false;
+			    Marshmallow_DeathmatchWeapons = false;
 			
 			CancelSandbox();
 
@@ -470,7 +470,7 @@ static void SetNewGameSettings()
 			//if (!deathmatch)
 			deathmatch = Preferred_DM_Mode;
 
-            SetDMFlags();
+            SetDMFlags(deathmatch);
 
 			if (M_CheckParm("-dmm"))
 				nomonsters = false;
@@ -521,7 +521,7 @@ void SkipToLevel()
 
 	SetNewGameSettings();
 
-	wipegamestate = -1;  // not working here?
+	wipegamestate = -1;  // Why does it not wipe sometimes?
 
 	if (skip_to_level == 0)  // 0 == RANDOM level
 	{
@@ -536,7 +536,7 @@ void SkipToLevel()
 
 	if (menuactive)  // Only if we're using the main menu
 		G_InitNew(newskill, gameepisode, gamemap);
-	else 
+	else            // Change Map menu
 		G_DeferedInitNew(newskill, gameepisode, gamemap);  
 }
 
@@ -881,6 +881,7 @@ static void DoConsoleTimeouts()
     else
     {
         second_consoleline_on = false;
+        second_consoleline_timeout = 0;
     }
 
     if (third_consoleline_timeout)
@@ -891,6 +892,7 @@ static void DoConsoleTimeouts()
     else
     {
         third_consoleline_on = false;
+        third_consoleline_timeout = 0;
     }
 
     if (fourth_consoleline_timeout)
@@ -901,6 +903,7 @@ static void DoConsoleTimeouts()
     else
     {
         fourth_consoleline_on = false;
+        fourth_consoleline_timeout = 0;
     }
 }
 
@@ -924,6 +927,14 @@ void DoTimeouts()
 		offertimeout_radsuit--;
 	else
 		offer_radsuit = false;
+
+	if (!realnetgame
+	    && !MAIN_PLAYER.mo->subsector->sector->special)
+    {
+        offer_radsuit = false;
+        offertimeout_radsuit = 0;
+        second_consoleline_timeout = 0;
+    }
 
 	if (offertimeout_medkit)
 		offertimeout_medkit--;
@@ -1311,9 +1322,11 @@ boolean Marshmallow_CheckForMultiplayerEvent()
 
 static void GameplayKeyInput()
 {
-    if (gamekeydown[key_use] && offertimeout_suicide)
+    if (gamekeydown[key_r] && offertimeout_suicide)
     {
         PlayerKillsHimself(players[consoleplayer].mo);
+        SetKeyDelay();
+        return;
     }
 
 	if (gamekeydown[key_g] && Marshmallow_GiftDropping)  // Press 'G' to gift some ammo to a friend in realnetgame
@@ -2130,7 +2143,7 @@ void PlayerKillsHimself(mobj_t* actor)
 
 		P_KillMobj(NULL, actor->player->mo);	
 
-		if (!crispy->singleplayer)
+		//if (!crispy->singleplayer)
 		    actor->player->message = DEH_String(YOUSEPPUKU);
 
 		HideAllMenus();
@@ -2503,8 +2516,12 @@ void AnnounceWhoKilledWhat(mobj_t* source, mobj_t* target, player_t* players)
 		&& !IsBot(target->player)
 		&& Marshmallow_DeathMessages)   
 	{
+	    if (offertimeout_suicide)
+	        return;
+
 		SendMessageToAllPlayers(players, DEH_String(ENVKILL));
 		target->player->message = DEH_String(KILLENV);
+
 		return;
 	}
 
@@ -2514,6 +2531,7 @@ void AnnounceWhoKilledWhat(mobj_t* source, mobj_t* target, player_t* players)
 	{
 		target->player->message = DEH_String(KILLBYPLAYER);
 		source->player->message = DEH_String(KILLPLAYER);
+
 		return;
 	}
 }
@@ -2563,7 +2581,7 @@ void GiveAllItems()
 	MAIN_PLAYER.extra_powers[ITEM_RADSUIT] = true;
 	MAIN_PLAYER.extra_powers[ITEM_MEDKIT] = true;
 	MAIN_PLAYER.extra_powers[ITEM_VISOR] = true;
-	//MAIN_PLAYER.extra_powers[ITEM_AUTOMAP] = true;
+	MAIN_PLAYER.extra_powers[ITEM_AUTOMAP] = true;
 
 	MAIN_PLAYER.medkit_remaining = 100;
 }
@@ -2728,6 +2746,33 @@ void SetSkills()
 }
 
 
+void ShowExtendedSkillInfo()
+{
+    WriteToThirdConsoleLine( WriteLineWithInteger("UPGRADE CHANCE: %d %%", upgrade_chance), SHORT_EXTRALINE_TIMEOUT );
+    WriteToFourthConsoleLine( WriteLineWithInteger("HITPOINTS MULTIPLIER: %d x", MonsterHitpointsScale), SHORT_EXTRALINE_TIMEOUT );
+}
+
+
+char* WriteLineWithInteger(char* prefix, int value)
+{
+    /*static*/ char completemessage[80];
+
+    M_snprintf(completemessage, sizeof(completemessage), prefix, value);
+
+    return /*DEH_String(*/completemessage/*)*/;
+}
+
+
+char* WriteLineWithString(char* string1, char* string2)
+{
+    /*static*/ char completemessage[80];
+
+    M_snprintf(completemessage, sizeof(completemessage), string1, string2);
+
+    return /*DEH_String(*/completemessage/*)*/;
+}
+
+
 void KilledByPlayer(mobj_t* source, mobj_t* target)
 {
     static char completemessage[80];
@@ -2819,23 +2864,35 @@ void DisplayMedkitRemaining()
 }
 
 
-void SetDMFlags()
+void SetDMFlags(int dm_mode)
 {
-    switch (deathmatch)
+    switch (dm_mode)
     {
-    case 1:
-        Marshmallow_DeathmatchWeaponsStay = true;
-        Marshmallow_ItemRespawn = false;
-        break;
-    case 2:
-        Marshmallow_DeathmatchWeaponsStay = false;
-        Marshmallow_ItemRespawn = true;
-        break;
-    case 3:
-        Marshmallow_DeathmatchWeaponsStay = true;
-        Marshmallow_ItemRespawn = true;
-        break;
+        case 1:
+            Marshmallow_DeathmatchWeaponsStay = true;
+            Marshmallow_DeathmatchItemRespawn = false;
+            break;
+        case 2:
+            Marshmallow_DeathmatchWeaponsStay = false;
+            Marshmallow_DeathmatchItemRespawn = true;
+            break;
+        case 3:
+            Marshmallow_DeathmatchWeaponsStay = true;
+            Marshmallow_DeathmatchItemRespawn = true;
+            break;
     }
+}
+
+
+void SetMultiplayerNames()
+{
+    if (realnetgame)
+        return;
+
+    marshmallow_player_names[0] = "YOU";
+    marshmallow_player_names[1] = "INDIGO";
+    marshmallow_player_names[2] = "BROWN";
+    marshmallow_player_names[3] = "RED";
 }
 
 

@@ -173,12 +173,13 @@ static void BrutalDeath(mobj_t* target)
 
 static void ApogeeDeath(mobj_t* target)
 {
-    ParticleFX_XDeath(target);  // TODO: RandomLargeSplat (rename RandomSplat to RandomSmallSplat)
+    ParticleFX_LargeBloodSplat(target);
 
     // Don't do P_RemoveMobj() to player corpses
     if ( IsPlayer(target) )
     {
-        P_SetMobjState (target, target->info->xdeathstate);
+        // WTF: this shows up in the status bar when we do this here!?!?
+        //P_SetMobjState (target, target->info->xdeathstate);
         return;
     }
 
@@ -186,7 +187,6 @@ static void ApogeeDeath(mobj_t* target)
 
     P_RemoveMobj(target);
 }
-
 
 #define DEATH_CHANCE_RATIO 50
 
@@ -302,6 +302,9 @@ boolean DoSpecialDeaths(mobj_t* target, mobj_t* source)
                 || P_CheckMeleeRange(target))
             {
                 if (weapon < wp_missile && weapon != wp_fist)
+                    return false;
+
+                if ( IsPlayer(target) )
                     return false;
 
                 BrutalDeath(target);

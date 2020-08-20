@@ -61,7 +61,7 @@ void SaveStats()  // rename to WriteProfile  or SaveProfile()   // TODO:  += exi
 
 	if ( we_got_a_cheater )
 	{
-		SHOW_MESSAGE "YOU CHEATED! NO STATS FOR YOU!";
+		SHOW_MESSAGE DEH_String(YOUCHEATED);
 		return;
 	}
 	
@@ -131,7 +131,6 @@ boolean GetProfile()
 }
 
 
-
 // Called when any cheat or level skipping occurs
 void DisableStats()
 {
@@ -141,8 +140,9 @@ void DisableStats()
 
 	we_got_a_cheater = true;
 
-	SHOW_MESSAGE "CHEATING BASTARD! NO STATS FOR YOU!";
+	SHOW_MESSAGE DEH_String(NOSTATS4U);
 }
+
 
 void ResetStats()  
 {

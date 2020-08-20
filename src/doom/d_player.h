@@ -195,7 +195,7 @@ typedef struct player_s
     int			neghealth;
 
     // [marshmallow] For new inventory system
-    boolean		extra_powers[6];
+    boolean		extra_powers[7];
 
     // [marshmallow] Our new portable medkit
     int			medkit_remaining;

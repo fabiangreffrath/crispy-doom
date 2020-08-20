@@ -31,6 +31,7 @@ boolean Marshmallow_SelfDamage;
 boolean Marshmallow_DropGoodies;     
 boolean Marshmallow_DropBackpack;
 boolean Marshmallow_ItemRespawn;
+boolean Marshmallow_DeathmatchItemRespawn;
 boolean Marshmallow_DeathmatchWeaponsStay;
 boolean Marshmallow_ConservePowerups;    
 boolean Marshmallow_KeepWeapons;  
@@ -49,7 +50,7 @@ boolean Marshmallow_BoostedFist;
 boolean Marshmallow_BoostedBullets;
 boolean Marshmallow_InfinitePistol;
 boolean Marshmallow_BalanceShotguns;
-boolean Marshmallow_PlasmaSlowdown;
+//boolean Marshmallow_PlasmaSlowdown;
 boolean Marshmallow_NerfHP_LostSoul;
 boolean Marshmallow_NerfHP_Cacodemon;
 boolean Marshmallow_NerfHP_Demons;
@@ -140,6 +141,7 @@ int WadSelection();
 int CheckForOtherIWAD();
 int CheckIfFileExists(const char *filename, const char *mode);
 void OfferRadsuit(player_t* player);
+void OfferSuicide();
 mobjtype_t RandomTreasureItem(int i, int probability);
 void Marshmallow_InitScaledMonster(mobj_t* monster);
 boolean IsWeapon(mobj_t* mo);
@@ -164,9 +166,13 @@ void ToggleFriendlyFire();
 int RandomEpisode();
 void SetSkills();
 void DisplayMedkitRemaining();
-void SetDMFlags();
+void SetDMFlags(int dm_mode);
+void ShowExtendedSkillInfo();
+char* WriteLineWithInteger(char* prefix, int value);
+char* WriteLineWithString(char* string1, char* string2);
 void KilledByPlayer(mobj_t* source, mobj_t* target);
 void KilledPlayer(mobj_t* source, mobj_t* target);
+void SetMultiplayerNames();
 void WriteToSecondConsoleLine(char* string, int timeout);
 void WriteToThirdConsoleLine(char* string, int timeout);
 void WriteToFourthConsoleLine(char* string, int timeout);
@@ -188,6 +194,7 @@ void ToggleSong_Runnin();
 void ToggleSong_E1M1();
 void ToggleSong_DoomInter();
 void ToggleSong_Doom2Inter();
+char* ShowIntAsChar(int val, int color);
 void AddIntegerToInfoReadout(char* label, int val, int line);
 void AddStringsToInfoReadout(char* label, char* output, int line);
 void ShowTargetHP();
@@ -201,6 +208,7 @@ void Game_Init();
 boolean PhysicsExempt(mobj_t* thing);
 boolean EnemyInRange(mobj_t* enemy);
 void PlayMenuSound(int sound);
+void SetGoreFlags();
 
 // Network stuff
 char* marshmallow_player_names[4];
@@ -329,6 +337,7 @@ boolean help_on;
 boolean mainmenu_on;
 boolean weaponmenu_on;
 boolean enemymenu_on;
+boolean effectsmenu_on;
 boolean sandboxmenu_on;
 boolean skipmenu_on;
 boolean musicmenu_on;
@@ -367,7 +376,7 @@ enum {
     INVIS_SELECTED,
     MEDKIT_SELECTED,
     VISOR_SELECTED,
-    //AUTOMAP_SELECTED,
+    AUTOMAP_SELECTED,
 
     MAX_INV_OPTIONS,
 } ;
@@ -405,6 +414,16 @@ boolean F_Key_BotFollow;
 
 // Gore/particles
 int Marshmallow_GibMode;
+
+struct {
+    boolean GibCorpses;
+    boolean SplashSplat;
+    boolean CritSplat;
+    boolean SlopProp;
+    boolean XDPointBlank;
+    boolean ExtraChainsawGore;
+} effects_flags;
+
 boolean Marshmallow_EpicBossDeaths;
 boolean barrel_fx;  // TODO: rename
 void PlaySlopSound(mobj_t* target);
@@ -427,7 +446,7 @@ void ParticleFX_SaucerBlast(mobj_t *actor);
 void ParticleFX_BabyDeath(mobj_t *actor);
 void ParticleFX_Test(mobj_t *actor);
 void BarrelFX_Test(mobj_t *actor);
-void ParticleFX_XDeath(mobj_t *actor);
+void ParticleFX_LargeBloodSplat(mobj_t *actor);
 void BFG_MegaBlast(mobj_t *actor);
 void DoChainsawBlood(mobj_t* target, mobj_t* inflictor);
 void DoCriticalHitBlood(mobj_t* target);
