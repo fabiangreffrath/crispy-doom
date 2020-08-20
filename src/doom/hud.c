@@ -30,6 +30,10 @@ void UpdateInfoReadout()
 
 void SetMarshmallowColors()
 {
+    CrispyReplaceColor( YOUCHEATED, CR_GOLD, "CHEATED");
+    CrispyReplaceColor( NOSTATS4U, CR_GOLD, "BASTARD");
+    CrispyReplaceColor( FOUNDBACKPACK, CR_GOLD, "AMMO");
+
     CrispyReplaceColor( "1.0", CR_GOLD, "1.0");
     CrispyReplaceColor( "2.0", CR_GRAY, "2.0");
     CrispyReplaceColor( "3.0", CR_GREEN, "3.0");
@@ -50,7 +54,7 @@ void SetMarshmallowColors()
 
     CrispyReplaceColor( MAINMENU_GAMEPLAY, CR_GRAY, "...");
     CrispyReplaceColor( MAINMENU_MUSIC, CR_GRAY, "...");
-    //CrispyReplaceColor( MAINMENU_EFFECTS, CR_GRAY, "...");
+    CrispyReplaceColor( MAINMENU_EFFECTS, CR_GRAY, "...");
     CrispyReplaceColor( MAINMENU_INTERFACE, CR_GRAY, "...");
     CrispyReplaceColor( MAINMENU_DM, CR_GRAY, "...");
 
@@ -106,8 +110,8 @@ void SetMarshmallowColors()
 	CrispyReplaceColor( KNIGHTKILL, CR_GOLD, "HELL KNIGHT");
 	CrispyReplaceColor( BABYKILL, CR_GOLD, "ARACHNOTRON");
 
-	CrispyReplaceColor( CONFIRMSUICIDE, CR_GRAY, "PRESS USE");
-	CrispyReplaceColor( YOUSEPPUKU, CR_DARK, "SEPPUKU");  // which color best represents SUICIDE?!?!?
+	CrispyReplaceColor( CONFIRMSUICIDE, CR_GRAY, "'R'");
+	CrispyReplaceColor( YOUSEPPUKU, CR_GOLD, "SUICIDE");  // which color best represents SUICIDE?!?!?
 
 	CrispyReplaceColor( VILEDEAD, CR_GREEN, "ARCHVILE");
 	CrispyReplaceColor( SPIDERDEAD, CR_GREEN, "SPIDERDEMON");
@@ -121,6 +125,7 @@ void SetMarshmallowColors()
 	CrispyReplaceColor( ADDEDRADSUIT, CR_GREEN, "RAD-SUIT");
 	CrispyReplaceColor( ADDEDMEDKIT, CR_GRAY, "MEDKIT");
 	//CrispyReplaceColor( ADDEDINVIS, CR_DARK, "INVISIBILITY");  // not working for some reason
+    CrispyReplaceColor( ADDEDAUTOMAP, CR_GREEN, "AREA MAP");
 
 	CrispyReplaceColor( USEDMEDICAL, CR_GRAY, "MEDICAL");
 
@@ -131,12 +136,13 @@ void SetMarshmallowColors()
 	CrispyReplaceColor( USINGMEDKIT, CR_GRAY, "MEDKIT");
 	CrispyReplaceColor( USINGINVIS, CR_DARK, "INVISIBILITY");
 	CrispyReplaceColor( USINGRADSUIT, CR_GREEN, "RAD-SUIT");
+    CrispyReplaceColor( USINGAUTOMAP, CR_GREEN, "AREA MAP");
 
 	CrispyReplaceColor( INVRADSUIT, CR_GREEN, "RAD-SUIT");
 	//CrispyReplaceColor( INVINVUL, CR_RED, "INVULNERABILITY");  // too long to color 
 	CrispyReplaceColor( INVINVIS, CR_DARK, "INVISIBILITY");  
 	CrispyReplaceColor( INVMEDKIT, CR_GRAY, "MEDKIT");
-	CrispyReplaceColor( INVAUTOMAP, CR_GOLD, "AUTO-MAP");
+	CrispyReplaceColor( INVAUTOMAP, CR_GREEN, "AREA MAP");
 
 	CrispyReplaceColor( MISSILELOCK1, CR_GOLD, MISSILELOCK1);  // been playing with different colors on this one
 	CrispyReplaceColor( MISSILELOCK2, CR_GREEN, MISSILELOCK2);
@@ -175,7 +181,7 @@ void SetMarshmallowColors()
 
 	CrispyReplaceColor( SANDBOXDONE, CR_GREEN, "COMPLETED!");
 
-	//CrispyReplaceColor( "PISTOL", CR_GRAY, "PISTOL");
+	CrispyReplaceColor( "PISTOL ONLY", CR_GOLD, "PISTOL ONLY");
 	CrispyReplaceColor( "PROGRESSIVE", CR_GREEN, "PROGRESSIVE");
 
 	CrispyReplaceColor( HELPTITLE, CR_GOLD, "KEYBOARD");
@@ -447,13 +453,13 @@ static void DrawInventoryItemIcon()
 
 		break;
 
-	//case AUTOMAP_SELECTED:
+	case AUTOMAP_SELECTED:
 
-	//	V_DrawPatchShadow2(INV_ICON_X, INV_ICON_Y, W_CacheLumpName(DEH_String("PMAPC0"), PU_CACHE));
+        V_DrawPatchDirect(INV_ICON_X, INV_ICON_Y, W_CacheLumpName(DEH_String("PMAPC0"), PU_CACHE));
 
-	//	// TODO: animate it
+		// TODO: animate it
 
-	//	break;
+		break;
 
 	default:
 
@@ -639,6 +645,7 @@ void ScoreboardReadout()
 
 void InitHUDMenuText()							
 {
+    HUD_InitEffectsMenu();
     HUD_InitExtraLines();
 	HUD_InitHelp();
 	HUD_InitEnemyMenu();
@@ -858,10 +865,25 @@ void DrawHUDMenu()
 		HUlib_drawSText(&weaponmenu_fist); 
 		HUlib_drawSText(&weaponmenu_bullet); 
 		HUlib_drawSText(&weaponmenu_infammo); 
-		HUlib_drawSText(&weaponmenu_shotgun); 
-		//HUlib_drawSText(&weaponmenu_plasma);
-		//HUlib_drawSText(&weaponmenu_bfg);
+		HUlib_drawSText(&weaponmenu_shotgun);
+		HUlib_drawSText(&weaponmenu_bfg);
 	}
+
+	if (effectsmenu_on)
+    {
+        HUlib_drawSText(&effectsmenu_redscreen);
+        HUlib_drawSText(&effectsmenu_gibmode);
+        HUlib_drawSText(&effectsmenu_corpsegib);
+        HUlib_drawSText(&effectsmenu_splashsplat);
+        HUlib_drawSText(&effectsmenu_critsplat);
+        HUlib_drawSText(&effectsmenu_slopprop);
+        HUlib_drawSText(&effectsmenu_xdpointblank);
+        HUlib_drawSText(&effectsmenu_chainsawgore);
+        HUlib_drawSText(&effectsmenu_epicbossdeaths);
+        HUlib_drawSText(&effectsmenu_bfgwave);
+        HUlib_drawSText(&effectsmenu_barrelsmoke);
+        HUlib_drawSText(&effectsmenu_physicsmode);
+    }
 
 	if (sandboxmenu_on)
 	{
@@ -1025,7 +1047,7 @@ void DrawHUDMenu()
     {
         HUlib_drawSText(&shortcutmenu_gameplay);
         HUlib_drawSText(&shortcutmenu_music);
-        //HUlib_drawSText(&shortcutmenu_effects);
+        HUlib_drawSText(&shortcutmenu_effects);
         HUlib_drawSText(&shortcutmenu_messages);
         HUlib_drawSText(&shortcutmenu_deathmatch);
     }
@@ -1101,8 +1123,8 @@ void DrawHUDMenu()
 		if (MAIN_PLAYER.extra_powers[ITEM_VISOR])
 			HUlib_drawSText(&inv_menu_visor); 
 
-		//if (MAIN_PLAYER.extra_powers[ITEM_AUTOMAP])
-		//	HUlib_drawSText(&inv_menu_automap); 
+		if (MAIN_PLAYER.extra_powers[ITEM_AUTOMAP])
+			HUlib_drawSText(&inv_menu_automap);
 	}
 }
 
@@ -1253,16 +1275,16 @@ void HUDMenuTicker()
 // deathmatch menu
 
     HUlib_addMessageToSText(&dmmenu_rules, "    Deathmatch Rules:  ", DisplayDeathmatchMode());
-    HUlib_addMessageToSText(&dmmenu_itemrespawn, "      Items Respawn ", DisplayOnOff(Marshmallow_ItemRespawn));
+    HUlib_addMessageToSText(&dmmenu_itemrespawn, "      Items Respawn ", DisplayOnOff(Marshmallow_DeathmatchItemRespawn));
     HUlib_addMessageToSText(&dmmenu_weaponstay, "      Weapons Stay ", DisplayOnOff(Marshmallow_DeathmatchWeaponsStay));
     HUlib_addMessageToSText(&dmmenu_monsters, "    Monsters ", DisplayOnOff(!nomonsters)); //  will be a skill selection index
     HUlib_addMessageToSText(&dmmenu_allowexit, "    Allow Exit ", DisplayOnOff(Marshmallow_AllowExit));
     HUlib_addMessageToSText(&dmmenu_killonexit, "    Kill On Exit ", DisplayOnOff(Marshmallow_KillOnExit));
-    HUlib_addMessageToSText(&dmmenu_timelimit, "    Time Limit  ", ShowIntAsChar(dm_timelimit));
-    HUlib_addMessageToSText(&dmmenu_fraglimit, "    Frag Limit  ", ShowIntAsChar(dm_fraglimit));
+    HUlib_addMessageToSText(&dmmenu_timelimit, "    Time Limit       ", ShowIntAsChar(dm_timelimit, CR_BLUE));
+    HUlib_addMessageToSText(&dmmenu_fraglimit, "    Frag Limit       ", ShowIntAsChar(dm_fraglimit, CR_GOLD));
     HUlib_addMessageToSText(&dmmenu_scores, "    Show Scores ", DisplayOnOff(dm_scoreboard));
 
-// options menu
+// options menuf
 
 	// title ?
 
@@ -1288,9 +1310,25 @@ void HUDMenuTicker()
 
     HUlib_addMessageToSText(&shortcutmenu_gameplay, NULL, DEH_String(MAINMENU_GAMEPLAY));
     HUlib_addMessageToSText(&shortcutmenu_music, NULL, DEH_String(MAINMENU_MUSIC));
-    //HUlib_addMessageToSText(&shortcutmenu_effects, NULL, DEH_String(MAINMENU_EFFECTS));
+    HUlib_addMessageToSText(&shortcutmenu_effects, NULL, DEH_String(MAINMENU_EFFECTS));
     HUlib_addMessageToSText(&shortcutmenu_messages, NULL, DEH_String(MAINMENU_INTERFACE));
     HUlib_addMessageToSText(&shortcutmenu_deathmatch, NULL, DEH_String(MAINMENU_DM));
+
+// effects menu
+
+    HUlib_addMessageToSText(&effectsmenu_redscreen, "    REDUCED RED SCREEN FILTER: ", DisplayOnOff(Marshmallow_ReducedRedscreen));
+    HUlib_addMessageToSText(&effectsmenu_gibmode, "    BLOOD AND EFFECTS MODE: ", DisplayGibMode());
+    HUlib_addMessageToSText(&effectsmenu_corpsegib, "    DESTRUCTIBLE CORPSES: ", DisplayOnOff(effects_flags.GibCorpses));
+    HUlib_addMessageToSText(&effectsmenu_splashsplat, "    BLOOD SPLAT ON SPLASH DAMAGE: ", DisplayOnOff(effects_flags.SplashSplat));
+    HUlib_addMessageToSText(&effectsmenu_critsplat, "    BLOOD SPLAT ON CRITICAL HIT: ", DisplayOnOff(effects_flags.CritSplat));
+    HUlib_addMessageToSText(&effectsmenu_slopprop, "    DROP SLOP PROP: ", DisplayOnOff(effects_flags.SlopProp));
+    HUlib_addMessageToSText(&effectsmenu_xdpointblank, "    XDeath AT POINT BLANK: ", DisplayOnOff(effects_flags.XDPointBlank));
+    HUlib_addMessageToSText(&effectsmenu_chainsawgore, "    EXTRA CHAINSAW GORE: ", DisplayOnOff(effects_flags.ExtraChainsawGore));
+
+    HUlib_addMessageToSText(&effectsmenu_epicbossdeaths, "    EPIC BOSS DEATHS: ", DisplayOnOff(Marshmallow_EpicBossDeaths));
+    HUlib_addMessageToSText(&effectsmenu_bfgwave, "    BFG PARTICLES: ", DisplayOnOff(Marshmallow_BFGBlastWave));
+    HUlib_addMessageToSText(&effectsmenu_barrelsmoke, "    BARREL SMOKE: ", DisplayOnOff(barrel_fx));
+    HUlib_addMessageToSText(&effectsmenu_physicsmode, "    PHYSICS MODE: ", DisplayPhysicsMode());
 
 
 // skill menu
@@ -1321,7 +1359,7 @@ void HUDMenuTicker()
 	HUlib_addMessageToSText(&inv_menu_invis, 0, DEH_String(INVINVIS) );
 	HUlib_addMessageToSText(&inv_menu_medkit, DEH_String(INVMEDKIT), BLANK_LINE);
 	HUlib_addMessageToSText(&inv_menu_visor, 0, DEH_String(INVGOGGLES) );
-	//HUlib_addMessageToSText(&inv_menu_automap, 0, DEH_String(INVAUTOMAP) );
+	HUlib_addMessageToSText(&inv_menu_automap, 0, DEH_String(INVAUTOMAP) );
 
 	//HUlib_addMessageToSText(&inv_menu_treasure, DEH_String("   TREASURE SCORE: "), DisplayValue(MAIN_PLAYER.score));  // should no longer be needed
 
@@ -1391,8 +1429,7 @@ void HUDMenuTicker()
 	HUlib_addMessageToSText(&weaponmenu_bullet, "    BOOSTED GUNSHOT", DisplayOnOff(Marshmallow_BoostedBullets));
 	HUlib_addMessageToSText(&weaponmenu_infammo, "    INFINITE PISTOL AMMO", DisplayOnOff(Marshmallow_InfinitePistol));
 	HUlib_addMessageToSText(&weaponmenu_shotgun, "    BALANCE SHOTGUNS", DisplayOnOff(Marshmallow_BalanceShotguns));
-	HUlib_addMessageToSText(&weaponmenu_plasma, "    PLASMA SPUTTER", DisplayOnOff(Marshmallow_PlasmaSlowdown));
-	HUlib_addMessageToSText(&weaponmenu_bfg, "    BFG SHOCKWAVE", DisplayOnOff(Marshmallow_BFGBlastWave));
+	HUlib_addMessageToSText(&weaponmenu_bfg, "    BFG SPLASH DAMAGE", DisplayOnOff(Marshmallow_DangerousBFG));
 
 // enemy menu
 
@@ -1452,6 +1489,36 @@ void CalculateCursorPosition()
 	}
 	*/
 
+	if (effectsmenu_on)
+    {
+        switch (effectsmenu_selection)
+        {
+            case 1:
+                cursor_y = INV_HU_Y_4;
+                break;
+
+            case 2:
+                cursor_y = INV_HU_Y_6;
+                break;
+
+            case 3:
+                cursor_y = INV_HU_Y_15;
+                break;
+
+            case 4:
+                cursor_y = INV_HU_Y_16;
+                break;
+
+            case 5:
+                cursor_y = INV_HU_Y_17;
+                break;
+
+            case 6:
+                cursor_y = INV_HU_Y_18;
+                break;
+        }
+    }
+
     if (deathmatchmenu_on)
     {
         switch (dmmenu_selection)
@@ -1506,10 +1573,10 @@ void CalculateCursorPosition()
             case 4:
                 cursor_y = INV_HU_Y_8;
                 break;
-/*
+
             case 5:
-                cursor_y = INV_HU_Y_7;
-                break;*/
+                cursor_y = INV_HU_Y_9;
+                break;
 
             default:
                 return;
@@ -1589,9 +1656,6 @@ void CalculateCursorPosition()
 			break;
 		case 9:
 			cursor_y = INV_HU_Y_13;
-			break;
-		case 10:
-			cursor_y = INV_HU_Y_14;
 			break;
 
 		default:
@@ -2122,6 +2186,19 @@ void HUDMenuKeyInput()
             HideAllMenus();
             menuactive = true;
         }
+        else if ( effectsmenu_on )
+        {
+            if (mainmenu_breadcrumb)
+            {
+                HideAllMenus();
+                shortcutmenu_on = true;
+            }
+            else
+            {
+                HideAllMenus();
+                mainmenu_on = true;
+            }
+        }
 		else if ( optionsmenu_on )
         {
             if (mainmenu_breadcrumb)
@@ -2266,6 +2343,64 @@ void HUDMenuKeyInput()
 			botmenu_selection = FIRST_MENU_ITEM;
 	}
 
+	if (effectsmenu_on)
+    {
+        if (MENUKEY_NEXT)
+        {
+            if (CheckKeyDelay())
+                return;
+
+            effectsmenu_selection++;
+
+            if (effectsmenu_selection == MAX_FXMENU_ITEMS)
+                effectsmenu_selection = FIRST_MENU_ITEM;
+        }
+
+        if (MENUKEY_PREVIOUS)
+        {
+            if (CheckKeyDelay())
+                return;
+
+            effectsmenu_selection--;
+
+            if (effectsmenu_selection == 0)
+                effectsmenu_selection = MAX_FXMENU_ITEMS - 1;
+        }
+
+        if (MENUKEY_SELECT)
+        {
+            if (CheckKeyDelay())
+                return;
+
+            switch (effectsmenu_selection)
+            {
+                case REDSCREEN_SELECTED:
+                    Marshmallow_ReducedRedscreen = !Marshmallow_ReducedRedscreen;
+                    break;
+
+                case GIBMODE_SELECTED:
+                    IncrementGibMode();
+                    break;
+
+                case EPICBOSSDEATHS_SELECTED:
+                    Marshmallow_EpicBossDeaths = !Marshmallow_EpicBossDeaths;
+                    break;
+
+                case BFGSHOCKWAVE_SELECTED:
+                    Marshmallow_BFGBlastWave = !Marshmallow_BFGBlastWave;
+                    break;
+
+                case BARRELSMOKE_SELECTED:
+                    barrel_fx = !barrel_fx;
+                    break;
+
+                case PHYSICSMODE_SELECTED:
+                    IncrementPhysicsMode();
+                    break;
+            }
+        }
+    }
+
 	if (deathmatchmenu_on)
     {
         if (MENUKEY_NEXT)
@@ -2299,49 +2434,21 @@ void HUDMenuKeyInput()
             {
                 case DMRULES_SELECTED:
 
-                        Preferred_DM_Mode++;
-                        if (Preferred_DM_Mode > 3)
-                            Preferred_DM_Mode = 1;
+                    Preferred_DM_Mode++;
+                    if (Preferred_DM_Mode > 3)
+                        Preferred_DM_Mode = 1;
 
-                        switch (Preferred_DM_Mode)
-                        {
-                            case 1:
-                                Marshmallow_DeathmatchWeaponsStay = true;
-                                Marshmallow_ItemRespawn = false;
-                                break;
-                            case 2:
-                                Marshmallow_DeathmatchWeaponsStay = false;
-                                Marshmallow_ItemRespawn = true;
-                                break;
-                            case 3:
-                                Marshmallow_DeathmatchWeaponsStay = true;
-                                Marshmallow_ItemRespawn = true;
-                                break;
-                        }
+                    SetDMFlags(Preferred_DM_Mode);
 
-                        if (!deathmatch)
-                            break;
+                    if (!deathmatch)
+                        break;
 
-                        deathmatch++;
+                    deathmatch++;
 
-                        if (deathmatch > 3)
-                            deathmatch = 1;
+                    if (deathmatch > 3)
+                        deathmatch = 1;
 
-                        switch (deathmatch)
-                        {
-                            case 1:
-                                Marshmallow_DeathmatchWeaponsStay = true;
-                                Marshmallow_ItemRespawn = false;
-                                break;
-                            case 2:
-                                Marshmallow_DeathmatchWeaponsStay = false;
-                                Marshmallow_ItemRespawn = true;
-                                break;
-                            case 3:
-                                Marshmallow_DeathmatchWeaponsStay = true;
-                                Marshmallow_ItemRespawn = true;
-                                break;
-                        }
+                    SetDMFlags(deathmatch);
 
                     break;
 /*
@@ -2366,9 +2473,14 @@ void HUDMenuKeyInput()
                     break;
 
                 case TIMELIMIT_SELECTED:
-                    dm_timelimit+=10;
+                    if (dm_timelimit < 10)
+                        dm_timelimit+=5;
+                    else
+                        dm_timelimit+=10;
+
                     if (dm_timelimit > 100)
-                        dm_timelimit = 10;
+                        dm_timelimit = 5;
+
                     break;
 
                 case FRAGLIMIT_SELECTED:
@@ -2415,12 +2527,25 @@ void HUDMenuKeyInput()
 
             switch (shortcutmenu_selection)
             {
+                case EFFECTSMENU_SELECTED:
+                    HideAllMenus();
+                    effectsmenu_on = true;
+                    SetGoreFlags();
+
+                    if (!effectsmenu_selection)
+                        effectsmenu_selection = FIRST_MENU_ITEM;
+
+                    break;
+
                 case DEATHMATCHMENU_SELECTED:
                     HideAllMenus();
                     deathmatchmenu_on = true;
 
+                    SetDMFlags(Preferred_DM_Mode);
+
                     if (!dmmenu_selection)
                         dmmenu_selection = FIRST_MENU_ITEM;
+
                     break;
 
                 case GAMEPLAYMENU_SELECTED:
@@ -2544,12 +2669,10 @@ void HUDMenuKeyInput()
 
 				if (Marshmallow_MissileAlert)  // roll into InvertBoolean() and get rid of these console messages altogether
 				{
-					SHOW_MESSAGE "MISSILE-LOCK ALARM DISABLED.";
 					Marshmallow_MissileAlert = !Marshmallow_MissileAlert;
 				}
 				else
 				{
-					SHOW_MESSAGE "MISSILE-LOCK ALARM ENABLED.";
 					Marshmallow_MissileAlert = !Marshmallow_MissileAlert;
 				}
 
@@ -2582,12 +2705,10 @@ void HUDMenuKeyInput()
 				
 				if (Marshmallow_DeathMessages)
 				{
-					SHOW_MESSAGE "DEATH MESSAGES DISABLED.";
 					Marshmallow_DeathMessages = !Marshmallow_DeathMessages;
 				}
 				else
 				{
-					SHOW_MESSAGE "DEATH MESSAGES ENABLED.";
 					Marshmallow_DeathMessages = !Marshmallow_DeathMessages;
 				}
 
@@ -2616,12 +2737,10 @@ void HUDMenuKeyInput()
 				
 				if (Marshmallow_ExtendedMessages)
 				{
-					//SHOW_MESSAGE "EXTENDED MESSAGES DISABLED.";
 					Marshmallow_ExtendedMessages = !Marshmallow_ExtendedMessages;
 				}
 				else
 				{
-					//SHOW_MESSAGE "EXTENDED MESSAGES ENABLED.";
 					Marshmallow_ExtendedMessages = !Marshmallow_ExtendedMessages;
 				}
 
@@ -2673,12 +2792,10 @@ void HUDMenuKeyInput()
 				
 				if (Marshmallow_BossAlert)
 				{
-					SHOW_MESSAGE "BOSS ALERTS DISABLED.";
 					Marshmallow_BossAlert = !Marshmallow_BossAlert;
 				}
 				else
 				{
-					SHOW_MESSAGE "BOSS ALERTS ENABLED.";
 					Marshmallow_BossAlert = !Marshmallow_BossAlert;
 				}
 
@@ -2690,12 +2807,10 @@ void HUDMenuKeyInput()
 				
 				if (Marshmallow_InfightAlert)
 				{
-					SHOW_MESSAGE "INFIGHT ALERTS DISABLED.";
 					Marshmallow_InfightAlert = !Marshmallow_InfightAlert;
 				}
 				else
 				{
-					SHOW_MESSAGE "INFIGHT ALERTS ENABLED.";
 					Marshmallow_InfightAlert = !Marshmallow_InfightAlert;
 				}
 
@@ -3285,12 +3400,9 @@ void HUDMenuKeyInput()
 				Marshmallow_BalanceShotguns = !Marshmallow_BalanceShotguns;	
 				BalanceShotguns(Marshmallow_BalanceShotguns);
 				break;
-			case PLSLOW_SELECTED:
-				Marshmallow_PlasmaSlowdown = !Marshmallow_PlasmaSlowdown;
-				break;
-			case BFGWAVE_SELECTED:
-				Marshmallow_BFGBlastWave = !Marshmallow_BFGBlastWave;
-				break;
+			case BFGSPLASH_SELECTED:
+			    Marshmallow_DangerousBFG = !Marshmallow_DangerousBFG;
+			    break;
 			}
 		}
 		if (MENUKEY_NEXT)
@@ -3879,21 +3991,13 @@ void HUDMenuKeyInput()
                     break;
 
                 case LUDICROUS_SELECTED:
-                    Marshmallow_GibMode--;
-                    if (Marshmallow_GibMode < 0)
-                        Marshmallow_GibMode = 3;
-
-                    if (Marshmallow_GibMode == BRUTAL_GIBS)
-                        S_StartSound(NULL, sfx_slop);
+                    DecrementGibMode();
 
                     break;
 
                 case PHYSICS_SELECTED:
 
-                    physics_mode--;
-
-                    if (physics_mode < 0)
-                        physics_mode = NUMPHYSICSMODES - 1;
+                    DecrementPhysicsMode();
 
                     break;
 
@@ -4012,21 +4116,13 @@ void HUDMenuKeyInput()
 				break;
 
 			case LUDICROUS_SELECTED:
-				Marshmallow_GibMode++;
-				if (Marshmallow_GibMode > 3)
-					Marshmallow_GibMode = 0;
-				
-				if (Marshmallow_GibMode == BRUTAL_GIBS)
-				S_StartSound (NULL, sfx_slop);
+                IncrementGibMode();
 
 				break;
 
 			case PHYSICS_SELECTED:
 
-				physics_mode++;
-
-				if ( physics_mode > NUMPHYSICSMODES-1 )
-					physics_mode = 0;
+				IncrementPhysicsMode();
 
 				break;
 
@@ -4101,7 +4197,7 @@ void HUDMenuKeyInput()
 		LaunchInventoryMenu();
 	}
 
-	if (Marshmallow_SaveItems && !deathmatch)    // TODO: move this up before the offer_radsuit line?
+	if (Marshmallow_SaveItems && !deathmatch && !PlayerIsDead())
 	{
 		if (invmenu_on)
 		{
@@ -4158,13 +4254,13 @@ void HUDMenuKeyInput()
 				invmenu_on = false;
 			}
 
-			//if (MENUKEY_SELECT && invmenu_selection == AUTOMAP_SELECTED  && MAIN_PLAYER.extra_powers[ITEM_AUTOMAP])
-			//{
-			//	MAIN_PLAYER.extra_powers[ITEM_AUTOMAP] = false;
-			//	P_GivePower (&MAIN_PLAYER, pw_allmap);
-			//	MAIN_PLAYER.message = DEH_String(USINGAUTOMAP);
-			//	invmenu_on = false;
-			//}
+			if (MENUKEY_SELECT && invmenu_selection == AUTOMAP_SELECTED  && MAIN_PLAYER.extra_powers[ITEM_AUTOMAP])
+			{
+				MAIN_PLAYER.extra_powers[ITEM_AUTOMAP] = false;
+				P_GivePower (&MAIN_PLAYER, pw_allmap);
+				MAIN_PLAYER.message = DEH_String(USINGAUTOMAP);
+				invmenu_on = false;
+			}
 
 			if (MENUKEY_SELECT && invmenu_selection == MEDKIT_SELECTED  && MAIN_PLAYER.extra_powers[ITEM_MEDKIT])
 			{
@@ -4191,6 +4287,70 @@ void HUD_InitExtraLines()
                     0, 30, HU_MSGHEIGHT,
                     hu_font,
                     HU_FONTSTART, &fourth_consoleline_on);
+}
+
+
+void HUD_InitEffectsMenu()
+{
+    HUlib_initSText(&effectsmenu_redscreen,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_4, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_gibmode,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_6, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_corpsegib,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_8, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_splashsplat,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_9, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_critsplat,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_10, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_slopprop,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_11, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_xdpointblank,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_12, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_chainsawgore,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_13, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_epicbossdeaths,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_15, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_bfgwave,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_16, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_barrelsmoke,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_17, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
+
+    HUlib_initSText(&effectsmenu_physicsmode,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_18, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &effectsmenu_on);
 }
 
 
@@ -4391,13 +4551,8 @@ void HUD_InitWeaponMenu()
 		hu_font,
 		HU_FONTSTART, &weaponmenu_on);
 
-	HUlib_initSText(&weaponmenu_plasma,
-		FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_13, HU_MSGHEIGHT,
-		hu_font,
-		HU_FONTSTART, &weaponmenu_on);
-
 	HUlib_initSText(&weaponmenu_bfg,
-		FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_14, HU_MSGHEIGHT,
+		FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_13, HU_MSGHEIGHT,
 		hu_font,
 		HU_FONTSTART, &weaponmenu_on);
 }
@@ -5075,18 +5230,18 @@ void HUD_InitShortcutMenu()
                     hu_font,
                     HU_FONTSTART, &shortcutmenu_on);
 
-    /*HUlib_initSText(&shortcutmenu_effects,
-                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_?, HU_MSGHEIGHT,
-                    hu_font,
-                    HU_FONTSTART, &shortcutmenu_on);*/
-
-    HUlib_initSText(&shortcutmenu_messages,
+    HUlib_initSText(&shortcutmenu_effects,
                     FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_7, HU_MSGHEIGHT,
                     hu_font,
                     HU_FONTSTART, &shortcutmenu_on);
 
-    HUlib_initSText(&shortcutmenu_deathmatch,
+    HUlib_initSText(&shortcutmenu_messages,
                     FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_8, HU_MSGHEIGHT,
+                    hu_font,
+                    HU_FONTSTART, &shortcutmenu_on);
+
+    HUlib_initSText(&shortcutmenu_deathmatch,
+                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_9, HU_MSGHEIGHT,
                     hu_font,
                     HU_FONTSTART, &shortcutmenu_on);
 }
@@ -5358,6 +5513,7 @@ void StartMenuCursor()
 		|| weaponmenu_on
 		|| shortcutmenu_on
 		|| deathmatchmenu_on
+		|| effectsmenu_on
 		)
 	{
 		int i;
@@ -5380,6 +5536,8 @@ void StartMenuCursor()
 		&& !enemymenu_on
 		&& !weaponmenu_on
 		&& !shortcutmenu_on
+		&& !deathmatchmenu_on
+		&& !effectsmenu_on
 		)
 			menus_on = false;  
 }
@@ -5410,6 +5568,7 @@ void HideAllMenus()
 	treasure_on = false;
 	shortcutmenu_on = false;
 	deathmatchmenu_on = false;
+	effectsmenu_on = false;
 
 	mainmenu_on = false; 
 	menus_on = false; 
@@ -5846,6 +6005,50 @@ void LaunchInventoryMenu()
 }
 
 
+void IncrementPhysicsMode()
+{
+    physics_mode++;
+
+    if ( physics_mode > NUMPHYSICSMODES-1 )
+        physics_mode = 0;
+}
+
+
+void DecrementPhysicsMode()
+{
+    physics_mode--;
+
+    if (physics_mode < 0)
+        physics_mode = NUMPHYSICSMODES - 1;
+}
+
+
+void IncrementGibMode()
+{
+    Marshmallow_GibMode++;
+    if (Marshmallow_GibMode > 3)
+        Marshmallow_GibMode = 0;
+
+    if (Marshmallow_GibMode == BRUTAL_GIBS)
+        S_StartSound (NULL, sfx_slop);
+
+    SetGoreFlags();
+}
+
+
+void DecrementGibMode()
+{
+    Marshmallow_GibMode--;
+    if (Marshmallow_GibMode < 0)
+        Marshmallow_GibMode = 3;
+
+    if (Marshmallow_GibMode == BRUTAL_GIBS)
+        S_StartSound(NULL, sfx_slop);
+
+    SetGoreFlags();
+}
+
+
 char* ShowBotWeapon(int bot)
 {
 	if (!playeringame[bot])  // if bot doesn't exist
@@ -6075,4 +6278,64 @@ void PlayMenuSound(int sound)
         return;
 
     S_StartSound(NULL, sound);
+}
+
+
+void SetGoreFlags()
+{
+    switch (Marshmallow_GibMode)
+    {
+        case NO_GIBS:
+            effects_flags.GibCorpses = false;
+            effects_flags.SplashSplat = false;
+            effects_flags.CritSplat = false;
+            effects_flags.SlopProp = false;
+            effects_flags.XDPointBlank = false;
+            effects_flags.ExtraChainsawGore = false;
+            Marshmallow_EpicBossDeaths = false;
+            Marshmallow_BFGBlastWave = false;
+            barrel_fx = false;
+            physics_mode = 0;
+
+        break;
+
+        case ROTT_GIBS:
+            effects_flags.GibCorpses = false;
+            effects_flags.SplashSplat = true;
+            effects_flags.CritSplat = false;
+            effects_flags.SlopProp = true;
+            effects_flags.XDPointBlank = false;
+            effects_flags.ExtraChainsawGore = false;
+            Marshmallow_EpicBossDeaths = true;
+            Marshmallow_BFGBlastWave = true;
+            barrel_fx = false;
+            physics_mode = 1;
+        break;
+
+        case DUKE_GIBS:
+            effects_flags.GibCorpses = true;
+            effects_flags.SplashSplat = true;
+            effects_flags.CritSplat = false;
+            effects_flags.SlopProp = true;
+            effects_flags.XDPointBlank = false;
+            effects_flags.ExtraChainsawGore = false;
+            Marshmallow_EpicBossDeaths = true;
+            Marshmallow_BFGBlastWave = true;
+            barrel_fx = false;
+            physics_mode = 1;
+        break;
+
+        case BRUTAL_GIBS:
+            effects_flags.GibCorpses = true;
+            effects_flags.SplashSplat = true;
+            effects_flags.CritSplat = true;
+            effects_flags.SlopProp = false;
+            effects_flags.XDPointBlank = true;
+            effects_flags.ExtraChainsawGore = true;
+            Marshmallow_EpicBossDeaths = true;
+            Marshmallow_BFGBlastWave = true;
+            barrel_fx = true;
+            physics_mode = 1;
+        break;
+    }
 }

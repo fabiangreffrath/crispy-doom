@@ -35,6 +35,7 @@
 #include "m_controls.h"
 #include "v_trans.h"
 #include "d_iwad.h"
+#include "w_wad.h"
 #include "m_random.h"
 #include "z_zone.h"
 #include "SDL_endian.h"

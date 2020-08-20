@@ -63,11 +63,8 @@ typedef enum {
     ITEM_INVIS,
     ITEM_MEDKIT,
     ITEM_VISOR,
-    MAX_INV_ITEMS,
-
-    // We are excluding automap for now
     ITEM_AUTOMAP,
-
+    MAX_INV_ITEMS,
 } invitem_t;
 
 // Menu stuff

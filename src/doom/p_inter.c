@@ -957,6 +957,29 @@ P_TouchSpecialThing
 	break;
 	
       case SPR_PMAP:
+
+          // [marshmallow]
+          if (Marshmallow_SaveItems && !deathmatch)
+          {
+              if (toucher->player->extra_powers[ITEM_AUTOMAP])
+              {
+                  player->message = DEH_String(HAVEAUTOMAP);
+                  return;
+              }
+
+              toucher->player->extra_powers[ITEM_AUTOMAP] = true;
+
+              player->message = DEH_String(ADDEDAUTOMAP);
+              sound = sfx_getpow;
+
+              if (invmenu_on)
+                  invmenu_selection = ITEM_AUTOMAP;
+
+              break;
+          }
+            // [m]
+
+
 	if (!P_GivePower (player, pw_allmap))
 	    return;
 	if (Marshmallow_PickupMessages)   // [marshmallow]

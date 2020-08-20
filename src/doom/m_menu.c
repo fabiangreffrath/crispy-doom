@@ -403,26 +403,26 @@ menu_t  NewDef =
 enum
 {
     messages,
-    endgame,
-    detail,
-    scrnsize,
-    option_empty1,
-    mousesens,
-    soundvol,
     crispness, // [crispy] Crispness menu
+    endgame,
+    soundvol,
+    detail,
+    mousesens,
+    scrnsize,
+    //option_empty1,
     opt_end
 } options_e;
 
 menuitem_t OptionsMenu[]=
 {
     {1,"M_MESSG",	M_MarshmallowMenu,'m', "MARSHMALLOW Options"},  // [marshmallow] Overwriting Messages on/off with a shortcut to gameplay options
+    {1,"M_CRISPY",	M_CrispnessCur,'c', "Crispness Options"}, // [crispy] Crispness menu
     {1,"M_ENDGAM",	M_EndGame,'e', "End Game"},
-    {1,"M_DETAIL",	M_ChangeDetail,'g', "Graphic Detail: "},
-    {2,"M_SCRNSZ",	M_SizeDisplay,'s', "Screen Size"},
-    {-1,"",0,'\0'},
-    {1,"M_MSENS",	M_Mouse,'m', "Mouse Sensitivity"}, // [crispy] mouse sensitivity menu
     {1,"M_SVOL",	M_Sound,'s', "Sound Volume"},
-    {1,"M_CRISPY",	M_CrispnessCur,'c', "Crispness"} // [crispy] Crispness menu
+    {1,"M_DETAIL",	M_ChangeDetail,'g', "Graphic Detail: "},
+    {1,"M_MSENS",	M_Mouse,'m', "Mouse Sensitivity"}, // [crispy] mouse sensitivity menu
+    {2,"M_SCRNSZ",	M_SizeDisplay,'s', "Screen Size"},
+    //{-1,"",0,'\0'},
 };
 
 menu_t  OptionsDef =

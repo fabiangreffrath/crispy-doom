@@ -1555,27 +1555,6 @@ void CorpseGib(mobj_t *actor)
 	Founders_ParticleCloudDuo1031(actor, &args, MT_PARTICLE_BLOOD, MT_PARTICLE_DARKBLOOD );
 }
 
-//=============================================================================
-//=============================================================================
-void XDeathSplat(mobj_t *actor) 
-{
-	particlesystem_args_t args;
-
-	int style = GetRandomIntegerInRange(2,3); 
-	int particles =  NUM_PARTICLES_BLOOD_MAX;
-	float scale = GetRandomFloatInRange(0.8, 2.0);
-
-	const float mom_scale = scale;
-
-	initParticleSystemArgs(&args);
-	args.style = style;
-
-	args.num_particles		= particles;
-	args.scale_size			=  0.2;
-	args.is_missile			= true;
-
-	Founders_ParticleCloudDuo1031(actor, &args, MT_PARTICLE_BLOOD, MT_PARTICLE_BLOOD);
-}
 
 //=============================================================================
 //=============================================================================
@@ -1663,9 +1642,24 @@ void Founders_Mushroom(mobj_t *actor, mobjtype_t type)
 }
 
 
-void ParticleFX_XDeath(mobj_t *actor)
+void ParticleFX_LargeBloodSplat(mobj_t *actor)
 {
-	XDeathSplat(actor);
+    particlesystem_args_t args;
+
+    int style = GetRandomIntegerInRange(2,3);
+    int particles =  NUM_PARTICLES_BLOOD_MAX;
+    float scale = GetRandomFloatInRange(0.8, 2.0);
+
+    const float mom_scale = scale;
+
+    initParticleSystemArgs(&args);
+    args.style = style;
+
+    args.num_particles		= particles;
+    args.scale_size			=  0.2;
+    args.is_missile			= true;
+
+    Founders_ParticleCloudDuo1031(actor, &args, MT_PARTICLE_BLOOD, MT_PARTICLE_BLOOD);
 }
 
 

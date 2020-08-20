@@ -1414,15 +1414,15 @@ void G_PlayerReborn (int player)
     }
 
     // [marshmallow] Re-initialize player number
-    if ( !realnetgame )
-    {
+    //if ( !realnetgame )
+    //{
         if (player != consoleplayer)
             p->bot_number = player;
-    }
-    else
-    {
+    //}
+    //else
+    //{
         p->player_number = player;
-    }
+    //}
 
     HandleRespawnInventory(player);   // [marshmallow]  Restores keys, weapons, and sets player->readyweapon
     GiveGradedWeapons(player);  // [marshmallow]  Give player free weapons and ammo if warping to a map

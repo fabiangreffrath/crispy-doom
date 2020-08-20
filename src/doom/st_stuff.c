@@ -1213,6 +1213,9 @@ ST_Responder (event_t* ev)
       M_snprintf(msg, sizeof(msg), "Skill: %s",
                  skilltable[BETWEEN(0,5,(int) gameskill+1)]);
       plyr->message = msg;
+
+      // [marshmallow] Also show upgrade chance and hitpoints multiplier as part of the skill information displayed
+      ShowExtendedSkillInfo();
     }
     
     // 'clev' change-level cheat

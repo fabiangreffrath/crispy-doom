@@ -64,7 +64,6 @@ void Marshmallow_InitVariables()
 	Marshmallow_ConservePowerups = true; 
 	Marshmallow_GradedWeapons = true;
 
-	Marshmallow_PlasmaSlowdown = true;  // We'll try this on by default for now
 	Marshmallow_BFGBlastWave = true;
 	Marshmallow_DangerousBFG = true;
 
@@ -105,15 +104,7 @@ void Marshmallow_InitVariables()
 
 	Marshmallow_DropBackpack = true;
 
-	if (!realnetgame)
-    {
-    marshmallow_player_names[0] = "CONSOLEPLAYER";
-    marshmallow_player_names[1] = "INDIGO";
-    marshmallow_player_names[2] = "BROWN";
-    marshmallow_player_names[3] = "RED";
-    }
-
-    Preferred_DM_Mode = 3;
+    SetMultiplayerNames();
 
 	dm_timelimit = 10;
 	dm_fraglimit = 50;
@@ -122,10 +113,6 @@ void Marshmallow_InitVariables()
 
     Marshmallow_AllowExit = false;
     Marshmallow_KillOnExit = true;
-
-    SetDMFlags();
-
-	Marshmallow_PlasmaSlowdown = true;
 
 	Marshmallow_KeepFreeAmmo = true;
 
@@ -165,12 +152,17 @@ void Marshmallow_InitVariables()
 
 		Marshmallow_SaveItems = false;
 		Marshmallow_DynamicMusic = false;
-		Marshmallow_PlasmaSlowdown = false;
 		Marshmallow_GiftDropping = true;  
 
 		if ( M_CheckParm("-server") || M_CheckParm("-solo-net"))
 			CheckForServerCfgFile();
 	}
+
+    // In case this variable is still zero, set dm3 as default mode
+    if (!Preferred_DM_Mode)
+        Preferred_DM_Mode = 3;
+
+    SetDMFlags(Preferred_DM_Mode);
 
 	// Change the invis sprite to appear with MF_SHADOW effect
 	if (Marshmallow_DropGoodies)

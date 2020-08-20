@@ -142,7 +142,7 @@ static void WritePreferences()
 	fprintf(f, "BoostedBullets %d \n", Marshmallow_BoostedBullets);
 	fprintf(f, "InfinitePistol %d \n", Marshmallow_InfinitePistol);
 	fprintf(f, "BalanceShotguns %d \n", Marshmallow_BalanceShotguns);
-	fprintf(f, "PlasmaSlowdown %d \n", Marshmallow_PlasmaSlowdown);
+	//fprintf(f, "PlasmaSlowdown %d \n", Marshmallow_PlasmaSlowdown);
 
 	fprintf(f, "NerfHP_LostSoul %d \n", Marshmallow_NerfHP_LostSoul);
 	fprintf(f, "NerfHP_Cacodemon %d \n", Marshmallow_NerfHP_Cacodemon);
@@ -243,7 +243,7 @@ static void LoadPreferences(FILE *f)
 	fscanf(f, "BoostedBullets %d \n", &Marshmallow_BoostedBullets);
 	fscanf(f, "InfinitePistol %d \n", &Marshmallow_InfinitePistol);
 	fscanf(f, "BalanceShotguns %d \n", &Marshmallow_BalanceShotguns);
-	fscanf(f, "PlasmaSlowdown %d \n", &Marshmallow_PlasmaSlowdown);
+	//fscanf(f, "PlasmaSlowdown %d \n", &Marshmallow_PlasmaSlowdown);
 
 	fscanf(f, "NerfHP_LostSoul %d \n", &Marshmallow_NerfHP_LostSoul);
 	fscanf(f, "NerfHP_Cacodemon %d \n", &Marshmallow_NerfHP_Cacodemon);
@@ -308,6 +308,8 @@ static void LoadPreferences(FILE *f)
 
 	fscanf(f, "DM_AllowExit %d \n", &Marshmallow_AllowExit);
 	fscanf(f, "DM_KillOnExit %d \n", &Marshmallow_KillOnExit);
+
+    fscanf(f, "PKE_SearchRadius %d \n", &PKE_Meter.search_radius);
 
     //if (!Preferred_DM_Mode)
     fscanf(f, "Preferred_DM_Mode %d \n", &Preferred_DM_Mode);
