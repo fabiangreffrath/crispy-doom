@@ -24,7 +24,7 @@
 
 #define MAINMENU_GAMEPLAY "    Gameplay options..."
 #define MAINMENU_MUSIC "    Music options..."
-#define MAINMENU_EFFECTS "    Visual tweaks..."
+#define MAINMENU_EFFECTS "    Visual options..."
 #define MAINMENU_INTERFACE "    Interface options..."
 #define MAINMENU_DM "    Deathmatch options..."
 

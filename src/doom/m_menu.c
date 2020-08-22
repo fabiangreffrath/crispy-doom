@@ -2616,7 +2616,8 @@ boolean M_Responder (event_t* ev)
 
     // [marshmallow] So we can launch keyboard reference widget while mainmenu is up
     if (key == 'h'
-        && !chat_on)
+        && !chat_on
+        && gamestate == GS_LEVEL)
     {
         menuactive = false;
 

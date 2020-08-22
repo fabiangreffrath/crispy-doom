@@ -1928,8 +1928,8 @@ void G_DoCompleted (void)
     // will agree with Compet-n.
     wminfo.totaltimes = (totalleveltimes += (leveltime - leveltime % TICRATE));
 
-    gamestate = GS_INTERMISSION; 
-    viewactive = false; 
+    gamestate = GS_INTERMISSION;
+    viewactive = false;
     automapactive = false; 
 
     // [crispy] no statdump output for ExM8
