@@ -175,14 +175,6 @@ static void ApogeeDeath(mobj_t* target)
 {
     ParticleFX_LargeBloodSplat(target);
 
-    // Don't do P_RemoveMobj() to player corpses
-    if ( IsPlayer(target) )
-    {
-        // WTF: this shows up in the status bar when we do this here!?!?
-        //P_SetMobjState (target, target->info->xdeathstate);
-        return;
-    }
-
     DropSlopProp(target, false);
 
     P_RemoveMobj(target);
@@ -283,18 +275,12 @@ boolean DoSpecialDeaths(mobj_t* target, mobj_t* source)
     if (!target->info->xdeathstate)
         return false;
 
-    // Determine if we're doing XDeath state or any other special deaths
+    // Determine if we're doing any special deaths
     switch (gibmode)
     {
         case NO_GIBS:
 
-            if (target->health <= negative_spawnhealth)
-            {
-                P_SetMobjState(target, target->info->xdeathstate);
-                return true;
-            }
-
-            break;
+            return false;
 
         case BRUTAL_GIBS:
 
@@ -318,6 +304,9 @@ boolean DoSpecialDeaths(mobj_t* target, mobj_t* source)
         case DUKE_GIBS:
 
             if (weapon != wp_missile && weapon != wp_fist)
+                return false;
+
+            if ( IsPlayer(target) )
                 return false;
 
             ApogeeDeath(target);

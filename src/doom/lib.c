@@ -933,7 +933,7 @@ void DoTimeouts()
     {
         offer_radsuit = false;
         offertimeout_radsuit = 0;
-        second_consoleline_timeout = 0;
+        //second_consoleline_timeout = 0;
     }
 
 	if (offertimeout_medkit)
@@ -1325,6 +1325,7 @@ static void GameplayKeyInput()
     if (gamekeydown[key_r] && offertimeout_suicide)
     {
         PlayerKillsHimself(players[consoleplayer].mo);
+        offertimeout_suicide = 0;
         SetKeyDelay();
         return;
     }

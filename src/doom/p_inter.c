@@ -1476,9 +1476,20 @@ P_KillMobj
         target->type == MT_BARREL)
         target->flags |= MF_TRANSLUCENT;
 
-    // [marshmallow]
+    // [marshmallow] If using enhanced gore modes, handle death events here
     if ( !DoSpecialDeaths(target, source) )
-        P_SetMobjState (target, target->info->deathstate);
+    {
+        // Otherwise, we just do the vanilla death behavior
+        if (target->health < -target->info->spawnhealth
+            && target->info->xdeathstate)
+        {
+            P_SetMobjState (target, target->info->xdeathstate);
+        }
+        else
+            P_SetMobjState (target, target->info->deathstate);
+
+        target->tics -= P_Random()&3;
+    }
 
     // [crispy] randomly flip corpse, blood and death animation sprites
     if (target->flags & MF_FLIPPABLE)
