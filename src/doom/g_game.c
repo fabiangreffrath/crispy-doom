@@ -851,6 +851,12 @@ void G_DoLoadLevel (void)
     // [crispy] sky texture scales
     R_InitSkyMap();
 
+    // [crispy] pistol start
+    if (crispy->pistolstart && !demorecording && !demoplayback && !netgame)
+    {
+        G_PlayerReborn(0);
+    }
+
     levelstarttic = gametic;        // for time calculation
     
     if (wipegamestate == GS_LEVEL) 
