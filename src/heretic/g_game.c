@@ -762,6 +762,12 @@ void G_DoLoadLevel(void)
 {
     int i;
 
+    // [crispy] pistol start
+    if (crispy->pistolstart && !demorecording && !demoplayback && !netgame)
+    {
+        G_PlayerReborn(0);
+    }
+
     levelstarttic = gametic;    // for time calculation
     gamestate = GS_LEVEL;
     for (i = 0; i < MAXPLAYERS; i++)
