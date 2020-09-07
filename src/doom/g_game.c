@@ -851,12 +851,6 @@ void G_DoLoadLevel (void)
     // [crispy] sky texture scales
     R_InitSkyMap();
 
-    // [crispy] pistol start
-    if (crispy->pistolstart && crispy->singleplayer)
-    {
-        G_PlayerReborn(0);
-    }
-
     levelstarttic = gametic;        // for time calculation
     
     if (wipegamestate == GS_LEVEL) 
@@ -874,6 +868,28 @@ void G_DoLoadLevel (void)
 		 
     // [crispy] update the "singleplayer" variable
     CheckCrispySingleplayer(!demorecording && !demoplayback && !netgame);
+
+    // [crispy] pistol start
+    if (crispy->pistolstart)
+    {
+        if (crispy->singleplayer)
+        {
+            G_PlayerReborn(0);
+        }
+        else if (demoplayback && !singledemo)
+        {
+            // no-op - silently ignore pistolstart when playing demo from the
+            // demo reel
+        }
+        else
+        {
+            const char message[] = "The -pistolstart option is not suppported"
+                                   " for demos and\n"
+                                   " network play.";
+            I_Error(message);
+        }
+    }
+
     P_SetupLevel (gameepisode, gamemap, 0, gameskill);    
     displayplayer = consoleplayer;		// view the guy you are playing    
     gameaction = ga_nothing; 

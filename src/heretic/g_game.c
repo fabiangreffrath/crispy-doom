@@ -762,12 +762,6 @@ void G_DoLoadLevel(void)
 {
     int i;
 
-    // [crispy] pistol start
-    if (crispy->pistolstart && crispy->singleplayer)
-    {
-        G_PlayerReborn(0);
-    }
-
     levelstarttic = gametic;    // for time calculation
     gamestate = GS_LEVEL;
     for (i = 0; i < MAXPLAYERS; i++)
@@ -775,6 +769,30 @@ void G_DoLoadLevel(void)
         if (playeringame[i] && players[i].playerstate == PST_DEAD)
             players[i].playerstate = PST_REBORN;
         memset(players[i].frags, 0, sizeof(players[i].frags));
+    }
+
+    // [crispy] update the "singleplayer" variable
+    CheckCrispySingleplayer(!demorecording && !demoplayback && !netgame);
+
+    // [crispy] wand start
+    if (crispy->pistolstart)
+    {
+        if (crispy->singleplayer)
+        {
+            G_PlayerReborn(0);
+        }
+        else if (demoplayback && !singledemo)
+        {
+            // no-op - silently ignore pistolstart when playing demo from
+            // the demo reel
+        }
+        else
+        {
+            const char message[] = "The -wandstart option is not supported"
+                                   " for demos and\n"
+                                   " network play.";
+            I_Error(message);
+        }
     }
 
     P_SetupLevel(gameepisode, gamemap, 0, gameskill);
