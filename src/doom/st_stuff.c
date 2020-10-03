@@ -502,7 +502,15 @@ void ST_refreshBackground(boolean force)
 		}
 	}
 
-	V_DrawPatch(ST_X, 0, sbar);
+        if (sbar->width > ORIGWIDTH && sbar->leftoffset == 0)
+        {
+            // Unity wide status bar, center on screen
+            V_DrawPatch(ST_X + (ORIGWIDTH - sbar->width) / 2, 0, sbar);
+        }
+        else
+        {
+            V_DrawPatch(ST_X, 0, sbar);
+        }
 
 	// draw right side of bar if needed (Doom 1.0)
 	if (sbarr)
