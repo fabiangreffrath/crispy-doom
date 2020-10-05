@@ -933,9 +933,9 @@ void F_BunnyScroll (void)
     p1 = W_CacheLumpName (DEH_String("PFUB2"), PU_LEVEL);
     p2 = W_CacheLumpName (DEH_String("PFUB1"), PU_LEVEL);
 
+    // [crispy] fill pillarboxes in widescreen mode
     pillar_width = (SCREENWIDTH - (p1->width << FRACBITS) / dxi) / 2;
 
-    // [crispy] fill pillarboxes in widescreen mode
     if (pillar_width > 0)
     {
         V_DrawFilledBox(0, 0, pillar_width, SCREENHEIGHT, 0);
@@ -946,18 +946,20 @@ void F_BunnyScroll (void)
         pillar_width = 0;
     }
 
-    if (p1->width != p2->width)
+    // Calculate the portion of PFUB2 that would be offscreen at original res.
+    p1offset = (ORIGWIDTH - p1->width) / 2;
+
+    if (p2->width == ORIGWIDTH)
     {
-        // Unity PFUBs, no overlap.
-        p2offset = p2->width - (ORIGWIDTH - p1->width) / 2;
-        p1offset = p2offset - p1->width;
+        // Unity or original PFUBs.
+        // PFUB1 only contains the pixels that scroll off.
+        p2offset = ORIGWIDTH - p1offset;
     }
     else
     {
-        // Widescreen mod PFUBs, overlap.
-        // Also original PFUBs, in which case these reduce to defaults.
-        p2offset = ORIGWIDTH + (ORIGWIDTH - p2->width) / 2;
-        p1offset = (ORIGWIDTH - p1->width) / 2;
+        // Widescreen mod PFUBs.
+        // Right side of PFUB2 and left side of PFUB1 are identical.
+        p2offset = ORIGWIDTH + p1offset;
     }
 
     V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
