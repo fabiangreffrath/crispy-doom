@@ -83,7 +83,7 @@ static void ReadServerSettings(FILE *f)
 	fscanf(f, "BarrelPushing %d \n", &Marshmallow_BarrelPushing);
 	fscanf(f, "DangerousBFG %d \n", &Marshmallow_DangerousBFG);
 
-    fscanf(f, "PKE_SearchRadius %d \n", &PKE_SavedSearchRadius);
+    //fscanf(f, "PKE_SearchRadius %d \n", &PKE_SavedSearchRadius);
 }
 
 
