@@ -1541,7 +1541,7 @@ static void GameplayKeyInput()
 
 	if (gamekeydown[key_quake2bfg])
 	{
-		if (realnetgame)   // untested
+		if (realnetgame)
 			return;
 
 		if (MAIN_PLAYER.weaponowned[wp_bfg] && MAIN_PLAYER.readyweapon != wp_bfg)

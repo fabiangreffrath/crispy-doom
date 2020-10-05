@@ -95,10 +95,7 @@ void CheckForServerCfgFile()
 	cfg_file = fopen("server.cfg", "r");
 
 	if (!cfg_file)
-	{
-		//WritePreferences();  // write default settings here if that's what we want to do
 		return;
-	}
 
 	// Load saved preferences from marshmallow.cfg
 	ReadServerSettings(cfg_file);
