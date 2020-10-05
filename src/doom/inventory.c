@@ -40,6 +40,10 @@ void UsePortableMedkit()
 	offer_medkit = false;
 	offertimeout_medkit = 0;
 
+	// New 10-4-2020
+	if (!MAIN_PLAYER.medkit_remaining)
+	    MAIN_PLAYER.extra_powers[ITEM_MEDKIT] = false;
+
 	MAIN_PLAYER.bonuscount += BONUSADD;  // Just for screen flash...
 }
 

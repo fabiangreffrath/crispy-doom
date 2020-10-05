@@ -1188,7 +1188,7 @@ ST_Responder (event_t* ev)
       plyr->message = msg;
 
       // [marshmallow] Also show upgrade chance and hitpoints multiplier as part of the skill information displayed
-      ShowExtendedSkillInfo();
+      //ShowExtendedSkillInfo();  // 10-4-2020 - crashing here now!
     }
     
     // 'clev' change-level cheat

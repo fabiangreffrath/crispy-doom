@@ -379,7 +379,7 @@ P_TouchSpecialThing
     fixed_t	delta;
     int		sound;
     const boolean dropped = ((special->flags & MF_DROPPED) != 0);
-		
+
     delta = special->z - toucher->z;
 
     if (delta > toucher->height
@@ -390,7 +390,7 @@ P_TouchSpecialThing
     }
 
     // [marshmallow] Bots don't pick up any items
-    if ( IsBot(toucher->player) )
+    if ( IsBot(toucher->player) && !realnetgame )
     {
         if (special->sprite == SPR_BAR1)
         {

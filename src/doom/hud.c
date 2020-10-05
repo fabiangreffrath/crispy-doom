@@ -21,6 +21,8 @@ void UpdateInfoReadout()
         //AddIntegerToInfoReadout("marshmallow_rndindex: ", marshmallow_rndindex, 7);
         //AddIntegerToInfoReadout("prndindex: ", prndindex, 8);
 
+        //AddIntegerToInfoReadout("itemrespawn_delay: ", itemrespawn_delay, 8);
+
 		DJ_ShowInfo();
 		
 		//PKE_ShowInfo();

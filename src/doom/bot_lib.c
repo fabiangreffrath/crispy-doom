@@ -645,6 +645,9 @@ int IsBot(player_t* player)
 	if (!player)
 		return false;
 
+	if (realnetgame)
+	    return false;
+
 	if (player->bot_number)
 		return player->bot_number;
 	else
