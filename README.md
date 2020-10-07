@@ -52,12 +52,6 @@ Download the latest Windows binary at http://www.marshmallowdoom.com.
 
 ## News
 
-### October 5, 2020
-
-Marshmallow Doom version 0.79 has been released!  This is the first official release compiled with MinGW.
-
-Download and see the changelog at http://www.marshmallowdoom.com.
-
 ### May 5, 2020
 
 We now have about 98% of the project re-implemented in this new project.  Only a few features have been omitted as they were previously very poorly implemented into the Doom code.  These features that were skipped are:
