@@ -315,16 +315,7 @@ static void AdjustWindowSize(void)
 {
     if (aspect_ratio_correct || integer_scaling)
     {
-        if (window_width * actualheight <= window_height * SCREENWIDTH)
-        {
-            // We round up window_height if the ratio is not exact; this leaves
-            // the result stable.
-            window_height = (window_width * actualheight + SCREENWIDTH - 1) / SCREENWIDTH;
-        }
-        else
-        {
-            window_width = window_height * SCREENWIDTH / actualheight;
-        }
+        window_width = window_height * SCREENWIDTH / actualheight;
     }
 }
 
@@ -1551,6 +1542,24 @@ void I_GetScreenDimensions (void)
 	// [crispy] widescreen rendering makes no sense without aspect ratio correction
 	if (crispy->widescreen && aspect_ratio_correct)
 	{
+		switch(crispy->widescreen)
+		{
+			case RATIO_16_10:
+				w = 16;
+				h = 10;
+				break;
+			case RATIO_16_9:
+				w = 16;
+				h = 9;
+				break;
+			case RATIO_21_9:
+				w = 21;
+				h = 9;
+				break;
+			default:
+				break;
+		}
+
 		SCREENWIDTH = w * ah / h;
 		// [crispy] make sure SCREENWIDTH is an integer multiple of 4 ...
 		SCREENWIDTH = (SCREENWIDTH + 3) & (int)~3;
