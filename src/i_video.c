@@ -315,7 +315,18 @@ static void AdjustWindowSize(void)
 {
     if (aspect_ratio_correct || integer_scaling)
     {
-        window_width = window_height * SCREENWIDTH / actualheight;
+        // [crispy] always adjust window width only, otherwise repeatedly
+        // changing widescreen settings causes the window to shrink.
+        if (window_width * actualheight <= window_height * SCREENWIDTH && FALSE)
+        {
+            // We round up window_height if the ratio is not exact; this leaves
+            // the result stable.
+            window_height = (window_width * actualheight + SCREENWIDTH - 1) / SCREENWIDTH;
+        }
+        else
+        {
+            window_width = window_height * SCREENWIDTH / actualheight;
+        }
     }
 }
 
