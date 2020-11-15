@@ -32,8 +32,11 @@
 byte*
 R_GetColumn
 ( int		tex,
-  int		col,
-  boolean	opaque );
+  int		col );
+byte*
+R_GetColumnMod
+( int		tex,
+  int		col );
 
 
 // I/O, setting up the stuff.
