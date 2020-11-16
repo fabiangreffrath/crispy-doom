@@ -147,15 +147,15 @@ texture_t**     textures_hashtable;
 
 
 int*			texturewidthmask;
-int*			texturewidth;
+int*			texturewidth; // [crispy] texture width for wrapping column getter function
 // needed for texture pegging
-fixed_t*		textureheight;		
+fixed_t*		textureheight; // [crispy] texture height for Tutti-Frutti fix
 int*			texturecompositesize;
 short**			texturecolumnlump;
-unsigned**		texturecolumnofs; // killough 4/9/98: make 32-bit
-unsigned**		texturecolumnofs2; // [crispy] original column offsets for single-patched textures
-byte**			texturecomposite;
-byte**			texturecomposite2;
+unsigned**		texturecolumnofs; // [crispy] column offsets for composited translucent mid-textures on 2S walls
+unsigned**		texturecolumnofs2; // [crispy] column offsets for composited opaque textures
+byte**			texturecomposite; // [crispy] composited translucent mid-textures on 2S walls
+byte**			texturecomposite2; // [crispy] composited opaque textures
 byte**			texturebrightmap; // [crispy] brightmaps
 
 // for global animation
@@ -259,8 +259,7 @@ R_DrawColumnInCache
 
 void R_GenerateComposite (int texnum)
 {
-    byte*		block;
-    byte*		block2;
+    byte*		block, *block2;
     texture_t*		texture;
     texpatch_t*		patch;	
     patch_t*		realpatch;
@@ -270,8 +269,7 @@ void R_GenerateComposite (int texnum)
     int			i;
     column_t*		patchcol;
     short*		collump;
-    unsigned*		colofs; // killough 4/9/98: make 32-bit
-    unsigned*		colofs2; // killough 4/9/98: make 32-bit
+    unsigned*		colofs, *colofs2; // killough 4/9/98: make 32-bit
     byte*		marks; // killough 4/9/98: transparency marks
     byte*		source; // killough 4/9/98: temporary column
 	
@@ -280,7 +278,8 @@ void R_GenerateComposite (int texnum)
     block = Z_Malloc (texturecompositesize[texnum],
 		      PU_STATIC, 
 		      &texturecomposite[texnum]);	
-    block2 = Z_Malloc (texturecompositesize[texnum],
+    // [crispy] memory block for opaque textures
+    block2 = Z_Malloc (texture->width * texture->height,
 		      PU_STATIC,
 		      &texturecomposite2[texnum]);
 
@@ -291,7 +290,7 @@ void R_GenerateComposite (int texnum)
     // killough 4/9/98: marks to identify transparent regions in merged textures
     marks = calloc(texture->width, texture->height);
 
-    // [crispy] initialize composite background to black (index 0)
+    // [crispy] initialize composite background to palette index 0 (usually black)
     memset(block, 0, texturecompositesize[texnum]);
 
     // Composite the columns together.
@@ -339,6 +338,7 @@ void R_GenerateComposite (int texnum)
     source = I_Realloc(NULL, texture->height); // temporary column
     for (i = 0; i < texture->width; i++)
     {
+	// [crispy] generate composites for all columns
 //	if (collump[i] == -1) // process only multipatched columns
 	{
 	    column_t *col = (column_t *)(block + colofs[i] - 3); // cached column
@@ -347,6 +347,7 @@ void R_GenerateComposite (int texnum)
 
 	    // save column in temporary so we can shuffle it around
 	    memcpy(source, (byte *) col + 3, texture->height);
+	    // [crispy] copy composited columns to opaque texture
 	    memcpy(block2 + (colofs2[i] = i * texture->height), source, texture->height);
 
 	    for ( ; ; ) // reconstruct the column by scanning transparency marks
@@ -467,6 +468,7 @@ void R_GenerateLookup (int texnum)
     // only one post per column. This avoids crashes while allowing
     // for arbitrarily tall multipatched 1s textures.
 
+    // [crispy] generate composites for all textures
     if (/* texture->patchcount > 1 && */ texture->height < 256)
     {
 	// killough 12/98: Warn about a common column construction bug
@@ -486,6 +488,7 @@ void R_GenerateLookup (int texnum)
 
 	    for (x = x1 ; x < x2 ; x++)
 	    {
+		// [crispy] generate composites for all columns
 //		if (patchcount[x] > 1) // Only multipatched columns
 		{
 		    const column_t *col = (const column_t*)((const byte*) realpatch + LONG(cofs[x]));
@@ -572,17 +575,18 @@ R_GetColumn
 ( int		tex,
   int		col )
 {
-    int		ofs2;
+    int		ofs;
 	
     col &= texturewidthmask[tex];
-    ofs2 = texturecolumnofs2[tex][col];
+    ofs = texturecolumnofs2[tex][col];
 
     if (!texturecomposite2[tex])
 	R_GenerateComposite (tex);
 
-    return texturecomposite2[tex] + ofs2;
+    return texturecomposite2[tex] + ofs;
 }
 
+// [crispy] wrapping column getter function for composited translucent mid-textures on 2S walls
 byte*
 R_GetColumnMod
 ( int		tex,
@@ -943,6 +947,7 @@ void R_InitTextures (void)
 
 	texturewidthmask[i] = j-1;
 	textureheight[i] = texture->height<<FRACBITS;
+	// [crispy] texture width for wrapping column getter function
 	texturewidth[i] = texture->width;
 		
 	totalwidth += texture->width;
