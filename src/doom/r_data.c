@@ -386,6 +386,7 @@ void R_GenerateComposite (int texnum)
     // Now that the texture has been built in column cache,
     //  it is purgable from zone memory.
     Z_ChangeTag (block, PU_CACHE);
+    Z_ChangeTag (block2, PU_CACHE);
 }
 
 
@@ -409,7 +410,6 @@ void R_GenerateLookup (int texnum)
     int			i;
     short*		collump;
     unsigned*		colofs; // killough 4/9/98: make 32-bit
-    unsigned*		colofs2; // [crispy] original column offsets
     int			csize = 0; // killough 10/98
     int			err = 0; // killough 10/98
 	
@@ -422,7 +422,6 @@ void R_GenerateLookup (int texnum)
     texturecompositesize[texnum] = 0;
     collump = texturecolumnlump[texnum];
     colofs = texturecolumnofs[texnum];
-    colofs2 = texturecolumnofs2[texnum]; // [crispy] original column offsets
     
     // Now count the number of columns
     //  that are covered by more than one patch.
@@ -452,7 +451,7 @@ void R_GenerateLookup (int texnum)
 	{
 	    patchcount[x]++;
 	    collump[x] = patch->patch;
-	    colofs[x] = colofs2[x] = LONG(realpatch->columnofs[x-x1])+3; // [crispy] original column offsets
+	    colofs[x] = LONG(realpatch->columnofs[x-x1])+3;
 	}
     }
 	
