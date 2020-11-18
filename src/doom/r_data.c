@@ -348,7 +348,7 @@ void R_GenerateComposite (int texnum)
 	    // save column in temporary so we can shuffle it around
 	    memcpy(source, (byte *) col + 3, texture->height);
 	    // [crispy] copy composited columns to opaque texture
-	    memcpy(block2 + (colofs2[i] = i * texture->height), source, texture->height);
+	    memcpy(block2 + colofs2[i], source, texture->height);
 
 	    for ( ; ; ) // reconstruct the column by scanning transparency marks
 	    {
@@ -409,7 +409,7 @@ void R_GenerateLookup (int texnum)
     int			x2;
     int			i;
     short*		collump;
-    unsigned*		colofs; // killough 4/9/98: make 32-bit
+    unsigned*		colofs, *colofs2; // killough 4/9/98: make 32-bit
     int			csize = 0; // killough 10/98
     int			err = 0; // killough 10/98
 	
@@ -422,6 +422,7 @@ void R_GenerateLookup (int texnum)
     texturecompositesize[texnum] = 0;
     collump = texturecolumnlump[texnum];
     colofs = texturecolumnofs[texnum];
+    colofs2 = texturecolumnofs2[texnum];
     
     // Now count the number of columns
     //  that are covered by more than one patch.
@@ -555,6 +556,8 @@ void R_GenerateLookup (int texnum)
 	    }
 	    */
 	csize += texture->height; // height bytes of texture data
+	// [crispy] initialize opaque texture column offset
+	colofs2[x] = x * texture->height;
     }
 
     texturecompositesize[texnum] = csize;
