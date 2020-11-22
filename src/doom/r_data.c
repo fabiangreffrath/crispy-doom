@@ -344,6 +344,8 @@ void R_GenerateComposite (int texnum)
 	    column_t *col = (column_t *)(block + colofs[i] - 3); // cached column
 	    const byte *mark = marks + i * texture->height;
 	    int j = 0;
+	    // [crispy] absolut topdelta for first 254 pixels, then relative
+	    int prevtop = 0;
 
 	    // save column in temporary so we can shuffle it around
 	    memcpy(source, (byte *) col + 3, texture->height);
@@ -354,8 +356,21 @@ void R_GenerateComposite (int texnum)
 	    {
 		unsigned len; // killough 12/98
 
+		// [crispy] absolut topdelta for first 254 pixels, then relative
+		if (prevtop)
+		{
+			prevtop = j;
+		}
+
 		while (j < texture->height && !mark[j]) // skip transparent cells
+		{
+		    // [crispy] maximum topdelta value is 254
+		    if (j - prevtop == 254)
+		    {
+		        break;
+		    }
 		    j++;
+		}
 
 		if (j >= texture->height) // if at end of column
 		{
@@ -363,13 +378,28 @@ void R_GenerateComposite (int texnum)
 		    break;
 		}
 
-		col->topdelta = j; // starting offset of post
+		// [crispy] absolut topdelta for first 254 pixels, then relative
+		col->topdelta = j - prevtop; // starting offset of post
+
+		// [crispy] once we pass the 254 boundary, topdelta becomes relative
+		if (j == 254)
+		{
+			prevtop = j;
+		}
 
 		// killough 12/98:
 		// Use 32-bit len counter, to support tall 1s multipatched textures
 
-		for (len = 0; j < texture->height && mark[j]; j++)
+		for (len = 0; j < texture->height && mark[j];)
+		{
 		    len++; // count opaque cells
+		    j++;
+		    // [crispy] maximum length value is 255
+		    if (len == 255 || j == 254)
+		    {
+		        break;
+		    }
+		}
 
 		col->length = len; // killough 12/98: intentionally truncate length
 
@@ -469,7 +499,7 @@ void R_GenerateLookup (int texnum)
     // for arbitrarily tall multipatched 1s textures.
 
     // [crispy] generate composites for all textures
-    if (/* texture->patchcount > 1 && */ texture->height < 256)
+//  if (texture->patchcount > 1 && texture->height < 256)
     {
 	// killough 12/98: Warn about a common column construction bug
 	unsigned limit = texture->height * 3 + 3; // absolute column size limit
