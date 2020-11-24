@@ -345,7 +345,8 @@ void R_GenerateComposite (int texnum)
 	    const byte *mark = marks + i * texture->height;
 	    int j = 0;
 	    // [crispy] absolut topdelta for first 254 pixels, then relative
-	    int prevtop = 0;
+	    int abstop, reltop = 0;
+	    boolean relative = false;
 
 	    // save column in temporary so we can shuffle it around
 	    memcpy(source, (byte *) col + 3, texture->height);
@@ -356,21 +357,8 @@ void R_GenerateComposite (int texnum)
 	    {
 		unsigned len; // killough 12/98
 
-		// [crispy] absolut topdelta for first 254 pixels, then relative
-		if (prevtop)
-		{
-			prevtop = j;
-		}
-
-		while (j < texture->height && !mark[j]) // skip transparent cells
-		{
-		    // [crispy] maximum topdelta value is 254
-		    if (j - prevtop == 254)
-		    {
-		        break;
-		    }
-		    j++;
-		}
+		while (j < texture->height && reltop < 254 && !mark[j]) // skip transparent cells
+		    j++, reltop++;
 
 		if (j >= texture->height) // if at end of column
 		{
@@ -379,32 +367,25 @@ void R_GenerateComposite (int texnum)
 		}
 
 		// [crispy] absolut topdelta for first 254 pixels, then relative
-		col->topdelta = j - prevtop; // starting offset of post
+		col->topdelta = relative ? reltop : j; // starting offset of post
 
 		// [crispy] once we pass the 254 boundary, topdelta becomes relative
-		if (j == 254)
+		if ((abstop = j) >= 254)
 		{
-			prevtop = j;
+			relative = true;
+			reltop = 0;
 		}
 
 		// killough 12/98:
 		// Use 32-bit len counter, to support tall 1s multipatched textures
 
-		for (len = 0; j < texture->height && mark[j];)
-		{
+		for (len = 0; j < texture->height && reltop < 254 && mark[j]; j++, reltop++)
 		    len++; // count opaque cells
-		    j++;
-		    // [crispy] maximum length value is 255
-		    if (len == 255 || j == 254)
-		    {
-		        break;
-		    }
-		}
 
 		col->length = len; // killough 12/98: intentionally truncate length
 
 		// copy opaque cells from the temporary back into the column
-		memcpy((byte *) col + 3, source + col->topdelta, len);
+		memcpy((byte *) col + 3, source + abstop, len);
 		col = (column_t *)((byte *) col + len + 4); // next post
 	    }
 	}
