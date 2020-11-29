@@ -314,9 +314,10 @@ typedef struct mobj_s
     int			corpsehealth;
 
     // [marshmallow] In case this is a dropped backpack
+    boolean    is_dropped;
     backpack_s dropped_backpack;
     int	       owner;
-    boolean    is_gift;
+    int    is_gift;
 
     // [marshmallow] For dropped item cleanup
     int		   drop_tic;

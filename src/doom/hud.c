@@ -1098,7 +1098,7 @@ void DrawHUDMenu()
 		//HUlib_drawSText(&inv_menu_title); 
 		//HUlib_drawSText(&inv_menu_blank); 
 
-		for (i=0;i<=MAX_INV_ITEMS;i++)  
+		for (i=0;i<MAX_INV_ITEMS;i++)
 		{
 			if (MAIN_PLAYER.extra_powers[i])
 			{
