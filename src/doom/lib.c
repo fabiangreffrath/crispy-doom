@@ -1332,6 +1332,8 @@ static void GameplayKeyInput()
 
 	if (gamekeydown[key_g] && Marshmallow_GiftDropping)  // Press 'G' to gift some ammo to a friend in realnetgame
 	{
+	    return; // 11-29-2020: disabled while we settle the backpack problems
+
 		if (realnetgame)
 			Marshmallow_SendMultiplayerEvent(MARSHMALLOW_BACKPACK_WAS_DROPPED);
 	}

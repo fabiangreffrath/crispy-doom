@@ -126,7 +126,7 @@ boolean Marshmallow_GimmeThatPhatLoot(mobj_t* toucher, mobj_t* special)
 	if (ammo_full == NUMAMMO)
 		return false;  // need to do true below!
 
-	if (!deathmatch)
+	if (deathmatch)
 		toucher->player->message = DEH_String(FOUNDBACKPACK);
 	  
 	P_GiveAmmo (toucher->player, am_clip, Marshmallow_LootMultiplier, false); // TODO: condense all of this to a for loop
@@ -227,7 +227,8 @@ mobj_t* CreateBackpack(mobj_t* target, boolean is_inventory)
 	backpack_z = target->z + DROP_FROM_ABOVE_FLOOR;
 
 	mo = P_SpawnMobj (backpack_x, backpack_y, backpack_z, MARSHMALLOW_BACKPACK);
-	mo->flags |= MF_DROPPED;
+	//mo->flags |= MF_DROPPED;
+	mo->is_dropped = true;
 
 	if ( deathmatch )
 		mo->drop_tic = gametic;
@@ -290,7 +291,8 @@ void DropBackpackForAFriend(mobj_t* actor)
 	y = actor->y + FixedMul (24*FRACUNIT, finesine[an])/* + MARSHMALLOW_DROPOBSTACLE_OFFSET_Y*/;  
 
 	backpack = P_SpawnMobj (x, y, ONFLOORZ, item);
-	backpack->flags |= MF_DROPPED;	
+	//backpack->flags |= MF_DROPPED;
+	backpack->is_dropped = true;
 
 	backpack->is_gift = true;  // NEW
 	backpack->owner = actor->player->player_number;  // NEW

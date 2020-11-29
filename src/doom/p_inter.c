@@ -1236,9 +1236,25 @@ P_TouchSpecialThing
       case SPR_BPAK:
 
     // [marshmallow] If this was a backpack with the MF_DROPPED flag, use our new inventory backpack functionality
-    if (special->flags & MF_DROPPED && toucher->player->playerstate == PST_LIVE )
+    if (special->is_dropped
+        && toucher->player
+        && toucher->player->playerstate == PST_LIVE)
     {
-        if ( deathmatch || special->is_gift )
+        if ( deathmatch )
+        {
+            if ( !Marshmallow_GimmeThatPhatLoot(toucher, special) )  // Basic ammo bonus backpack
+            {
+                toucher->player->message = "YOU CANNOT CARRY ANY MORE AMMO.";
+                return;  // Ammo is full, so leave it on the ground
+            }
+            else
+            {
+                player->message = DEH_String(FOUNDBACKPACK);
+            }
+        }
+        // "Gift" backpacks disabled for now; remnants if its code lie below
+#if 0
+        if ( special->is_gift )
         {
             if (special->owner == toucher->player->player_number && !deathmatch)
                 return;
@@ -1248,7 +1264,9 @@ P_TouchSpecialThing
                 toucher->player->message = "YOU CANNOT CARRY ANY MORE AMMO.";
                 return;  // Ammo is full, so leave it on the ground
             }
+
         }
+#endif
         else
         {
             if ( special->owner != toucher->player->player_number )  // Only the player that dropped it can pick it up
@@ -1256,6 +1274,8 @@ P_TouchSpecialThing
 
             RecoverInventoryFromBackpack(toucher, special);  // Entire player inventory backpack
         }
+
+        break;
     }
     // [m]
 
@@ -1267,11 +1287,9 @@ P_TouchSpecialThing
 	}
 	for (i=0 ; i<NUMAMMO ; i++)
 	    P_GiveAmmo (player, i, 1, false);
-	if (!(special->flags & MF_DROPPED))
+
 	player->message = DEH_String(GOTBACKPACK);
 
-	if (deathmatch && special->flags & MF_DROPPED)  // [marshmallow]
-        player->message = DEH_String(FOUNDBACKPACK);
 	break;
 	
 	// weapons
