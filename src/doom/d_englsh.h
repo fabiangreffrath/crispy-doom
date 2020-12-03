@@ -365,6 +365,11 @@
 #define HUSTR_KEYINDIGO	'i'
 #define HUSTR_KEYBROWN	'b'
 #define HUSTR_KEYRED	'r'
+#define HUSTR_KEYPLAYER5	'j'
+#define HUSTR_KEYPLAYER6	'y'
+#define HUSTR_KEYPLAYER7	'h'
+#define HUSTR_KEYPLAYER8	'l'
+
 
 //
 //	AM_map.C

@@ -1529,8 +1529,8 @@ void G_DeathMatchSpawnPlayer (int playernum)
     int				selections; 
 	 
     selections = deathmatch_p - deathmatchstarts; 
-    if (selections < 4) 
-	I_Error ("Only %i deathmatch spots, 4 required", selections); 
+    if (selections < MINPLAYERS) 
+	I_Error ("Only %i deathmatch spots, %i required", selections, MINPLAYERS); 
  
     for (j=0 ; j<20 ; j++) 
     { 

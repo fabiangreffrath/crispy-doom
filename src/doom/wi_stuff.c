@@ -1842,11 +1842,11 @@ static void WI_loadUnloadData(load_callback_t callback)
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
 	// "1,2,3,4"
-	DEH_snprintf(name, 9, "STPB%d", i);
+	DEH_snprintf(name, 9, "STPB%d", i%4);
         callback(name, &p[i]);
 
 	// "1,2,3,4"
-	DEH_snprintf(name, 9, "WIBP%d", i+1);
+	DEH_snprintf(name, 9, "WIBP%d", i%4+1);
         callback(name, &bp[i]);
     }
 
