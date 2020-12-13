@@ -1498,10 +1498,12 @@ static void CheatSpecHitFunc(player_t *player, Cheat_t *cheat)
         if (lines[i].special)
         {
             // do not trigger level exits or teleports
-            // 39 = teleport, 97 = retrig teleport,
-            // 52 = regular exit, 105 = secret exit
+            // 39 = teleport, 97 = retrig teleport
+            // 52 = regular walk exit, 105 = secret walk exit
+            // 11 = regular switch exit, 51 = secret switch exit
             if (lines[i].special == 39 || lines[i].special == 97 ||
-                lines[i].special == 52 || lines[i].special == 105)
+                lines[i].special == 52 || lines[i].special == 105 ||
+                lines[i].special == 11 || lines[i].special == 51)
             {
                 continue;
             }
