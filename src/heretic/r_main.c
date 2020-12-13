@@ -21,6 +21,7 @@
 #include "m_bbox.h"
 #include "r_local.h"
 #include "tables.h"
+#include "v_video.h" // [crispy] V_DrawFilledBox for HOM detector
 
 int viewangleoffset;
 
