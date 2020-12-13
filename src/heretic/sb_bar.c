@@ -1588,7 +1588,6 @@ static void CheatNoTargetFunc(player_t *player, Cheat_t *cheat)
 
     if (player->cheats & CF_NOTARGET)
     {
-        int i;
         thinker_t *th;
 
         // [crispy] let monsters and tracers forget their target
@@ -1607,7 +1606,7 @@ static void CheatNoTargetFunc(player_t *player, Cheat_t *cheat)
                 // can also home on a target stored in special1, but it should
                 // never be homing on the player in single player mode, and
                 // HHE patches cannot make monsters fire those properly since
-                // it is only spaned by a pspr action function
+                // it is only spawned by a pspr action function
                 if (mo->type == MT_MUMMYFX1 || mo->type == MT_WHIRLWIND)
                 {
                     if (mo->special1.m && mo->special1.m->player)
