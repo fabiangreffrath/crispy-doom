@@ -1359,7 +1359,6 @@ static void CheatShowFpsFunc(player_t* player, Cheat_t* cheat)
 // [crispy] implement boom-style "tntweap?" cheat
 extern boolean P_GiveWeapon(player_t * player, weapontype_t weapon);
 extern const char *const WeaponPickupMessages[NUMWEAPONS];
-extern boolean P_CheckAmmo(player_t * player);
 
 static boolean WeaponAvailable (int w)
 {
@@ -1374,6 +1373,27 @@ static boolean WeaponAvailable (int w)
     }
 
     return true;
+}
+
+// same order of preference as in p_inter.c:WeaponValue
+static weapontype_t PickBestWeapon(player_t *player)
+{
+    int i;
+
+    for (i = wp_mace; i >= wp_goldwand; i--)
+    {
+        if (player->weaponowned[i])
+        {
+            return i;
+        }
+    }
+
+    if (player->weaponowned[wp_gauntlets])
+    {
+        return wp_gauntlets;
+    }
+
+    return wp_staff;
 }
 
 static void CheatAddRemoveWpnFunc(player_t *player, Cheat_t *cheat)
@@ -1435,8 +1455,8 @@ static void CheatAddRemoveWpnFunc(player_t *player, Cheat_t *cheat)
     setmsg = 0;
 
     // do not give registered only weapons if in shareware mode
-    // or the chicken beak
-    if (!WeaponAvailable(w))
+    // or the chicken bea, never remove staff
+    if (!WeaponAvailable(w) || w == wp_staff)
     {
         return;
     }
@@ -1463,7 +1483,7 @@ static void CheatAddRemoveWpnFunc(player_t *player, Cheat_t *cheat)
         // if current weapon was removed, select another one
         if (w == player->readyweapon)
         {
-            P_CheckAmmo(player);
+            player->pendingweapon = PickBestWeapon(player);
         }
     }
 
