@@ -1455,7 +1455,7 @@ static void CheatAddRemoveWpnFunc(player_t *player, Cheat_t *cheat)
     setmsg = 0;
 
     // do not give registered only weapons if in shareware mode
-    // or the chicken bea, never remove staff
+    // or touch the chicken beak, never remove staff
     if (!WeaponAvailable(w) || w == wp_staff)
     {
         return;
