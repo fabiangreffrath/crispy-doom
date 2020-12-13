@@ -856,6 +856,15 @@ void R_RenderPlayerView(player_t * player)
     R_ClearDrawSegs();
     R_ClearPlanes();
     R_ClearSprites();
+
+    // [crispy] flashing HOM indicator
+    if (crispy->flashinghom)
+    {
+        V_DrawFilledBox(viewwindowx, viewwindowy,
+            scaledviewwidth, viewheight,
+            160 - (gametic % 16));
+    }
+
     NetUpdate();                // check for new console commands
     R_InterpolateTextureOffsets(); // [crispy] smooth texture scrolling
     R_RenderBSPNode(numnodes - 1);      // the head node is the last node output
