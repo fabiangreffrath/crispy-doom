@@ -1477,7 +1477,7 @@ static void CheatAddRemoveWpnFunc(player_t *player, Cheat_t *cheat)
 }
 
 // [crispy] trigger all special lines available on the map
-#define NO_INDEX ((unsigned short)-1)
+#define NO_INDEX (-1)
 static void CheatSpecHitFunc(player_t *player, Cheat_t *cheat)
 {
     int i, speciallines = 0;
