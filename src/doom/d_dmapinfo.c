@@ -630,7 +630,7 @@ void DMAPINFO_GetFinale(const char **text, const char **flat, int *music)
     endseq = dmapinfo.endsequences;
     for (i = 0; i < dmapinfo.num_endsequences; i++, endseq++)
     {
-        if (stricmp(DMAPINFO_GetString(endseq->ofs_id), endseq_name) == 0)
+        if (strcmp(DMAPINFO_GetString(endseq->ofs_id), endseq_name) == 0)
             break;
     }
 
@@ -670,7 +670,7 @@ dmapinfo_map_t *DMAPINFO_GetMapByLumpname(const char *lumpname)
 
     for (i = 0; i < dmapinfo.num_maps; i++, d_map++)
     {
-        if (stricmp(DMAPINFO_GetString(d_map->ofs_lump), lumpname) == 0)
+        if (strcmp(DMAPINFO_GetString(d_map->ofs_lump), lumpname) == 0)
         {
             break;
         }
