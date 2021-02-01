@@ -741,7 +741,7 @@ void HU_Start(void)
     for (i = 0; i < dmapinfo.num_maps; i++)
     {
         dmapinfo_map_t *map = dmapinfo.maps + i;
-        if (strnicmp(maplumpinfo->name, DMAPINFO_GetString(map->ofs_lump), 8) == 0)
+        if (strncmp(maplumpinfo->name, DMAPINFO_GetString(map->ofs_lump), 8) == 0)
         {
             s = DMAPINFO_GetString(map->ofs_displayed_name);
             break;
