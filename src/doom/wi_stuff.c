@@ -24,6 +24,7 @@
 #include "m_misc.h"
 #include "m_random.h"
 
+#include "d_dmapinfo.h"
 #include "deh_main.h"
 #include "deh_bexpars.h" // [crispy] bex_pars[]
 #include "i_swap.h"
@@ -1552,6 +1553,17 @@ static boolean WI_drawParTime (void)
 
 		// [crispy] PWAD: par times for Sigil
 		if (wbs->epsd == 4)
+		{
+			result = true;
+		}
+	}
+
+	// [crispy] DMAPINFO show par
+	if (dmapinfo.num_maps)
+	{
+		dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+
+		if (d_map && d_map->par)
 		{
 			result = true;
 		}

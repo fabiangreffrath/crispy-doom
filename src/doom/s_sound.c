@@ -21,6 +21,7 @@
 #include "i_sound.h"
 #include "i_system.h"
 
+#include "d_dmapinfo.h"
 #include "deh_str.h"
 
 #include "doomstat.h"
@@ -359,6 +360,7 @@ static short prevmap = -1;
 
 void S_Start(void)
 {
+    int dmapinfo_music_lump = -1;
     int cnum;
     int mnum;
 
@@ -449,7 +451,11 @@ void S_Start(void)
     // [crispy] reset musinfo data at the start of a new map
     memset(&musinfo, 0, sizeof(musinfo));
 
-    S_ChangeMusic(mnum, true);
+    dmapinfo_music_lump = DMAPINFO_GetLevelMusic();
+    if (dmapinfo_music_lump != -1)
+        S_ChangeMusInfoMusic(dmapinfo_music_lump, true);
+    else
+        S_ChangeMusic(mnum, true);
 }
 
 void S_StopSound(mobj_t *origin)

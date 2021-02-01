@@ -19,6 +19,7 @@ deh_ptr.c                       \
 deh_sound.c                     \
 deh_thing.c                     \
 deh_weapon.c                    \
+d_dmapinfo.c       d_dmapinfo.h \
                    d_englsh.h   \
 d_items.c          d_items.h    \
 d_main.c           d_main.h     \

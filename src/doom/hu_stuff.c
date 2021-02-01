@@ -24,6 +24,7 @@
 
 #include "z_zone.h"
 
+#include "d_dmapinfo.h"
 #include "deh_main.h"
 #include "i_input.h"
 #include "i_swap.h"
@@ -735,6 +736,17 @@ void HU_Start(void)
     // dehacked substitution to get modified level name
 
     s = DEH_String(s);
+
+    // [crispy] DMAPINFO map names
+    for (i = 0; i < dmapinfo.num_maps; i++)
+    {
+        dmapinfo_map_t *map = dmapinfo.maps + i;
+        if (strnicmp(maplumpinfo->name, DMAPINFO_GetString(map->ofs_lump), 8) == 0)
+        {
+            s = DMAPINFO_GetString(map->ofs_displayed_name);
+            break;
+        }
+    }
     
     // [crispy] print the map title in white from the first colon onward
     M_snprintf(buf, sizeof(buf), "%s%s", ":", crstr[CR_GRAY]);

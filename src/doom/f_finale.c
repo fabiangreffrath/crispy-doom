@@ -35,6 +35,7 @@
 #include "dstrings.h"
 #include "sounds.h"
 
+#include "d_dmapinfo.h"
 #include "doomstat.h"
 #include "r_state.h"
 #include "m_controls.h" // [crispy] key_*
@@ -120,13 +121,22 @@ extern void A_RandomJump();
 void F_StartFinale (void)
 {
     size_t i;
+    lumpindex_t dmapinfo_music = -1;
+    const char *dmapinfo_flat = NULL;
+    const char *dmapinfo_text = NULL;
 
     gameaction = ga_nothing;
     gamestate = GS_FINALE;
     viewactive = false;
     automapactive = false;
 
-    if (logical_gamemission == doom)
+    DMAPINFO_GetFinale(&dmapinfo_text, &dmapinfo_flat, &dmapinfo_music);
+
+    if (dmapinfo_music != -1)
+    {
+        S_ChangeMusInfoMusic(dmapinfo_music, true);
+    }
+    else if (logical_gamemission == doom)
     {
         S_ChangeMusic(mus_victor, true);
     }
@@ -161,6 +171,17 @@ void F_StartFinale (void)
   
     finaletext = DEH_String(finaletext);
     finaleflat = DEH_String(finaleflat);
+
+    if (dmapinfo_text)
+    {
+        finaletext = dmapinfo_text;
+    }
+
+    if (dmapinfo_flat)
+    {
+        finaleflat = dmapinfo_flat;
+    }
+
     // [crispy] do the "char* vs. const char*" dance
     if (finaletext_rw)
     {
