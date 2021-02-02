@@ -2059,6 +2059,24 @@ void G_WorldDone (void)
 { 
     gameaction = ga_worlddone; 
 
+    // [crispy] DMAPINFO endsequence
+    if (dmapinfo.maps)
+    {
+        dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+
+        if (d_map && d_map->ofs_endsequence != -1)
+        {
+            gameaction = ga_victory;
+            return;
+        }
+
+        // continue if next map exists
+        if (d_map && d_map->ofs_next != -1)
+        {
+            return;
+        }
+    }
+
     if (secretexit) 
       // [crispy] special-casing for E1M10 "Sewers" support
       // i.e. avoid drawing the splat for E1M9 already

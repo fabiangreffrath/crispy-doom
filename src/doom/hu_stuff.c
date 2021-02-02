@@ -738,13 +738,12 @@ void HU_Start(void)
     s = DEH_String(s);
 
     // [crispy] DMAPINFO map names
-    for (i = 0; i < dmapinfo.num_maps; i++)
+    if (dmapinfo.num_maps)
     {
-        dmapinfo_map_t *map = dmapinfo.maps + i;
-        if (strncmp(maplumpinfo->name, DMAPINFO_GetString(map->ofs_lump), 8) == 0)
+        dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+        if (d_map)
         {
-            s = DMAPINFO_GetString(map->ofs_displayed_name);
-            break;
+            s = DMAPINFO_GetString(d_map->ofs_displayed_name);
         }
     }
     

@@ -169,18 +169,8 @@ void F_StartFinale (void)
 
     // Do dehacked substitutions of strings
   
-    finaletext = DEH_String(finaletext);
-    finaleflat = DEH_String(finaleflat);
-
-    if (dmapinfo_text)
-    {
-        finaletext = dmapinfo_text;
-    }
-
-    if (dmapinfo_flat)
-    {
-        finaleflat = dmapinfo_flat;
-    }
+    finaletext = dmapinfo_text ? dmapinfo_text : DEH_String(finaletext);
+    finaleflat = dmapinfo_flat ? dmapinfo_flat : DEH_String(finaleflat);
 
     // [crispy] do the "char* vs. const char*" dance
     if (finaletext_rw)
@@ -224,6 +214,13 @@ void F_Ticker (void)
 				
       if (i < MAXPLAYERS)
       {	
+	// [crispy] DMAPINFO end sequence
+	dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+	if (d_map && d_map->ofs_endsequence != -1)
+	{
+	  F_StartCast();
+	}
+	else
 	if (gamemission == pack_nerve && gamemap == 8)
 	  F_StartCast ();
 	else
