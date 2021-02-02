@@ -168,11 +168,8 @@ static int escape_string(const char *in, const char *in_end, char *out, char *ou
 
     in++;
 
-    if (in_end - 1 > in && in_end[-1] == '"')
+    if (in_end > in && in_end[-1] == '"')
         in_end--;
-
-    if (in >= in_end)
-        return 0;
 
     if (out)
     {
