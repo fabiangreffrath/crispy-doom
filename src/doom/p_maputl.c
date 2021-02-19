@@ -69,7 +69,7 @@ P_PointOnLineSide
     fixed_t	left;
     fixed_t	right;
 	
-    if (!line->dx)
+    if (!line->dx)  // [m] crash here 12-15-2020 (bot mobj in SlideMove())
     {
 	if (x <= line->v1->x)
 	    return line->dy > 0;

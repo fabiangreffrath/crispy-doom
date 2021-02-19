@@ -3,7 +3,7 @@
 
 #include "marshmallow.h"
 
-extern void CrispyReplaceColor (char *str, const int cr, const char *col);
+extern void CrispyReplaceColor (const char *str, const int cr, const char *col);
 
 #define MAXOBJECTS 1000  // More than enough?
 #define DRAW_DELAY 25

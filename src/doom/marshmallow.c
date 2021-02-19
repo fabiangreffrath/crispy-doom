@@ -487,6 +487,8 @@ void Marshmallow_CheckCheats(event_t* ev)
 
 	if (cht_CheckCheat(&Marshmallow_FlipLevelsCheatString, ev->data2))
 	{
+	    return;  // Disabled
+
 		if (crispy->fliplevels)
 		{
 			crispy->fliplevels = false;

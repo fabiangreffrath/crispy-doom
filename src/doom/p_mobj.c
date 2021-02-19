@@ -648,7 +648,7 @@ P_SpawnMobjSafe
     mobj->health = info->spawnhealth;
 
     mobj->corpsehealth = info->spawnhealth;  // [marshmallow]
-    mobj->is_gift = false;   // [marshmallow]
+    //mobj->is_gift = false;   // [marshmallow]
 
     if (gameskill != sk_nightmare)
 	mobj->reactiontime = info->reactiontime;

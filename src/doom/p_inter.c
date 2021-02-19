@@ -396,7 +396,7 @@ P_TouchSpecialThing
         {
             toucher->player->touching_barrel = true;
             toucher->player->current_barrel = special;
-            toucher->player->barrel_timeout = 30;
+            //toucher->player->barrel_timeout = 30;
         }
 
         return;
@@ -421,7 +421,7 @@ P_TouchSpecialThing
 
           toucher->player->touching_barrel = true;
           toucher->player->current_barrel = special;
-          toucher->player->barrel_timeout = 30;
+          //toucher->player->barrel_timeout = 30;
 
           return;
 
@@ -1665,7 +1665,8 @@ P_DamageMobj
 
     SetPlayerTarget(source, target);  // [marshmallow]
 
-    HandleChainsawBlood(target, inflictor);  // [marshmallow]
+    DoChainsawBlood(target, inflictor);  // [marshmallow]
+    DoCriticalHitBlood(target); // [marshmallow]
     
     // player specific
     if (player)

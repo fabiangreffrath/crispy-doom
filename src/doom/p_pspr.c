@@ -844,7 +844,15 @@ A_FireShotgun2
     int		i;
     angle_t	angle;
     int		damage;
-		
+
+    // [marshmallow]
+    int ssg_pellets;
+
+    if (Marshmallow_BalanceShotguns)
+        ssg_pellets = 30;
+    else
+        ssg_pellets = 20;
+    // [m]
 	
     if (!player) return; // [crispy] let pspr action pointers get called from mobj states
 
@@ -862,7 +870,7 @@ A_FireShotgun2
 
     P_BulletSlope (player->mo);
 	
-    for (i=0 ; i<20 ; i++)
+    for (i=0 ; i<30; i++)  // [marshmallow] increased
     {
     // [marshmallow]
     if (Marshmallow_TrueRandomDamage && !realnetgame)

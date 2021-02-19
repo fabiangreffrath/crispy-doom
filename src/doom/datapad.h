@@ -55,7 +55,7 @@
 #define DATAPAD2_DISKLED_Y 28
 
 #define PKE_BLINKTIMER 50
-#define BLINK_TIMER 1000
+#define BLINK_TIMER 500
 char* blinking_light;
 int blink_timer;
 

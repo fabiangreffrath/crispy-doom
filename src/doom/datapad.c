@@ -94,8 +94,8 @@ void Draw_Datapad()
 	// lights
 	//V_DrawPatchDirect(DATAPAD2_POWERLED_X+3, DATAPAD2_POWERLED_Y, W_CacheLumpName(DEH_String(REDLIGHT_TILE), PU_CACHE));
 
-	//BlinkingLight();
-	PKE_BlinkingLight();
+	BlinkingLight();
+	//PKE_BlinkingLight();
 }
 
 

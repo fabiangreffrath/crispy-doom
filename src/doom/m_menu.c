@@ -2918,6 +2918,8 @@ boolean M_Responder (event_t* ev)
         // [marshmallow]
         if (currentMenu == &MarshmallowNewGameDef)
         {
+            S_StartSound(NULL,sfx_stnmov);
+
             switch (itemOn)
             {
                 case newgame_type:

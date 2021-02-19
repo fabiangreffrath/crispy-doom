@@ -158,6 +158,8 @@ enum {
 // Effects menu
 enum {
     NO_FXMENU_SELECTION,
+    LIGHTINGTWEAK_SELECTED,
+    //FLIP_SELECTED,
     REDSCREEN_SELECTED,
     GIBMODE_SELECTED,
     //GIBCORPSES_SELECTED,
@@ -323,7 +325,8 @@ enum {
 	TREASURE_SELECTED,
 	LUDICROUS_SELECTED,
 	PHYSICS_SELECTED,
-	LIGHTING_SELECTED,
+	//LIGHTING_SELECTED,
+	VISUALTWEAKS_SELECTED,
 	WEAPONSMENU_SELECTED,
 	MONSTERSMENU_SELECTED,
 	AUTOUSE_SELECTED,
@@ -515,7 +518,8 @@ hu_stext_t optionsmenu_keepitems;
 hu_stext_t optionsmenu_keepweapons;
 hu_stext_t optionsmenu_goodies;
 hu_stext_t optionsmenu_ludicrous;
-hu_stext_t optionsmenu_lighting;
+//hu_stext_t optionsmenu_lighting;
+hu_stext_t optionsmenu_visuals;
 hu_stext_t optionsmenu_physics;
 
 hu_stext_t shortcutmenu_gameplay;
@@ -680,6 +684,8 @@ hu_stext_t profile_treasurered;
 hu_stext_t profile_alltreasure;
 hu_stext_t profile_allkills;
 
+hu_stext_t effectsmenu_lighting;
+//hu_stext_t effectsmenu_flip;
 hu_stext_t effectsmenu_redscreen;
 hu_stext_t effectsmenu_gibmode;
 hu_stext_t effectsmenu_corpsegib;
