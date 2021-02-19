@@ -1,0 +1,7 @@
+# top-most EditorConfig file
+root = true
+
+# 4 space indentation
+[*.{c, h}]
+indent_style = space
+indent_size = 4
