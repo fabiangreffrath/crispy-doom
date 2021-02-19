@@ -317,7 +317,7 @@ typedef struct mobj_s
     boolean    is_dropped;
     backpack_s dropped_backpack;
     int	       owner;
-    //int    is_gift;
+    int    is_gift;
 
     // [marshmallow] For dropped item cleanup
     int		   drop_tic;

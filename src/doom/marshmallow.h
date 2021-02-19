@@ -490,7 +490,7 @@ int gunshot_damage;
 #define BOOSTED_CHAINSAW_DAMAGE 2
 #define VANILLA_CHAINSAW_DAMAGE 1
 //#define FIST_DAMAGE_MULTIPLIER 3 // default is 1
-#define EXTRA_PELLETS 13 // was 9
+#define EXTRA_PELLETS 9 
 #define VANILLA_PELLETS 7
 #define SSG_RANGE_NERF 5
 int mightyfist_delay;

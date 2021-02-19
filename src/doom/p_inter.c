@@ -1517,11 +1517,8 @@ P_KillMobj
 
     if (target->tics < 1)
 	target->tics = 1;
-		
-    //	I_StartSound (&actor->r, actor->info->deathsound);
 
     // In Chex Quest, monsters don't drop items.
-
     if (gameversion == exe_chex)
     {
         return;
@@ -1644,7 +1641,7 @@ P_DamageMobj
 		
 	thrust = damage*(FRACUNIT>>3)*100/target->info->mass;
 
-    if ( physics_mode && !IsPlayer(target) )
+    if ( physics_mode && !IsPlayer(target) && !PhysicsExempt(target))
         thrust *= thrust_multiplier[ physics_mode ];      // [marshmallow] Increasing thrust/inertia
 
 	// make fall forwards sometimes
@@ -1652,7 +1649,7 @@ P_DamageMobj
 	     && damage > target->health
 	     && target->z - inflictor->z > 64*FRACUNIT
 	     && (P_Random ()&1)
-	     && physics_mode )  // [marshmallow] Don't fall forward when using alternate physics modes
+	     && !physics_mode )  // [marshmallow] Don't fall forward when using alternate physics modes
     {
 	    ang += ANG180;
 	    thrust *= 4;

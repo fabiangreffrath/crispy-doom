@@ -1570,6 +1570,13 @@ boolean PIT_ChangeSector (mobj_t*	thing)
         PlaySlopSound(thing);  // Make it sound nice and sloppy
     }
 
+	// [marshmallow] Blood splat when corpses are crushed by doors and elevators
+	if ( Marshmallow_GibMode > 0 )
+    {
+	    BrutalSplat(thing);
+        PlaySlopSound(thing);  // Make it sound nice and sloppy
+    }
+
     if (gameversion > exe_doom_1_2)
 	    thing->flags &= ~MF_SOLID;
 

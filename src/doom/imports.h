@@ -42,7 +42,7 @@
 
 // Prototypes for vanilla doom objects that we'll need:
 void *W_CacheLumpName(const char *name, int tag);
-void CrispyReplaceColor (const char *str, const int cr, const char *col);
+void CrispyReplaceColor (char *str, const int cr, const char *col);
 
 int showMessages;
 void P_KillMobj ( mobj_t*	source, mobj_t*	target );

@@ -1381,9 +1381,7 @@ void G_PlayerReborn (int player)
 
     // [marshmallow] This respawns the bot
     if ( IsBot(p) )
-    {
         Bot_Reborn(p->bot_number);
-    }
     // [m]
 
     memset (p, 0, sizeof(*p)); 
@@ -2677,7 +2675,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 //
 // G_RecordDemo
 //
-void G_RecordDemo (const char *name)
+void G_RecordDemo (char *name)
 {
     size_t demoname_size;
     int i;

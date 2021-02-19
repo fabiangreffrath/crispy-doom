@@ -194,9 +194,6 @@ typedef struct player_s
     // [crispy] negative player health
     int			neghealth;
 
-    // [crispy] "use" button timer
-    int			btuse, btuse_tics;
-
     // [marshmallow] For new inventory system
     boolean		extra_powers[7];
 

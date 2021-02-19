@@ -255,9 +255,9 @@ void SetMarshmallowColors()
 
     CrispyReplaceColor( "OFF", CR_DARK, "OFF");
 
-	CrispyReplaceColor( BOT1LABEL, CR_GRAY, "INDIGO:");
-	CrispyReplaceColor( BOT2LABEL, CR_GOLD, "BROWN:");
-	CrispyReplaceColor( BOT3LABEL, CR_DARK, "RED:");
+	CrispyReplaceColor( BOT1LABEL, CR_GRAY, "BOT1:");
+	CrispyReplaceColor( BOT2LABEL, CR_GOLD, "BOT2:");
+	CrispyReplaceColor( BOT3LABEL, CR_RED, "BOT3:");
 
 	CrispyReplaceColor( PLAYERSHOT, CR_GREEN, "PLAYER");
 	CrispyReplaceColor( SHOTPLAYER, CR_GREEN, "PLAYER");
@@ -282,7 +282,6 @@ void SetMarshmallowColors()
 	CrispyReplaceColor( REDSCREENSHORT, CR_GRAY, "SHORT");
 	CrispyReplaceColor( REDSCREENFULL, CR_GOLD, "FULL");   // redundant since we already colored "FULL" above
 
-    CrispyReplaceColor( "  Visual Tweaks...", CR_GRAY, "...");
 	CrispyReplaceColor( "  Weapon Tweaks...", CR_GRAY, "...");
 	CrispyReplaceColor( "  Monster Tweaks...", CR_GRAY, "...");
 
@@ -874,8 +873,6 @@ void DrawHUDMenu()
 
 	if (effectsmenu_on)
     {
-        HUlib_drawSText(&effectsmenu_lighting);
-        //HUlib_drawSText(&effectsmenu_flip);
         HUlib_drawSText(&effectsmenu_redscreen);
         HUlib_drawSText(&effectsmenu_gibmode);
         HUlib_drawSText(&effectsmenu_corpsegib);
@@ -1031,8 +1028,7 @@ void DrawHUDMenu()
 		HUlib_drawSText(&optionsmenu_goodies);
 		HUlib_drawSText(&optionsmenu_treasure); 
 		HUlib_drawSText(&optionsmenu_ludicrous); 
-		//HUlib_drawSText(&optionsmenu_lighting);
-        HUlib_drawSText(&optionsmenu_visuals);
+		HUlib_drawSText(&optionsmenu_lighting); 
 		HUlib_drawSText(&optionsmenu_physics); 
 
 		HUlib_drawSText(&optionsmenu_weapons); 
@@ -1290,7 +1286,7 @@ void HUDMenuTicker()
     HUlib_addMessageToSText(&dmmenu_fraglimit, "    Frag Limit       ", ShowIntAsChar(dm_fraglimit, CR_GOLD));
     HUlib_addMessageToSText(&dmmenu_scores, "    Show Scores ", DisplayOnOff(dm_scoreboard));
 
-// options menu
+// options menuf
 
 	// title ?
 
@@ -1300,8 +1296,8 @@ void HUDMenuTicker()
 	HUlib_addMessageToSText(&optionsmenu_treasure, "    Treasure Items", DisplayTreasureMode());
 	HUlib_addMessageToSText(&optionsmenu_ludicrous, "    Blood and Gibs", DisplayGibMode());
 	HUlib_addMessageToSText(&optionsmenu_physics, "    Enhanced Physics", DisplayPhysicsMode());
-
-    HUlib_addMessageToSText(&optionsmenu_visuals, 0, DEH_String("  Visual Tweaks..."));
+	HUlib_addMessageToSText(&optionsmenu_lighting, "    Darkened Lighting", DisplayLightingMode());
+	
 	HUlib_addMessageToSText(&optionsmenu_weapons, 0, DEH_String("  Weapon Tweaks..."));
 	HUlib_addMessageToSText(&optionsmenu_monsters, 0, DEH_String("  Monster Tweaks..."));
 
@@ -1322,14 +1318,12 @@ void HUDMenuTicker()
 
 // effects menu
 
-    HUlib_addMessageToSText(&effectsmenu_lighting, "    Darkened Lighting:   ", DisplayLightingMode());
-    //HUlib_addMessageToSText(&effectsmenu_flip, "    Flip Levels:   ", DisplayOnOff(crispy->fliplevels));
     HUlib_addMessageToSText(&effectsmenu_redscreen, "    REDUCED RED SCREEN FILTER: ", DisplayOnOff(Marshmallow_ReducedRedscreen));
     HUlib_addMessageToSText(&effectsmenu_gibmode, "    BLOOD AND EFFECTS MODE: ", DisplayGibMode());
     HUlib_addMessageToSText(&effectsmenu_corpsegib, "    DESTRUCTIBLE CORPSES: ", DisplayOnOff(effects_flags.GibCorpses));
     HUlib_addMessageToSText(&effectsmenu_splashsplat, "    BLOOD SPLAT ON SPLASH DAMAGE: ", DisplayOnOff(effects_flags.SplashSplat));
     HUlib_addMessageToSText(&effectsmenu_critsplat, "    BLOOD SPLAT ON CRITICAL HIT: ", DisplayOnOff(effects_flags.CritSplat));
-    HUlib_addMessageToSText(&effectsmenu_slopprop, "    CUSTOM RADIUSATTACK DEATH: ", DisplayOnOff(effects_flags.SlopProp));
+    HUlib_addMessageToSText(&effectsmenu_slopprop, "    DROP SLOP PROP: ", DisplayOnOff(effects_flags.SlopProp));
     HUlib_addMessageToSText(&effectsmenu_xdpointblank, "    XDeath AT POINT BLANK: ", DisplayOnOff(effects_flags.XDPointBlank));
     HUlib_addMessageToSText(&effectsmenu_chainsawgore, "    EXTRA CHAINSAW GORE: ", DisplayOnOff(effects_flags.ExtraChainsawGore));
 
@@ -1502,31 +1496,27 @@ void CalculateCursorPosition()
         switch (effectsmenu_selection)
         {
             case 1:
-                cursor_y = INV_HU_Y_2;
-                break;
-
-            case 2:
                 cursor_y = INV_HU_Y_4;
                 break;
 
-            case 3:
+            case 2:
                 cursor_y = INV_HU_Y_6;
                 break;
 
-            case 4:
+            case 3:
                 cursor_y = INV_HU_Y_15;
                 break;
 
-            case 5:
+            case 4:
                 cursor_y = INV_HU_Y_16;
                 break;
 
-            case 6:
+            case 5:
                 cursor_y = INV_HU_Y_17;
                 break;
 
-            case 7:
-                cursor_y = INV_HU_Y_19;
+            case 6:
+                cursor_y = INV_HU_Y_18;
                 break;
         }
     }
@@ -1760,7 +1750,7 @@ void CalculateCursorPosition()
 			cursor_y = INV_HU_Y_9;
 			break;
 		case 7:
-			cursor_y = INV_HU_Y_11;
+			cursor_y = INV_HU_Y_10;
 			break;
 		case 8:
 			cursor_y = INV_HU_Y_12;
@@ -2386,33 +2376,6 @@ void HUDMenuKeyInput()
 
             switch (effectsmenu_selection)
             {
-            /*    case FLIP_SELECTED:
-
-                    if (crispy->fliplevels)
-                    {
-                        crispy->fliplevels = false;
-                        SHOW_MESSAGE DEH_String(CHANGEFFECT);
-                    }
-                    else
-                    {
-                        crispy->fliplevels = true;
-                        SHOW_MESSAGE DEH_String(CHANGEFFECT);
-                    }
-
-                    break;
-                    */
-
-                case LIGHTINGTWEAK_SELECTED:
-
-                Marshmallow_AlternateLighting++;
-
-                if ( Marshmallow_AlternateLighting > NUMLIGHTLEVELS-1 )
-                    Marshmallow_AlternateLighting = 0;
-
-                SHOW_MESSAGE DEH_String(CHANGEFFECT);
-
-                break;
-
                 case REDSCREEN_SELECTED:
                     Marshmallow_ReducedRedscreen = !Marshmallow_ReducedRedscreen;
                     break;
@@ -2546,8 +2509,6 @@ void HUDMenuKeyInput()
 
             if (shortcutmenu_selection == MAX_SHORTCUT_OPTIONS)
                 shortcutmenu_selection = FIRST_MENU_ITEM;
-
-            S_StartSound(NULL,sfx_stnmov);
         }
 
         if (MENUKEY_PREVIOUS)
@@ -2559,16 +2520,12 @@ void HUDMenuKeyInput()
 
             if (shortcutmenu_selection == 0)
                 shortcutmenu_selection = MAX_SHORTCUT_OPTIONS - 1;
-
-            S_StartSound(NULL,sfx_stnmov);
         }
 
         if (MENUKEY_SELECT)
         {
             if (CheckKeyDelay())
                 return;
-
-            S_StartSound(NULL,sfx_pistol);
 
             switch (shortcutmenu_selection)
             {
@@ -4046,11 +4003,14 @@ void HUDMenuKeyInput()
 
                     break;
 
-                case VISUALTWEAKS_SELECTED:
+                case LIGHTING_SELECTED:
 
-                    optionsmenu_on = false;
-                    effectsmenu_on = true;
-                    SetGoreFlags();
+                    Marshmallow_AlternateLighting--;
+
+                    if (Marshmallow_AlternateLighting < 0)
+                        Marshmallow_AlternateLighting = NUMLIGHTLEVELS - 1;
+
+                    SHOW_MESSAGE DEH_String(CHANGEFFECT);
 
                     break;
 
@@ -4168,14 +4128,16 @@ void HUDMenuKeyInput()
 
 				break;
 
-			case VISUALTWEAKS_SELECTED:
+			case LIGHTING_SELECTED:
 
-                optionsmenu_on = false;
-                effectsmenu_on = true;
-                effectsmenu_selection = FIRST_MENU_ITEM;
-                SetGoreFlags();
+				Marshmallow_AlternateLighting++;
 
-                break;
+				if ( Marshmallow_AlternateLighting > NUMLIGHTLEVELS-1 )
+					Marshmallow_AlternateLighting = 0;
+
+				SHOW_MESSAGE DEH_String(CHANGEFFECT);
+
+				break;
 
 			case GOODIES_SELECTED:
 				ToggleGoodiesMode();
@@ -4332,16 +4294,6 @@ void HUD_InitExtraLines()
 
 void HUD_InitEffectsMenu()
 {
-    HUlib_initSText(&effectsmenu_lighting,
-                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_2, HU_MSGHEIGHT,
-                    hu_font,
-                    HU_FONTSTART, &effectsmenu_on);
-
-    /*HUlib_initSText(&effectsmenu_flip,
-                    FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_3, HU_MSGHEIGHT,
-                    hu_font,
-                    HU_FONTSTART, &effectsmenu_on);*/
-
     HUlib_initSText(&effectsmenu_redscreen,
                     FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_4, HU_MSGHEIGHT,
                     hu_font,
@@ -4398,7 +4350,7 @@ void HUD_InitEffectsMenu()
                     HU_FONTSTART, &effectsmenu_on);
 
     HUlib_initSText(&effectsmenu_physicsmode,
-                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_19, HU_MSGHEIGHT,
+                    FULLSCREEN_MENU_X_OFFSET+10, INV_HU_Y_18, HU_MSGHEIGHT,
                     hu_font,
                     HU_FONTSTART, &effectsmenu_on);
 }
@@ -5226,15 +5178,10 @@ void HUD_InitGameplayMenu()
 		hu_font,
 		HU_FONTSTART, &optionsmenu_on);
 
-    HUlib_initSText(&optionsmenu_visuals,
-                    FULLSCREEN_MENU_X_OFFSET+15, INV_HU_Y_11, HU_MSGHEIGHT,   // added +15 to appear indented
-                    hu_font,
-                    HU_FONTSTART, &optionsmenu_on);
-
-	/*HUlib_initSText(&optionsmenu_lighting,
+	HUlib_initSText(&optionsmenu_lighting,  
 		FULLSCREEN_MENU_X_OFFSET, INV_HU_Y_10, HU_MSGHEIGHT,
 		hu_font,
-		HU_FONTSTART, &optionsmenu_on);*/
+		HU_FONTSTART, &optionsmenu_on);
 
 	HUlib_initSText(&optionsmenu_weapons,  
 		FULLSCREEN_MENU_X_OFFSET+15, INV_HU_Y_12, HU_MSGHEIGHT,   // added +15 to appear indented

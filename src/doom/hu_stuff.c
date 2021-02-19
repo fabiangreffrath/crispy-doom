@@ -414,7 +414,7 @@ const char *mapnames_commercial[] =
     MHUSTR_21
 };
 
-/*static*/ void CrispyReplaceColor (const char *str, const int cr, const char *col)  // [marshmallow] we need this to be global... though we're getting a warning on the cr parameter
+/*static*/ void CrispyReplaceColor (char *str, const int cr, const char *col)  // [marshmallow] Removed static
 {
     char *str_replace, col_replace[16];
 
@@ -519,7 +519,7 @@ void HU_Init(void)
 	CrispyReplaceColor(HUSTR_PLRGREEN,  CR_GREEN, "Green: ");
 	CrispyReplaceColor(HUSTR_PLRINDIGO, CR_GRAY,  "Indigo: ");
 	CrispyReplaceColor(HUSTR_PLRBROWN,  CR_GOLD,  "Brown: ");
-	CrispyReplaceColor(HUSTR_PLRRED,    CR_DARK,   "Red: ");
+	CrispyReplaceColor(HUSTR_PLRRED,    CR_RED,   "Red: ");
 
 	SetMarshmallowColors();		// [marshmallow]
     }
@@ -734,7 +734,7 @@ void HU_Start(void)
 
     // [crispy] explicitely display (episode and) map if the
     // map is from a PWAD or if the map title string has been dehacked
-    if (DEH_HasStringReplacement(s) || (!W_IsIWADLump(maplumpinfo) && (/*!nervewadfile ||*/ gamemission != pack_nerve)))
+    if (DEH_HasStringReplacement(s) || (!W_IsIWADLump(maplumpinfo) && (!nervewadfile || gamemission != pack_nerve)))
     {
 	char *m;
 
