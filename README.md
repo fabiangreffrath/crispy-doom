@@ -1,6 +1,6 @@
 # Marshmallow Doom
 
-![Icon](https://doomwiki.org/w/images/9/95/Newlogo-halfsize.jpg)
+![Icon](http://marshmallowdoom.com/images/newlogo-halfsize.jpg)
 
 Marshmallow Doom is a source port which lightly sweetens classic Doom gameplay with new additions such as dynamic gameplay-driven music, cooperative bot players, persistent player stats, enhanced blood and gore, treasure items, new difficulty levels, customizable sandbox battles, a much-improved multiplayer experience, and more.
 
@@ -48,9 +48,24 @@ For the full documentation, see the [wiki](https://www.chocolate-doom.org/wiki/i
 
 ## Download
 
-Download the latest Windows binary at http://www.marshmallowdoom.com.
+Download the latest Windows binary at http://www.marshmallowdoom.com/downloads/marshmallow79.zip
 
 ## News
+
+### Feb 21, 2021
+
+The project has come a long way in one year!  
+
+Special thanks to everyone on the Doomworld forums who tested the game and presented bugs and feature requests!  
+
+If you would like to test the latest Windows build, you may refer to this forum thread for links as well as discussion:
+
+https://www.doomworld.com/forum/topic/119898-who-wants-to-test-the-latest-build-of-marshmallow-doom/
+
+You may also try compiling this source code for your own operating system, such as Linux.  If you do give this a try, 
+let us know in the discussion how it goes! 
+
+Happy fragging! 
 
 ### May 5, 2020
 
