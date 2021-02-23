@@ -298,7 +298,7 @@ static boolean stopped = true;
 // [crispy] Antialiased lines from Heretic with more colors
 #define NUMSHADES 8
 #define NUMSHADES_BITS 3 // log2(NUMSHADES)
-static byte color_shades[NUMSHADES * 256];
+static pixel_t color_shades[NUMSHADES * 256];
 
 // Forward declare for AM_LevelInit
 static void AM_drawFline_Vanilla(fline_t* fl, int color);
@@ -1262,7 +1262,7 @@ AM_drawFline_Vanilla
 static void AM_drawFline_Smooth(fline_t* fl, int color)
 {
     int X0 = fl->a.x, Y0 = fl->a.y, X1 = fl->b.x, Y1 = fl->b.y;
-    byte* BaseColor = &color_shades[color * NUMSHADES];
+    pixel_t* BaseColor = &color_shades[color * NUMSHADES];
 
     unsigned short IntensityShift, ErrorAdj, ErrorAcc;
     unsigned short ErrorAccTemp, Weighting, WeightingComplementMask;
@@ -1278,6 +1278,11 @@ static void AM_drawFline_Smooth(fline_t* fl, int color)
         X0 = X1;
         X1 = Temp;
     }
+#ifdef CRISPY_TRUECOLOR
+    /* We have already applied the colormap lookup in AM_LevelInit so can directly copy the values */
+#undef PUTDOT
+#define PUTDOT(xx,yy,cc) fb[(yy)*f_w+(flipscreenwidth[xx])]=(cc)
+#endif
     /* Draw the initial pixel, which is always exactly intersected by
        the line and so needs no weighting */
     PUTDOT(X0, Y0, BaseColor[0]);
