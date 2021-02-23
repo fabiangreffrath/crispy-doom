@@ -1207,10 +1207,11 @@ AM_drawFline_Vanilla
 	return;
     }
 
+#define PUTDOT_RAW(xx,yy,cc) fb[(yy)*f_w+(flipscreenwidth[xx])]=(cc)
 #ifndef CRISPY_TRUECOLOR
-#define PUTDOT(xx,yy,cc) fb[(yy)*f_w+(flipscreenwidth[xx])]=(cc)
+#define PUTDOT(xx,yy,cc) PUTDOT_RAW(xx,yy,cc)
 #else
-#define PUTDOT(xx,yy,cc) fb[(yy)*f_w+(flipscreenwidth[xx])]=(colormaps[(cc)])
+#define PUTDOT(xx,yy,cc) PUTDOT_RAW(xx,yy,(colormaps[(cc)]))
 #endif
 
     dx = fl->b.x - fl->a.x;
@@ -1278,14 +1279,12 @@ static void AM_drawFline_Smooth(fline_t* fl, int color)
         X0 = X1;
         X1 = Temp;
     }
-#ifdef CRISPY_TRUECOLOR
-    /* We have already applied the colormap lookup in AM_LevelInit so can directly copy the values */
-#undef PUTDOT
-#define PUTDOT(xx,yy,cc) fb[(yy)*f_w+(flipscreenwidth[xx])]=(cc)
-#endif
+
     /* Draw the initial pixel, which is always exactly intersected by
        the line and so needs no weighting */
-    PUTDOT(X0, Y0, BaseColor[0]);
+    /* Always write the raw color value because we've already performed the necessary lookup
+     * into colormap */
+    PUTDOT_RAW(X0, Y0, BaseColor[0]);
 
     if ((DeltaX = X1 - X0) >= 0)
     {
@@ -1305,7 +1304,7 @@ static void AM_drawFline_Smooth(fline_t* fl, int color)
         while (DeltaX-- != 0)
         {
             X0 += XDir;
-            PUTDOT(X0, Y0, BaseColor[0]);
+            PUTDOT_RAW(X0, Y0, BaseColor[0]);
         }
         return;
     }
@@ -1315,7 +1314,7 @@ static void AM_drawFline_Smooth(fline_t* fl, int color)
         do
         {
             Y0++;
-            PUTDOT(X0, Y0, BaseColor[0]);
+            PUTDOT_RAW(X0, Y0, BaseColor[0]);
         }
         while (--DeltaY != 0);
         return;
@@ -1327,7 +1326,7 @@ static void AM_drawFline_Smooth(fline_t* fl, int color)
         {
             X0 += XDir;
             Y0++;
-            PUTDOT(X0, Y0, BaseColor[0]);
+            PUTDOT_RAW(X0, Y0, BaseColor[0]);
         }
         while (--DeltaY != 0);
         return;
@@ -1361,12 +1360,12 @@ static void AM_drawFline_Smooth(fline_t* fl, int color)
                intensity weighting for this pixel, and the complement of the
                weighting for the paired pixel */
             Weighting = ErrorAcc >> IntensityShift;
-            PUTDOT(X0, Y0, BaseColor[Weighting]);
-            PUTDOT(X0 + XDir, Y0, BaseColor[(Weighting ^ WeightingComplementMask)]);
+            PUTDOT_RAW(X0, Y0, BaseColor[Weighting]);
+            PUTDOT_RAW(X0 + XDir, Y0, BaseColor[(Weighting ^ WeightingComplementMask)]);
         }
         /* Draw the final pixel, which is always exactly intersected by the line
            and so needs no weighting */
-        PUTDOT(X1, Y1, BaseColor[0]);
+        PUTDOT_RAW(X1, Y1, BaseColor[0]);
         return;
     }
     /* It's an X-major line; calculate 16-bit fixed-point fractional part of a
@@ -1388,13 +1387,13 @@ static void AM_drawFline_Smooth(fline_t* fl, int color)
            intensity weighting for this pixel, and the complement of the
            weighting for the paired pixel */
         Weighting = ErrorAcc >> IntensityShift;
-        PUTDOT(X0, Y0, BaseColor[Weighting]);
-        PUTDOT(X0, Y0 + 1, BaseColor[(Weighting ^ WeightingComplementMask)]);
+        PUTDOT_RAW(X0, Y0, BaseColor[Weighting]);
+        PUTDOT_RAW(X0, Y0 + 1, BaseColor[(Weighting ^ WeightingComplementMask)]);
 
     }
     /* Draw the final pixel, which is always exactly intersected by the line
        and so needs no weighting */
-    PUTDOT(X1, Y1, BaseColor[0]);
+    PUTDOT_RAW(X1, Y1, BaseColor[0]);
 }
 
 //
