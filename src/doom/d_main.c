@@ -638,6 +638,7 @@ void D_DoAdvanceDemo (void)
 void D_StartTitle (void)
 {
     gameaction = ga_nothing;
+    automapactive = false; // [crispy] clear overlaid automap remainings
     demosequence = -1;
     D_AdvanceDemo ();
 }
