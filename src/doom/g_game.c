@@ -15,7 +15,9 @@
 // DESCRIPTION:  none
 //
 
+#include "marshmallow.h"  // [marshmallow]
 
+extern void PKE_Reset();
 
 #include <string.h>
 #include <stdlib.h>
@@ -136,7 +138,7 @@ int             totalleveltimes;        // [crispy] CPhipps - total time for all
 int             demostarttic;           // [crispy] fix revenant internal demo bug
  
 char           *demoname;
-const char     *orig_demoname; // [crispy] the name originally chosen for the demo, i.e. without "-00000"
+char           *orig_demoname; // [crispy] the name originally chosen for the demo, i.e. without "-00000"
 boolean         demorecording; 
 boolean         longtics;               // cph's doom 1.91 longtics hack
 boolean         lowres_turn;            // low resolution turning for longtics
@@ -204,7 +206,7 @@ static const struct
 #define NUMKEYS		256 
 #define MAX_JOY_BUTTONS 20
 
-static boolean  gamekeydown[NUMKEYS]; 
+/*static*/ boolean  gamekeydown[NUMKEYS];    // [marshmallow] We need this to be global
 static int      turnheld;		// for accelerative turning 
 static int      lookheld;		// [crispy] for accelerative looking
  
@@ -242,9 +244,6 @@ int		bodyqueslot;
  
 int             vanilla_savegame_limit = 1;
 int             vanilla_demo_limit = 1;
-
-// [crispy] store last cmd to track joins
-static ticcmd_t* last_cmd = NULL;
  
 int G_CmdChecksum (ticcmd_t* cmd) 
 { 
@@ -381,9 +380,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     if (joyxmove < 0
 	|| joyxmove > 0  
 	|| gamekeydown[key_right]
-	|| gamekeydown[key_left]
-	|| mousebuttons[mousebturnright]
-	|| mousebuttons[mousebturnleft])
+	|| gamekeydown[key_left]) 
 	turnheld += ticdup; 
     else 
 	turnheld = 0; 
@@ -480,12 +477,12 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     // let movement keys cancel each other out
     if (strafe) 
     { 
-	if (gamekeydown[key_right] || mousebuttons[mousebturnright])
+	if (gamekeydown[key_right]) 
 	{
 	    // fprintf(stderr, "strafe right\n");
 	    side += sidemove[speed]; 
 	}
-	if (gamekeydown[key_left] || mousebuttons[mousebturnleft])
+	if (gamekeydown[key_left]) 
 	{
 	    //	fprintf(stderr, "strafe left\n");
 	    side -= sidemove[speed]; 
@@ -498,9 +495,9 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     } 
     else 
     { 
-	if (gamekeydown[key_right] || mousebuttons[mousebturnright])
-	    cmd->angleturn -= angleturn[tspeed]; 
-	if (gamekeydown[key_left] || mousebuttons[mousebturnleft])
+	if (gamekeydown[key_right] && !menus_on)  // [marshmallow] For using arrow keys on datapad menu
+	    cmd->angleturn -= angleturn[tspeed];
+	if (gamekeydown[key_left] && !menus_on)   // [marshmallow] For using arrow keys on datapad menu
 	    cmd->angleturn += angleturn[tspeed]; 
 	if (joyxmove > 0) 
 	    cmd->angleturn -= angleturn[tspeed]; 
@@ -508,12 +505,14 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 	    cmd->angleturn += angleturn[tspeed]; 
     } 
  
-    if (gamekeydown[key_up] || gamekeydown[key_alt_up]) // [crispy] add key_alt_*
+    if ((gamekeydown[key_up] || gamekeydown[key_alt_up]) // [crispy] add key_alt_*
+        && !menus_on)  // [marshmallow] For using arrow keys on datapad menu
     {
 	// fprintf(stderr, "up\n");
 	forward += forwardmove[speed]; 
     }
-    if (gamekeydown[key_down] || gamekeydown[key_alt_down]) // [crispy] add key_alt_*
+    if ((gamekeydown[key_down] || gamekeydown[key_alt_down]) // [crispy] add key_alt_*
+        && !menus_on)  // [marshmallow] For using arrow keys on datapad menu
     {
 	// fprintf(stderr, "down\n");
 	forward -= forwardmove[speed]; 
@@ -796,6 +795,8 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 
         carry = desired_angleturn - cmd->angleturn;
     }
+
+    Marshmallow_Controls();  // [marshmallow] For reading Marshmallow's new keyboard controls
 } 
  
 
@@ -831,14 +832,6 @@ void G_DoLoadLevel (void)
         }
         else if (gamemap < 21)
         {
-            // [crispy] BLACKTWR (MAP25) and TEETH (MAP31 and MAP32)
-            if ((gameepisode == 3 || gamemission == pack_master) && gamemap >= 19)
-                skytexturename = "SKY3";
-            else
-            // [crispy] BLOODSEA and MEPHISTO (both MAP07)
-            if ((gameepisode == 3 || gamemission == pack_master) && (gamemap == 14 || gamemap == 15))
-                skytexturename = "SKY1";
-            else
             skytexturename = "SKY2";
         }
         else
@@ -870,29 +863,6 @@ void G_DoLoadLevel (void)
 		 
     // [crispy] update the "singleplayer" variable
     CheckCrispySingleplayer(!demorecording && !demoplayback && !netgame);
-
-    // [crispy] pistol start
-    if (crispy->pistolstart)
-    {
-        if (crispy->singleplayer)
-        {
-            G_PlayerReborn(0);
-        }
-        else if ((demoplayback || netdemo) && !singledemo)
-        {
-            // no-op - silently ignore pistolstart when playing demo from the
-            // demo reel
-        }
-        else
-        {
-            const char message[] = "The -pistolstart option is not supported"
-                                   " for demos and\n"
-                                   " network play.";
-            if (!demo_p) demorecording = false;
-            I_Error(message);
-        }
-    }
-
     P_SetupLevel (gameepisode, gamemap, 0, gameskill);    
     displayplayer = consoleplayer;		// view the guy you are playing    
     gameaction = ga_nothing; 
@@ -1003,7 +973,14 @@ boolean G_Responder (event_t* ev)
 	    return true; 
 	} 
 	return false; 
-    } 
+    }
+
+    // [marshmallow] Getting our hook on the ENTER key
+    if (ev->type == ev_keydown)
+    {
+        if (ev->data1 == key_enter)
+            gamekeydown[key_enter] = true;
+    }
 
     if (gamestate == GS_LEVEL) 
     { 
@@ -1106,7 +1083,7 @@ static void G_ReadGameParms (void)
 {
     respawnparm = M_CheckParm ("-respawn");
     fastparm = M_CheckParm ("-fast");
-    nomonsters = M_CheckParm ("-nomonsters");
+    //nomonsters = M_CheckParm ("-nomonsters");  // [marshmallow] Removed because we handle -nomonsters differently
 }
  
 // [crispy] take a screenshot after rendering the next frame
@@ -1161,8 +1138,11 @@ void G_Ticker (void)
 	  case ga_completed: 
 	    G_DoCompleted (); 
 	    break; 
-	  case ga_victory: 
-	    F_StartFinale (); 
+	  case ga_victory:
+        if ( deathmatch )  // [marshmallow] No finale screens in DM
+            G_DoWorldDone ();
+        else
+            F_StartFinale ();
 	    break; 
 	  case ga_worlddone: 
 	    G_DoWorldDone (); 
@@ -1191,7 +1171,8 @@ void G_Ticker (void)
  
     for (i=0 ; i<MAXPLAYERS ; i++)
     {
-	if (playeringame[i]) 
+	if (playeringame[i]
+        && !bot_in_game[i])   // [marshmallow] Don't do this for bots
 	{ 
 	    cmd = &players[i].cmd; 
 
@@ -1228,7 +1209,7 @@ void G_Ticker (void)
                 turbodetected[i] = false;
             }
 
-	    if (netgame && !netdemo && !(gametic%ticdup) ) 
+	    if (realnetgame && !netdemo && !(gametic%ticdup) )  // [marshmallow] Only build consistency byte in real network games
 	    { 
 		if (gametic > BACKUPTICS 
 		    && consistancy[i][buf] != cmd->consistancy) 
@@ -1362,8 +1343,11 @@ void G_PlayerFinishLevel (int player)
     p->centering =
     p->jumpTics =
     p->recoilpitch = p->oldrecoilpitch =
-    p->psp_dy_max =
-    p->btuse = p->btuse_tics = 0;
+    p->psp_dy_max = 0;
+
+    // [marshmallow]  Current weapon arsenal is saved so that during the next map we respawn with this arsenal
+    if (Marshmallow_KeepWeapons)
+        SaveArsenal(player);
 } 
  
 
@@ -1379,14 +1363,27 @@ void G_PlayerReborn (int player)
     int		frags[MAXPLAYERS]; 
     int		killcount;
     int		itemcount;
-    int		secretcount; 
+    int		secretcount;
+
+    // [marshmallow]  Save which keys the player has so he can respawn with them if option is enabled
+    if (Marshmallow_KeepKeys)
+        SaveKeys(player);
+
+    // [marshmallow] Reset our inventory cursor to the "empty" line
+    invmenu_selection = 0;
 	 
     memcpy (frags,players[player].frags,sizeof(frags)); 
     killcount = players[player].killcount; 
     itemcount = players[player].itemcount; 
     secretcount = players[player].secretcount; 
 	 
-    p = &players[player]; 
+    p = &players[player];
+
+    // [marshmallow] This respawns the bot
+    if ( IsBot(p) )
+        Bot_Reborn(p->bot_number);
+    // [m]
+
     memset (p, 0, sizeof(*p)); 
  
     memcpy (players[player].frags, frags, sizeof(players[player].frags)); 
@@ -1405,8 +1402,28 @@ void G_PlayerReborn (int player)
     p->ammo[am_clip] = deh_initial_bullets; 
 	 
     for (i=0 ; i<NUMAMMO ; i++) 
-	p->maxammo[i] = maxammo[i]; 
-		 
+	p->maxammo[i] = maxammo[i];
+
+    // [marshmallow] Reset the monster selection cursor to the beginning of the list
+    if (Marshmallow_Sandbox)
+    {
+        for (i=0;i<MAXPLAYERS;i++)
+            players[i].sandbox_object = FIRST_MONSTER;
+    }
+
+    // [marshmallow] Re-initialize player number
+    //if ( !realnetgame )
+    //{
+        if (player != consoleplayer)
+            p->bot_number = player;
+    //}
+    //else
+    //{
+        p->player_number = player;
+    //}
+
+    HandleRespawnInventory(player);   // [marshmallow]  Restores keys, weapons, and sets player->readyweapon
+    GiveGradedWeapons(player);  // [marshmallow]  Give player free weapons and ammo if warping to a map
 }
 
 //
@@ -1565,6 +1582,8 @@ void G_DoReborn (int playernum)
 	 
     if (!netgame)
     {
+    PKE_Reset();  // [marshmallow]  For single player only
+
 	// [crispy] if the player dies and the game has been loaded or saved
 	// in the mean time, reload that savegame instead of restarting the level
 	// when "Run" is pressed upon resurrection
@@ -1581,7 +1600,8 @@ void G_DoReborn (int playernum)
     {
 	// respawn at the start
 
-	// first dissasociate the corpse 
+	// first dissasociate the corpse
+	if (!playeringame[playernum])  // [marshmallow]
 	players[playernum].mo->player = NULL;   
 		 
 	// spawn at random spot if in death match 
@@ -1622,7 +1642,7 @@ void G_ScreenShot (void)
 
 
 // DOOM Par Times
-static const int pars[6][10] =
+int pars[6][10] =
 { 
     {0}, 
     {0,30,75,120,90,165,180,180,30,165}, 
@@ -1635,22 +1655,16 @@ static const int pars[6][10] =
 }; 
 
 // DOOM II Par Times
-static const int cpars[32] =
+int cpars[32] =
 {
     30,90,120,120,90,150,120,120,270,90,	//  1-10
     210,150,150,150,210,150,420,150,210,150,	// 11-20
     240,150,180,150,150,300,330,420,300,180,	// 21-30
     120,30					// 31-32
 };
-
-// Chex Quest Par Times
-static const int chexpars[6] =
-{ 
-    0,120,360,480,200,360
-}; 
  
 // [crispy] No Rest For The Living par times from the BFG Edition
-static const int npars[9] =
+static int npars[9] =
 {
     75,105,120,105,210,105,165,105,135
 };
@@ -1662,7 +1676,15 @@ boolean		secretexit;
 extern char*	pagename; 
  
 void G_ExitLevel (void) 
-{ 
+{
+    if (!Marshmallow_Sandbox)    // [marshmallow]
+    {
+        level_stats.levels_completed = 1;
+        SaveStats(); // [marshmallow] As long as player didn't cheat, stats are saved on level exit
+    }
+
+    organic_levelchange = true;  // [marshmallow] So we don't get "warp weapons" on normal level changes
+
     secretexit = false; 
     G_ClearSavename();
     gameaction = ga_completed; 
@@ -1680,100 +1702,10 @@ void G_SecretExitLevel (void)
     G_ClearSavename();
     gameaction = ga_completed; 
 } 
-
-// [crispy] format time for level statistics
-#define TIMESTRSIZE 16
-static void G_FormatLevelStatTime(char *str, int tics)
-{
-    int exitHours, exitMinutes;
-    float exitTime, exitSeconds;
-
-    exitTime = (float) tics / 35;
-    exitHours = exitTime / 3600;
-    exitTime -= exitHours * 3600;
-    exitMinutes = exitTime / 60;
-    exitTime -= exitMinutes * 60;
-    exitSeconds = exitTime;
-
-    if (exitHours)
-    {
-        M_snprintf(str, TIMESTRSIZE, "%d:%02d:%05.2f",
-                    exitHours, exitMinutes, exitSeconds);
-    }
-    else
-    {
-        M_snprintf(str, TIMESTRSIZE, "%01d:%05.2f", exitMinutes, exitSeconds);
-    }
-}
-
-// [crispy] Write level statistics upon exit
-static void G_WriteLevelStat(void)
-{
-    static FILE *fstream = NULL;
-
-    int i, playerKills = 0, playerItems = 0, playerSecrets = 0;
-
-    char levelString[8];
-    char levelTimeString[TIMESTRSIZE];
-    char totalTimeString[TIMESTRSIZE];
-    char *decimal;
-
-    if (fstream == NULL)
-    {
-        fstream = fopen("levelstat.txt", "w");
-
-        if (fstream == NULL)
-        {
-            fprintf(stderr, "G_WriteLevelStat: Unable to open levelstat.txt for writing!\n");
-            return;
-        }
-    }
-    
-    if (gamemode == commercial)
-    {
-        M_snprintf(levelString, sizeof(levelString), "MAP%02d", gamemap);
-    }
-    else
-    {
-        M_snprintf(levelString, sizeof(levelString), "E%dM%d",
-                    gameepisode, gamemap);
-    }
-
-    G_FormatLevelStatTime(levelTimeString, leveltime);
-    G_FormatLevelStatTime(totalTimeString, totalleveltimes + leveltime);
-
-    // Total time ignores centiseconds
-    decimal = strchr(totalTimeString, '.');
-    if (decimal != NULL)
-    {
-        *decimal = '\0';
-    }
-
-    for (i = 0; i < MAXPLAYERS; i++)
-    {
-        if (playeringame[i])
-        {
-            playerKills += players[i].killcount;
-            playerItems += players[i].itemcount;
-            playerSecrets += players[i].secretcount;
-        }
-    }
-
-    fprintf(fstream, "%s%s - %s (%s)  K: %d/%d  I: %d/%d  S: %d/%d\n",
-            levelString, (secretexit ? "s" : ""),
-            levelTimeString, totalTimeString, playerKills, totalkills, 
-            playerItems, totalitems, playerSecrets, totalsecret);
-}
  
 void G_DoCompleted (void) 
 { 
     int             i; 
-
-    // [crispy] Write level statistics upon exit
-    if (M_ParmExists("-levelstat"))
-    {
-        G_WriteLevelStat();
-    }
 	 
     gameaction = ga_nothing; 
  
@@ -1790,14 +1722,11 @@ void G_DoCompleted (void)
 
         if (gameversion == exe_chex)
         {
-            // [crispy] display tally screen after Chex Quest E1M5
-            /*
             if (gamemap == 5)
             {
                 gameaction = ga_victory;
                 return;
             }
-            */
         }
         else
         {
@@ -1844,7 +1773,7 @@ void G_DoCompleted (void)
     wminfo.last = gamemap -1;
     
     // wminfo.next is 0 biased, unlike gamemap
-    if ( gamemission == pack_nerve && gamemap <= 9 )
+    if ( gamemission == pack_nerve && gamemap <= 9 && crispy->singleplayer )
     {
 	if (secretexit)
 	    switch(gamemap)
@@ -1859,7 +1788,7 @@ void G_DoCompleted (void)
 	    }
     }
     else
-    if ( gamemission == pack_master && gamemap <= 21 )
+    if ( gamemission == pack_master && gamemap <= 21 && crispy->singleplayer )
     {
 	wminfo.next = gamemap;
     }
@@ -1946,8 +1875,8 @@ void G_DoCompleted (void)
         {
             wminfo.partime = TICRATE*bex_cpars[gamemap-1];
         }
-        // [crispy] par times for NRFTL
-        else if (gamemission == pack_nerve)
+        // [crispy] single player par times for NRFTL
+        else if (gamemission == pack_nerve && crispy->singleplayer)
         {
             wminfo.partime = TICRATE*npars[gamemap-1];
         }
@@ -1970,14 +1899,7 @@ void G_DoCompleted (void)
             wminfo.partime = TICRATE*bex_pars[gameepisode][gamemap];
         }
         else
-        if (gameversion == exe_chex && gameepisode == 1 && gamemap < 6)
-        {
-            wminfo.partime = TICRATE*chexpars[gamemap];
-        }
-        else
-        {
-            wminfo.partime = TICRATE*pars[gameepisode][gamemap];
-        }
+        wminfo.partime = TICRATE*pars[gameepisode][gamemap];
     }
     else
     {
@@ -2004,8 +1926,8 @@ void G_DoCompleted (void)
     // will agree with Compet-n.
     wminfo.totaltimes = (totalleveltimes += (leveltime - leveltime % TICRATE));
 
-    gamestate = GS_INTERMISSION; 
-    viewactive = false; 
+    gamestate = GS_INTERMISSION;
+    viewactive = false;
     automapactive = false; 
 
     // [crispy] no statdump output for ExM8
@@ -2014,7 +1936,13 @@ void G_DoCompleted (void)
     StatCopy(&wminfo);
     }
  
-    WI_Start (&wminfo); 
+    WI_Start (&wminfo);
+
+    missilelock_on = false; // [marshmallow]
+    HideAllMenus(); // [marshmallow]
+    Bot_ExitLevelCleanup();  // [marshmallow]
+
+    PKE_Reset();    // [marshmallow]
 } 
 
 
@@ -2031,7 +1959,7 @@ void G_WorldDone (void)
       if (!crispy->havee1m10 || gameepisode != 1 || gamemap != 1)
 	players[consoleplayer].didsecret = true; 
 
-    if ( gamemission == pack_nerve )
+    if ( gamemission == pack_nerve && crispy->singleplayer )
     {
 	switch (gamemap)
 	{
@@ -2041,7 +1969,7 @@ void G_WorldDone (void)
 	}
     }
     else
-    if ( gamemission == pack_master )
+    if ( gamemission == pack_master && crispy->singleplayer )
     {
 	switch (gamemap)
 	{
@@ -2066,13 +1994,16 @@ void G_WorldDone (void)
 	  case 11:
 	  case 20:
 	  case 30:
+          if ( deathmatch )  // [marshmallow] No finale screens in DM
+              break;
+
 	    F_StartFinale ();
 	    break;
 	}
     }
     // [crispy] display tally screen after ExM8
     else
-    if ( gamemap == 8 || (gameversion == exe_chex && gamemap == 5) )
+    if ( gamemap == 8 )
     {
 	gameaction = ga_victory;
     }
@@ -2344,10 +2275,6 @@ G_DeferedInitNew
     // [crispy] if a new game is started during demo recording, start a new demo
     if (demorecording)
     {
-	// [crispy] reset IDDT cheat when re-starting map during demo recording
-	void AM_ResetIDDTcheat (void);
-	AM_ResetIDDTcheat();
-
 	G_CheckDemoStatus();
 	Z_Free(demoname);
 
@@ -2361,9 +2288,24 @@ void G_DoNewGame (void)
 {
     demoplayback = false; 
     netdemo = false;
+
+    Bot_ExitLevelCleanup();  // [marshmallow] Clean up bot stuff like path nodes, etc.
+
+    if (Marshmallow_DynamicMusic)
+    {
+        if (!deathmatch)
+            DJ_StartPlaylist(SUSPENSEFUL);
+    }
+
+    PKE_Reset();
+
+    // [marshmallow] Don't change these variables here
+    /*
     netgame = false;
     deathmatch = false;
     playeringame[1] = playeringame[2] = playeringame[3] = 0;
+     */
+
     // [crispy] do not reset -respawn, -fast and -nomonsters parameters
     /*
     respawnparm = false;
@@ -2423,18 +2365,16 @@ G_InitNew
     }
     */
 
-    if (skill > sk_nightmare)
-	skill = sk_nightmare;
+    // [marshmallow] For our new skill levels
+    if (skill == 5)
+        skill = sk_hard;
 
-  // [crispy] if NRFTL is not available, "episode 2" may mean The Master Levels ("episode 3")
-  if (gamemode == commercial)
-  {
-    if (episode < 1)
-      episode = 1;
-    else
-    if (episode == 2 && !crispy->havenerve)
-      episode = crispy->havemaster ? 3 : 1;
-  }
+    if (skill == 6)
+        skill = sk_nightmare;
+
+    if (skill > 6)
+        skill = sk_nightmare;
+    // [m]
 
   // [crispy] only fix episode/map if it doesn't exist
   if (P_GetNumForMap(episode, map, false) < 0)
@@ -2526,6 +2466,8 @@ G_InitNew
     defdemotics = 0;
     demostarttic = gametic; // [crispy] fix revenant internal demo bug
 
+    viewactive = true;
+
     // Set the sky to use.
     //
     // Note: This IS broken, but it is how Vanilla Doom behaves.
@@ -2593,8 +2535,6 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 { 
     if (*demo_p == DEMOMARKER) 
     {
-	last_cmd = cmd; // [crispy] remember last cmd to track joins
-
 	// end of demo data stream 
 	G_CheckDemoStatus (); 
 	return; 
@@ -2617,8 +2557,6 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 	// [crispy] discard the newly allocated demo buffer
 	Z_Free(demobuffer);
 	demobuffer = actualbuffer;
-
-	last_cmd = cmd; // [crispy] remember last cmd to track joins
 
 	// [crispy] continue recording
 	G_CheckDemoStatus();
@@ -2737,7 +2675,7 @@ void G_WriteDemoTiccmd (ticcmd_t* cmd)
 //
 // G_RecordDemo
 //
-void G_RecordDemo (const char *name)
+void G_RecordDemo (char *name)
 {
     size_t demoname_size;
     int i;
@@ -3090,11 +3028,7 @@ void G_TimeDemo (char* name)
 boolean G_CheckDemoStatus (void) 
 { 
     int             endtime; 
-
-    // [crispy] catch the last cmd to track joins
-    ticcmd_t* cmd = last_cmd;
-    last_cmd = NULL;
-
+	 
     if (timingdemo) 
     { 
         float fps;
@@ -3143,12 +3077,6 @@ boolean G_CheckDemoStatus (void)
             if (gamestate == GS_LEVEL)
             {
                 S_Start();
-            }
-
-            // [crispy] record demo join
-            if (cmd != NULL)
-            {
-                cmd->buttons |= BT_JOIN;
             }
 
             return true;

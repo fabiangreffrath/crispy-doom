@@ -39,6 +39,8 @@
 // Data.
 #include "sounds.h"
 
+#include "marshmallow.h"
+
 // Spechit overrun magic value.
 //
 // This is the value used by PrBoom-plus.  I think the value below is 
@@ -117,9 +119,14 @@ boolean PIT_StompThing (mobj_t* thing)
     
     // monsters don't stomp things except on boss level
     if ( !tmthing->player && gamemap != 30)
-	return false;	
-		
-    P_DamageMobj (thing, tmthing, tmthing, 10000);
+	return false;
+
+    if (thing->type == MT_PLAYER)
+        P_KillMobj(NULL, thing);   // [marshmallow] Force the telefrag kill even if friendly fire is disabled
+    else
+        P_DamageMobj (thing, tmthing, tmthing, 10000);  // Telefragged monsters get the usual 10000 damage
+
+    players[consoleplayer].message = DEH_String("TELEFRAG!");  // [marshmallow]
 	
     return true;
 }
@@ -1367,13 +1374,16 @@ mobj_t*		usething;
 boolean	PTR_UseTraverse (intercept_t* in)
 {
     int		side;
+
+    int		bot = IsBot( usething->player);	  //  [marshmallow] Bots use stuff
 	
     if (!in->d.line->special)
     {
 	P_LineOpening (in->d.line);
 	if (openrange <= 0)
 	{
-	    S_StartSound (usething, sfx_noway);
+        if (!bot)  //  [marshmallow]   so bots don't say "oof"
+            S_StartSound (usething, sfx_noway);
 	    
 	    // can't use through a wall
 	    return false;	
@@ -1389,6 +1399,10 @@ boolean	PTR_UseTraverse (intercept_t* in)
     //	return false;		// don't use back side
 	
     P_UseSpecialLine (usething, in->d.line, side);
+
+    // [marshmallow]
+    if ( bot )
+        Bots[bot].waiting_for_door = true;
 
     // can't use for than one special line in a row
     return false;
@@ -1438,9 +1452,10 @@ boolean PIT_RadiusAttack (mobj_t* thing)
     fixed_t	dx;
     fixed_t	dy;
     fixed_t	dist;
-	
-    if (!(thing->flags & MF_SHOOTABLE) )
-	return true;
+
+    // [marshmallow] For gibbing monster corpses and corpse decorations
+    if (!(thing->flags & MF_SHOOTABLE) && !IsGibbableThing(thing))
+        return true;
 
     // Boss spider and cyborg
     // take no damage from concussion.
@@ -1548,8 +1563,23 @@ boolean PIT_ChangeSector (mobj_t*	thing)
 		thing->sprite = SPR_TNT1;
 	}
 
+	// [marshmallow] Blood splat when corpses are crushed by doors and elevators
+	if ( Marshmallow_GibMode > 0 )
+    {
+	    BrutalSplat(thing);
+        PlaySlopSound(thing);  // Make it sound nice and sloppy
+    }
+
+	// [marshmallow] Blood splat when corpses are crushed by doors and elevators
+	if ( Marshmallow_GibMode > 0 )
+    {
+	    BrutalSplat(thing);
+        PlaySlopSound(thing);  // Make it sound nice and sloppy
+    }
+
     if (gameversion > exe_doom_1_2)
 	    thing->flags &= ~MF_SOLID;
+
 	thing->height = 0;
 	thing->radius = 0;
 
