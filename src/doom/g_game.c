@@ -25,6 +25,8 @@
 #include "doomkeys.h"
 #include "doomstat.h"
 
+#include "d_dmapinfo.h"
+
 #include "deh_main.h"
 #include "deh_misc.h"
 #include "deh_bexpars.h" // [crispy] bex_pars[]
@@ -850,6 +852,19 @@ void G_DoLoadLevel (void)
 
         skytexture = R_TextureNumForName(skytexturename);
     }
+
+    // [crispy] DMAPINFO skies
+    if (dmapinfo.num_episodes)
+    {
+        dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+
+        if (d_map && d_map->ofs_sky1 != -1)
+        {
+            const char *skytexturename = DMAPINFO_GetString(d_map->ofs_sky1);
+            skytexture = R_TextureNumForName(skytexturename);
+        }
+    }
+
     // [crispy] sky texture scales
     R_InitSkyMap();
 
@@ -1984,6 +1999,40 @@ void G_DoCompleted (void)
         wminfo.partime = TICRATE*cpars[gamemap];
     }
 
+    // [crispy] DMAPINFO next map and par time
+    if (dmapinfo.maps)
+    {
+        dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+        
+        if (d_map)
+        {
+            const char *next_map_lump = NULL;
+            int ofs;
+
+            ofs = d_map->ofs_next;
+            if (secretexit && d_map->ofs_secret_next != -1)
+            {
+                ofs = d_map->ofs_secret_next;
+            }
+
+            next_map_lump = DMAPINFO_GetString(ofs);
+            if (next_map_lump)
+            {
+                dmapinfo_map_t *d_map2 = DMAPINFO_GetMapByLumpname(next_map_lump);
+
+                if (d_map2)
+                {
+                    wminfo.next = d_map2->map_number - 1;
+                }
+            }
+
+            if (d_map->par)
+            {
+                wminfo.partime = TICRATE * d_map->par;
+            }
+        }
+    }
+
     wminfo.pnum = consoleplayer; 
  
     for (i=0 ; i<MAXPLAYERS ; i++) 
@@ -2024,6 +2073,24 @@ void G_DoCompleted (void)
 void G_WorldDone (void) 
 { 
     gameaction = ga_worlddone; 
+
+    // [crispy] DMAPINFO endsequence
+    if (dmapinfo.maps)
+    {
+        dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+
+        if (d_map && d_map->ofs_endsequence != -1)
+        {
+            gameaction = ga_victory;
+            return;
+        }
+
+        // continue if next map exists
+        if (d_map && d_map->ofs_next != -1)
+        {
+            return;
+        }
+    }
 
     if (secretexit) 
       // [crispy] special-casing for E1M10 "Sewers" support
@@ -2573,6 +2640,18 @@ G_InitNew
         }
         skytexturename = DEH_String(skytexturename);
         skytexture = R_TextureNumForName(skytexturename);
+    }
+
+    // [crispy] DMAPINFO skies
+    if (dmapinfo.num_maps)
+    {
+        dmapinfo_map_t *d_map = DMAPINFO_GetMap(episode, map);
+
+        if (d_map && d_map->ofs_sky1 != -1)
+        {
+            skytexturename = DMAPINFO_GetString(d_map->ofs_sky1);
+            skytexture = R_TextureNumForName(skytexturename);
+        }
     }
 
     G_DoLoadLevel ();

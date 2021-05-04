@@ -32,6 +32,7 @@
 #include "g_game.h"
 
 // State.
+#include "d_dmapinfo.h"
 #include "doomstat.h"
 #include "r_state.h"
 
@@ -1737,10 +1738,21 @@ void A_BossDeath (mobj_t* mo)
     mobj_t*	mo2;
     line_t	junk;
     int		i;
+    int     map07special = 0;
 		
+    // [crispy] DMAPINFO map07special
+    if (dmapinfo.num_maps)
+    {
+        dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+
+        map07special = (d_map && d_map->map07special);
+    }
+
     if ( gamemode == commercial)
     {
 	if (gamemap != 7 &&
+	// [crispy] DMAPINFO map07special
+	!map07special &&
 	// [crispy] Master Levels in PC slot 7
 	!(gamemission == pack_master && (gamemap == 14 || gamemap == 15 || gamemap == 16)))
 	    return;
@@ -1786,6 +1798,8 @@ void A_BossDeath (mobj_t* mo)
     if ( gamemode == commercial)
     {
 	if (gamemap == 7 ||
+	// [crispy] DMAPINFO map07special
+	map07special ||
 	// [crispy] Master Levels in PC slot 7
 	(gamemission == pack_master && (gamemap == 14 || gamemap == 15 || gamemap == 16)))
 	{

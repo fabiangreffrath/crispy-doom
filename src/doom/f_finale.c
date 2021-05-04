@@ -35,6 +35,7 @@
 #include "dstrings.h"
 #include "sounds.h"
 
+#include "d_dmapinfo.h"
 #include "doomstat.h"
 #include "r_state.h"
 #include "m_controls.h" // [crispy] key_*
@@ -120,13 +121,22 @@ extern void A_RandomJump();
 void F_StartFinale (void)
 {
     size_t i;
+    lumpindex_t dmapinfo_music = -1;
+    const char *dmapinfo_flat = NULL;
+    const char *dmapinfo_text = NULL;
 
     gameaction = ga_nothing;
     gamestate = GS_FINALE;
     viewactive = false;
     automapactive = false;
 
-    if (logical_gamemission == doom)
+    DMAPINFO_GetFinale(&dmapinfo_text, &dmapinfo_flat, &dmapinfo_music);
+
+    if (dmapinfo_music != -1)
+    {
+        S_ChangeMusInfoMusic(dmapinfo_music, true);
+    }
+    else if (logical_gamemission == doom)
     {
         S_ChangeMusic(mus_victor, true);
     }
@@ -159,8 +169,9 @@ void F_StartFinale (void)
 
     // Do dehacked substitutions of strings
   
-    finaletext = DEH_String(finaletext);
-    finaleflat = DEH_String(finaleflat);
+    finaletext = dmapinfo_text ? dmapinfo_text : DEH_String(finaletext);
+    finaleflat = dmapinfo_flat ? dmapinfo_flat : DEH_String(finaleflat);
+
     // [crispy] do the "char* vs. const char*" dance
     if (finaletext_rw)
     {
@@ -203,6 +214,13 @@ void F_Ticker (void)
 				
       if (i < MAXPLAYERS)
       {	
+	// [crispy] DMAPINFO end sequence
+	dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+	if (d_map && d_map->ofs_endsequence != -1)
+	{
+	  F_StartCast();
+	}
+	else
 	if (gamemission == pack_nerve && gamemap == 8)
 	  F_StartCast ();
 	else

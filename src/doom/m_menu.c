@@ -27,6 +27,7 @@
 #include "dstrings.h"
 
 #include "d_main.h"
+#include "d_dmapinfo.h"
 #include "deh_main.h"
 
 #include "i_input.h"
@@ -301,7 +302,9 @@ enum
     ep_end
 } episodes_e;
 
-menuitem_t EpisodeMenu[]=
+#define MAX_EPISODES 10
+
+menuitem_t EpisodeMenu[MAX_EPISODES]=
 {
     {1,"M_EPI1", M_Episode,'k'},
     {1,"M_EPI2", M_Episode,'t'},
@@ -3161,6 +3164,28 @@ void M_Init (void)
             {
                 EpiDef.lumps_missing = 1;
             }
+        }
+    }
+
+    // [crispy] DMAPINFO episodes
+    if (dmapinfo.num_episodes)
+    {
+        dmapinfo_episode_t *ep;
+        int i;
+
+        EpiDef.numitems = dmapinfo.num_episodes;
+        if (EpiDef.numitems > MAX_EPISODES)
+            EpiDef.numitems = MAX_EPISODES;
+
+        ep = dmapinfo.episodes;
+        for (i = 0; i < EpiDef.numitems; i++, ep++)
+        {
+            EpisodeMenu[i].status = 1;
+            M_snprintf(EpisodeMenu[i].name, sizeof(EpisodeMenu[i].name), 
+                   "M_EPI%d", i);
+            EpisodeMenu[i].routine = M_Episode;
+            EpisodeMenu[i].alphaKey = 0;
+            EpisodeMenu[i].alttext = DMAPINFO_GetString(ep->ofs_episode_name);
         }
     }
 

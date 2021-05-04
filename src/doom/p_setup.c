@@ -24,6 +24,7 @@
 
 #include "z_zone.h"
 
+#include "d_dmapinfo.h"
 #include "deh_main.h"
 #include "i_swap.h"
 #include "m_argv.h"
@@ -1074,6 +1075,18 @@ int P_GetNumForMap (int episode, int map, boolean critical)
     if (crispy->havemaster && episode == 3 && map <= 21)
     {
 	strcat(lumpname, "M");
+    }
+
+    // [crispy] DMAPINFO
+    if (dmapinfo.num_maps)
+    {
+        dmapinfo_map_t *d_map = DMAPINFO_GetMap(episode, map);
+
+        if (d_map)
+        {
+            strncpy(lumpname, DMAPINFO_GetString(d_map->ofs_lump), 8);
+            lumpname[8] = '\0';
+        }
     }
 
     return critical ? W_GetNumForName(lumpname) : W_CheckNumForName(lumpname);
