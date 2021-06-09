@@ -161,7 +161,11 @@ static void InitConnectData(net_connect_data_t *connect_data)
 {
     boolean shorttics;
 
-    connect_data->max_players = MAXPLAYERS;
+    if (deathmatch)
+      connect_data->max_players = MAX(MIN(deathmatch_p - deathmatchstarts, MAXPLAYERS), MINPLAYERS);
+    else
+      connect_data->max_players = 4;
+
     connect_data->drone = false;
 
     //!

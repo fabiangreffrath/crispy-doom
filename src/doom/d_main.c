@@ -394,6 +394,10 @@ void D_BindVariables(void)
     key_multi_msgplayer[1] = HUSTR_KEYINDIGO;
     key_multi_msgplayer[2] = HUSTR_KEYBROWN;
     key_multi_msgplayer[3] = HUSTR_KEYRED;
+    key_multi_msgplayer[4] = HUSTR_KEYPLAYER5;
+    key_multi_msgplayer[5] = HUSTR_KEYPLAYER6;
+    key_multi_msgplayer[6] = HUSTR_KEYPLAYER7;
+    key_multi_msgplayer[7] = HUSTR_KEYPLAYER8;
 
     NET_BindVariables();
 
@@ -2055,9 +2059,6 @@ void D_DoomMain (void)
     printf ("NET_Init: Init network subsystem.\n");
     NET_Init ();
 
-    // Initial netgame startup. Connect to server etc.
-    D_ConnectNetGame();
-
     // get skill / episode / map from parms
     startskill = sk_medium;
     startepisode = 1;
@@ -2239,9 +2240,6 @@ void D_DoomMain (void)
     DEH_printf("S_Init: Setting up sound.\n");
     S_Init (sfxVolume * 8, musicVolume * 8);
 
-    DEH_printf("D_CheckNetGame: Checking network game status.\n");
-    D_CheckNetGame ();
-
     PrintGameVersion();
 
     DEH_printf("HU_Init: Setting up heads up display.\n");
@@ -2301,6 +2299,18 @@ void D_DoomMain (void)
 	G_LoadGame(file);
     }
 	
+    if (gameaction != ga_loadgame )
+    {
+	if (autostart || netgame)
+            G_InitNew (startskill, startepisode, startmap);
+    }
+
+    // Initial netgame startup. Connect to server etc.
+    D_ConnectNetGame();
+
+    DEH_printf("D_CheckNetGame: Checking network game status.\n");
+    D_CheckNetGame ();
+
     if (gameaction != ga_loadgame )
     {
 	if (autostart || netgame)

@@ -41,8 +41,11 @@
 // most parameter validation debugging code will not be compiled
 #define RANGECHECK
 
+// The manimum number of players, multiplayer/networking.
+#define MINPLAYERS 4
+
 // The maximum number of players, multiplayer/networking.
-#define MAXPLAYERS 4
+#define MAXPLAYERS 8
 
 // The current state of the game: whether we are
 // playing, gazing at the intermission screen,
