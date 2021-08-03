@@ -246,6 +246,11 @@ int             vanilla_demo_limit = 1;
 // [crispy] store last cmd to track joins
 static ticcmd_t* last_cmd = NULL;
  
+int             a11y_sector_lighting = 1;
+int             a11y_weapon_flash = 1;
+int             a11y_palette_changes = 1;
+int             a11y_invul_colormap = 1;
+
 int G_CmdChecksum (ticcmd_t* cmd) 
 { 
     size_t		i;

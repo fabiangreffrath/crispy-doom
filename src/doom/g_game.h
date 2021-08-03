@@ -76,5 +76,10 @@ int G_VanillaVersionCode(void);
 
 extern int vanilla_savegame_limit;
 extern int vanilla_demo_limit;
+
+extern int a11y_sector_lighting;
+extern int a11y_weapon_flash;
+extern int a11y_palette_changes;
+extern int a11y_invul_colormap;
 #endif
 
