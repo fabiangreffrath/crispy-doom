@@ -28,7 +28,7 @@
 #include "p_local.h"
 
 #include "doomstat.h"
-#include "g_game.h" // [crispy] A11Y
+#include "a11y.h" // [crispy] A11Y
 
 
 

@@ -62,6 +62,7 @@
 #include "i_video.h"
 
 #include "g_game.h"
+#include "a11y.h" // [crispy] A11Y
 
 #include "hu_stuff.h"
 #include "wi_stuff.h"

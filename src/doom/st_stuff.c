@@ -38,6 +38,7 @@
 #include "doomkeys.h"
 
 #include "g_game.h"
+#include "a11y.h" // [crispy] A11Y
 
 #include "st_stuff.h"
 #include "st_lib.h"

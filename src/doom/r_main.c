@@ -38,7 +38,7 @@
 #include "r_local.h"
 #include "r_sky.h"
 #include "st_stuff.h" // [crispy] ST_refreshBackground()
-#include "g_game.h" // [crispy] A11Y
+#include "a11y.h" // [crispy] A11Y
 
 
 
@@ -108,7 +108,7 @@ lighttable_t**		scalelightfixed = NULL;
 lighttable_t***		zlight = NULL;
 
 // bumped light from gun blasts
-int			extralight = 0; // [crispy] A11Y
+int			extralight;			
 
 // [crispy] parameterized for smooth diminishing lighting
 int LIGHTLEVELS;
@@ -1044,6 +1044,8 @@ void R_SetupFrame (player_t* player)
     {
     extralight = player->extralight;
     }
+    else
+        extralight = 0;
 
     if (pitch > LOOKDIRMAX)
 	pitch = LOOKDIRMAX;

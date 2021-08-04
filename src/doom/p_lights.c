@@ -28,7 +28,7 @@
 
 // State.
 #include "r_state.h"
-#include "g_game.h" // [crispy] A11Y
+#include "a11y.h" // [crispy] A11Y
 
 //
 // FIRELIGHT FLICKER
