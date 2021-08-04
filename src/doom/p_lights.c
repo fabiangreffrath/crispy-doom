@@ -28,6 +28,7 @@
 
 // State.
 #include "r_state.h"
+#include "g_game.h" // [crispy] A11Y
 
 //
 // FIRELIGHT FLICKER
@@ -51,6 +52,10 @@ void T_FireFlicker (fireflicker_t* flick)
 	flick->sector->lightlevel = flick->maxlight - amount;
 
     flick->count = 4;
+
+    // [crispy] A11Y
+    if (a11y_sector_lighting)
+	flick->sector->rlightlevel = flick->sector->lightlevel;
 }
 
 
@@ -104,6 +109,9 @@ void T_LightFlash (lightflash_t* flash)
 	flash->count = (P_Random()&flash->maxtime)+1;
     }
 
+    // [crispy] A11Y
+    if (a11y_sector_lighting)
+	flash->sector->rlightlevel = flash->sector->lightlevel;
 }
 
 
@@ -161,6 +169,9 @@ void T_StrobeFlash (strobe_t*		flash)
 	flash->count =flash->darktime;
     }
 
+    // [crispy] A11Y
+    if (a11y_sector_lighting)
+	flash->sector->rlightlevel = flash->sector->lightlevel;
 }
 
 
@@ -328,6 +339,10 @@ void T_Glow(glow_t*	g)
 	}
 	break;
     }
+
+    // [crispy] A11Y
+    if (a11y_sector_lighting)
+	g->sector->rlightlevel = g->sector->lightlevel;
 }
 
 
