@@ -1698,6 +1698,12 @@ void ST_doPaletteStuff(void)
 	    cnt = bzc;
     }
 	
+    // [crispy] A11Y
+    if (!a11y_palette_changes)
+    {
+	palette = 0;
+    }
+    else
     if (cnt)
     {
 	palette = (cnt+7)>>3;
