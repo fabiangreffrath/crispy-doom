@@ -970,7 +970,8 @@ void P_SetupPsprites (player_t* player)
     player->pendingweapon = player->readyweapon;
     P_BringUpWeapon (player);
 
-    numrpsprites = a11y_weapon_pspr ? NUMPSPRITES : NUMPSPRITES - 1;
+    // [crispy] A11Y
+    numrpsprites = a11y_weapon_pspr ? NUMPSPRITES : (NUMPSPRITES - 1);
 }
 
 

@@ -61,4 +61,3 @@ void BindAccessibilityVariables(void)
     M_BindIntVariable("a11y_palette_changes", &a11y_palette_changes);
     M_BindIntVariable("a11y_invul_colormap",  &a11y_invul_colormap);
 }
-
