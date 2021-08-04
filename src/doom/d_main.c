@@ -412,6 +412,7 @@ void D_BindVariables(void)
 //  M_BindIntVariable("vanilla_demo_limit",     &vanilla_demo_limit);
     M_BindIntVariable("a11y_sector_lighting",   &a11y_sector_lighting);
     M_BindIntVariable("a11y_weapon_flash",      &a11y_weapon_flash);
+    M_BindIntVariable("a11y_weapon_pspr",       &a11y_weapon_pspr);
     M_BindIntVariable("a11y_palette_changes",   &a11y_palette_changes);
     M_BindIntVariable("a11y_invul_colormap",    &a11y_invul_colormap);
     M_BindIntVariable("show_endoom",            &show_endoom);

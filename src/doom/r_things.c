@@ -1091,6 +1091,7 @@ void R_DrawPSprite (pspdef_t* psp, psprnum_t psprnum) // [crispy] differentiate 
 //
 // R_DrawPlayerSprites
 //
+int numrpsprites = NUMPSPRITES; // [crispy] A11Y
 void R_DrawPlayerSprites (void)
 {
     int		i;
@@ -1118,7 +1119,7 @@ void R_DrawPlayerSprites (void)
 
     // add all active psprites
     for (i=0, psp=viewplayer->psprites;
-	 i<NUMPSPRITES;
+	 i<numrpsprites;
 	 i++,psp++)
     {
 	if (psp->state)

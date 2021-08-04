@@ -1063,6 +1063,12 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(a11y_weapon_flash),
 
     //!
+    // If zero, this disables rendering of weapon flashes sprites.
+    //
+
+    CONFIG_VARIABLE_INT(a11y_weapon_pspr),
+
+    //!
     // If zero, this disables palette changes upon damage, item pickup,
     // or when wearing the radiation suit.
     //

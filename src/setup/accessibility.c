@@ -27,6 +27,7 @@
 
 int a11y_sector_lighting = 1;
 int a11y_weapon_flash = 1;
+int a11y_weapon_pspr = 1;
 int a11y_palette_changes = 1;
 int a11y_invul_colormap = 1;
 
@@ -43,6 +44,8 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
                                    &a11y_sector_lighting),
                    TXT_NewCheckBox("Weapon Flash Lighting",
                                    &a11y_weapon_flash),
+                   TXT_NewCheckBox("Weapon Flash Sprite",
+                                   &a11y_weapon_pspr),
                    TXT_NewCheckBox("Palette Changes",
                                    &a11y_palette_changes),
                    TXT_NewCheckBox("Invulnerability Colormap",
@@ -54,6 +57,7 @@ void BindAccessibilityVariables(void)
 {
     M_BindIntVariable("a11y_sector_lighting", &a11y_sector_lighting);
     M_BindIntVariable("a11y_weapon_flash",    &a11y_weapon_flash);
+    M_BindIntVariable("a11y_weapon_pspr",     &a11y_weapon_pspr);
     M_BindIntVariable("a11y_palette_changes", &a11y_palette_changes);
     M_BindIntVariable("a11y_invul_colormap",  &a11y_invul_colormap);
 }
