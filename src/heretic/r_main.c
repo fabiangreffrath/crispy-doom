@@ -656,7 +656,6 @@ void R_ExecuteSetViewSize(void)
 //
     for (i = 0; i < viewheight; i++)
     {
-	const fixed_t num = (viewwidth_nonwide<<detailshift)/2*FRACUNIT;
         dy = ((i - viewheight / 2) << FRACBITS) + FRACUNIT / 2;
         dy = abs(dy);
         yslope[i] = FixedDiv((viewwidth_nonwide << detailshift) / 2 * FRACUNIT, dy);

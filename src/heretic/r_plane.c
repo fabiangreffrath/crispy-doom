@@ -124,8 +124,7 @@ BASIC PRIMITIVE
 
 void R_MapPlane(int y, int x1, int x2)
 {
-    angle_t angle;
-    fixed_t distance, length;
+    fixed_t distance;
     unsigned index;
     int dx, dy;
 
