@@ -1256,12 +1256,11 @@ static void CrispyToggleWidescreenHook (void)
 	I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
 	// [crispy] re-calculate framebuffer coordinates
 	R_ExecuteSetViewSize();
-	// [crispy] re-draw bezel
-	//R_FillBackScreen();
-	// [crispy] re-calculate disk icon coordinates
-	//EnableLoadingDisk();
 	// [crispy] re-calculate automap coordinates
-	// AM_LevelInit(true);
+        AM_LevelInit();
+        if (automapactive) {
+            AM_initVariables();
+        }
     }
 }
 static boolean CrispyToggleWidescreen(int option)

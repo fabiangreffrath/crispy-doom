@@ -163,6 +163,9 @@ static byte *maplump;           // pointer to the raw data for the automap backg
 static short mapystart = 0;     // y-value for the start of the map bitmap...used in the paralax stuff.
 static short mapxstart = 0;     //x-value for the bitmap.
 
+#define MAPBGROUNDWIDTH ORIGWIDTH
+#define MAPBGROUNDHEIGHT (ORIGHEIGHT - 42)
+
 //byte screens[][SCREENWIDTH*SCREENHEIGHT];
 //void V_MarkRect (int x, int y, int width, int height);
 
@@ -313,14 +316,14 @@ void AM_changeWindowLoc(void)
     // in AM_clearFB).
     mapxstart += MTOF(m_paninc.x+FRACUNIT/2);
     mapystart -= MTOF(m_paninc.y+FRACUNIT/2);
-    if(mapxstart >= (finit_width >> crispy->hires))
-        mapxstart -= (finit_width >> crispy->hires);
+    if(mapxstart >= MAPBGROUNDWIDTH << crispy->hires)
+        mapxstart -= MAPBGROUNDWIDTH << crispy->hires;
     if(mapxstart < 0)
-        mapxstart += (finit_width >> crispy->hires);
-    if(mapystart >= (finit_height >> crispy->hires))
-        mapystart -= (finit_height >> crispy->hires);
+        mapxstart += MAPBGROUNDWIDTH << crispy->hires;
+    if(mapystart >= MAPBGROUNDHEIGHT >> crispy->hires)
+        mapystart -= MAPBGROUNDHEIGHT >> crispy->hires;
     if(mapystart < 0)
-        mapystart += (finit_height >> crispy->hires);
+        mapystart += MAPBGROUNDHEIGHT >> crispy->hires;
     // - end of code that was commented-out
 
     m_x2 = m_x + m_w;
@@ -795,6 +798,7 @@ void AM_clearFB(int color)
     int i, j;
     int dmapx;
     int dmapy;
+    int x1, x2, x3;
 
     if (followplayer)
     {
@@ -808,14 +812,14 @@ void AM_clearFB(int color)
         mapxstart += dmapx >> 1;
         mapystart += dmapy >> 1;
 
-        while (mapxstart >= (finit_width >> crispy->hires))
-            mapxstart -= (finit_width >> crispy->hires);
+        while (mapxstart >= MAPBGROUNDWIDTH << crispy->hires)
+            mapxstart -= MAPBGROUNDWIDTH << crispy->hires;
         while (mapxstart < 0)
-            mapxstart += (finit_width >> crispy->hires);
-        while (mapystart >= (finit_height >> crispy->hires))
-            mapystart -= (finit_height >> crispy->hires);
+            mapxstart += MAPBGROUNDWIDTH << crispy->hires;
+        while (mapystart >= MAPBGROUNDHEIGHT >> crispy->hires)
+            mapystart -= MAPBGROUNDHEIGHT >> crispy->hires;
         while (mapystart < 0)
-            mapystart += (finit_height >> crispy->hires);
+            mapystart += MAPBGROUNDHEIGHT >> crispy->hires;
     }
     else
     {
@@ -838,15 +842,29 @@ void AM_clearFB(int color)
     }
 
     //blit the automap background to the screen.
-    j = (mapystart & ~crispy->hires) * (finit_width >> crispy->hires);
+    j = mapystart * (MAPBGROUNDWIDTH << crispy->hires);
+
+    x1 = mapxstart;
+    x2 = finit_width - x1;
+
+    if (x2 > MAPBGROUNDWIDTH << crispy->hires)
+        x2 = MAPBGROUNDWIDTH << crispy->hires;
+
+    x3 = finit_width - x2 - x1;
+
     for (i = 0; i < finit_height; i++)
     {
-        memcpy(I_VideoBuffer + i * finit_width, maplump + j + mapxstart,
-               finit_width - mapxstart);
-        memcpy(I_VideoBuffer + i * finit_width + finit_width - mapxstart,
-               maplump + j, mapxstart);
-        j += finit_width;
-        if (j >= (finit_height >> crispy->hires) * (finit_width >> crispy->hires))
+        memcpy(I_VideoBuffer + i * finit_width,
+               maplump + j + (MAPBGROUNDWIDTH << crispy->hires) - x3, x3);
+
+        memcpy(I_VideoBuffer + i * finit_width + x3,
+               maplump + j + (MAPBGROUNDWIDTH << crispy->hires) - x2, x2);
+
+        memcpy(I_VideoBuffer + i * finit_width + x2 + x3,
+               maplump + j, x1);
+
+        j += MAPBGROUNDWIDTH << crispy->hires;
+        if (j >= MAPBGROUNDHEIGHT * MAPBGROUNDWIDTH)
             j = 0;
     }
 
@@ -1084,17 +1102,17 @@ void PUTDOT(short xx, short yy, byte * cc, byte * cm)
     if (yy == oldyy + 1)
     {
         oldyy++;
-        oldyyshifted += (320 << crispy->hires);
+        oldyyshifted += f_w;
     }
     else if (yy == oldyy - 1)
     {
         oldyy--;
-        oldyyshifted -= (320 << crispy->hires);
+        oldyyshifted -= f_w;
     }
     else if (yy != oldyy)
     {
         oldyy = yy;
-        oldyyshifted = yy * (320 << crispy->hires);
+        oldyyshifted = yy * f_w;
     }
     fb[oldyyshifted + xx] = *(cc);
 //      fb[(yy)*f_w+(xx)]=*(cc);
