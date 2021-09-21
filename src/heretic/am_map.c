@@ -163,6 +163,7 @@ static byte *maplump;           // pointer to the raw data for the automap backg
 static short mapystart = 0;     // y-value for the start of the map bitmap...used in the paralax stuff.
 static short mapxstart = 0;     //x-value for the bitmap.
 
+// [crispy] Used for automap background tiling and scrolling
 #define MAPBGROUNDWIDTH ORIGWIDTH
 #define MAPBGROUNDHEIGHT (ORIGHEIGHT - 42)
 
@@ -316,6 +317,7 @@ void AM_changeWindowLoc(void)
     // in AM_clearFB).
     mapxstart += MTOF(m_paninc.x+FRACUNIT/2);
     mapystart -= MTOF(m_paninc.y+FRACUNIT/2);
+    // [crispy] Change background tile dimensions for hi-res
     if(mapxstart >= MAPBGROUNDWIDTH << crispy->hires)
         mapxstart -= MAPBGROUNDWIDTH << crispy->hires;
     if(mapxstart < 0)
@@ -565,6 +567,7 @@ boolean AM_Responder(event_t * ev)
     {
         rc = true;
 
+        // [crispy] Ensure panning speed is same for hi-res
         if (key == key_map_east)                 // pan right
         {
             if (!followplayer && !crispy->automapoverlay)
@@ -824,6 +827,7 @@ void AM_clearFB(int color)
         mapxstart += dmapx >> 1;
         mapystart += dmapy >> 1;
 
+        // [crispy] Change background tile dimensions for hi-res
         while (mapxstart >= MAPBGROUNDWIDTH << crispy->hires)
             mapxstart -= MAPBGROUNDWIDTH << crispy->hires;
         while (mapxstart < 0)
@@ -854,6 +858,10 @@ void AM_clearFB(int color)
     }
 
     //blit the automap background to the screen.
+
+    // [crispy] To support widescreen, increase the number of possible
+    // background tiles from 2 to 3. To support rendering at 2x resolution,
+    // treat original 320 x 158 tile image as 640 x 79.
     j = mapystart * (MAPBGROUNDWIDTH << crispy->hires);
 
     x1 = mapxstart;
