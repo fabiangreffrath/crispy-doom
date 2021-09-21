@@ -138,7 +138,7 @@ void MN_LoadSlotText(void);
 
 extern void I_ReInitGraphics(int reinit);
 extern void R_ExecuteSetViewSize(void);
-extern void AM_LevelInit(void);
+extern void AM_LevelInit(boolean reinit);
 extern void AM_initVariables(void);
 
 // External Data
@@ -1231,7 +1231,7 @@ static void CrispyHiresHook(void)
     // [crispy] scale the sky for new resolution
     R_InitSkyMap();
     // [crispy] re-calculate automap coordinates
-    AM_LevelInit();
+    AM_LevelInit(true);
     if (automapactive) {
         AM_initVariables();
     }
@@ -1257,7 +1257,7 @@ static void CrispyToggleWidescreenHook (void)
 	// [crispy] re-calculate framebuffer coordinates
 	R_ExecuteSetViewSize();
 	// [crispy] re-calculate automap coordinates
-        AM_LevelInit();
+        AM_LevelInit(true);
         if (automapactive) {
             AM_initVariables();
         }

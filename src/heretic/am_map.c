@@ -436,8 +436,11 @@ void AM_clearMarks(void)
 // should be called at the start of every level
 // right now, i figure it out myself
 
-void AM_LevelInit(void)
+void AM_LevelInit(boolean reinit)
 {
+    // [crispy] Used for reinit
+    static int f_h_old;
+
     leveljuststarted = 0;
 
     finit_width = SCREENWIDTH;
@@ -451,7 +454,16 @@ void AM_LevelInit(void)
 //  AM_clearMarks();
 
     AM_findMinMaxBoundaries();
+
+    // [crispy] preserve map scale when re-initializing
+    if (reinit && f_h_old)
+    {
+        scale_mtof = scale_mtof * f_h / f_h_old;
+    }
+    else
+    {
     scale_mtof = FixedDiv(min_scale_mtof, (int) (0.7 * FRACUNIT));
+    }
     if (scale_mtof > max_scale_mtof)
         scale_mtof = min_scale_mtof;
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
@@ -483,7 +495,7 @@ void AM_Start(void)
     }
     if (lastlevel != gamemap || lastepisode != gameepisode)
     {
-        AM_LevelInit();
+        AM_LevelInit(false);
         lastlevel = gamemap;
         lastepisode = gameepisode;
     }
@@ -556,28 +568,28 @@ boolean AM_Responder(event_t * ev)
         if (key == key_map_east)                 // pan right
         {
             if (!followplayer && !crispy->automapoverlay)
-                m_paninc.x = FTOM(F_PANINC);
+                m_paninc.x = FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
         }
         else if (key == key_map_west)            // pan left
         {
             if (!followplayer && !crispy->automapoverlay)
-                m_paninc.x = -FTOM(F_PANINC);
+                m_paninc.x = -FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
         }
         else if (key == key_map_north)           // pan up
         {
             if (!followplayer && !crispy->automapoverlay)
-                m_paninc.y = FTOM(F_PANINC);
+                m_paninc.y = FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
         }
         else if (key == key_map_south)           // pan down
         {
             if (!followplayer && !crispy->automapoverlay)
-                m_paninc.y = -FTOM(F_PANINC);
+                m_paninc.y = -FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
         }
