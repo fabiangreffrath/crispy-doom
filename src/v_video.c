@@ -822,7 +822,7 @@ void V_DrawBox(int x, int y, int w, int h, int c)
 
 void V_CopyScaledBuffer(pixel_t *dest, pixel_t *src, size_t size)
 {
-    int i, j;
+    int i, j, index;
 
 #ifdef RANGECHECK
     if (size > ORIGWIDTH * ORIGHEIGHT)
@@ -831,15 +831,41 @@ void V_CopyScaledBuffer(pixel_t *dest, pixel_t *src, size_t size)
     }
 #endif
 
+    // [crispy] fill pillarboxes in widescreen mode
+    if (SCREENWIDTH != NONWIDEWIDTH)
+    {
+        V_DrawFilledBox(0, 0, WIDESCREENDELTA << crispy->hires, SCREENHEIGHT, 0);
+        V_DrawFilledBox(SCREENWIDTH - (WIDESCREENDELTA << crispy->hires), 0,
+                        WIDESCREENDELTA << crispy->hires, SCREENHEIGHT, 0);
+    }
+
+    index = ((size / ORIGWIDTH) << crispy->hires) * SCREENWIDTH - 1;
+
+    if (size % ORIGWIDTH)
+    {
+        index += ((size % ORIGWIDTH) + WIDESCREENDELTA) << crispy->hires;
+    }
+    else
+    {
+        // [crispy] Handles starting in the middle of a row.
+        index -= WIDESCREENDELTA << crispy->hires;
+    }
+
     while (size--)
     {
         for (i = 0; i <= crispy->hires; i++)
         {
             for (j = 0; j <= crispy->hires; j++)
             {
-                *(dest + (size << crispy->hires) + (crispy->hires * (int) (size / ORIGWIDTH) + i) * SCREENWIDTH + j) = *(src + size);
+                *(dest + index - (j * SCREENWIDTH) - i) = *(src + size);
             }
         }
+        if (size % ORIGWIDTH == 0)
+        {
+            index -= 2 * (WIDESCREENDELTA << crispy->hires)
+                     + crispy->hires * SCREENWIDTH;
+        }
+        index -= 1 + crispy->hires;
     }
 }
  
