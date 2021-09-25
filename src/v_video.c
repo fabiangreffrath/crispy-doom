@@ -831,7 +831,8 @@ void V_CopyScaledBuffer(pixel_t *dest, pixel_t *src, size_t size)
     }
 #endif
 
-    // [crispy] fill pillarboxes in widescreen mode
+    // [crispy] Fill pillarboxes in widescreen mode. Needs to be a two separate
+    // pillars to allow for Heretic finale vertical scrolling.
     if (SCREENWIDTH != NONWIDEWIDTH)
     {
         V_DrawFilledBox(0, 0, WIDESCREENDELTA << crispy->hires, SCREENHEIGHT, 0);
@@ -843,11 +844,11 @@ void V_CopyScaledBuffer(pixel_t *dest, pixel_t *src, size_t size)
 
     if (size % ORIGWIDTH)
     {
+        // [crispy] Handles starting in the middle of a row.
         index += ((size % ORIGWIDTH) + WIDESCREENDELTA) << crispy->hires;
     }
     else
     {
-        // [crispy] Handles starting in the middle of a row.
         index -= WIDESCREENDELTA << crispy->hires;
     }
 
