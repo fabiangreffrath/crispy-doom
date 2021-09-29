@@ -594,7 +594,7 @@ void R_ExecuteSetViewSize(void)
 	// [crispy] regular viewwidth in non-widescreen mode
 	if (crispy->widescreen)
 	{
-		const int widescreen_edge_aligner = (8 << crispy->hires) - 1;
+		const int widescreen_edge_aligner = (16 << crispy->hires) - 1;
 
 		scaledviewwidth = viewheight*SCREENWIDTH/(SCREENHEIGHT-(42<<crispy->hires));
 		// [crispy] make sure scaledviewwidth is an integer multiple of the bezel patch width
