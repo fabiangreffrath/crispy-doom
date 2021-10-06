@@ -922,6 +922,52 @@ static void saveg_read_mobj_t(mobj_t *str)
     saveg_read_mapthing_t(&str->spawnpoint);
 }
 
+// [crispy] enumerate all thinker pointers
+uint32_t P_ThinkerToIndex (thinker_t* thinker)
+{
+    thinker_t*	th;
+    uint32_t	i;
+
+    if (!thinker)
+	return 0;
+
+    for (th = thinkercap.next, i = 0; th != &thinkercap; th = th->next)
+    {
+	if (th->function.acp1 == (actionf_p1) P_MobjThinker)
+	{
+	    i++;
+	    if (th == thinker)
+		return i;
+	}
+    }
+
+    return 0;
+}
+
+// [crispy] replace indizes with corresponding pointers
+thinker_t* P_IndexToThinker (uint32_t index)
+{
+    thinker_t*	th;
+    uint32_t	i;
+
+    if (!index)
+	return NULL;
+
+    for (th = thinkercap.next, i = 0; th != &thinkercap; th = th->next)
+    {
+	if (th->function.acp1 == (actionf_p1) P_MobjThinker)
+	{
+	    i++;
+	    if (i == index)
+		return th;
+	}
+    }
+
+    restoretargets_fail++;
+
+    return NULL;
+}
+
 static void saveg_write_mobj_t(mobj_t *str)
 {
     // thinker_t thinker;
@@ -1734,6 +1780,29 @@ void P_UnArchiveThinkers(void)
 
 //=============================================================================
 
+// [crispy] after all the thinkers have been restored, replace all indices in
+// the mobj->target and mobj->tracers fields by the corresponding current pointers again
+void P_RestoreTargets (void)
+{
+    mobj_t*	mo;
+    thinker_t*	th;
+
+    for (th = thinkercap.next; th != &thinkercap; th = th->next)
+    {
+	if (th->function.acp1 == (actionf_p1) P_MobjThinker)
+	{
+	    mo = (mobj_t*) th;
+	    mo->target = (mobj_t*) P_IndexToThinker((uintptr_t) mo->target);
+	    mo->tracer = (mobj_t*) P_IndexToThinker((uintptr_t) mo->tracer);
+	}
+    }
+
+    if (restoretargets_fail)
+    {
+	fprintf (stderr, "P_RestoreTargets: Failed to restore %d target pointers.\n", restoretargets_fail);
+	restoretargets_fail = 0;
+    }
+}
 
 /*
 ====================
