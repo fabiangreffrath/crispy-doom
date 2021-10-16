@@ -894,8 +894,7 @@ static void saveg_read_mobj_t(mobj_t *str)
     str->movecount = SV_ReadLong();
 
     // struct mobj_s *target;
-    SV_ReadLong();
-    str->target = NULL;
+    str->target = (void *)(uintptr_t) SV_ReadLong();
 
     // int reactiontime;
     str->reactiontime = SV_ReadLong();
