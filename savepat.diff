@@ -1,0 +1,117 @@
+diff --git a/src/heretic/doomdef.h b/src/heretic/doomdef.h
+index f6a6ecb65..2422be5e4 100644
+--- a/src/heretic/doomdef.h
++++ b/src/heretic/doomdef.h
+@@ -746,6 +746,7 @@ void P_ArchiveThinkers(void);
+ void P_UnArchiveThinkers(void);
+ void P_ArchiveSpecials(void);
+ void P_UnArchiveSpecials(void);
++void P_RestoreTargets (void);
+ // load / save game routines
+ 
+ 
+diff --git a/src/heretic/g_game.c b/src/heretic/g_game.c
+index c3d953ae3..eefe96b1f 100644
+--- a/src/heretic/g_game.c
++++ b/src/heretic/g_game.c
+@@ -1780,6 +1780,7 @@ void G_DoLoadGame(void)
+     P_UnArchiveWorld();
+     P_UnArchiveThinkers();
+     P_UnArchiveSpecials();
++    P_RestoreTargets();
+ 
+     if (SV_ReadByte() != SAVE_GAME_TERMINATOR)
+     {                           // Missing savegame termination marker
+diff --git a/src/heretic/p_saveg.c b/src/heretic/p_saveg.c
+index 2c5dab5de..192c059fa 100644
+--- a/src/heretic/p_saveg.c
++++ b/src/heretic/p_saveg.c
+@@ -894,8 +894,7 @@ static void saveg_read_mobj_t(mobj_t *str)
+     str->movecount = SV_ReadLong();
+ 
+     // struct mobj_s *target;
+-    SV_ReadLong();
+-    str->target = NULL;
++    str->target = (void *)(uintptr_t) SV_ReadLong();
+ 
+     // int reactiontime;
+     str->reactiontime = SV_ReadLong();
+@@ -923,7 +922,7 @@ static void saveg_read_mobj_t(mobj_t *str)
+ }
+ 
+ // [crispy] enumerate all thinker pointers
+-uint32_t P_ThinkerToIndex (thinker_t* thinker)
++static uint32_t P_ThinkerToIndex (const thinker_t* thinker)
+ {
+     thinker_t*	th;
+     uint32_t	i;
+@@ -933,7 +932,7 @@ uint32_t P_ThinkerToIndex (thinker_t* thinker)
+ 
+     for (th = thinkercap.next, i = 0; th != &thinkercap; th = th->next)
+     {
+-	if (th->function.acp1 == (actionf_p1) P_MobjThinker)
++	if (th->function == P_MobjThinker)
+ 	{
+ 	    i++;
+ 	    if (th == thinker)
+@@ -944,8 +943,9 @@ uint32_t P_ThinkerToIndex (thinker_t* thinker)
+     return 0;
+ }
+ 
+-// [crispy] replace indizes with corresponding pointers
+-thinker_t* P_IndexToThinker (uint32_t index)
++// [crispy] replace indices with corresponding pointers
++static int restoretargets_fail = 0;
++static const thinker_t* P_IndexToThinker (uint32_t index)
+ {
+     thinker_t*	th;
+     uint32_t	i;
+@@ -955,7 +955,7 @@ thinker_t* P_IndexToThinker (uint32_t index)
+ 
+     for (th = thinkercap.next, i = 0; th != &thinkercap; th = th->next)
+     {
+-	if (th->function.acp1 == (actionf_p1) P_MobjThinker)
++	if (th->function == P_MobjThinker)
+ 	{
+ 	    i++;
+ 	    if (i == index)
+@@ -1068,7 +1068,7 @@ static void saveg_write_mobj_t(mobj_t *str)
+     SV_WriteLong(str->movecount);
+ 
+     // struct mobj_s *target;
+-    SV_WritePtr(str->target);
++    SV_WritePtr((void *)(uintptr_t) P_ThinkerToIndex((thinker_t *)str->target));
+ 
+     // int reactiontime;
+     SV_WriteLong(str->reactiontime);
+@@ -1761,7 +1761,7 @@ void P_UnArchiveThinkers(void)
+             case tc_mobj:
+                 mobj = Z_Malloc(sizeof(*mobj), PU_LEVEL, NULL);
+                 saveg_read_mobj_t(mobj);
+-                mobj->target = NULL;
++//              mobj->target = NULL;
+                 P_SetThingPosition(mobj);
+                 mobj->info = &mobjinfo[mobj->type];
+                 mobj->floorz = mobj->subsector->sector->floorheight;
+@@ -1781,7 +1781,7 @@ void P_UnArchiveThinkers(void)
+ //=============================================================================
+ 
+ // [crispy] after all the thinkers have been restored, replace all indices in
+-// the mobj->target and mobj->tracers fields by the corresponding current pointers again
++// the mobj->target fields by the corresponding current pointers again
+ void P_RestoreTargets (void)
+ {
+     mobj_t*	mo;
+@@ -1789,11 +1789,10 @@ void P_RestoreTargets (void)
+ 
+     for (th = thinkercap.next; th != &thinkercap; th = th->next)
+     {
+-	if (th->function.acp1 == (actionf_p1) P_MobjThinker)
++	if (th->function == P_MobjThinker)
+ 	{
+ 	    mo = (mobj_t*) th;
+ 	    mo->target = (mobj_t*) P_IndexToThinker((uintptr_t) mo->target);
+-	    mo->tracer = (mobj_t*) P_IndexToThinker((uintptr_t) mo->tracer);
+ 	}
+     }
+
