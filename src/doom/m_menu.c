@@ -1395,7 +1395,7 @@ static void M_DrawCrispnessBackground(void)
     const byte *src = crispness_background;
     // [NS] Try to load the background from a lump.
     int lump = W_CheckNumForName("CRISPYBG");
-    if (lump != -1 && W_LumpLength(lump) == 64*64)
+    if (lump != -1 && W_LumpLength(lump) >= 64*64)
     {
         src = W_CacheLumpNum(lump, PU_STATIC);
     }
