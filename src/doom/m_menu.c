@@ -1392,7 +1392,7 @@ static void M_DrawMouse(void)
 #include "m_background.h"
 static void M_DrawCrispnessBackground(void)
 {
-    const byte *src = crispness_background;
+	const byte *src = crispness_background;
     // [NS] Try to load the background from a lump.
     int lump = W_CheckNumForName("CRISPYBG");
     if (lump != -1 && W_LumpLength(lump) >= 64*64)
