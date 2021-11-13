@@ -54,6 +54,7 @@ static boolean music_initialized = false;
 static boolean sdl_was_initialized = false;
 
 static boolean win_midi_stream_opened = false;
+static boolean win_midi_song_registered = false;
 
 static boolean musicpaused = false;
 static int current_music_volume;
@@ -267,7 +268,11 @@ static void UpdateMusicVolume(void)
     }
 
 #if defined(_WIN32)
-    I_WIN_SetMusicVolume(vol);
+    if (win_midi_song_registered)
+    {
+        I_WIN_SetMusicVolume(vol);
+    }
+    else
 #endif
     Mix_VolumeMusic(vol);
 }
@@ -293,7 +298,7 @@ static void I_SDL_PlaySong(void *handle, boolean looping)
         return;
     }
 
-    if (handle == NULL && !win_midi_stream_opened)
+    if (handle == NULL && !win_midi_song_registered)
     {
         return;
     }
@@ -308,7 +313,7 @@ static void I_SDL_PlaySong(void *handle, boolean looping)
     }
 
 #if defined(_WIN32)
-    if (win_midi_stream_opened)
+    if (win_midi_song_registered)
     {
         I_WIN_PlaySong(looping);
     }
@@ -351,7 +356,7 @@ static void I_SDL_StopSong(void)
     }
 
 #if defined(_WIN32)
-    if (win_midi_stream_opened)
+    if (win_midi_song_registered)
     {
         I_WIN_StopSong();
     }
@@ -372,9 +377,10 @@ static void I_SDL_UnRegisterSong(void *handle)
     }
 
 #if defined(_WIN32)
-    if (win_midi_stream_opened)
+    if (win_midi_song_registered)
     {
         I_WIN_UnRegisterSong();
+        win_midi_song_registered = false;
     }
     else
 #endif
@@ -387,14 +393,17 @@ static void I_SDL_UnRegisterSong(void *handle)
 }
 
 // Determine whether memory block is a .mid file 
-
-// [crispy] Reverse Choco's logic from "if (MIDI)" to "if (not MUS)"
-/*
+#if defined(_WIN32)
 static boolean IsMid(byte *mem, int len)
 {
     return len > 4 && !memcmp(mem, "MThd", 4);
 }
-*/
+#endif
+
+static boolean IsMus(byte *mem, int len)
+{
+    return len > 4 && !memcmp(mem, "MUS\x1a", 4);
+}
 
 static boolean ConvertMus(byte *musdata, int len, const char *filename)
 {
@@ -443,7 +452,7 @@ static void *I_SDL_RegisterSong(void *data, int len)
 /*
     if (IsMid(data, len) && len < MAXMIDLENGTH)
 */
-    if (len < 4 || memcmp(data, "MUS\x1a", 4)) // [crispy] MUS_HEADER_MAGIC
+    if (!IsMus(data, len)) // [crispy] MUS_HEADER_MAGIC
     {
         M_WriteFile(filename, data, len);
     }
@@ -461,11 +470,12 @@ static void *I_SDL_RegisterSong(void *data, int len)
 #if defined(_WIN32)
     // If we do not have an external music command defined, play
     // music with the Windows native MIDI.
-    if (win_midi_stream_opened)
+    if (win_midi_stream_opened && (IsMus(data, len) || IsMid(data, len)))
     {
         if (I_WIN_RegisterSong(filename))
         {
             music = (void *) 1;
+            win_midi_song_registered = true;
         }
         else
         {
