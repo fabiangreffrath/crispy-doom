@@ -268,7 +268,7 @@ static void UpdateMusicVolume(void)
     }
 
 #if defined(_WIN32)
-    if (win_midi_song_registered)
+    if (win_midi_stream_opened)
     {
         I_WIN_SetMusicVolume(vol);
     }
