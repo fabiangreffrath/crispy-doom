@@ -53,8 +53,10 @@ static boolean music_initialized = false;
 
 static boolean sdl_was_initialized = false;
 
+#if defined(_WIN32)
 static boolean win_midi_stream_opened = false;
 static boolean win_midi_song_registered = false;
+#endif
 
 static boolean musicpaused = false;
 static int current_music_volume;
