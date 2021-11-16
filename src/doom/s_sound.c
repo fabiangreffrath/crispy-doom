@@ -780,12 +780,14 @@ boolean S_CheckSoundId(int sfx_id)
 }
 
 // [NS] Start a sound only if its lump exists.
-void S_StartSoundOptional(void *origin_p, int sfx_id)
+boolean S_StartSoundOptional(void *origin_p, int sfx_id)
 {
     if (S_CheckSoundId(sfx_id))
     {
         S_StartSound(origin_p, sfx_id);
+        return true;
     }
+    return false;
 }
 
 //
