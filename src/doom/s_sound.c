@@ -773,6 +773,21 @@ void S_StartSoundOnce (void *origin_p, int sfx_id)
     S_StartSound(origin_p, sfx_id);
 }
 
+// [NS] Check if a sound ID has a valid lump.
+boolean S_CheckSoundId(int sfx_id)
+{
+    return I_GetSfxLumpNum(&S_sfx[sfx_id]) != -1;
+}
+
+// [NS] Start a sound only if its lump exists.
+void S_StartSoundOptional(void *origin_p, int sfx_id)
+{
+    if (S_CheckSoundId(sfx_id))
+    {
+        S_StartSound(origin_p, sfx_id);
+    }
+}
+
 //
 // Stop and resume music, during game PAUSE.
 //
