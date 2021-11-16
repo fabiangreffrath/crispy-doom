@@ -256,6 +256,14 @@ typedef enum
     sfx_plland,
     sfx_locked,
     sfx_keyup,
+    // [NS] Optional menu sounds.
+    sfx_mnuopn,
+    sfx_mnucls,
+    sfx_mnuact,
+    sfx_mnubak,
+    sfx_mnumov,
+    sfx_mnusli,
+    sfx_mnuerr,
     NUMSFX
 } sfxenum_t;
 
