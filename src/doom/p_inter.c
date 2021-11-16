@@ -450,6 +450,7 @@ P_TouchSpecialThing
 	if (!player->cards[it_bluecard])
 	    player->message = DEH_String(GOTBLUECARD);
 	P_GiveCard (player, it_bluecard);
+	sound = S_CheckSoundId(sfx_keyup) ? sfx_keyup : sound;
 	if (!netgame)
 	    break;
 	return;
@@ -458,6 +459,7 @@ P_TouchSpecialThing
 	if (!player->cards[it_yellowcard])
 	    player->message = DEH_String(GOTYELWCARD);
 	P_GiveCard (player, it_yellowcard);
+	sound = S_CheckSoundId(sfx_keyup) ? sfx_keyup : sound;
 	if (!netgame)
 	    break;
 	return;
@@ -466,6 +468,7 @@ P_TouchSpecialThing
 	if (!player->cards[it_redcard])
 	    player->message = DEH_String(GOTREDCARD);
 	P_GiveCard (player, it_redcard);
+	sound = S_CheckSoundId(sfx_keyup) ? sfx_keyup : sound;
 	if (!netgame)
 	    break;
 	return;
@@ -474,6 +477,7 @@ P_TouchSpecialThing
 	if (!player->cards[it_blueskull])
 	    player->message = DEH_String(GOTBLUESKUL);
 	P_GiveCard (player, it_blueskull);
+	sound = S_CheckSoundId(sfx_keyup) ? sfx_keyup : sound;
 	if (!netgame)
 	    break;
 	return;
@@ -482,6 +486,7 @@ P_TouchSpecialThing
 	if (!player->cards[it_yellowskull])
 	    player->message = DEH_String(GOTYELWSKUL);
 	P_GiveCard (player, it_yellowskull);
+	sound = S_CheckSoundId(sfx_keyup) ? sfx_keyup : sound;
 	if (!netgame)
 	    break;
 	return;
@@ -490,6 +495,7 @@ P_TouchSpecialThing
 	if (!player->cards[it_redskull])
 	    player->message = DEH_String(GOTREDSKULL);
 	P_GiveCard (player, it_redskull);
+	sound = S_CheckSoundId(sfx_keyup) ? sfx_keyup : sound;
 	if (!netgame)
 	    break;
 	return;

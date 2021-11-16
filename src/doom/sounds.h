@@ -254,6 +254,8 @@ typedef enum
     // [NS] New optional sounds.
     sfx_pljump,
     sfx_plland,
+    sfx_locked,
+    sfx_keyup,
     NUMSFX
 } sfxenum_t;
 

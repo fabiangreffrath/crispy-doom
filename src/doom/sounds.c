@@ -259,5 +259,7 @@ sfxinfo_t S_sfx[] =
   // [NS] New optional sounds.
   SOUND("pljump",  78),
   SOUND("plland",  78),
+  SOUND("locked",  78),
+  SOUND("keyup",   78),
 };
 
