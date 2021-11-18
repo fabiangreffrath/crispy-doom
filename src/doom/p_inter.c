@@ -742,11 +742,29 @@ P_KillMobj
 	if (target->player)
 	    source->player->frags[target->player-players]++;
     }
-    else if (!netgame && (target->flags & MF_COUNTKILL) )
+    else if (target->flags & MF_COUNTKILL)
     {
 	// count all monster deaths,
 	// even those caused by other monsters
-	players[0].killcount++;
+        if (!netgame)
+        {
+	    players[0].killcount++;
+        }
+        else // netgame
+        {
+            if (!deathmatch)
+            {
+                // add kill to first player who is still ingame
+                for (unsigned int plridx = 0; plridx < MAXPLAYERS; plridx++)
+                {
+                    if (playeringame[plridx])
+                    {
+                        players[plridx].killcount++;
+                        break;
+                    }
+                }
+            }
+        }
     }
     
     if (target->player)
