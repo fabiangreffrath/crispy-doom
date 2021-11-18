@@ -680,6 +680,8 @@ P_SpawnMobjSafe
     mobj->oldz = mobj->z;
     mobj->oldangle = mobj->angle;
 
+    mobj->lastenemy = NULL;
+
     // [crispy] height of the spawnstate's first sprite in pixels
     if (!info->actualheight)
     {

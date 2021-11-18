@@ -293,6 +293,9 @@ typedef struct mobj_s
     fixed_t		oldz;
     angle_t		oldangle;
 
+    // last known enemy
+    struct mobj_s*	lastenemy;
+
 } mobj_t;
 
 

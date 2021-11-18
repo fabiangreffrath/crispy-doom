@@ -754,13 +754,20 @@ P_KillMobj
         {
             if (!deathmatch)
             {
-                // add kill to first player who is still ingame
-                for (unsigned int plridx = 0; plridx < MAXPLAYERS; plridx++)
+                if (target->lastenemy && target->lastenemy->health > 0 && target->lastenemy->player)
                 {
-                    if (playeringame[plridx])
+                    target->lastenemy->player->killcount++;
+                }
+                else
+                {
+                    // add kill to first player who is still ingame
+                    for (unsigned int plridx = 0; plridx < MAXPLAYERS; plridx++)
                     {
-                        players[plridx].killcount++;
-                        break;
+                        if (playeringame[plridx])
+                        {
+                            players[plridx].killcount++;
+                            break;
+                        }
                     }
                 }
             }
@@ -994,6 +1001,10 @@ P_DamageMobj
     {
 	// if not intent on another player,
 	// chase after this one
+        if ( !target->lastenemy || target->lastenemy->health <= 0
+             || !target->lastenemy->player)
+           target->lastenemy = target->target;
+
 	target->target = source;
 	target->threshold = BASETHRESHOLD;
 	if (target->state == &states[target->info->spawnstate]
