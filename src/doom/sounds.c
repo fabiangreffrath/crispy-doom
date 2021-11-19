@@ -269,5 +269,10 @@ sfxinfo_t S_sfx[] =
   SOUND("mnumov",  60),
   SOUND("mnusli",  60),
   SOUND("mnuerr",  60),
+  SOUND("inttic",  60),
+  SOUND("inttot",  60),
+  SOUND("intnex",  60),
+  SOUND("intnet",  60),
+  SOUND("intdms",  60),
 };
 

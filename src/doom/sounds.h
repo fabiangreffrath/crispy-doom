@@ -256,7 +256,7 @@ typedef enum
     sfx_plland,
     sfx_locked,
     sfx_keyup,
-    // [NS] Optional menu sounds.
+    // [NS] Optional menu/intermission sounds.
     sfx_mnuopn,
     sfx_mnucls,
     sfx_mnuact,
@@ -264,6 +264,11 @@ typedef enum
     sfx_mnumov,
     sfx_mnusli,
     sfx_mnuerr,
+    sfx_inttic,
+    sfx_inttot,
+    sfx_intnex,
+    sfx_intnet,
+    sfx_intdms,
     NUMSFX
 } sfxenum_t;
 
