@@ -773,21 +773,17 @@ void S_StartSoundOnce (void *origin_p, int sfx_id)
     S_StartSound(origin_p, sfx_id);
 }
 
-// [NS] Check if a sound ID has a valid lump.
-boolean S_CheckSoundId(int sfx_id)
+// [NS] Try to play an optional sound.
+void S_StartSoundOptional(void *origin_p, int sfx_id, int old_sfx_id)
 {
-    return I_GetSfxLumpNum(&S_sfx[sfx_id]) != -1;
-}
-
-// [NS] Start a sound only if its lump exists.
-boolean S_StartSoundOptional(void *origin_p, int sfx_id)
-{
-    if (S_CheckSoundId(sfx_id))
+    if (I_GetSfxLumpNum(&S_sfx[sfx_id]) != -1)
     {
         S_StartSound(origin_p, sfx_id);
-        return true;
     }
-    return false;
+    else if (old_sfx_id != -1) // Play a fallback?
+    {
+        S_StartSound(origin_p, old_sfx_id);
+    }
 }
 
 //

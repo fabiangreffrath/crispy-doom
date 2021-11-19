@@ -382,7 +382,7 @@ void P_PlayerThink (player_t* player)
             player->mo->momz = (7 + crispy->jump) * FRACUNIT;
             player->jumpTics = 18;
             // [NS] Jump sound.
-            S_StartSoundOptional(player->mo, sfx_pljump);
+            S_StartSoundOptional(player->mo, sfx_pljump, -1);
         }
     }
 

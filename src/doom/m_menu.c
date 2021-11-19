@@ -1045,10 +1045,7 @@ void M_QuickSaveResponse(int key)
     if (key == key_menu_confirm)
     {
 	M_DoSave(quickSaveSlot);
-	if (!S_StartSoundOptional(NULL, sfx_mnucls)) // [NS] Optional menu sounds.
-	{
-	S_StartSound(NULL,sfx_swtchx);
-	}
+	S_StartSoundOptional(NULL, sfx_mnucls, sfx_swtchx); // [NS] Optional menu sounds.
     }
 }
 
@@ -1056,10 +1053,7 @@ void M_QuickSave(void)
 {
     if (!usergame)
     {
-	if (!S_StartSoundOptional(NULL, sfx_mnuerr)) // [NS] Optional menu sounds.
-	{
-	S_StartSound(NULL,sfx_oof);
-	}
+	S_StartSoundOptional(NULL, sfx_mnuerr, sfx_oof); // [NS] Optional menu sounds.
 	return;
     }
 
@@ -1089,10 +1083,7 @@ void M_QuickLoadResponse(int key)
     if (key == key_menu_confirm)
     {
 	M_LoadSelect(quickSaveSlot);
-	if (!S_StartSoundOptional(NULL, sfx_mnucls)) // [NS] Optional menu sounds.
-	{
-	S_StartSound(NULL,sfx_swtchx);
-	}
+	S_StartSoundOptional(NULL, sfx_mnucls, sfx_swtchx); // [NS] Optional menu sounds.
     }
 }
 
@@ -1666,10 +1657,7 @@ void M_EndGame(int choice)
     choice = 0;
     if (!usergame)
     {
-	if (!S_StartSoundOptional(NULL, sfx_mnuerr)) // [NS] Optional menu sounds.
-	{
-	S_StartSound(NULL,sfx_oof);
-	}
+	S_StartSoundOptional(NULL, sfx_mnuerr, sfx_oof); // [NS] Optional menu sounds.
 	return;
     }
 	
@@ -2244,10 +2232,7 @@ boolean M_Responder (event_t* ev)
         }
         else
         {
-            if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-            {
-            S_StartSound(NULL,sfx_swtchn);
-            }
+            S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
             M_QuitDOOM(0);
         }
 
@@ -2503,10 +2488,7 @@ boolean M_Responder (event_t* ev)
 	menuactive = false;
 	}
 	messageToPrint = 0; // [crispy] moved here
-	if (!S_StartSoundOptional(NULL, sfx_mnucls)) // [NS] Optional menu sounds.
-	{
-	S_StartSound(NULL,sfx_swtchx);
-	}
+	S_StartSoundOptional(NULL, sfx_mnucls, sfx_swtchx); // [NS] Optional menu sounds.
 	return true;
     }
 
@@ -2531,10 +2513,7 @@ boolean M_Responder (event_t* ev)
 	    if (automapactive || chat_on)
 		return false;
 	    M_SizeDisplay(0);
-	    if (!S_StartSoundOptional(NULL, sfx_mnusli)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_stnmov);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
 	    return true;
 	}
         else if (key == key_menu_incscreen) // Screen size up
@@ -2542,10 +2521,7 @@ boolean M_Responder (event_t* ev)
 	    if (automapactive || chat_on)
 		return false;
 	    M_SizeDisplay(1);
-	    if (!S_StartSoundOptional(NULL, sfx_mnusli)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_stnmov);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
 	    return true;
 	}
         else if (key == key_menu_help)     // Help key
@@ -2558,29 +2534,20 @@ boolean M_Responder (event_t* ev)
 	      currentMenu = &ReadDef1;
 
 	    itemOn = 0;
-	    if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 	    return true;
 	}
         else if (key == key_menu_save)     // Save
         {
 	    M_StartControlPanel();
-	    if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 	    M_SaveGame(0);
 	    return true;
         }
         else if (key == key_menu_load)     // Load
         {
 	    M_StartControlPanel();
-	    if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 	    M_LoadGame(0);
 	    return true;
         }
@@ -2589,63 +2556,42 @@ boolean M_Responder (event_t* ev)
 	    M_StartControlPanel ();
 	    currentMenu = &SoundDef;
 	    itemOn = sfx_vol;
-	    if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 	    return true;
 	}
         else if (key == key_menu_detail)   // Detail toggle
         {
 	    M_ChangeDetail(0);
-	    if (!S_StartSoundOptional(NULL, sfx_mnusli)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
 	    return true;
         }
         else if (key == key_menu_qsave)    // Quicksave
         {
-	    if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 	    M_QuickSave();
 	    return true;
         }
         else if (key == key_menu_endgame)  // End game
         {
-	    if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 	    M_EndGame(0);
 	    return true;
         }
         else if (key == key_menu_messages) // Toggle messages
         {
 	    M_ChangeMessages(0);
-	    if (!S_StartSoundOptional(NULL, sfx_mnusli)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
 	    return true;
         }
         else if (key == key_menu_qload)    // Quickload
         {
-	    if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 	    M_QuickLoad();
 	    return true;
         }
         else if (key == key_menu_quit)     // Quit DOOM
         {
-	    if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 	    M_QuitDOOM(0);
 	    return true;
         }
@@ -2690,10 +2636,7 @@ boolean M_Responder (event_t* ev)
 	if (key == key_menu_activate)
 	{
 	    M_StartControlPanel ();
-	    if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 	    return true;
 	}
 	return false;
@@ -2710,10 +2653,7 @@ boolean M_Responder (event_t* ev)
 	    if (itemOn+1 > currentMenu->numitems-1)
 		itemOn = 0;
 	    else itemOn++;
-	    if (!S_StartSoundOptional(NULL, sfx_mnumov)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_pstop);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnumov, sfx_pstop); // [NS] Optional menu sounds.
 	} while(currentMenu->menuitems[itemOn].status==-1);
 
 	return true;
@@ -2727,10 +2667,7 @@ boolean M_Responder (event_t* ev)
 	    if (!itemOn)
 		itemOn = currentMenu->numitems-1;
 	    else itemOn--;
-	    if (!S_StartSoundOptional(NULL, sfx_mnumov)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_pstop);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnumov, sfx_pstop); // [NS] Optional menu sounds.
 	} while(currentMenu->menuitems[itemOn].status==-1);
 
 	return true;
@@ -2742,10 +2679,7 @@ boolean M_Responder (event_t* ev)
 	if (currentMenu->menuitems[itemOn].routine &&
 	    currentMenu->menuitems[itemOn].status == 2)
 	{
-	    if (!S_StartSoundOptional(NULL, sfx_mnusli)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_stnmov);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
 	    currentMenu->menuitems[itemOn].routine(0);
 	}
 	return true;
@@ -2757,10 +2691,7 @@ boolean M_Responder (event_t* ev)
 	if (currentMenu->menuitems[itemOn].routine &&
 	    currentMenu->menuitems[itemOn].status == 2)
 	{
-	    if (!S_StartSoundOptional(NULL, sfx_mnusli)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_stnmov);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
 	    currentMenu->menuitems[itemOn].routine(1);
 	}
 	return true;
@@ -2776,18 +2707,12 @@ boolean M_Responder (event_t* ev)
 	    if (currentMenu->menuitems[itemOn].status == 2)
 	    {
 		currentMenu->menuitems[itemOn].routine(1);      // right arrow
-		if (!S_StartSoundOptional(NULL, sfx_mnusli)) // [NS] Optional menu sounds.
-		{
-		S_StartSound(NULL,sfx_stnmov);
-		}
+		S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
 	    }
 	    else
 	    {
 		currentMenu->menuitems[itemOn].routine(itemOn);
-		if (!S_StartSoundOptional(NULL, sfx_mnuact)) // [NS] Optional menu sounds.
-		{
-		S_StartSound(NULL,sfx_pistol);
-		}
+		S_StartSoundOptional(NULL, sfx_mnuact, sfx_pistol); // [NS] Optional menu sounds.
 	    }
 	}
 	return true;
@@ -2798,10 +2723,7 @@ boolean M_Responder (event_t* ev)
 
 	currentMenu->lastOn = itemOn;
 	M_ClearMenus ();
-	if (!S_StartSoundOptional(NULL, sfx_mnucls)) // [NS] Optional menu sounds.
-	{
-	S_StartSound(NULL,sfx_swtchx);
-	}
+	S_StartSoundOptional(NULL, sfx_mnucls, sfx_swtchx); // [NS] Optional menu sounds.
 	return true;
     }
     else if (key == key_menu_back)
@@ -2813,10 +2735,7 @@ boolean M_Responder (event_t* ev)
 	{
 	    currentMenu = currentMenu->prevMenu;
 	    itemOn = currentMenu->lastOn;
-	    if (!S_StartSoundOptional(NULL, sfx_mnubak)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnubak, sfx_swtchn); // [NS] Optional menu sounds.
 	}
 	return true;
     }
@@ -2833,10 +2752,7 @@ boolean M_Responder (event_t* ev)
 	    }
 	    else
 	    {
-		if (!S_StartSoundOptional(NULL, sfx_mnuerr)) // [NS] Optional menu sounds.
-		{
-		S_StartSound(NULL,sfx_oof);
-		}
+		S_StartSoundOptional(NULL, sfx_mnuerr, sfx_oof); // [NS] Optional menu sounds.
 	    }
 	}
     }
@@ -2847,10 +2763,7 @@ boolean M_Responder (event_t* ev)
 	if (currentMenu == CrispnessMenus[crispness_cur])
 	{
 	    M_CrispnessPrev(0);
-	    if (!S_StartSoundOptional(NULL, sfx_mnuact)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuact, sfx_swtchn); // [NS] Optional menu sounds.
 	    return true;
 	}
     }
@@ -2860,10 +2773,7 @@ boolean M_Responder (event_t* ev)
 	if (currentMenu == CrispnessMenus[crispness_cur])
 	{
 	    M_CrispnessNext(0);
-	    if (!S_StartSoundOptional(NULL, sfx_mnuact)) // [NS] Optional menu sounds.
-	    {
-	    S_StartSound(NULL,sfx_swtchn);
-	    }
+	    S_StartSoundOptional(NULL, sfx_mnuact, sfx_swtchn); // [NS] Optional menu sounds.
 	    return true;
 	}
     }
@@ -2879,10 +2789,7 @@ boolean M_Responder (event_t* ev)
 	    if (currentMenu->menuitems[i].alphaKey == ch)
 	    {
 		itemOn = i;
-		if (!S_StartSoundOptional(NULL, sfx_mnumov)) // [NS] Optional menu sounds.
-		{
-		S_StartSound(NULL,sfx_pstop);
-		}
+		S_StartSoundOptional(NULL, sfx_mnumov, sfx_pstop); // [NS] Optional menu sounds.
 		return true;
 	    }
         }
@@ -2892,10 +2799,7 @@ boolean M_Responder (event_t* ev)
 	    if (currentMenu->menuitems[i].alphaKey == ch)
 	    {
 		itemOn = i;
-		if (!S_StartSoundOptional(NULL, sfx_mnumov)) // [NS] Optional menu sounds.
-		{
-		S_StartSound(NULL,sfx_pstop);
-		}
+		S_StartSoundOptional(NULL, sfx_mnumov, sfx_pstop); // [NS] Optional menu sounds.
 		return true;
 	    }
         }
@@ -3366,10 +3270,7 @@ void M_ForceLoadGame()
 
 	M_StartMessage(savegwarning, M_ForceLoadGameResponse, savemaplumpinfo != NULL);
 	messageToPrint = 2;
-	if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	{
-	S_StartSound(NULL,sfx_swtchn);
-	}
+	S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 }
 
 static void M_ConfirmDeleteGameResponse (int key)
@@ -3396,10 +3297,7 @@ void M_ConfirmDeleteGame ()
 
 	M_StartMessage(savegwarning, M_ConfirmDeleteGameResponse, true);
 	messageToPrint = 2;
-	if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	{
-	S_StartSound(NULL,sfx_swtchn);
-	}
+	S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 }
 
 // [crispy] indicate game version mismatch
@@ -3407,8 +3305,5 @@ void M_LoadGameVerMismatch ()
 {
 	M_StartMessage("Game Version Mismatch\n\n"PRESSKEY, NULL, false);
 	messageToPrint = 2;
-	if (!S_StartSoundOptional(NULL, sfx_mnuopn)) // [NS] Optional menu sounds.
-	{
-	S_StartSound(NULL,sfx_swtchn);
-	}
+	S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 }

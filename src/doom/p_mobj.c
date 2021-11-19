@@ -395,7 +395,7 @@ void P_ZMovement (mobj_t* mo)
 		    // [NS] Landing sound for longer falls. (Hexen's calculation.)
 		    if (mo->momz < -GRAVITY * 12)
 		    {
-		        S_StartSoundOptional(mo, sfx_plland);
+		        S_StartSoundOptional(mo, sfx_plland, -1);
 		    }
 		}
 	    }
