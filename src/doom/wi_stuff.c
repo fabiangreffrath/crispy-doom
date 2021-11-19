@@ -965,7 +965,7 @@ void WI_updateDeathmatchStats(void)
 	    if (playeringame[i])
 	    {
 		for (j=0 ; j<MAXPLAYERS ; j++)
-		    if (playeringame[j])
+		    if (playeringame[j])
 			dm_frags[i][j] = plrs[i].frags[j];
 
 		dm_totals[i] = WI_fragSum(i);
