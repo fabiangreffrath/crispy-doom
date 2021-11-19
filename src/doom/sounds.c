@@ -261,7 +261,7 @@ sfxinfo_t S_sfx[] =
   SOUND("plland",  78),
   SOUND("locked",  78),
   SOUND("keyup",   78),
-  // [NS] Optional menu sounds.
+  // [NS] Optional menu/intermission sounds.
   SOUND("mnuopn",  60),
   SOUND("mnucls",  60),
   SOUND("mnuact",  60),
