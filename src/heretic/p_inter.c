@@ -180,8 +180,10 @@ boolean P_GiveAmmo(player_t * player, ammotype_t ammo, int count)
     {
         return (false);
     }
-    if (gameskill == sk_baby || gameskill == sk_nightmare)
+    if (gameskill == sk_baby || gameskill == sk_nightmare
+                             || (crispy->moreammo && !demoplayback))
     {                           // extra ammo in baby mode and nightmare mode
+                                // [crispy] more ammo
         count += count >> 1;
     }
     prevAmmo = player->ammo[ammo];

@@ -1047,6 +1047,16 @@ void D_DoomMain(void)
     crispy->pistolstart = M_ParmExists("-wandstart");
 
     //!
+    // @category game
+    // @category mod
+    //
+    // Ammo pickups give 50% more ammo. This option is not allowed when recording a
+    // demo, playing back a demo or when starting a network game.
+    //
+
+    crispy->moreammo = M_ParmExists("-moreammo");
+
+    //!
     // @category mod
     //
     // Disable auto-loading of .wad files.
