@@ -440,6 +440,16 @@ void D_DoomMain(void)
     AdjustForMacIWAD();
 
     //!
+    // @category game
+    // @category mod
+    //
+    // Mana pickups give 50% more mana. This option is not allowed when recording a
+    // demo, playing back a demo or when starting a network game.
+    //
+
+    crispy->moreammo = M_ParmExists("-moremana");
+
+    //!
     // @category mod
     //
     // Disable auto-loading of .wad files.
