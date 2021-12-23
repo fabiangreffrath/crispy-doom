@@ -164,7 +164,7 @@ boolean P_GiveMana(player_t * player, manatype_t mana, int count)
         return (false);
     }
     if (gameskill == sk_baby || gameskill == sk_nightmare
-                             || crispy->moreammo && !demoplayback)
+                             || (crispy->moreammo && !demoplayback))
     {                           // extra mana in baby mode and nightmare mode
                                 // [crispy] more mana
         count += count >> 1;
