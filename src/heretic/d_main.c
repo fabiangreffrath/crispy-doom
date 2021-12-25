@@ -1057,6 +1057,16 @@ void D_DoomMain(void)
     crispy->moreammo = M_ParmExists("-moreammo");
 
     //!
+    // @category game
+    // @category mod
+    //
+    // Fast monsters. This option is not allowed when recording a demo,
+    // playing back a demo or when starting a network game.
+    //
+
+    crispy->fast = M_ParmExists("-fast");
+
+    //!
     // @category mod
     //
     // Disable auto-loading of .wad files.

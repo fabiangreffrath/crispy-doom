@@ -790,6 +790,17 @@ void G_DoLoadLevel(void)
         I_Error(message);
     }
 
+    // [crispy] fast monsters
+    if (crispy->fast && !crispy->singleplayer)
+    {
+        const char message[] = "The -fast option is not supported"
+                               " for demos and\n"
+                               " network play.";
+        if (!demo_p) demorecording = false;
+        I_Error(message);
+    }
+
+
     // [crispy] wand start
     if (crispy->pistolstart)
     {
@@ -1871,7 +1882,8 @@ void G_InitNew(skill_t skill, int episode, int map)
         respawnmonsters = false;
     }
     // Set monster missile speeds
-    speed = skill == sk_nightmare;
+    // [crispy] fast monsters
+    speed = skill == sk_nightmare || (crispy->fast && !demoplayback);
     for (i = 0; MonsterMissileInfo[i].type != -1; i++)
     {
         mobjinfo[MonsterMissileInfo[i].type].speed
