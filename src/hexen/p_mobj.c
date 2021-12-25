@@ -1186,7 +1186,8 @@ mobj_t *P_SpawnMobj(fixed_t x, fixed_t y, fixed_t z, mobjtype_t type)
     mobj->flags2 = info->flags2;
     mobj->damage = info->damage;
     mobj->health = info->spawnhealth;
-    if (gameskill != sk_nightmare)
+    // [crispy] fast monsters
+    if (gameskill != sk_nightmare && !(crispy->fast && !demoplayback))
     {
         mobj->reactiontime = info->reactiontime;
     }
