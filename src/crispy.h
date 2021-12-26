@@ -94,6 +94,7 @@ typedef struct
 	boolean havee1m10;
 	boolean havemap33;
 	boolean havessg;
+    boolean keysloc;
     boolean moreammo;
 	boolean pistolstart;
 	boolean singleplayer;

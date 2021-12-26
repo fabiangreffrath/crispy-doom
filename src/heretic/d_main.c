@@ -1067,6 +1067,15 @@ void D_DoomMain(void)
     crispy->fast = M_ParmExists("-fast");
 
     //!
+    // @category game
+    // @category mod
+    //
+    // Show the location of keys on the automap.
+    //
+
+    crispy->keysloc = M_ParmExists("-keysloc");
+
+    //!
     // @category mod
     //
     // Disable auto-loading of .wad files.
