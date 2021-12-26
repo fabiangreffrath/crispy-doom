@@ -460,6 +460,15 @@ void D_DoomMain(void)
     crispy->fast = M_ParmExists("-fast");
 
     //!
+    // @category game
+    // @category mod
+    //
+    // Automatic use of Quartz flasks and Mystic urns.
+    //
+
+    crispy->autohealth = M_ParmExists("-autohealth");
+
+    //!
     // @category mod
     //
     // Disable auto-loading of .wad files.

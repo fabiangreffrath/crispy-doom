@@ -1213,8 +1213,9 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
             superCount = player->inventory[i].count;
         }
     }
-    if ((gameskill == sk_baby) && (normalCount * 25 >= saveHealth))
+    if ((gameskill == sk_baby || crispy->autohealth) && (normalCount * 25 >= saveHealth))
     {                           // Use quartz flasks
+                                // [crispy] auto health
         count = (saveHealth + 24) / 25;
         for (i = 0; i < count; i++)
         {
@@ -1231,9 +1232,10 @@ void P_AutoUseHealth(player_t * player, int saveHealth)
             P_PlayerRemoveArtifact(player, superSlot);
         }
     }
-    else if ((gameskill == sk_baby)
+    else if ((gameskill == sk_baby || crispy->autohealth)
              && (superCount * 100 + normalCount * 25 >= saveHealth))
     {                           // Use mystic urns and quartz flasks
+                                // [crispy] auto health
         count = (saveHealth + 24) / 25;
         saveHealth -= count * 25;
         for (i = 0; i < count; i++)
@@ -1452,8 +1454,10 @@ void P_DamageMobj
             damage -= saved;
         }
         if (damage >= player->health
-            && ((gameskill == sk_baby) || deathmatch) && !player->chickenTics)
+            && ((gameskill == sk_baby) || deathmatch || crispy->autohealth)
+            && !player->chickenTics)
         {                       // Try to use some inventory health
+                                // [crispy] auto health
             P_AutoUseHealth(player, damage - player->health + 1);
         }
         player->health -= damage;       // mirror mobj health here for Dave

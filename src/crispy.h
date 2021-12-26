@@ -86,6 +86,7 @@ typedef struct
 	int demowarp;
 	int fps;
 
+    boolean autohealth;
     boolean fast;
 	boolean flashinghom;
 	boolean fliplevels;

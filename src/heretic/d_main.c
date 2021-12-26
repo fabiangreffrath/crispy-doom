@@ -1070,6 +1070,15 @@ void D_DoomMain(void)
     // @category game
     // @category mod
     //
+    // Automatic use of Quartz flasks and Mystic urns.
+    //
+
+    crispy->autohealth = M_ParmExists("-autohealth");
+
+    //!
+    // @category game
+    // @category mod
+    //
     // Show the location of keys on the automap.
     //
 
