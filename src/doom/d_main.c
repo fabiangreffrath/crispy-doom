@@ -82,7 +82,7 @@
 
 typedef struct snowflake_t {
     int x, y;
-}snowflake_t;
+} snowflake_t;
 
 //
 // D-DoomLoop()
@@ -172,8 +172,9 @@ void D_ProcessEvents (void)
 
 // wipegamestate can be set to -1 to force a wipe on the next draw
 gamestate_t     wipegamestate = GS_DEMOSCREEN;
-snowflake_t     snowflakes[5000];
-int             start_snoflakes = 0;
+snowflake_t     *snowflakes;
+size_t          snowflakes_num;
+int             start_snoflakes = false;
 extern  boolean setsizeneeded;
 extern  int             showMessages;
 void R_ExecuteSetViewSize (void);
@@ -186,21 +187,33 @@ boolean D_Display (void)
     static  boolean		fullscreen = false;
     static  gamestate_t		oldgamestate = -1;
     static  int			borderdrawcount;
+    static  int			last_screen_size;
     int				y;
     boolean			wipe;
     boolean			redrawsbar;
+    
+    redrawsbar = false;
 
-    if(!start_snoflakes && crispy->snowflakes)
+    if (start_snoflakes && (last_screen_size != SCREENWIDTH * SCREENHEIGHT))
     {
-        for(size_t i = 0; i < 5000; i++)
-        {
-            snowflakes[i].y = 0 - (Crispy_Random()*20 % (SCREENHEIGHT*2));
-            snowflakes[i].x = Crispy_Random()*20 % (SCREENWIDTH);
-        }
-        start_snoflakes = true;
+	Z_Free(snowflakes);
+	start_snoflakes = false;
     }
 
-    redrawsbar = false;
+    if (!start_snoflakes && crispy->snowflakes)
+    {
+	last_screen_size = SCREENWIDTH * SCREENHEIGHT;
+	snowflakes_num = last_screen_size >> 6;
+	snowflakes = Z_Malloc(snowflakes_num * sizeof(snowflake_t), PU_STATIC, NULL);
+
+	    for (size_t i = 0; i < snowflakes_num; i++)
+	    {
+		snowflakes[i].y = 0 - (rand() % (SCREENHEIGHT*2));
+		snowflakes[i].x = rand() % (SCREENWIDTH);
+	    }
+	start_snoflakes = true;
+    }
+
     // change the view size if needed
     if (setsizeneeded)
     {
@@ -267,6 +280,29 @@ boolean D_Display (void)
             ST_Drawer(false, true);
     }
 
+    // [crispy] draw snowflakes
+    if(crispy->snowflakes)
+    {
+	int color = I_GetPaletteIndex(0xFF, 0xFF, 0xFF);
+
+	for (size_t i = 0; i < snowflakes_num; i++)
+	{
+	    snowflakes[i].y += rand() % 2;
+	    if(snowflakes[i].y < 0)
+		continue;
+
+	    snowflakes[i].x += 1 - rand() % 3;
+	    if(snowflakes[i].y >= SCREENHEIGHT)
+		snowflakes[i].y = 0;
+	    if(snowflakes[i].x >= SCREENWIDTH)
+		snowflakes[i].x = 0;
+	    if(snowflakes[i].x < 0)
+		snowflakes[i].x = SCREENWIDTH;
+
+	    I_VideoBuffer[snowflakes[i].x + snowflakes[i].y * SCREENWIDTH] = color;
+	}
+    }
+
     // [crispy] in automap overlay mode,
     // the HUD is drawn on top of everything else
     if (gamestate == GS_LEVEL && gametic && !(automapactive && crispy->automapoverlay))
@@ -292,7 +328,7 @@ boolean D_Display (void)
     {
 	if (menuactive || menuactivestate || !viewactivestate)
 	    borderdrawcount = 3;
-    if (borderdrawcount || crispy->snowflakes)
+	if (borderdrawcount || crispy->snowflakes)
 	{
 	    R_DrawViewBorder ();    // erase old menu stuff
 	    borderdrawcount--;
@@ -311,34 +347,12 @@ boolean D_Display (void)
     viewactivestate = viewactive;
     inhelpscreensstate = inhelpscreens;
     oldgamestate = wipegamestate = gamestate;
-    
-
-    if(crispy->snowflakes)
-    {
-        for(size_t i = 0; i < 5000; i++)
-        {
-            snowflakes[i].y += Crispy_Random() % 2;
-            if(snowflakes[i].y < 0)
-                continue;
-
-            snowflakes[i].x += 1 - Crispy_Random() % 3;
-            if(snowflakes[i].y >= SCREENHEIGHT)
-                snowflakes[i].y = 0;
-            if(snowflakes[i].x >= SCREENWIDTH)
-                snowflakes[i].x = 0;
-            if(snowflakes[i].x < 0)
-                snowflakes[i].x = SCREENWIDTH;
-
-            I_VideoBuffer[snowflakes[i].x + snowflakes[i].y * SCREENWIDTH] = 4;
-        }
-    }
-
     // [crispy] in automap overlay mode,
     // draw the automap and HUD on top of everything else
     if (automapactive && crispy->automapoverlay)
     {
-    AM_Drawer ();
-    HU_Drawer ();
+	AM_Drawer ();
+	HU_Drawer ();
 
 	// [crispy] force redraw of status bar and border
 	viewactivestate = false;
@@ -354,11 +368,11 @@ boolean D_Display (void)
     // draw pause pic
     if (paused)
     {
-    if (automapactive && !crispy->automapoverlay)
-        y = 4;
-    else
-        y = (viewwindowy >> crispy->hires)+4;
-    V_DrawPatchDirect((viewwindowx >> crispy->hires) + ((scaledviewwidth >> crispy->hires) - 68) / 2 - WIDESCREENDELTA, y,
+	if (automapactive && !crispy->automapoverlay)
+	    y = 4;
+	else
+	    y = (viewwindowy >> crispy->hires)+4;
+	V_DrawPatchDirect((viewwindowx >> crispy->hires) + ((scaledviewwidth >> crispy->hires) - 68) / 2 - WIDESCREENDELTA, y,
                           W_CacheLumpName (DEH_String("M_PAUSE"), PU_CACHE));
     }
 
@@ -2063,6 +2077,8 @@ void D_DoomMain (void)
     I_InitJoystick();
     I_InitSound(true);
     I_InitMusic();
+
+	crispy->snowflakes = 0; // [crispy] turn off by default
 
     // [crispy] check for SSG resources
     crispy->havessg =

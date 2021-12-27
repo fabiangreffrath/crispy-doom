@@ -431,12 +431,6 @@ void M_CrispyToggleSecretmessage(int choice)
     crispy->secretmessage = (crispy->secretmessage + 1) % NUM_SECRETMESSAGE;
 }
 
-void M_CrispyToggleSnow(int choice)
-{
-    choice = 0;
-    crispy->snowflakes = !crispy->snowflakes;
-}
-
 void M_CrispyToggleSmoothScaling(int choice)
 {
     choice = 0;

@@ -603,10 +603,6 @@ enum
     crispness_demousetimer,
     crispness_sep_demos_,
 
-    crispness_sep_new_year,
-    crispness_snow,
-    crispness_sep_new_year_,
-
     crispness4_next,
     crispness4_prev,
     crispness4_end
@@ -625,9 +621,6 @@ static menuitem_t Crispness4Menu[]=
     {1,"",	M_CrispyToggleDemoTimerDir,'a'},
     {1,"",	M_CrispyToggleDemoBar,'w'},
     {1,"",	M_CrispyToggleDemoUseTimer,'u'},
-    {-1,"",0,'\0'},
-    {-1,"",0,'\0'},
-    {1,"",	M_CrispyToggleSnow,'s'},
     {-1,"",0,'\0'},
     {1,"",	M_CrispnessNext,'n'},
     {1,"",	M_CrispnessPrev,'p'},
@@ -1416,7 +1409,7 @@ static void M_DrawCrispnessBackground(void)
 		for (x = 0; x < SCREENWIDTH; x++)
 		{
 #ifndef CRISPY_TRUECOLOR
-            *dest++ = src[(y & 63) * 64 + (x & 63)];
+			*dest++ = src[(y & 63) * 64 + (x & 63)];
 #else
 			*dest++ = colormaps[src[(y & 63) * 64 + (x & 63)]];
 #endif
@@ -1566,9 +1559,6 @@ static void M_DrawCrispness4(void)
     M_DrawCrispnessMultiItem(crispness_demotimerdir, "Playback Timer Direction", multiitem_demotimerdir, crispy->demotimerdir + 1, crispy->demotimer & DEMOTIMER_PLAYBACK);
     M_DrawCrispnessItem(crispness_demobar, "Show Demo Progress Bar", crispy->demobar, true);
     M_DrawCrispnessItem(crispness_demousetimer, "\"Use\" Button Timer", crispy->btusetimer, true);
-
-    M_DrawCrispnessSeparator(crispness_sep_new_year, "New Year");
-    M_DrawCrispnessItem(crispness_snow, "Falling Snow", crispy->snowflakes, true);
 
     M_DrawCrispnessGoto(crispness4_next, "First Page >");
     M_DrawCrispnessGoto(crispness4_prev, "< Prev Page");
