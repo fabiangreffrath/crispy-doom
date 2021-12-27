@@ -972,7 +972,30 @@ static void SetMouseButtons(unsigned int buttons_mask)
 // Get info needed to make ticcmd_ts for the players.
 // 
 boolean G_Responder (event_t* ev) 
-{ 
+{
+    // [crispy] demo fast-forward
+    if (ev->type == ev_keydown && ev->data1 == key_demospeed && 
+        (demoplayback || gamestate == GS_DEMOSCREEN))
+    {
+        if (singletics == false)
+        singletics = true;
+        else singletics = false;
+    }
+
+    // [crispy] demo pause (from prboom-plus)
+    if (gameaction == ga_nothing && 
+        (demoplayback || gamestate == GS_DEMOSCREEN))
+    {
+         if (ev->type == ev_keydown && ev->data1 == key_pause)
+    {
+              if (paused ^= 2)
+                S_PauseSound();
+              else
+                S_ResumeSound();
+              return true;
+    }
+    }
+ 
     // allow spy mode changes even during the demo
     if (gamestate == GS_LEVEL && ev->type == ev_keydown 
      && ev->data1 == key_spy && (singledemo || !deathmatch) )
@@ -1184,7 +1207,12 @@ void G_Ticker (void)
 	    break; 
 	} 
     }
-    
+
+    // [crispy] demo sync of revenant tracers and RNG (from prboom-plus)
+    if (paused & 2 || (!demoplayback && menuactive && !netgame))
+        demostarttic++;
+    else
+    {     
     // get commands, check consistancy,
     // and build new consistancy check
     buf = (gametic/ticdup)%BACKUPTICS; 
@@ -1197,7 +1225,8 @@ void G_Ticker (void)
 
 	    memcpy(cmd, &netcmds[i], sizeof(ticcmd_t));
 
-	    if (demoplayback) 
+        // [crispy] don't read input from demo when paused
+	    if (demoplayback && !paused)
 		G_ReadDemoTiccmd (cmd); 
 	    // [crispy] do not record tics while still playing back in demo continue mode
 	    if (demorecording && !demoplayback)
@@ -1285,6 +1314,7 @@ void G_Ticker (void)
 	    } 
 	}
     }
+    }
 
     // Have we just finished displaying an intermission screen?
 
@@ -1295,6 +1325,14 @@ void G_Ticker (void)
 
     oldgamestate = gamestate;
     oldleveltime = leveltime;
+
+    // [crispy] no pause at intermission screen during demo playback 
+    // to avoid desyncs (from prboom-plus)
+    if ((paused & 2 || (!demoplayback && menuactive && !netgame)) 
+        && gamestate != GS_LEVEL)
+    {
+    return;
+    }
     
     // do main actions
     switch (gamestate) 
