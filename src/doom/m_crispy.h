@@ -71,6 +71,7 @@ extern void M_CrispyToggleOverunder(int choice);
 extern void M_CrispyTogglePitch(int choice);
 extern void M_CrispyTogglePlayerCoords(int choice);
 extern void M_CrispyToggleSecretmessage(int choice);
+extern void M_CrispyToggleSnow(int choice);
 extern void M_CrispyToggleSmoothLighting(int choice);
 extern void M_CrispyToggleSmoothMap(int choice);
 extern void M_CrispyToggleSmoothScaling(int choice);

@@ -2182,6 +2182,14 @@ static default_t extra_defaults_list[] =
     //!
     // @game doom
     //
+    // Snow!.
+    //
+
+    CONFIG_VARIABLE_INT(crispy_snowflakes),
+
+    //!
+    // @game doom
+    //
     // Smooth Diminishing Lighting.
     //
 

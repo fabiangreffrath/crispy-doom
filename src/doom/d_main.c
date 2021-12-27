@@ -52,6 +52,7 @@
 #include "m_controls.h"
 #include "m_misc.h"
 #include "m_menu.h"
+#include "m_random.h"
 #include "p_saveg.h"
 
 #include "i_endoom.h"
@@ -78,6 +79,10 @@
 
 
 #include "d_main.h"
+
+typedef struct snowflake_t {
+    int x, y;
+}snowflake_t;
 
 //
 // D-DoomLoop()
@@ -167,6 +172,8 @@ void D_ProcessEvents (void)
 
 // wipegamestate can be set to -1 to force a wipe on the next draw
 gamestate_t     wipegamestate = GS_DEMOSCREEN;
+snowflake_t     snowflakes[5000];
+int             start_snoflakes = 0;
 extern  boolean setsizeneeded;
 extern  int             showMessages;
 void R_ExecuteSetViewSize (void);
@@ -182,9 +189,18 @@ boolean D_Display (void)
     int				y;
     boolean			wipe;
     boolean			redrawsbar;
-		
+
+    if(!start_snoflakes && crispy->snowflakes)
+    {
+        for(size_t i = 0; i < 5000; i++)
+        {
+            snowflakes[i].y = 0 - (Crispy_Random()*20 % (SCREENHEIGHT*2));
+            snowflakes[i].x = Crispy_Random()*20 % (SCREENWIDTH);
+        }
+        start_snoflakes = true;
+    }
+
     redrawsbar = false;
-    
     // change the view size if needed
     if (setsizeneeded)
     {
@@ -237,17 +253,17 @@ boolean D_Display (void)
 	D_PageDrawer ();
 	break;
     }
-    
+
     // draw buffered stuff to screen
     I_UpdateNoBlit ();
-    
+
     // draw the view directly
     if (gamestate == GS_LEVEL && (!automapactive || crispy->automapoverlay) && gametic)
     {
 	R_RenderPlayerView (&players[displayplayer]);
 
         // [crispy] Crispy HUD
-        if (screenblocks >= CRISPY_HUD)
+        if (screenblocks >= CRISPY_HUD || crispy->snowflakes)
             ST_Drawer(false, true);
     }
 
@@ -276,7 +292,7 @@ boolean D_Display (void)
     {
 	if (menuactive || menuactivestate || !viewactivestate)
 	    borderdrawcount = 3;
-	if (borderdrawcount)
+    if (borderdrawcount || crispy->snowflakes)
 	{
 	    R_DrawViewBorder ();    // erase old menu stuff
 	    borderdrawcount--;
@@ -296,12 +312,33 @@ boolean D_Display (void)
     inhelpscreensstate = inhelpscreens;
     oldgamestate = wipegamestate = gamestate;
     
+
+    if(crispy->snowflakes)
+    {
+        for(size_t i = 0; i < 5000; i++)
+        {
+            snowflakes[i].y += Crispy_Random() % 2;
+            if(snowflakes[i].y < 0)
+                continue;
+
+            snowflakes[i].x += 1 - Crispy_Random() % 3;
+            if(snowflakes[i].y >= SCREENHEIGHT)
+                snowflakes[i].y = 0;
+            if(snowflakes[i].x >= SCREENWIDTH)
+                snowflakes[i].x = 0;
+            if(snowflakes[i].x < 0)
+                snowflakes[i].x = SCREENWIDTH;
+
+            I_VideoBuffer[snowflakes[i].x + snowflakes[i].y * SCREENWIDTH] = 4;
+        }
+    }
+
     // [crispy] in automap overlay mode,
     // draw the automap and HUD on top of everything else
     if (automapactive && crispy->automapoverlay)
     {
-	AM_Drawer ();
-	HU_Drawer ();
+    AM_Drawer ();
+    HU_Drawer ();
 
 	// [crispy] force redraw of status bar and border
 	viewactivestate = false;
@@ -317,14 +354,13 @@ boolean D_Display (void)
     // draw pause pic
     if (paused)
     {
-	if (automapactive && !crispy->automapoverlay)
-	    y = 4;
-	else
-	    y = (viewwindowy >> crispy->hires)+4;
-	V_DrawPatchDirect((viewwindowx >> crispy->hires) + ((scaledviewwidth >> crispy->hires) - 68) / 2 - WIDESCREENDELTA, y,
+    if (automapactive && !crispy->automapoverlay)
+        y = 4;
+    else
+        y = (viewwindowy >> crispy->hires)+4;
+    V_DrawPatchDirect((viewwindowx >> crispy->hires) + ((scaledviewwidth >> crispy->hires) - 68) / 2 - WIDESCREENDELTA, y,
                           W_CacheLumpName (DEH_String("M_PAUSE"), PU_CACHE));
     }
-
 
     // menus go directly to the screen
     M_Drawer ();          // menu is drawn even on top of everything
@@ -459,6 +495,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_pitch",           &crispy->pitch);
     M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
     M_BindIntVariable("crispy_secretmessage",   &crispy->secretmessage);
+    M_BindIntVariable("crispy_snowflakes",      &crispy->snowflakes);
     M_BindIntVariable("crispy_smoothlight",     &crispy->smoothlight);
     M_BindIntVariable("crispy_smoothmap",       &crispy->smoothmap);
     M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
