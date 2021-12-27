@@ -980,6 +980,7 @@ boolean G_Responder (event_t* ev)
         if (singletics == false)
         singletics = true;
         else singletics = false;
+        return true;
     }
 
     // [crispy] demo pause (from prboom-plus)
@@ -2392,6 +2393,8 @@ void G_DoNewGame (void)
     netdemo = false;
     netgame = false;
     deathmatch = false;
+    // [crispy] reset game speed after demo fast-forward
+    singletics = false;
     playeringame[1] = playeringame[2] = playeringame[3] = 0;
     // [crispy] do not reset -respawn, -fast and -nomonsters parameters
     /*
