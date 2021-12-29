@@ -451,7 +451,7 @@ cheatseq_t cheat_showfps2 = CHEAT("idrate", 0); // [crispy] PrBoom+
 cheatseq_t cheat_goobers = CHEAT("goobers", 0);
 cheatseq_t cheat_version = CHEAT("version", 0); // [crispy] Russian Doom
 cheatseq_t cheat_skill = CHEAT("skill", 0);
-cheatseq_t cheat_snow = CHEAT("snow", 0);
+cheatseq_t cheat_snow = CHEAT("letitsnow", 0);
 static char msg[ST_MSGWIDTH];
 
 // [crispy] restrict cheat usage

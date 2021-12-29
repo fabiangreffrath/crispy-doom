@@ -66,7 +66,6 @@ typedef struct
 	int playercoords;
 	int recoil;
 	int secretmessage;
-	int snowflakes;
 	int smoothlight;
 	int smoothmap;
 	int smoothscaling;
@@ -83,6 +82,7 @@ typedef struct
 
 	// [crispy] in-game switches and variables
 	int screenshotmsg;
+	int snowflakes;
 	int cleanscreenshot;
 	int demowarp;
 	int fps;

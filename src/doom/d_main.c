@@ -66,6 +66,7 @@
 #include "a11y.h" // [crispy] A11Y
 
 #include "hu_stuff.h"
+#include "v_snow.h"
 #include "wi_stuff.h"
 #include "st_stuff.h"
 #include "am_map.h"
@@ -79,10 +80,6 @@
 
 
 #include "d_main.h"
-
-typedef struct snowflake_t {
-    int x, y;
-} snowflake_t;
 
 //
 // D-DoomLoop()
@@ -172,9 +169,6 @@ void D_ProcessEvents (void)
 
 // wipegamestate can be set to -1 to force a wipe on the next draw
 gamestate_t     wipegamestate = GS_DEMOSCREEN;
-snowflake_t     *snowflakes;
-size_t          snowflakes_num;
-int             start_snoflakes = false;
 extern  boolean setsizeneeded;
 extern  int             showMessages;
 void R_ExecuteSetViewSize (void);
@@ -187,32 +181,11 @@ boolean D_Display (void)
     static  boolean		fullscreen = false;
     static  gamestate_t		oldgamestate = -1;
     static  int			borderdrawcount;
-    static  int			last_screen_size;
     int				y;
     boolean			wipe;
     boolean			redrawsbar;
     
     redrawsbar = false;
-
-    if (start_snoflakes && (last_screen_size != SCREENWIDTH * SCREENHEIGHT))
-    {
-	Z_Free(snowflakes);
-	start_snoflakes = false;
-    }
-
-    if (!start_snoflakes && crispy->snowflakes)
-    {
-	last_screen_size = SCREENWIDTH * SCREENHEIGHT;
-	snowflakes_num = last_screen_size >> 6;
-	snowflakes = Z_Malloc(snowflakes_num * sizeof(snowflake_t), PU_STATIC, NULL);
-
-	    for (size_t i = 0; i < snowflakes_num; i++)
-	    {
-		snowflakes[i].y = 0 - (rand() % (SCREENHEIGHT*2));
-		snowflakes[i].x = rand() % (SCREENWIDTH);
-	    }
-	start_snoflakes = true;
-    }
 
     // change the view size if needed
     if (setsizeneeded)
@@ -266,41 +239,22 @@ boolean D_Display (void)
 	D_PageDrawer ();
 	break;
     }
-
+    
     // draw buffered stuff to screen
     I_UpdateNoBlit ();
-
+    
     // draw the view directly
     if (gamestate == GS_LEVEL && (!automapactive || crispy->automapoverlay) && gametic)
     {
 	R_RenderPlayerView (&players[displayplayer]);
 
+	// [crispy] Snow
+	if(crispy->snowflakes)
+	    V_DrawSnow();
+
         // [crispy] Crispy HUD
         if (screenblocks >= CRISPY_HUD || crispy->snowflakes)
             ST_Drawer(false, true);
-    }
-
-    // [crispy] draw snowflakes
-    if(crispy->snowflakes)
-    {
-	int color = I_GetPaletteIndex(0xFF, 0xFF, 0xFF);
-
-	for (size_t i = 0; i < snowflakes_num; i++)
-	{
-	    snowflakes[i].y += rand() % 2;
-	    if(snowflakes[i].y < 0)
-		continue;
-
-	    snowflakes[i].x += 1 - rand() % 3;
-	    if(snowflakes[i].y >= SCREENHEIGHT)
-		snowflakes[i].y = 0;
-	    if(snowflakes[i].x >= SCREENWIDTH)
-		snowflakes[i].x = 0;
-	    if(snowflakes[i].x < 0)
-		snowflakes[i].x = SCREENWIDTH;
-
-	    I_VideoBuffer[snowflakes[i].x + snowflakes[i].y * SCREENWIDTH] = color;
-	}
     }
 
     // [crispy] in automap overlay mode,
@@ -347,6 +301,7 @@ boolean D_Display (void)
     viewactivestate = viewactive;
     inhelpscreensstate = inhelpscreens;
     oldgamestate = wipegamestate = gamestate;
+
     // [crispy] in automap overlay mode,
     // draw the automap and HUD on top of everything else
     if (automapactive && crispy->automapoverlay)
@@ -509,7 +464,6 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_pitch",           &crispy->pitch);
     M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
     M_BindIntVariable("crispy_secretmessage",   &crispy->secretmessage);
-    M_BindIntVariable("crispy_snowflakes",      &crispy->snowflakes);
     M_BindIntVariable("crispy_smoothlight",     &crispy->smoothlight);
     M_BindIntVariable("crispy_smoothmap",       &crispy->smoothmap);
     M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
@@ -2077,8 +2031,6 @@ void D_DoomMain (void)
     I_InitJoystick();
     I_InitSound(true);
     I_InitMusic();
-
-	crispy->snowflakes = 0; // [crispy] turn off by default
 
     // [crispy] check for SSG resources
     crispy->havessg =
