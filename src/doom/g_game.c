@@ -105,6 +105,8 @@ boolean		respawnmonsters;
 int             gameepisode; 
 int             gamemap; 
 
+boolean         activated;	// tag 667 fix -nod2
+
 // If non-zero, exit the level after this number of minutes.
 
 int             timelimit;
@@ -160,10 +162,15 @@ byte		consistancy[MAXPLAYERS][BACKUPTICS];
  
 #define MAXPLMOVE		(forwardmove[1]) 
  
-#define TURBOTHRESHOLD	0x32
+#define TURBOTHRESHOLD	(gameversion < exe_doom_1_2 ? 0x71 : 0x32)
 
-fixed_t         forwardmove[2] = {0x19, 0x32}; 
-fixed_t         sidemove[2] = {0x18, 0x28}; 
+fixed_t         forwardmove12[2] = {0x19, 0x32}; 
+fixed_t         sidemove12[2] = {0x18, 0x28}; 
+
+// Doom 1.0 values, scaled by 1/900
+fixed_t         forwardmove10[2] = {51200/900, 102400/900}; 
+fixed_t         sidemove10[2] = {49152/900, 81920/900}; 
+ 
 fixed_t         angleturn[3] = {640, 1280, 320};    // + slow turn 
 
 static int *weapon_keys[] = {
@@ -354,6 +361,15 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     int		forward;
     int		side;
     int		look;
+    fixed_t     *forwardmove = forwardmove12;
+    fixed_t     *sidemove = sidemove12;
+
+    if (gameversion < exe_doom_1_2)
+    {
+	    forwardmove = forwardmove10;
+	    sidemove = sidemove10;
+    }
+
     player_t *const player = &players[consoleplayer];
     static char playermessage[48];
 
@@ -362,8 +378,8 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     cmd->consistancy = 
 	consistancy[consoleplayer][maketic%BACKUPTICS]; 
  
-    strafe = gamekeydown[key_strafe] || mousebuttons[mousebstrafe] 
-	|| joybuttons[joybstrafe]; 
+    strafe = gamekeydown[key_strafe] || gamekeydown[key_alt_strafe] 
+	|| mousebuttons[mousebstrafe] || joybuttons[joybstrafe]; 
 
     // fraggle: support the old "joyb_speed = 31" hack which
     // allowed an autorun effect
@@ -894,6 +910,8 @@ void G_DoLoadLevel (void)
     }
 
     P_SetupLevel (gameepisode, gamemap, 0, gameskill);    
+    if (gamemode == commercial && gamemap == 7)
+	    activated = false;	// tag 667 fix -nod2
     displayplayer = consoleplayer;		// view the guy you are playing    
     gameaction = ga_nothing; 
     Z_CheckHeap ();
@@ -972,7 +990,7 @@ static void SetMouseButtons(unsigned int buttons_mask)
 // Get info needed to make ticcmd_ts for the players.
 // 
 boolean G_Responder (event_t* ev) 
-{
+{ 
     // [crispy] demo fast-forward
     if (ev->type == ev_keydown && ev->data1 == key_demospeed && 
         (demoplayback || gamestate == GS_DEMOSCREEN))
@@ -996,7 +1014,7 @@ boolean G_Responder (event_t* ev)
               return true;
     }
     }
- 
+
     // allow spy mode changes even during the demo
     if (gamestate == GS_LEVEL && ev->type == ev_keydown 
      && ev->data1 == key_spy && (singledemo || !deathmatch) )
@@ -1012,11 +1030,11 @@ boolean G_Responder (event_t* ev)
     }
     
     // any other key pops up menu if in demos
-    if (gameaction == ga_nothing && !singledemo && 
+/*     if (gameaction == ga_nothing && !singledemo && 
 	(demoplayback || gamestate == GS_DEMOSCREEN) 
 	) 
     { 
-	if (ev->type == ev_keydown ||  
+	if ((ev->type == ev_keydown && !(ev->data1 == key_map_toggle)) ||  
 	    (ev->type == ev_mouse && ev->data1) || 
 	    (ev->type == ev_joystick && ev->data1) ) 
 	{ 
@@ -1027,7 +1045,7 @@ boolean G_Responder (event_t* ev)
 	    return true; 
 	} 
 	return false; 
-    } 
+    }  */
 
     if (gamestate == GS_LEVEL) 
     { 
@@ -1213,7 +1231,7 @@ void G_Ticker (void)
     if (paused & 2 || (!demoplayback && menuactive && !netgame))
         demostarttic++;
     else
-    {     
+    {
     // get commands, check consistancy,
     // and build new consistancy check
     buf = (gametic/ticdup)%BACKUPTICS; 
@@ -2375,8 +2393,8 @@ G_DeferedInitNew
     if (demorecording)
     {
 	// [crispy] reset IDDT cheat when re-starting map during demo recording
-	void AM_ResetIDDTcheat (void);
-	AM_ResetIDDTcheat();
+/* 	void AM_ResetIDDTcheat (void);
+	AM_ResetIDDTcheat(); */
 
 	G_CheckDemoStatus();
 	Z_Free(demoname);
@@ -2983,7 +3001,7 @@ void G_DoPlayDemo (void)
     {
         longtics = true;
     }
-    else if (demoversion != G_VanillaVersionCode() &&
+/*     else if (demoversion != G_VanillaVersionCode() &&
              !(gameversion <= exe_doom_1_2 && olddemo))
     {
         const char *message = "Demo is from a different game version!\n"
@@ -3008,7 +3026,7 @@ void G_DoPlayDemo (void)
 	G_CheckDemoStatus();
 	return;
         }
-    }
+    } */
 
     skill = *demo_p++; 
     episode = *demo_p++; 
@@ -3085,6 +3103,7 @@ void G_DoPlayDemo (void)
 	    deftotaldemotics++;
 	}
     }
+
 } 
 
 //
@@ -3131,6 +3150,32 @@ boolean G_CheckDemoStatus (void)
     { 
         float fps;
         int realtics;
+    
+    // levelstat for -timedemo, last level only -N_A
+		int displayminutes;
+		int displayseconds;
+		int levelseconds;
+		int player;
+		int	killcount;
+        int cnt_kills;
+		int	secretcount; 
+        int cnt_secrets;
+		int totaldemotime;
+		int totalminutes;
+		int totalseconds;
+		
+		player = 0;
+		killcount = players[player].killcount; 
+		secretcount = players[player].secretcount;
+        cnt_kills = (killcount * 100) / totalkills;
+        cnt_secrets = (secretcount * 100) / totalsecret;
+
+		levelseconds = leveltime / TICRATE;
+		displayminutes = levelseconds / 60;
+		displayseconds = levelseconds % 60;
+		totaldemotime = gametic / TICRATE;
+		totalminutes = totaldemotime / 60;
+		totalseconds = totaldemotime % 60;
 
 	endtime = I_GetTime (); 
         realtics = endtime - starttime;
@@ -3140,8 +3185,9 @@ boolean G_CheckDemoStatus (void)
         timingdemo = false;
         demoplayback = false;
 
-	I_Error ("timed %i gametics in %i realtics (%f fps)",
-                 gametic, realtics, fps);
+	I_Error ("timed %i gametics in %i realtics (%f fps)\n\nkills:\t%i/%i\t(%i%%)\nsecrets:\t%i/%i\t(%i%%)\ntime:\t%i:%02d\n\ndemo length:\t%i:%02d",
+              gametic, realtics, fps, killcount, totalkills, cnt_kills, secretcount, totalsecret, cnt_secrets, 
+              displayminutes, displayseconds, totalminutes, totalseconds);
     } 
 	 
     if (demoplayback) 
@@ -3201,14 +3247,14 @@ boolean G_CheckDemoStatus (void)
 	Z_Free (demobuffer); 
 	demorecording = false; 
 	// [crispy] if a new game is started during demo recording, start a new demo
-	if (gameaction != ga_newgame)
+/* 	if (gameaction != ga_newgame)
 	{
 	I_Error ("Demo %s recorded",demoname); 
 	}
 	else
 	{
 	    fprintf(stderr, "Demo %s recorded\n",demoname);
-	}
+	} */
     } 
 	 
     return false; 
