@@ -184,9 +184,9 @@ boolean D_Display (void)
     int				y;
     boolean			wipe;
     boolean			redrawsbar;
-    
+		
     redrawsbar = false;
-
+    
     // change the view size if needed
     if (setsizeneeded)
     {
@@ -250,7 +250,7 @@ boolean D_Display (void)
 
 	// [crispy] Snow
 	if(crispy->snowflakes)
-	    V_DrawSnow();
+	    V_SnowDraw();
 
         // [crispy] Crispy HUD
         if (screenblocks >= CRISPY_HUD || crispy->snowflakes)
@@ -330,6 +330,7 @@ boolean D_Display (void)
 	V_DrawPatchDirect((viewwindowx >> crispy->hires) + ((scaledviewwidth >> crispy->hires) - 68) / 2 - WIDESCREENDELTA, y,
                           W_CacheLumpName (DEH_String("M_PAUSE"), PU_CACHE));
     }
+
 
     // menus go directly to the screen
     M_Drawer ();          // menu is drawn even on top of everything
