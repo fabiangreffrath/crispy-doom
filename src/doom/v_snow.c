@@ -43,22 +43,21 @@ static void InitSnowCoords()
     {
         // here rand() but not Crispy_Random() because
         // Crispy_Random() returns too small numbers
-        snowflakes[i].y = 0 - rand() % (SCREENHEIGHT * 2);
-        snowflakes[i].x = rand() % (SCREENWIDTH);
+        snowflakes[i].y = 0 - (Crispy_Random() * SCREENHEIGHT) / 256;
+        snowflakes[i].x = (Crispy_Random() * SCREENWIDTH) / 256;
     }
 }
 
 static void ResetSnow()
 {
-
     last_screen_size = SCREENWIDTH * SCREENHEIGHT;
     snowflakes_num = last_screen_size >> 6;
 
     if (snowflakes != NULL)
         free(snowflakes);
-    
+
     snowflakes = malloc(snowflakes_num * sizeof(snowflake_t));
-    
+
     InitSnowCoords();
 
     if (snowflakes_color == -1)
@@ -69,7 +68,7 @@ void V_SnowUpdate()
 {
     if (last_screen_size != (SCREENHEIGHT * SCREENWIDTH))
         ResetSnow();
-        
+
     if (Crispy_Random() % 20 == 4)
         wind = 1 - Crispy_Random() % 3;
 
@@ -90,6 +89,7 @@ void V_SnowUpdate()
             snowflakes[i].x = SCREENWIDTH + snowflakes[i].x;
     }
 }
+
 void V_SnowDraw()
 {
     int video_offset;

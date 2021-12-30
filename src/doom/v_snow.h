@@ -23,4 +23,5 @@
 
 void V_SnowDraw();
 void V_SnowUpdate();
+
 #endif

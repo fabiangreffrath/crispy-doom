@@ -248,7 +248,7 @@ boolean D_Display (void)
 	R_RenderPlayerView (&players[displayplayer]);
 
 	// [crispy] Snow
-	if(crispy->snowflakes)
+	if (crispy->snowflakes)
 	    V_SnowDraw();
 
         // [crispy] Crispy HUD

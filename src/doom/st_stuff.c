@@ -1162,11 +1162,11 @@ ST_Responder (event_t* ev)
 	    plyr->message = msg;
 	}
       }
-	// [crispy] snow
-	else if (cht_CheckCheatSP(&cheat_snow, ev->data2))
-	{
-	    crispy->snowflakes = !crispy->snowflakes;
-	}
+      // [crispy] snow
+      else if (cht_CheckCheatSP(&cheat_snow, ev->data2))
+      {
+    crispy->snowflakes = !crispy->snowflakes;
+      }
     }
 
 // [crispy] now follow "harmless" Crispy Doom specific cheats
