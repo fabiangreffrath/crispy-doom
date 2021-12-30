@@ -301,7 +301,7 @@ boolean D_Display (void)
     viewactivestate = viewactive;
     inhelpscreensstate = inhelpscreens;
     oldgamestate = wipegamestate = gamestate;
-
+    
     // [crispy] in automap overlay mode,
     // draw the automap and HUD on top of everything else
     if (automapactive && crispy->automapoverlay)
