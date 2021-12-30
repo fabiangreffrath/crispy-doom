@@ -54,12 +54,11 @@ static void ResetSnow()
     last_screen_size = SCREENWIDTH * SCREENHEIGHT;
     snowflakes_num = last_screen_size >> 6;
 
-    if (snowflakes == NULL)
-        snowflakes = malloc(snowflakes_num * sizeof(snowflake_t));
-    else
-        snowflakes = realloc(snowflakes, snowflakes_num * sizeof(snowflake_t));
+    if (snowflakes != NULL)
+        free(snowflakes);
     
-
+    snowflakes = malloc(snowflakes_num * sizeof(snowflake_t));
+    
     InitSnowCoords();
 
     if (snowflakes_color == -1)
@@ -91,7 +90,6 @@ void V_SnowUpdate()
             snowflakes[i].x = SCREENWIDTH + snowflakes[i].x;
     }
 }
-
 void V_SnowDraw()
 {
     int video_offset;
