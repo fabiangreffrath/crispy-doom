@@ -19,12 +19,12 @@
 //
 
 #include <stdlib.h>
-#include <stdbool.h>
 
 #include "v_snow.h"
 #include "i_video.h"
 #include "z_zone.h"
 #include "r_main.h"
+#include "m_random.h"
 
 typedef struct snowflake_t
 {
@@ -41,42 +41,24 @@ static void InitSnowCoords()
 {
     for (size_t i = 0; i < snowflakes_num; i++)
     {
+        // here rand() but not Crispy_Random() because
+        // Crispy_Random() returns too small numbers
         snowflakes[i].y = 0 - rand() % (SCREENHEIGHT * 2);
         snowflakes[i].x = rand() % (SCREENWIDTH);
     }
 }
 
-void V_SnowUpdate()
-{
-    if (rand() % 150 == 1)
-        wind = 1 - rand() % 3;
-
-    for (size_t i = 0; i < snowflakes_num; i++)
-    {
-        snowflakes[i].y += rand() % 2;
-        if (snowflakes[i].y < 0)
-            continue;
-
-        snowflakes[i].x += 1 - rand() % 3;
-        snowflakes[i].x += wind;
-
-        if (snowflakes[i].y >= SCREENHEIGHT)
-            snowflakes[i].y = 0;
-        if (snowflakes[i].x >= SCREENWIDTH)
-            snowflakes[i].x = snowflakes[i].x - SCREENWIDTH;
-        if (snowflakes[i].x < 0)
-            snowflakes[i].x = SCREENWIDTH - snowflakes[i].x;
-    }
-}
-
 static void ResetSnow()
 {
-    if (snowflakes != NULL)
-        Z_Free(snowflakes);
 
     last_screen_size = SCREENWIDTH * SCREENHEIGHT;
     snowflakes_num = last_screen_size >> 6;
-    snowflakes = Z_Malloc(snowflakes_num * sizeof(snowflake_t), PU_STATIC, NULL);
+
+    if (snowflakes == NULL)
+        snowflakes = malloc(snowflakes_num * sizeof(snowflake_t));
+    else
+        snowflakes = realloc(snowflakes, snowflakes_num * sizeof(snowflake_t));
+    
 
     InitSnowCoords();
 
@@ -84,12 +66,35 @@ static void ResetSnow()
         snowflakes_color = I_GetPaletteIndex(0xFF, 0xFF, 0xFF);
 }
 
+void V_SnowUpdate()
+{
+    if (last_screen_size != (SCREENHEIGHT * SCREENWIDTH))
+        ResetSnow();
+        
+    if (Crispy_Random() % 20 == 4)
+        wind = 1 - Crispy_Random() % 3;
+
+    for (size_t i = 0; i < snowflakes_num; i++)
+    {
+        snowflakes[i].y += Crispy_Random() % 2;
+        if (snowflakes[i].y < 0)
+            continue;
+
+        snowflakes[i].x += 1 - Crispy_Random() % 3;
+        snowflakes[i].x += wind;
+
+        if (snowflakes[i].y >= SCREENHEIGHT)
+            snowflakes[i].y = 0;
+        if (snowflakes[i].x >= SCREENWIDTH)
+            snowflakes[i].x = snowflakes[i].x - SCREENWIDTH;
+        if (snowflakes[i].x < 0)
+            snowflakes[i].x = SCREENWIDTH + snowflakes[i].x;
+    }
+}
+
 void V_SnowDraw()
 {
     int video_offset;
-
-    if (last_screen_size != (SCREENHEIGHT * SCREENWIDTH))
-        ResetSnow();
 
     for (size_t i = 0; i < snowflakes_num; i++)
     {
