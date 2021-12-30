@@ -24,7 +24,6 @@
 #include "i_video.h"
 #include "i_video.h"
 #include "z_zone.h"
-#include "m_fixed.h"
 #include "r_main.h"
 
 typedef struct snowflake_t {
@@ -38,21 +37,17 @@ static int             last_screen_size;
 
 static bool CoordsNeedsUpdate()
 {
-    static int counter = 0;
-    static int last_time = -1;
+    static int 	last_tic = -1;
+    int		current_tic;
 
-    int current_time = I_GetTimeMS();
+    current_tic = I_GetTime();
 
-    if (last_time == -1)
-	last_time = current_time;
-
-    counter += I_GetTimeMS() - last_time;
-    if (counter <= TICRATE)
+    if (last_tic == -1)
+	last_tic = current_tic;
+    if (current_tic == last_tic)
 	return false;
 
-    counter = counter - TICRATE;
-    last_time = current_time;
-
+    last_tic = current_tic;
     return true;
 }
 
@@ -67,9 +62,6 @@ static void InitSnowCoords()
 
 static void UpdateSnowCoords()
 {
-    if (!CoordsNeedsUpdate())
-	return;
-
     for (size_t i = 0; i < snowflakes_num; i++)
     {
 	snowflakes[i].y += rand() % 2;
@@ -109,7 +101,8 @@ void V_DrawSnow()
     if (last_screen_size != (SCREENHEIGHT * SCREENWIDTH))
 	ResetSnow();
 
-    UpdateSnowCoords();
+    if (CoordsNeedsUpdate())
+    	UpdateSnowCoords();
 
     for (size_t i = 0; i < snowflakes_num; i++)
     {
