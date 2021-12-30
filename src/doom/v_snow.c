@@ -34,6 +34,7 @@ static snowflake_t     *snowflakes = NULL;
 static size_t          snowflakes_num;
 static int             snowflakes_color = -1;
 static int             last_screen_size;
+static int             wind = 1;
 
 static bool CoordsNeedsUpdate()
 {
@@ -62,6 +63,9 @@ static void InitSnowCoords()
 
 static void UpdateSnowCoords()
 {
+    if (rand()%150 == 1)
+	wind = 1 - rand()%3;
+
     for (size_t i = 0; i < snowflakes_num; i++)
     {
 	snowflakes[i].y += rand() % 2;
@@ -69,12 +73,14 @@ static void UpdateSnowCoords()
 	    continue;
 
 	snowflakes[i].x += 1 - rand() % 3;
+	snowflakes[i].x += wind;
+
 	if (snowflakes[i].y >= SCREENHEIGHT)
 	    snowflakes[i].y = 0;
 	if (snowflakes[i].x >= SCREENWIDTH)
-	    snowflakes[i].x = 0;
+	    snowflakes[i].x = snowflakes[i].x - SCREENWIDTH;
 	if (snowflakes[i].x < 0)
-	    snowflakes[i].x = SCREENWIDTH;
+	    snowflakes[i].x = SCREENWIDTH - snowflakes[i].x;
     }
 }
 
