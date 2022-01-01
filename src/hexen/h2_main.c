@@ -192,6 +192,9 @@ void D_BindVariables(void)
         M_snprintf(buf, sizeof(buf), "chatmacro%i", i);
         M_BindStringVariable(buf, &chat_macros[i]);
     }
+
+    // [crispy] bind "crispness" config variables
+    M_BindIntVariable("crispy_widescreen",      &crispy->widescreen);
 }
 
 // Set the default directory where hub savegames are saved.
