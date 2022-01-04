@@ -716,6 +716,17 @@ void G_DoLoadLevel(void)
         I_Error(message);
     }
 
+
+    // [crispy] auto health
+    if (crispy->autohealth && !crispy->singleplayer)
+    {
+        const char message[] = "The -autohealth option is not supported"
+                               " for demos and\n"
+                               " network play.";
+        if (!demo_p) demorecording = false;
+        I_Error(message);
+    }
+
     SN_StopAllSequences();
     P_SetupLevel(gameepisode, gamemap, 0, gameskill);
     displayplayer = consoleplayer;      // view the guy you are playing   
