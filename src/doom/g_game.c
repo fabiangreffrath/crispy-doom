@@ -972,7 +972,7 @@ static void SetMouseButtons(unsigned int buttons_mask)
 // Get info needed to make ticcmd_ts for the players.
 // 
 boolean G_Responder (event_t* ev) 
-{
+{ 
     // [crispy] demo pause (from prboom-plus)
     if (gameaction == ga_nothing && 
         (demoplayback || gamestate == GS_DEMOSCREEN))
