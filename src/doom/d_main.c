@@ -65,6 +65,7 @@
 #include "a11y.h" // [crispy] A11Y
 
 #include "hu_stuff.h"
+#include "v_snow.h"
 #include "wi_stuff.h"
 #include "st_stuff.h"
 #include "am_map.h"
@@ -302,6 +303,16 @@ boolean D_Display (void)
     {
 	AM_Drawer ();
 	HU_Drawer ();
+
+	// [crispy] force redraw of status bar and border
+	viewactivestate = false;
+	inhelpscreensstate = true;
+    }
+
+    // [crispy] Snow
+    if (crispy->snowflakes)
+    {
+	V_SnowDraw();
 
 	// [crispy] force redraw of status bar and border
 	viewactivestate = false;
