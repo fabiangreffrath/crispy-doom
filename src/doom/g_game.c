@@ -972,7 +972,7 @@ static void SetMouseButtons(unsigned int buttons_mask)
 // Get info needed to make ticcmd_ts for the players.
 // 
 boolean G_Responder (event_t* ev) 
-{ 
+{
     // [crispy] demo pause (from prboom-plus)
     if (gameaction == ga_nothing && 
         (demoplayback || gamestate == GS_DEMOSCREEN))
@@ -985,6 +985,13 @@ boolean G_Responder (event_t* ev)
                 S_ResumeSound();
             return true;
         }
+
+    // [crispy] demo fast-forward
+    if (ev->type == ev_keydown && ev->data1 == key_demospeed && 
+        (demoplayback || gamestate == GS_DEMOSCREEN))
+    {
+        singletics = !singletics;
+        return true;
     }
  
     // allow spy mode changes even during the demo
@@ -2384,6 +2391,8 @@ void G_DoNewGame (void)
     netdemo = false;
     netgame = false;
     deathmatch = false;
+    // [crispy] reset game speed after demo fast-forward
+    singletics = false;
     playeringame[1] = playeringame[2] = playeringame[3] = 0;
     // [crispy] do not reset -respawn, -fast and -nomonsters parameters
     /*
