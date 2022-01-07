@@ -1028,27 +1028,81 @@ void HU_Ticker(void)
 
     if (crispy->automapstats == WIDGETS_ALWAYS || (automapactive && crispy->automapstats == WIDGETS_AUTOMAP))
     {
-	// [crispy] count spawned monsters
-	if (extrakills)
-	    M_snprintf(str, sizeof(str), "%s%s%s%d/%d+%d", cr_stat, kills, crstr[CR_GRAY],
-	            plr->killcount, totalkills, extrakills);
+	if (crispy->statsformat == STATSFORMAT_BOOLEAN)
+	{
+		M_snprintf(str, sizeof(str), "%s%s%s%s", cr_stat, kills, crstr[CR_GRAY],
+			   plr->killcount >= totalkills ? "Yes" : "No");
+	}
+	else if (crispy->statsformat == STATSFORMAT_PERCENT)
+	{
+		M_snprintf(str, sizeof(str), "%s%s%s%d%%", cr_stat, kills, crstr[CR_GRAY],
+			   plr->killcount * 100 / (totalkills ? totalkills : 1));
+	}
+	else if (crispy->statsformat == STATSFORMAT_REMAINING)
+	{
+		M_snprintf(str, sizeof(str), "%s%s%s%d", cr_stat, kills, crstr[CR_GRAY],
+			   MAX(0, totalkills - plr->killcount));
+	}
 	else
-	    M_snprintf(str, sizeof(str), "%s%s%s%d/%d", cr_stat, kills, crstr[CR_GRAY],
-	            plr->killcount, totalkills);
+	{
+		// [crispy] count spawned monsters
+		if (extrakills)
+		    M_snprintf(str, sizeof(str), "%s%s%s%d/%d+%d", cr_stat, kills, crstr[CR_GRAY],
+		               plr->killcount, totalkills, extrakills);
+		else
+		    M_snprintf(str, sizeof(str), "%s%s%s%d/%d", cr_stat, kills, crstr[CR_GRAY],
+		               plr->killcount, totalkills);
+	}
 	HUlib_clearTextLine(&w_kills);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_kills, *(s++));
 
-	M_snprintf(str, sizeof(str), "%sI %s%d/%d", cr_stat, crstr[CR_GRAY],
-	        plr->itemcount, totalitems);
+	if (crispy->statsformat == STATSFORMAT_BOOLEAN)
+	{
+		M_snprintf(str, sizeof(str), "%sI %s%s", cr_stat, crstr[CR_GRAY],
+			   plr->itemcount >= totalitems ? "Yes" : "No");
+	}
+	else if (crispy->statsformat == STATSFORMAT_PERCENT)
+	{
+		M_snprintf(str, sizeof(str), "%sI %s%d%%", cr_stat, crstr[CR_GRAY],
+			   plr->itemcount * 100 / (totalitems ? totalitems : 1));
+	}
+	else if (crispy->statsformat == STATSFORMAT_REMAINING)
+	{
+		M_snprintf(str, sizeof(str), "%sI %s%d", cr_stat, crstr[CR_GRAY],
+			   MAX(0, totalitems - plr->itemcount));
+	}
+	else
+	{
+		M_snprintf(str, sizeof(str), "%sI %s%d/%d", cr_stat, crstr[CR_GRAY],
+		           plr->itemcount, totalitems);
+	}
 	HUlib_clearTextLine(&w_items);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_items, *(s++));
 
-	M_snprintf(str, sizeof(str), "%sS %s%d/%d", cr_stat, crstr[CR_GRAY],
-	        plr->secretcount, totalsecret);
+	if (crispy->statsformat == STATSFORMAT_BOOLEAN)
+	{
+		M_snprintf(str, sizeof(str), "%sS %s%s", cr_stat, crstr[CR_GRAY],
+			   plr->secretcount >= totalsecret ? "Yes" : "No");
+	}
+	else if (crispy->statsformat == STATSFORMAT_PERCENT)
+	{
+		M_snprintf(str, sizeof(str), "%sS %s%d%%", cr_stat, crstr[CR_GRAY],
+			   plr->secretcount * 100 / (totalsecret ? totalsecret : 1));
+	}
+	else if (crispy->statsformat == STATSFORMAT_REMAINING)
+	{
+		M_snprintf(str, sizeof(str), "%sS %s%d", cr_stat, crstr[CR_GRAY],
+			   MAX(0, totalsecret - plr->secretcount));
+	}
+	else
+	{
+		M_snprintf(str, sizeof(str), "%sS %s%d/%d", cr_stat, crstr[CR_GRAY],
+		           plr->secretcount, totalsecret);
+	}
 	HUlib_clearTextLine(&w_scrts);
 	s = str;
 	while (*s)
