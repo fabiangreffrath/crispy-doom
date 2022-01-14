@@ -131,7 +131,8 @@ HUlib_drawTextLine
 	// [crispy] support tab stops
 	else if (c == '\t')
 	{
-	    while ((x - l->x) % tabwidth) x++;
+	    int tab = (x - l->x - 1) / tabwidth;
+	    x = l->x + (tab + 1) * tabwidth;
 	    if (x >= ORIGWIDTH + WIDESCREENDELTA)
 		break;
 	}
