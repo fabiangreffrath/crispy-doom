@@ -71,6 +71,8 @@ void (*tlcolfunc) (void);
 void (*transcolfunc) (void);
 void (*spanfunc) (void);
 
+void SB_ForceRedraw(void); // [crispy] sb_bar.c
+
 /*
 ===================
 =
@@ -667,6 +669,9 @@ void R_ExecuteSetViewSize(void)
 // draw the border
 //
     R_DrawViewBorder();         // erase old menu stuff
+
+    // [crispy] Redraw status bar needed for widescreen HUD
+    SB_ForceRedraw();
 }
 
 
