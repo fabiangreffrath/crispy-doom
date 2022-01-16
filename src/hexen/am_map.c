@@ -105,7 +105,7 @@ static short mapxstart = 0;     //x-value for the bitmap.
 
 // [crispy] Used for automap background tiling and scrolling
 #define MAPBGROUNDWIDTH ORIGWIDTH
-#define MAPBGROUNDHEIGHT (ORIGHEIGHT - SBARHEIGHT - 3)
+#define MAPBGROUNDHEIGHT (ORIGHEIGHT - ORIGSBARHEIGHT - 3)
 
 //byte screens[][SCREENWIDTH*SCREENHEIGHT];
 //void V_MarkRect (int x, int y, int width, int height);
@@ -359,7 +359,7 @@ void AM_LevelInit(boolean reinit)
     leveljuststarted = 0;
 
     finit_width = SCREENWIDTH;
-    finit_height = SCREENHEIGHT - ((SBARHEIGHT + 3) << crispy->hires);
+    finit_height = SCREENHEIGHT - ((ORIGSBARHEIGHT + 3) << crispy->hires);
 
     f_x = f_y = 0;
     f_w = finit_width;
