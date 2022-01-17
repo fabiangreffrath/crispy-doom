@@ -833,7 +833,7 @@ void V_CopyScaledBuffer(pixel_t *dest, pixel_t *src, size_t size)
     }
 #endif
 
-    // [crispy] Fill pillarboxes in widescreen mode. Needs to be a two separate
+    // [crispy] Fill pillarboxes in widescreen mode. Needs to be two separate
     // pillars to allow for Heretic finale vertical scrolling.
     if (SCREENWIDTH != NONWIDEWIDTH)
     {
