@@ -1782,9 +1782,6 @@ void MN_DrawInfo(void)
     lumpindex_t lumpindex; // [crispy]
 
     I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
-    // V_CopyScaledBuffer(I_VideoBuffer,
-    //        (byte *) W_CacheLumpNum(W_GetNumForName("TITLE") + InfoType,
-    //                                PU_CACHE), ORIGWIDTH * ORIGHEIGHT);
 
     // [crispy] Refactor to allow for use of V_DrawFullscreenRawOrPatch
 
