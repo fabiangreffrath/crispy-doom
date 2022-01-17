@@ -1233,11 +1233,12 @@ void DrawMainBar(void)
          for (j = 0; j <= crispy->hires; j++)
           for (k = 0; k <= crispy->hires; k++)
           {
-            temp = SCREENWIDTH * ((i << crispy->hires) + j);
-
-            I_VideoBuffer[temp + ((95 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
-            I_VideoBuffer[temp + ((96 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
-            I_VideoBuffer[temp + ((97 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((95 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((96 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((97 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
           }
         }
         V_DrawPatch(102, 164, manaVialPatch2);
@@ -1246,10 +1247,12 @@ void DrawMainBar(void)
          for (j = 0; j <= crispy->hires; j++)
           for (k = 0; k <= crispy->hires; k++)
           {
-            temp = SCREENWIDTH * ((i << crispy->hires) + j);
-            I_VideoBuffer[temp + ((103 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
-            I_VideoBuffer[temp + ((104 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
-            I_VideoBuffer[temp + ((105 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((103 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((104 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((105 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
           }
         }
         oldweapon = CPlayer->readyweapon;
