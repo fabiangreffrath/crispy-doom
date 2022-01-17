@@ -1004,7 +1004,9 @@ void H2_PageTicker(void)
 
 static void PageDrawer(void)
 {
-    V_DrawRawScreen(W_CacheLumpName(pagename, PU_CACHE));
+    // V_DrawRawScreen(W_CacheLumpName(pagename, PU_CACHE));
+    V_DrawFullscreenRawOrPatch(W_GetNumForName(pagename)); // [crispy]
+
     if (demosequence == 1)
     {
         V_DrawPatch(4, 160, W_CacheLumpName("ADVISOR", PU_CACHE));

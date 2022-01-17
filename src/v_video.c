@@ -877,6 +877,28 @@ void V_DrawRawScreen(pixel_t *raw)
     V_CopyScaledBuffer(dest_screen, raw, ORIGWIDTH * ORIGHEIGHT);
 }
 
+// [crispy] For Heretic and Hexen widescreen support of replacement TITLE,
+// HELP1, etc. These lumps are normally 320 x 200 raw graphics. If the lump
+// size is larger than expected, proceed as if it were a patch.
+void V_DrawFullscreenRawOrPatch(lumpindex_t index)
+{
+    patch_t *patch;
+
+    patch = W_CacheLumpNum(index, PU_CACHE);
+
+    if (W_LumpLength(index) == ORIGWIDTH * ORIGHEIGHT)
+    {
+        V_DrawRawScreen((pixel_t*)patch);
+    }
+    else if ((patch->height == 200) && (patch->width >= 320))
+    {
+        V_DrawPatchFullScreen(patch, false);
+    }
+    else
+    {
+        I_Error("Invalid fullscreen graphic.");
+    }
+}
 //
 // V_Init
 // 
