@@ -87,11 +87,10 @@ P_GiveAmmo
     
     if (gameskill == sk_baby
 	|| gameskill == sk_nightmare
-    || (crispy->moreammo && !demoplayback))
+    || critical->moreammo)
     {
 	// give double ammo in trainer mode,
 	// you'll need in nightmare
-    // [crispy] double ammo
 	num <<= 1;
     }
     

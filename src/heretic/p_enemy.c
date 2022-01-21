@@ -697,9 +697,8 @@ void A_Chase(mobj_t * actor)
         actor->threshold--;
     }
 
-    if (gameskill == sk_nightmare || (crispy->fast && !demoplayback))
+    if (gameskill == sk_nightmare || critical->fast)
     {                           // Monsters move faster in nightmare mode
-                                // [crispy] fast monsters
         actor->tics -= actor->tics / 2;
         if (actor->tics < 3)
         {
@@ -736,12 +735,11 @@ void A_Chase(mobj_t * actor)
 
 //
 // don't attack twice in a row
-// [crispy] fast monsters
     if (actor->flags & MF_JUSTATTACKED)
     {
         actor->flags &= ~MF_JUSTATTACKED;
         if (gameskill != sk_nightmare
-            && !(crispy->fast && !demoplayback))
+            && !critical->fast)
             P_NewChaseDir(actor);
         return;
     }
@@ -759,11 +757,10 @@ void A_Chase(mobj_t * actor)
 
 //
 // check for missile attack
-// [crispy] fast monsters
     if (actor->info->missilestate)
     {
         if (gameskill < sk_nightmare &&
-            !(crispy->fast && !demoplayback) && actor->movecount)
+            !critical->fast && actor->movecount)
             goto nomissile;
         if (!P_CheckMissileRange(actor))
             goto nomissile;

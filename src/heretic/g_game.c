@@ -777,30 +777,6 @@ void G_DoLoadLevel(void)
         memset(players[i].frags, 0, sizeof(players[i].frags));
     }
 
-    // [crispy] update the "singleplayer" variable
-    CheckCrispySingleplayer(!demorecording && !demoplayback && !netgame);
-
-    // [crispy] more ammo
-    if (crispy->moreammo && !crispy->singleplayer)
-    {
-        const char message[] = "The -moreammo option is not supported"
-                               " for demos and\n"
-                               " network play.";
-        if (!demo_p) demorecording = false;
-        I_Error(message);
-    }
-
-    // [crispy] fast monsters
-    if (crispy->fast && !crispy->singleplayer)
-    {
-        const char message[] = "The -fast option is not supported"
-                               " for demos and\n"
-                               " network play.";
-        if (!demo_p) demorecording = false;
-        I_Error(message);
-    }
-
-
     // [crispy] wand start
     if (crispy->pistolstart)
     {
@@ -820,16 +796,6 @@ void G_DoLoadLevel(void)
                                    " network play.";
             I_Error(message);
         }
-    }
-
-    // [crispy] auto health
-    if (crispy->autohealth && !crispy->singleplayer)
-    {
-        const char message[] = "The -autohealth option is not supported"
-                               " for demos and\n"
-                               " network play.";
-        if (!demo_p) demorecording = false;
-        I_Error(message);
     }
 
     P_SetupLevel(gameepisode, gamemap, 0, gameskill);
@@ -1892,8 +1858,7 @@ void G_InitNew(skill_t skill, int episode, int map)
         respawnmonsters = false;
     }
     // Set monster missile speeds
-    // [crispy] fast monsters
-    speed = skill == sk_nightmare || (crispy->fast && !demoplayback);
+    speed = skill == sk_nightmare || critical->fast;
     for (i = 0; MonsterMissileInfo[i].type != -1; i++)
     {
         mobjinfo[MonsterMissileInfo[i].type].speed

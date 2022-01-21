@@ -845,6 +845,36 @@ static void WarpCheck(void)
 
 void H2_GameLoop(void)
 {
+    // [crispy] update the "singleplayer" variable
+    CheckCrispySingleplayer(!demorecording && gameaction != ga_playdemo && !netgame);
+
+    // [crispy] more mana
+    if (crispy->moreammo && !crispy->singleplayer)
+    {
+        const char message[] = "The -moremana option is not supported"
+                               " for demos and\n"
+                               " network play.";
+        I_Error(message);
+    }
+
+    // [crispy] fast monsters
+    if (crispy->fast && !crispy->singleplayer)
+    {
+        const char message[] = "The -fast option is not supported"
+                               " for demos and\n"
+                               " network play.";
+        I_Error(message);
+    }
+
+    // [crispy] auto health
+    if (crispy->autohealth && !crispy->singleplayer)
+    {
+        const char message[] = "The -autohealth option is not supported"
+                               " for demos and\n"
+                               " network play.";
+        I_Error(message);
+    }
+
     if (M_CheckParm("-debugfile"))
     {
         char filename[20];
