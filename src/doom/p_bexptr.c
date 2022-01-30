@@ -243,6 +243,11 @@ void A_FireOldBFG(mobj_t *mobj, player_t *player, pspdef_t *psp)
       th = P_SpawnMobj(mo->x, mo->y,
 		       mo->z + 62*FRACUNIT - player->psprites[ps_weapon].sy,
 		       type);
+      // [NS] Play projectile sound.
+      if (th->info->seesound)
+      {
+	S_StartSound (th, th->info->seesound);
+      }
       th->target = mo; // P_SetTarget(&th->target, mo);
       th->angle = an1;
       th->momx = finecosine[an1>>ANGLETOFINESHIFT] * 25;
