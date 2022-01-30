@@ -372,6 +372,12 @@ void P_ZMovement (mobj_t* mo)
 	    mo->momz = -mo->momz;
 	}
 	
+	// [NS] Beta projectile bouncing.
+	if ( (mo->flags & MF_MISSILE) && (mo->flags & MF_BOUNCES) )
+	{
+	    mo->momz = -mo->momz;
+	}
+
 	if (mo->momz < 0)
 	{
 	    // [crispy] delay next jump
@@ -414,7 +420,8 @@ void P_ZMovement (mobj_t* mo)
             mo->momz = -mo->momz;
 
 	if ( (mo->flags & MF_MISSILE)
-	     && !(mo->flags & MF_NOCLIP) )
+	     // [NS] Beta projectile bouncing.
+	     && !(mo->flags & MF_NOCLIP) && !(mo->flags & MF_BOUNCES) )
 	{
 	    P_ExplodeMissile (mo);
 	    return;
@@ -430,6 +437,13 @@ void P_ZMovement (mobj_t* mo)
 	
     if (mo->z + mo->height > mo->ceilingz)
     {
+	// [NS] Beta projectile bouncing.
+	if ( (mo->flags & MF_MISSILE) && (mo->flags & MF_BOUNCES) )
+	{
+	    mo->momz = -mo->momz;
+	    mo->z = mo->ceilingz - mo->height;
+	}
+
 	// hit the ceiling
 	if (mo->momz > 0)
 	    mo->momz = 0;
@@ -443,7 +457,7 @@ void P_ZMovement (mobj_t* mo)
 	}
 	
 	if ( (mo->flags & MF_MISSILE)
-	     && !(mo->flags & MF_NOCLIP) )
+	     && !(mo->flags & MF_NOCLIP) && !(mo->flags & MF_BOUNCES) )
 	{
 	    P_ExplodeMissile (mo);
 	    return;
