@@ -250,9 +250,10 @@ void A_FireOldBFG(mobj_t *mobj, player_t *player, pspdef_t *psp)
       }
       th->target = mo; // P_SetTarget(&th->target, mo);
       th->angle = an1;
-      th->momx = finecosine[an1>>ANGLETOFINESHIFT] * 25;
-      th->momy = finesine[an1>>ANGLETOFINESHIFT] * 25;
-      th->momz = finetangent[an2>>ANGLETOFINESHIFT] * 25;
+      // [NS] Use speed from thing info.
+      th->momx = FixedMul(th->info->speed, finecosine[an1>>ANGLETOFINESHIFT]);
+      th->momy = FixedMul(th->info->speed, finesine[an1>>ANGLETOFINESHIFT]);
+      th->momz = FixedMul(th->info->speed, finetangent[an2>>ANGLETOFINESHIFT]);
       // [crispy] suppress interpolation of player missiles for the first tic
       th->interp = -1;
       P_CheckMissileSpawn(th);
