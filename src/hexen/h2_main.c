@@ -194,6 +194,9 @@ void D_BindVariables(void)
     }
 
     // [crispy] bind "crispness" config variables
+    M_BindIntVariable("crispy_hires",           &crispy->hires);
+    M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
+    M_BindIntVariable("crispy_vsync",           &crispy->vsync);
     M_BindIntVariable("crispy_widescreen",      &crispy->widescreen);
 }
 
