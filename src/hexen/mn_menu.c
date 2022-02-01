@@ -30,6 +30,7 @@
 #include "r_local.h"
 #include "s_sound.h"
 #include "v_video.h"
+#include "v_trans.h" // [crispy] dp_translation
 
 #include "crispy.h"
 
@@ -2016,7 +2017,9 @@ static void DrawCrispnessMenu(void)
     MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 6);
 
     // Subheaders
+    dp_translation = cr[CR_GREEN];
     MN_DrTextA("RENDERING", 63, 30);
+    dp_translation = cr[CR_GOLD];
 
     // Hires rendering
     MN_DrTextA(crispy->hires ? "ON" : "OFF", 254, 40);
@@ -2033,4 +2036,6 @@ static void DrawCrispnessMenu(void)
 
     // Vsync
     MN_DrTextA(crispy->vsync ? "ON" : "OFF", 167, 70);
+
+    dp_translation = NULL;
 }
