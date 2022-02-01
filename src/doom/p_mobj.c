@@ -449,8 +449,10 @@ void P_ZMovement (mobj_t* mo)
 	    }
 	    else
 	    {
-		mo->momz = 0;
+	    mo->momz = 0;
 	    }
+	}
+	{
 	    mo->z = mo->ceilingz - mo->height;
 	}
 
