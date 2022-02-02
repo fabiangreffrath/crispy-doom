@@ -2021,7 +2021,7 @@ void A_SerpentChase(mobj_t * actor)
         actor->threshold--;
     }
 
-    if (gameskill == sk_nightmare || (critical->fast))
+    if (gameskill == sk_nightmare || critical->fast)
     {                           // Monsters move faster in nightmare mode
         actor->tics -= actor->tics / 2;
         if (actor->tics < 3)
@@ -2064,7 +2064,7 @@ void A_SerpentChase(mobj_t * actor)
     {
         actor->flags &= ~MF_JUSTATTACKED;
         if (gameskill != sk_nightmare
-            && !(critical->fast))
+            && !critical->fast)
             P_NewChaseDir(actor);
         return;
     }
@@ -2223,7 +2223,7 @@ void A_SerpentWalk(mobj_t * actor)
         actor->threshold--;
     }
 
-    if (gameskill == sk_nightmare || (critical->fast))
+    if (gameskill == sk_nightmare || critical->fast)
     {                           // Monsters move faster in nightmare mode
         actor->tics -= actor->tics / 2;
         if (actor->tics < 3)
@@ -2266,7 +2266,7 @@ void A_SerpentWalk(mobj_t * actor)
     {
         actor->flags &= ~MF_JUSTATTACKED;
         if (gameskill != sk_nightmare
-            && !(critical->fast))
+            && !critical->fast)
             P_NewChaseDir(actor);
         return;
     }
@@ -4609,7 +4609,7 @@ void A_FastChase(mobj_t * actor)
         actor->threshold--;
     }
 
-    if (gameskill == sk_nightmare || (critical->fast))
+    if (gameskill == sk_nightmare || critical->fast)
     {                           // Monsters move faster in nightmare mode
         actor->tics -= actor->tics / 2;
         if (actor->tics < 3)
@@ -4652,7 +4652,7 @@ void A_FastChase(mobj_t * actor)
     {
         actor->flags &= ~MF_JUSTATTACKED;
         if (gameskill != sk_nightmare
-            && !(critical->fast))
+            && !critical->fast)
             P_NewChaseDir(actor);
         return;
     }

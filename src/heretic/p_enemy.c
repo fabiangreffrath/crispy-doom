@@ -735,6 +735,7 @@ void A_Chase(mobj_t * actor)
 
 //
 // don't attack twice in a row
+//
     if (actor->flags & MF_JUSTATTACKED)
     {
         actor->flags &= ~MF_JUSTATTACKED;
@@ -757,6 +758,7 @@ void A_Chase(mobj_t * actor)
 
 //
 // check for missile attack
+//
     if (actor->info->missilestate)
     {
         if (gameskill < sk_nightmare &&
