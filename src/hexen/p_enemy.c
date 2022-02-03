@@ -753,8 +753,8 @@ void A_Chase(mobj_t * actor)
 //
     if (actor->info->missilestate)
     {
-        if (gameskill < sk_nightmare &&
-            !critical->fast && actor->movecount)
+        if (gameskill < sk_nightmare && actor->movecount
+            && !critical->fast)
             goto nomissile;
         if (!P_CheckMissileRange(actor))
             goto nomissile;
@@ -4691,8 +4691,8 @@ void A_FastChase(mobj_t * actor)
 //
     if (actor->info->missilestate)
     {
-        if (gameskill < sk_nightmare &&
-            !(critical->fast) && actor->movecount)
+        if (gameskill < sk_nightmare && actor->movecount
+            && !critical->fast)
             goto nomissile;
         if (!P_CheckMissileRange(actor))
             goto nomissile;

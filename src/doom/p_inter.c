@@ -87,7 +87,7 @@ P_GiveAmmo
     
     if (gameskill == sk_baby
 	|| gameskill == sk_nightmare
-    || critical->moreammo)
+	|| critical->moreammo)
     {
 	// give double ammo in trainer mode,
 	// you'll need in nightmare
