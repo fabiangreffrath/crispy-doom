@@ -1098,7 +1098,7 @@ void G_Ticker(void)
 //
     while (gameaction != ga_nothing)
     {
-        // [crispy] check if we are in a demo reel
+        // [crispy] check if we are in the demo reel
         CheckCrispySingleplayer(!demorecording && gameaction != ga_playdemo && !netgame);
         switch (gameaction)
         {
