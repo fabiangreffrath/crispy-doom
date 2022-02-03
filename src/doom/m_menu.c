@@ -88,7 +88,7 @@ int			screenblocks = 10; // [crispy] increased
 int			screenSize;
 
 // -1 = no quicksave slot picked!
-const int			quickSaveSlot=-1;
+int			quickSaveSlot;
 
  // 1 = message to be printed
 int			messageToPrint;
@@ -872,6 +872,10 @@ void M_LoadSelect(int choice)
     SaveDef.lastOn = choice;
     G_LoadGame (name);
     M_ClearMenus ();
+
+    // [crispy] allow quickload before quicksave
+    if (quickSaveSlot == -2)
+	quickSaveSlot = choice;
 }
 
 //
@@ -920,6 +924,10 @@ void M_DoSave(int slot)
 {
     G_SaveGame (slot,savegamestrings[slot]);
     M_ClearMenus ();
+
+    // PICK QUICKSAVE SLOT YET?
+    if (quickSaveSlot == -2)
+	quickSaveSlot = slot;
 }
 
 //
@@ -1032,6 +1040,16 @@ void M_SaveGame (int choice)
 //
 //      M_QuickSave
 //
+static char tempstring[90];
+
+void M_QuickSaveResponse(int key)
+{
+    if (key == key_menu_confirm)
+    {
+	M_DoSave(quickSaveSlot);
+	S_StartSoundOptional(NULL, sfx_mnucls, sfx_swtchx); // [NS] Optional menu sounds.
+    }
+}
 
 void M_QuickSave(void)
 {
@@ -1043,9 +1061,18 @@ void M_QuickSave(void)
 
     if (gamestate != GS_LEVEL)
 	return;
-
-    G_QuickSaveGame();
-    S_StartSoundOptional(NULL, sfx_mnucls, sfx_swtchx); // [NS] Optional menu sounds.
+	
+    if (quickSaveSlot < 0)
+    {
+	M_StartControlPanel();
+	M_ReadSaveStrings();
+	M_SetupNextMenu(&SaveDef);
+	quickSaveSlot = -2;	// means to pick a slot now
+	return;
+    }
+    DEH_snprintf(tempstring, sizeof(tempstring),
+                 QSPROMPT, savegamestrings[quickSaveSlot]);
+    M_StartMessage(tempstring, M_QuickSaveResponse, true);
 }
 
 
@@ -1053,6 +1080,15 @@ void M_QuickSave(void)
 //
 // M_QuickLoad
 //
+void M_QuickLoadResponse(int key)
+{
+    if (key == key_menu_confirm)
+    {
+	M_LoadSelect(quickSaveSlot);
+	S_StartSoundOptional(NULL, sfx_mnucls, sfx_swtchx); // [NS] Optional menu sounds.
+    }
+}
+
 
 void M_QuickLoad(void)
 {
@@ -1062,9 +1098,19 @@ void M_QuickLoad(void)
 	M_StartMessage(DEH_String(QLOADNET),NULL,false);
 	return;
     }
-
-    M_LoadSelect(quickSaveSlot);
-    S_StartSoundOptional(NULL, sfx_mnucls, sfx_swtchx); // [NS] Optional menu sounds.
+	
+    if (quickSaveSlot < 0)
+    {
+	// [crispy] allow quickload before quicksave
+	M_StartControlPanel();
+	M_ReadSaveStrings();
+	M_SetupNextMenu(&LoadDef);
+	quickSaveSlot = -2;
+	return;
+    }
+    DEH_snprintf(tempstring, sizeof(tempstring),
+                 QLPROMPT, savegamestrings[quickSaveSlot]);
+    M_StartMessage(tempstring, M_QuickLoadResponse, true);
 }
 
 
@@ -1608,6 +1654,8 @@ void M_EndGameResponse(int key)
     if (demorecording || singledemo)
 	G_CheckDemoStatus();
 
+    // [crispy] clear quicksave slot
+    quickSaveSlot = -1;
     currentMenu->lastOn = itemOn;
     M_ClearMenus ();
     D_StartTitle ();
@@ -3001,6 +3049,7 @@ void M_Init (void)
     messageToPrint = 0;
     messageString = NULL;
     messageLastMenuActive = menuactive;
+    quickSaveSlot = -1;
 
     // Here we could catch other version dependencies,
     //  like HELP1/2, and four episodes.
