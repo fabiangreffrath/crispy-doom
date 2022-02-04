@@ -3288,6 +3288,9 @@ static void M_ConfirmDeleteGameResponse (int key)
 		M_StringCopy(name, P_SaveGameFile(itemOn), sizeof(name));
 		remove(name);
 
+		if (itemOn == quickSaveSlot)
+			quickSaveSlot = -1;
+
 		M_ReadSaveStrings();
 	}
 }
