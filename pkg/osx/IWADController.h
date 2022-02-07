@@ -33,7 +33,7 @@
     id freedm;
 
     id heretic;
-    //id hexen;
+    id hexen;
     //id strife;
 }
 

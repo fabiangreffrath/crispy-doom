@@ -27,7 +27,7 @@ typedef enum
     IWAD_PLUTONIA,
     IWAD_CHEX,
     IWAD_HERETIC,
-    //IWAD_HEXEN,
+    IWAD_HEXEN,
     //IWAD_STRIFE,
     IWAD_FREEDOOM1,
     IWAD_FREEDOOM2,
@@ -43,7 +43,7 @@ static NSString *IWADLabels[NUM_IWAD_TYPES] =
     @"Final Doom: Plutonia Experiment",
     @"Chex Quest",
     @"Heretic",
-    //@"Hexen",
+    @"Hexen",
     //@"Strife",
     @"Freedoom: Phase 1",
     @"Freedoom: Phase 2",
@@ -58,7 +58,7 @@ static NSString *IWADFilenames[NUM_IWAD_TYPES + 1] =
     @"plutonia.wad",
     @"chex.wad",
     @"heretic.wad",
-    //@"hexen.wad",
+    @"hexen.wad",
     //@"strife.wad",
     @"freedoom1.wad",
     @"freedoom2.wad",
@@ -76,7 +76,7 @@ static NSString *IWADFilenames[NUM_IWAD_TYPES + 1] =
     iwadList[IWAD_PLUTONIA] = self->plutonia;
     iwadList[IWAD_CHEX] = self->chex;
     iwadList[IWAD_HERETIC] = self->heretic;
-    //iwadList[IWAD_HEXEN] = self->hexen;
+    iwadList[IWAD_HEXEN] = self->hexen;
     //iwadList[IWAD_STRIFE] = self->strife;
     iwadList[IWAD_FREEDOOM1] = self->freedoom1;
     iwadList[IWAD_FREEDOOM2] = self->freedoom2;
@@ -126,9 +126,9 @@ static const char *NameForIWAD(IWAD iwad)
         case IWAD_HERETIC:
             return "heretic";
         
-        //case IWAD_HEXEN:
-        //    return "hexen";
-        //
+        case IWAD_HEXEN:
+            return "hexen";
+        
         //case IWAD_STRIFE:
         //    return "strife";
         //
