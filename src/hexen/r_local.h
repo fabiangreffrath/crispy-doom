@@ -360,6 +360,7 @@ angle_t R_PointToAngle(fixed_t x, fixed_t y);
 angle_t R_PointToAngle2(fixed_t x1, fixed_t y1, fixed_t x2, fixed_t y2);
 fixed_t R_PointToDist(fixed_t x, fixed_t y);
 fixed_t R_ScaleFromGlobalAngle(angle_t visangle);
+angle_t R_InterpolateAngle(angle_t oangle, angle_t nangle, fixed_t scale);
 subsector_t *R_PointInSubsector(fixed_t x, fixed_t y);
 //void R_AddPointToBox (int x, int y, fixed_t *box);
 
