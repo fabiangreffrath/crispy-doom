@@ -26,6 +26,9 @@
 #include "i_input.h"
 #include "m_argv.h"
 #include "m_config.h"
+#include "m_fixed.h" // [crispy]
+
+#include "crispy.h"
 
 static const int scancode_translate_table[] = SCANCODE_TO_KEYS_ARRAY;
 
@@ -445,6 +448,31 @@ static int AccelerateMouseY(int val)
     }
 }
 
+// [crispy] Distribute the mouse movement between the current tic and the next
+// based on how far we are into the current tic. Compensates for mouse sampling
+// jitter.
+static void SmoothMouse(int* x, int* y)
+{
+    static int x_remainder_old = 0;
+    static int y_remainder_old = 0;
+    int x_remainder, y_remainder;
+    fixed_t correction_factor;
+    extern fixed_t fractionaltic;
+
+    *x += x_remainder_old;
+    *y += y_remainder_old;
+
+    correction_factor = FixedDiv(fractionaltic, FRACUNIT + fractionaltic);
+
+    x_remainder = FixedMul(*x, correction_factor);
+    *x -= x_remainder;
+    x_remainder_old = x_remainder;
+
+    y_remainder = FixedMul(*y, correction_factor);
+    *y -= y_remainder;
+    y_remainder_old = y_remainder;
+}
+
 //
 // Read the change in mouse state to generate mouse motion events
 //
@@ -456,6 +484,11 @@ void I_ReadMouse(void)
     event_t ev;
 
     SDL_GetRelativeMouseState(&x, &y);
+
+    if (crispy->uncapped)
+    {
+        SmoothMouse(&x, &y);
+    }
 
     if (x != 0 || y != 0) 
     {
