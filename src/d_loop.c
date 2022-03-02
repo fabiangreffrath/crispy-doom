@@ -209,6 +209,7 @@ void NetUpdate (void)
     int nowtime;
     int newtics;
     int	i;
+    extern fixed_t fractionaltic; // [crispy]
 
     // If we are running with singletics (timing a demo), this
     // is all done separately.
@@ -226,6 +227,12 @@ void NetUpdate (void)
     newtics = nowtime - lasttime;
 
     lasttime = nowtime;
+
+    // [AM] Figure out how far into the current tic we're in as a fixed_t.
+    if (crispy->uncapped)
+    {
+	fractionaltic = (int64_t)I_GetTimeMS() * TICRATE % 1000 * FRACUNIT / 1000;
+    }
 
     if (skiptics <= newtics)
     {
