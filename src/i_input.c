@@ -24,6 +24,7 @@
 #include "doomtype.h"
 #include "d_event.h"
 #include "i_input.h"
+#include "i_timer.h" // [crispy]
 #include "m_argv.h"
 #include "m_config.h"
 #include "m_fixed.h" // [crispy]
@@ -457,12 +458,13 @@ static void SmoothMouse(int* x, int* y)
     static int y_remainder_old = 0;
     int x_remainder, y_remainder;
     fixed_t correction_factor;
-    extern fixed_t fractionaltic;
+    fixed_t fractic;
 
     *x += x_remainder_old;
     *y += y_remainder_old;
 
-    correction_factor = FixedDiv(fractionaltic, FRACUNIT + fractionaltic);
+    fractic = (int64_t)I_GetTimeMS() * TICRATE % 1000 * FRACUNIT / 1000;
+    correction_factor = FixedDiv(fractic, FRACUNIT + fractic);
 
     x_remainder = FixedMul(*x, correction_factor);
     *x -= x_remainder;
