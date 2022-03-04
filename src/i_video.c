@@ -892,6 +892,12 @@ void I_FinishUpdate (void)
 
     SDL_RenderPresent(renderer);
 
+    // [AM] Figure out how far into the current tic we're in as a fixed_t.
+    if (crispy->uncapped)
+    {
+	fractionaltic = (int64_t)I_GetTimeMS() * TICRATE % 1000 * FRACUNIT / 1000;
+    }
+
     // Restore background and undo the disk indicator, if it was drawn.
     V_RestoreDiskBackground();
 }
