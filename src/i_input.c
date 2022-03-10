@@ -463,7 +463,7 @@ static void SmoothMouse(int* x, int* y)
     *x += x_remainder_old;
     *y += y_remainder_old;
 
-    fractic = (int64_t)I_GetTimeMS() * TICRATE % 1000 * FRACUNIT / 1000;
+    fractic = I_GetFracRealTime();
     correction_factor = FixedDiv(fractic, FRACUNIT + fractic);
 
     x_remainder = FixedMul(*x, correction_factor);
