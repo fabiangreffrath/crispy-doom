@@ -2799,6 +2799,15 @@ float M_GetFloatVariable(const char *name)
     return *variable->location.f;
 }
 
+static char *GetPrefPath(const char *org, const char *app) {
+    char *ret = SDL_GetPrefPath(org, app);
+    if (!ret) {
+        ret = M_TempFile(NULL);
+    }
+
+    return ret;
+}
+
 // Get the path to the default configuration dir to use, if NULL
 // is passed to M_SetConfigDir.
 
@@ -2814,7 +2823,7 @@ static char *GetDefaultConfigDir(void)
     char *result;
     char *copy;
 
-    result = SDL_GetPrefPath("", PACKAGE_TARNAME);
+    result = GetPrefPath("", PACKAGE_TARNAME);
     if (result != NULL)
     {
         copy = M_StringDuplicate(result);
@@ -2876,7 +2885,7 @@ void M_SetMusicPackDir(void)
         return;
     }
 
-    prefdir = SDL_GetPrefPath("", PACKAGE_TARNAME);
+    prefdir = GetPrefPath("", PACKAGE_TARNAME);
     music_pack_path = M_StringJoin(prefdir, "music-packs", NULL);
 
     M_MakeDirectory(prefdir);
@@ -2972,7 +2981,7 @@ char *M_GetAutoloadDir(const char *iwadname, boolean makedir)
     if (autoload_path == NULL || strlen(autoload_path) == 0)
     {
         char *prefdir;
-        prefdir = SDL_GetPrefPath("", PACKAGE_TARNAME);
+        prefdir = GetPrefPath("", PACKAGE_TARNAME);
         autoload_path = M_StringJoin(prefdir, "autoload", NULL);
         SDL_free(prefdir);
     }
