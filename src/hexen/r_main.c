@@ -765,6 +765,7 @@ void R_SetupFrame(player_t * player)
     int tableAngle;
     int tempCentery;
     int intensity;
+    static int x_quake, y_quake, quaketime; // [crispy]
 
     //drawbsp = 1;
     viewplayer = player;
@@ -783,15 +784,35 @@ void R_SetupFrame(player_t * player)
         viewx = player->mo->x;
         viewy = player->mo->y;
         viewz = player->viewz;
+    }
 
-        if (localQuakeHappening[displayplayer] && !paused)
+    if (localQuakeHappening[displayplayer] && !paused)
+    {
+        // [crispy] only get new quake values once every gametic
+        if (leveltime > quaketime)
         {
             intensity = localQuakeHappening[displayplayer];
-            viewx += ((M_Random() % (intensity << 2))
-                      - (intensity << 1)) << FRACBITS;
-            viewy += ((M_Random() % (intensity << 2))
-                      - (intensity << 1)) << FRACBITS;
+            x_quake = ((M_Random() % (intensity << 2))
+                           - (intensity << 1)) << FRACBITS;
+            y_quake = ((M_Random() % (intensity << 2))
+                           - (intensity << 1)) << FRACBITS;
+            quaketime = leveltime;
         }
+
+        if (crispy->uncapped)
+        {
+            viewx += FixedMul(x_quake, fractionaltic);
+            viewy += FixedMul(y_quake, fractionaltic);
+        }
+        else
+        {
+            viewx += x_quake;
+            viewy += y_quake;
+        }
+    }
+    else if (!localQuakeHappening[displayplayer])
+    {
+        quaketime = 0;
     }
 
     extralight = player->extralight;
