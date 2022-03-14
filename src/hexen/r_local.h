@@ -82,6 +82,24 @@ typedef struct
     void *specialdata;          // thinker_t for reversable actions
     int linecount;
     struct line_s **lines;      // [linecount] size
+
+    // [AM] Previous position of floor and ceiling before
+    //      think.  Used to interpolate between positions.
+    fixed_t	oldfloorheight;
+    fixed_t	oldceilingheight;
+
+    // [AM] Gametic when the old positions were recorded.
+    //      Has a dual purpose; it prevents movement thinkers
+    //      from storing old positions twice in a tic, and
+    //      prevents the renderer from attempting to interpolate
+    //      if old values were not updated recently.
+    int         oldgametic;
+
+    // [AM] Interpolated floor and ceiling height.
+    //      Calculated once per tic and used inside
+    //      the renderer.
+    fixed_t	interpfloorheight;
+    fixed_t	interpceilingheight;
 } sector_t;
 
 typedef struct
