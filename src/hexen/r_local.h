@@ -183,6 +183,8 @@ typedef struct
     int seqType;
     fixed_t size;               // polyobj size (area of POLY_AREAUNIT == size of FRACUNIT)
     void *specialdata;          // pointer a thinker, if the poly is moving
+    fixed_t dx, dy, rx, ry;     // [crispy] for poly movement interpolation
+    boolean moving;             // [crispy] for poly movement interpolation
 } polyobj_t;
 
 typedef struct polyblock_s

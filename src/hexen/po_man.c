@@ -24,6 +24,8 @@
 #include "p_local.h"
 #include "r_local.h"
 
+#include "crispy.h"
+
 // MACROS ------------------------------------------------------------------
 
 #define PO_MAXPOLYSEGS 64
@@ -222,6 +224,7 @@ void T_MovePoly(polyevent_t * pe)
             {
                 poly->specialdata = NULL;
             }
+            poly->moving = false; // [crispy]
             SN_StopSequence((mobj_t *) & poly->startSpot);
             P_PolyobjFinished(poly->tag);
             P_RemoveThinker(&pe->thinker);
@@ -366,6 +369,7 @@ void T_PolyDoor(polydoor_t * pd)
                         {
                             poly->specialdata = NULL;
                         }
+                        poly->moving = false; // [crispy]
                         P_PolyobjFinished(poly->tag);
                         P_RemoveThinker(&pd->thinker);
                     }
@@ -713,7 +717,6 @@ boolean PO_MovePolyobj(int num, int x, int y)
 {
     int count;
     seg_t **segList;
-    seg_t **veryTempSeg;
     polyobj_t *po;
     vertex_t *prevPts;
     boolean blocked;
@@ -739,18 +742,6 @@ boolean PO_MovePolyobj(int num, int x, int y)
             (*segList)->linedef->bbox[BOXLEFT] += x;
             (*segList)->linedef->bbox[BOXRIGHT] += x;
             (*segList)->linedef->validcount = validcount;
-        }
-        for (veryTempSeg = po->segs; veryTempSeg != segList; veryTempSeg++)
-        {
-            if ((*veryTempSeg)->v1 == (*segList)->v1)
-            {
-                break;
-            }
-        }
-        if (veryTempSeg == segList)
-        {
-            (*segList)->v1->x += x;
-            (*segList)->v1->y += y;
         }
         (*prevPts).x += x;      // previous points are unique for each seg
         (*prevPts).y += y;
@@ -779,32 +770,115 @@ boolean PO_MovePolyobj(int num, int x, int y)
                 (*segList)->linedef->bbox[BOXRIGHT] -= x;
                 (*segList)->linedef->validcount = validcount;
             }
-            for (veryTempSeg = po->segs; veryTempSeg != segList;
-                 veryTempSeg++)
-            {
-                if ((*veryTempSeg)->v1 == (*segList)->v1)
-                {
-                    break;
-                }
-            }
-            if (veryTempSeg == segList)
-            {
-                (*segList)->v1->x -= x;
-                (*segList)->v1->y -= y;
-            }
             (*prevPts).x -= x;
             (*prevPts).y -= y;
             segList++;
             prevPts++;
         }
         LinkPolyobj(po);
+        po->moving = false; // [crispy]
         return false;
     }
     po->startSpot.x += x;
     po->startSpot.y += y;
+    po->dx = x; // [crispy]
+    po->dy = y; // [crispy]
+    po->rx += x;
+    po->ry += y;
+    po->moving = true; // [crispy]
     LinkPolyobj(po);
     return true;
 }
+
+// [crispy]
+static void TranslatePolyVertices(polyobj_t *po, fixed_t dx, fixed_t dy)
+{
+    seg_t **segList;
+    seg_t **veryTempSeg;
+    int count;
+
+    segList = po->segs;
+
+    for (count = po->numsegs; count; count--, segList++)
+    {
+        for (veryTempSeg = po->segs; veryTempSeg != segList; veryTempSeg++)
+        {
+            if ((*veryTempSeg)->v1 == (*segList)->v1)
+            {
+                break;
+            }
+        }
+        if (veryTempSeg == segList)
+        {
+            (*segList)->v1->x += dx;
+            (*segList)->v1->y += dy;
+        }
+    }
+}
+extern fixed_t fractionaltic; // [crispy]
+
+// [crispy]
+void PO_InterpolatePolyObjects(void)
+{
+    polyobj_t *po;
+    int i;
+    static fixed_t old_fractics = 0;
+    fixed_t dfractics = 0, dx, dy;
+
+    if (!(leveltime > oldleveltime))
+    {
+        return;
+    }
+
+    if (crispy->uncapped)
+    {
+        if (fractionaltic < old_fractics)
+        {
+            dfractics = FRACUNIT + fractionaltic - old_fractics;
+        }
+        else
+        {
+            dfractics = fractionaltic - old_fractics;
+        }
+
+        old_fractics = fractionaltic;
+    }
+
+    po = polyobjs;
+
+    // interate through all polyobjects and interpolate if necessary
+    for (i = 0; i < po_NumPolyobjs; i++, po++)
+    {
+        if (po->moving || po->rx != 0 || po->rx !=0)
+        {
+            if (!po->moving)
+            {
+                dx = po->rx;
+                dy = po->ry;
+                po->rx = 0;
+                po->ry = 0;
+            }
+            else
+            {
+                if (crispy->uncapped)
+                {
+                    dx = FixedMul(dfractics, po->dx);
+                    dy = FixedMul(dfractics, po->dy);
+                }
+                else
+                {
+                    dx = po->dx;
+                    dy = po->dy;
+                }
+                po->rx -= dx;
+                po->ry -= dy;
+            }
+
+            TranslatePolyVertices(po, dx, dy);
+        }
+    }
+}
+
 
 //==========================================================================
 //
@@ -1233,6 +1307,8 @@ static void SpawnPolyobj(int index, int tag, boolean crush)
             polyobjs[index].crush = crush;
             polyobjs[index].tag = tag;
             polyobjs[index].seqType = segs[i].linedef->arg3;
+            polyobjs[index].rx = 0; // [crispy]
+            polyobjs[index].ry = 0; // [crispy]
             if (polyobjs[index].seqType < 0
                 || polyobjs[index].seqType >= SEQTYPE_NUMSEQ)
             {
@@ -1306,6 +1382,8 @@ static void SpawnPolyobj(int index, int tag, boolean crush)
             PolySegCount = polyobjs[index].numsegs;     // PolySegCount used globally
             polyobjs[index].crush = crush;
             polyobjs[index].tag = tag;
+            polyobjs[index].rx = 0; // [crispy]
+            polyobjs[index].ry = 0; // [crispy]
             polyobjs[index].segs = Z_Malloc(polyobjs[index].numsegs
                                             * sizeof(seg_t *), PU_LEVEL, 0);
             for (i = 0; i < polyobjs[index].numsegs; i++)

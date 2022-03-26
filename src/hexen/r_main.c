@@ -889,12 +889,15 @@ void R_SetupFrame(player_t * player)
 
 void R_RenderPlayerView(player_t * player)
 {
+    extern void PO_InterpolatePolyObjects(void);
+
     R_SetupFrame(player);
     R_ClearClipSegs();
     R_ClearDrawSegs();
     R_ClearPlanes();
     R_ClearSprites();
     NetUpdate();                // check for new console commands
+    PO_InterpolatePolyObjects(); // [crispy] Interpolate polyobjects here
 
     // Make displayed player invisible locally
     if (localQuakeHappening[displayplayer] && gamestate == GS_LEVEL)
