@@ -781,11 +781,9 @@ boolean PO_MovePolyobj(int num, int x, int y)
     }
     po->startSpot.x += x;
     po->startSpot.y += y;
-    po->dx = x; // [crispy]
-    po->dy = y; // [crispy]
-    po->rx += x;
-    po->ry += y;
-    po->moving = true; // [crispy]
+    po->rx += x; // [crispy]
+    po->ry += y; // [crispy]
+    po->moving = (x || y); // [crispy]
     LinkPolyobj(po);
     return true;
 }
@@ -849,9 +847,16 @@ void PO_InterpolatePolyObjects(void)
     // interate through all polyobjects and interpolate if necessary
     for (i = 0; i < po_NumPolyobjs; i++, po++)
     {
-        if (po->moving || po->rx != 0 || po->rx !=0)
+        if (po->rx || po->rx)
         {
-            if (!po->moving)
+            if (!crispy->uncapped)
+            {
+                dx = po->rx;
+                dy = po->ry;
+                po->rx = 0;
+                po->ry = 0;
+            }
+            else if (!po->moving)
             {
                 dx = po->rx;
                 dy = po->ry;
@@ -860,16 +865,8 @@ void PO_InterpolatePolyObjects(void)
             }
             else
             {
-                if (crispy->uncapped)
-                {
-                    dx = FixedMul(dfractics, po->dx);
-                    dy = FixedMul(dfractics, po->dy);
-                }
-                else
-                {
-                    dx = po->dx;
-                    dy = po->dy;
-                }
+                dx = FixedMul(dfractics, po->rx);
+                dy = FixedMul(dfractics, po->ry);
                 po->rx -= dx;
                 po->ry -= dy;
             }
