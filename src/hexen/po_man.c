@@ -224,7 +224,6 @@ void T_MovePoly(polyevent_t * pe)
             {
                 poly->specialdata = NULL;
             }
-            poly->moving = false; // [crispy]
             SN_StopSequence((mobj_t *) & poly->startSpot);
             P_PolyobjFinished(poly->tag);
             P_RemoveThinker(&pe->thinker);
@@ -369,7 +368,6 @@ void T_PolyDoor(polydoor_t * pd)
                         {
                             poly->specialdata = NULL;
                         }
-                        poly->moving = false; // [crispy]
                         P_PolyobjFinished(poly->tag);
                         P_RemoveThinker(&pd->thinker);
                     }
@@ -707,6 +705,32 @@ static void UpdateSegBBox(seg_t * seg)
     }
 }
 
+// [crispy]
+static void TranslatePolyVertices(polyobj_t *po, fixed_t dx, fixed_t dy)
+{
+    seg_t **segList;
+    seg_t **veryTempSeg;
+    int count;
+
+    segList = po->segs;
+
+    for (count = po->numsegs; count; count--, segList++)
+    {
+        for (veryTempSeg = po->segs; veryTempSeg != segList; veryTempSeg++)
+        {
+            if ((*veryTempSeg)->v1 == (*segList)->v1)
+            {
+                break;
+            }
+        }
+        if (veryTempSeg == segList)
+        {
+            (*segList)->v1->x += dx;
+            (*segList)->v1->y += dy;
+        }
+    }
+}
+
 //==========================================================================
 //
 // PO_MovePolyobj
@@ -732,6 +756,13 @@ boolean PO_MovePolyobj(int num, int x, int y)
     prevPts = po->prevPts;
     blocked = false;
 
+    // [crispy] sync poly vertices every gametic
+    if (crispy->uncapped)
+    {
+        TranslatePolyVertices(po, po->rx, po->ry);
+        po->rx = 0;
+        po->ry = 0;
+    }
     validcount++;
     for (count = po->numsegs; count; count--, segList++, prevPts++)
     {
@@ -775,44 +806,21 @@ boolean PO_MovePolyobj(int num, int x, int y)
             segList++;
             prevPts++;
         }
+        po->dx = 0; // [crispy]
+        po->dy = 0; // [crispy]
         LinkPolyobj(po);
-        po->moving = false; // [crispy]
         return false;
     }
     po->startSpot.x += x;
     po->startSpot.y += y;
-    po->rx += x; // [crispy]
-    po->ry += y; // [crispy]
-    po->moving = (x || y); // [crispy]
+    po->dx = x; // [crispy]
+    po->dy = y; // [crispy]
+    po->rx = x; // [crispy]
+    po->ry = y; // [crispy]
     LinkPolyobj(po);
     return true;
 }
 
-// [crispy]
-static void TranslatePolyVertices(polyobj_t *po, fixed_t dx, fixed_t dy)
-{
-    seg_t **segList;
-    seg_t **veryTempSeg;
-    int count;
-
-    segList = po->segs;
-
-    for (count = po->numsegs; count; count--, segList++)
-    {
-        for (veryTempSeg = po->segs; veryTempSeg != segList; veryTempSeg++)
-        {
-            if ((*veryTempSeg)->v1 == (*segList)->v1)
-            {
-                break;
-            }
-        }
-        if (veryTempSeg == segList)
-        {
-            (*segList)->v1->x += dx;
-            (*segList)->v1->y += dy;
-        }
-    }
-}
 extern fixed_t fractionaltic; // [crispy]
 
 // [crispy]
@@ -821,7 +829,7 @@ void PO_InterpolatePolyObjects(void)
     polyobj_t *po;
     int i;
     static fixed_t old_fractics = 0;
-    fixed_t dfractics = 0, dx, dy;
+    fixed_t dfractics = 0, dx = 0, dy = 0;
 
     if (!(leveltime > oldleveltime))
     {
@@ -830,7 +838,7 @@ void PO_InterpolatePolyObjects(void)
 
     if (crispy->uncapped)
     {
-        if (fractionaltic < old_fractics)
+        if (fractionaltic <= old_fractics)
         {
             dfractics = FRACUNIT + fractionaltic - old_fractics;
         }
@@ -844,34 +852,42 @@ void PO_InterpolatePolyObjects(void)
 
     po = polyobjs;
 
-    // interate through all polyobjects and interpolate if necessary
     for (i = 0; i < po_NumPolyobjs; i++, po++)
     {
-        if (po->rx || po->rx)
+        if (po->rx || po->ry)
         {
             if (!crispy->uncapped)
             {
                 dx = po->rx;
                 dy = po->ry;
-                po->rx = 0;
-                po->ry = 0;
-            }
-            else if (!po->moving)
-            {
-                dx = po->rx;
-                dy = po->ry;
-                po->rx = 0;
-                po->ry = 0;
             }
             else
             {
-                dx = FixedMul(dfractics, po->rx);
-                dy = FixedMul(dfractics, po->ry);
-                po->rx -= dx;
-                po->ry -= dy;
+                // Remainder terms and movement vectors must never have
+                // opposite signs.
+                if (po->rx)
+                {
+                    dx = FixedMul(dfractics, po->dx);
+
+                    if (((po->rx - dx) ^ dx) < 0)
+                    {
+                        dx = po->rx;
+                    }
+                }
+                if (po->ry)
+                {
+                    dy = FixedMul(dfractics, po->dy);
+
+                    if (((po->ry - dy) ^ dy) < 0)
+                    {
+                        dy = po->ry;
+                    }
+                }
             }
 
             TranslatePolyVertices(po, dx, dy);
+            po->rx -= dx;
+            po->ry -= dy;
         }
     }
 }
@@ -1057,10 +1073,12 @@ static void LinkPolyobj(polyobj_t * po)
             bottomY = (*tempSeg)->v1->y;
         }
     }
-    po->bbox[BOXRIGHT] = (rightX - bmaporgx) >> MAPBLOCKSHIFT;
-    po->bbox[BOXLEFT] = (leftX - bmaporgx) >> MAPBLOCKSHIFT;
-    po->bbox[BOXTOP] = (topY - bmaporgy) >> MAPBLOCKSHIFT;
-    po->bbox[BOXBOTTOM] = (bottomY - bmaporgy) >> MAPBLOCKSHIFT;
+    // [crispy] Take total interpolated poly movement into account, even if the
+    // vertices haven't actually been moved yet.
+    po->bbox[BOXRIGHT] = (rightX - bmaporgx + po->dx) >> MAPBLOCKSHIFT;
+    po->bbox[BOXLEFT] = (leftX - bmaporgx + po->dx) >> MAPBLOCKSHIFT;
+    po->bbox[BOXTOP] = (topY - bmaporgy + po->dy) >> MAPBLOCKSHIFT;
+    po->bbox[BOXBOTTOM] = (bottomY - bmaporgy + po->dy) >> MAPBLOCKSHIFT;
     // add the polyobj to each blockmap section
     for (j = po->bbox[BOXBOTTOM] * bmapwidth;
          j <= po->bbox[BOXTOP] * bmapwidth; j += bmapwidth)
