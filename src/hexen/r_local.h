@@ -185,6 +185,8 @@ typedef struct
     void *specialdata;          // pointer a thinker, if the poly is moving
     fixed_t rx, ry;             // [crispy] remaining poly movement this tic
     fixed_t dx, dy;             // [crispy] total poly movement this tic
+    angle_t rtheta;             // [crispy] remaining poly rotation this tic
+    angle_t dtheta;             // [crispy] total poly rotation this tic
 } polyobj_t;
 
 typedef struct polyblock_s
