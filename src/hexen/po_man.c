@@ -728,6 +728,7 @@ static void RotatePolyVertices(polyobj_t *po, angle_t angle)
         (*segList)->v1->y = originalPts->y;
         RotatePt(an, &(*segList)->v1->x, &(*segList)->v1->y, po->startSpot.x,
                  po->startSpot.y);
+        (*segList)->angle += angle;
     }
 }
 
@@ -997,7 +998,6 @@ boolean PO_RotatePolyobj(int num, angle_t angle)
             UpdateSegBBox(*segList);
             (*segList)->linedef->validcount = validcount;
         }
-        (*segList)->angle += angle;
     }
     if (blocked)
     {
@@ -1035,6 +1035,7 @@ boolean PO_RotatePolyobj(int num, angle_t angle)
         {
             (*segList)->v1->x = prevPts->x;
             (*segList)->v1->y = prevPts->y;
+            (*segList)->angle -= angle;
         }
         po->rtheta = po->dtheta = angle;
     }
