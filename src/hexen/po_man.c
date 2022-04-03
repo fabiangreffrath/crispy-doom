@@ -855,27 +855,43 @@ void PO_InterpolatePolyObjects(void)
 {
     polyobj_t *po;
     int i;
-    static fixed_t old_fractics = 0;
-    fixed_t dfractics = 0, dx = 0, dy = 0;
+    static fixed_t old_fractic;
+    fixed_t dfractic, fractic, dx, dy;
     angle_t interpangle;
+    static int old_gametic;
 
     if (!(leveltime > oldleveltime))
     {
         return;
     }
 
+    dfractic = 0;
+
     if (crispy->uncapped)
     {
-        if (fractionaltic <= old_fractics)
+        fractic = fractionaltic;
+
+        if (fractic < old_fractic)
         {
-            dfractics = FRACUNIT + fractionaltic - old_fractics;
+            dfractic = fractic;
         }
         else
         {
-            dfractics = fractionaltic - old_fractics;
+            if (gametic > old_gametic)
+            {
+                // Covers the case when fractionaltic is very close to 1 and we
+                // roll over to the new tic immediately after it's updated.
+                dfractic = 0;
+                fractic = 0;
+            }
+            else
+            {
+                dfractic = fractic - old_fractic;
+            }
         }
 
-        old_fractics = fractionaltic;
+        old_fractic = fractic;
+        old_gametic = gametic;
     }
 
     po = polyobjs;
@@ -891,22 +907,24 @@ void PO_InterpolatePolyObjects(void)
             }
             else
             {
-                // Remainder terms and movement vectors must never have
-                // opposite signs.
+                dx = dy = 0;
+
+                // Coerce remainder terms to 0. They must never flip sign.
                 if (po->rx)
                 {
-                    dx = FixedMul(dfractics, po->dx);
+                    dx = FixedMul(dfractic, po->dx);
 
-                    if (((po->rx - dx) ^ dx) < 0)
+                    if (((po->rx - dx) ^ po->rx) < 0)
                     {
                         dx = po->rx;
                     }
                 }
+
                 if (po->ry)
                 {
-                    dy = FixedMul(dfractics, po->dy);
+                    dy = FixedMul(dfractic, po->dy);
 
-                    if (((po->ry - dy) ^ dy) < 0)
+                    if (((po->ry - dy) ^ po->ry) < 0)
                     {
                         dy = po->ry;
                     }
@@ -920,7 +938,7 @@ void PO_InterpolatePolyObjects(void)
 
         if (po->rtheta && crispy->uncapped)
         {
-            interpangle = R_InterpolateAngle(0, po->dtheta, dfractics);
+            interpangle = R_InterpolateAngle(0, po->dtheta, dfractic);
 
             if (((po->rtheta - interpangle) < ANG180 && po->dtheta > ANG180) ||
                     ((po->rtheta - interpangle) > ANG180 && po->dtheta < ANG180))
