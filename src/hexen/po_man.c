@@ -900,34 +900,26 @@ void PO_InterpolatePolyObjects(void)
     {
         if (po->rx || po->ry)
         {
-            if (!crispy->uncapped)
-            {
-                dx = po->rx;
-                dy = po->ry;
-            }
-            else
-            {
-                dx = dy = 0;
+            dx = dy = 0;
 
-                // Coerce remainder terms to 0. They must never flip sign.
-                if (po->rx)
+            // Coerce remainder terms to 0. They must never flip sign.
+            if (po->rx)
+            {
+                dx = FixedMul(dfractic, po->dx);
+
+                if (((po->rx - dx) ^ po->rx) < 0)
                 {
-                    dx = FixedMul(dfractic, po->dx);
-
-                    if (((po->rx - dx) ^ po->rx) < 0)
-                    {
-                        dx = po->rx;
-                    }
+                    dx = po->rx;
                 }
+            }
 
-                if (po->ry)
+            if (po->ry)
+            {
+                dy = FixedMul(dfractic, po->dy);
+
+                if (((po->ry - dy) ^ po->ry) < 0)
                 {
-                    dy = FixedMul(dfractic, po->dy);
-
-                    if (((po->ry - dy) ^ po->ry) < 0)
-                    {
-                        dy = po->ry;
-                    }
+                    dy = po->ry;
                 }
             }
 
@@ -936,7 +928,7 @@ void PO_InterpolatePolyObjects(void)
             po->ry -= dy;
         }
 
-        if (po->rtheta && crispy->uncapped)
+        if (po->rtheta)
         {
             interpangle = R_InterpolateAngle(0, po->dtheta, dfractic);
 
