@@ -400,7 +400,7 @@ void R_DrawPlanes(void)
     int scrollOffset;
     int frac;
     int fracstep = FRACUNIT >> crispy->hires;
-    int interpfactor; // [crispy]
+    static int interpfactor; // [crispy]
     int heightmask; // [crispy]
 
     extern byte *ylookup[MAXHEIGHT];
@@ -580,6 +580,8 @@ void R_DrawPlanes(void)
                                     flattranslation[pl->picnum], PU_STATIC);
         scrollOffset = leveltime >> 1 & 63;
 
+        // [crispy] Use old value of interpfactor if uncapped and paused. This
+        // ensures that scrolling stops smoothly when pausing.
         if (crispy->uncapped && leveltime > oldleveltime)
         {
             // [crispy] Scrolling normally advances every *other* gametic, so
@@ -593,7 +595,7 @@ void R_DrawPlanes(void)
                 interpfactor = fractionaltic >> 1;
             }
         }
-        else
+        else if (!crispy->uncapped)
         {
             interpfactor = 0;
         }
