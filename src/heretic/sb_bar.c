@@ -648,7 +648,19 @@ void SB_Drawer(void)
         if (SB_state == -1)
         {
             RefreshBackground(); // [crispy] for widescreen
-            V_DrawPatch(0, 158, PatchBARBACK);
+
+            // [crispy] support wide status bars with 0 offset
+            if (SHORT(PatchBARBACK->width) > ORIGWIDTH &&
+                    SHORT(PatchBARBACK->leftoffset) == 0)
+            {
+                V_DrawPatch((ORIGWIDTH - SHORT(PatchBARBACK->width)) / 2, 158,
+                        PatchBARBACK);
+            }
+            else
+            {
+                V_DrawPatch(0, 158, PatchBARBACK);
+            }
+
             if (players[consoleplayer].cheats & CF_GODMODE)
             {
                 V_DrawPatch(16, 167,

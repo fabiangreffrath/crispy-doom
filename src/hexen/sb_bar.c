@@ -812,7 +812,19 @@ void SB_Drawer(void)
         if (SB_state == -1)
         {
             RefreshBackground(); // [crispy] for widescreen
-            V_DrawPatch(0, 134, PatchH2BAR);
+
+            // [crispy] support wide status bars with 0 offset
+            if (SHORT(PatchH2BAR->width) > ORIGWIDTH &&
+                    SHORT(PatchH2BAR->leftoffset) == 0)
+            {
+                V_DrawPatch((ORIGWIDTH - SHORT(PatchH2BAR->width)) / 2, 134,
+                        PatchH2BAR);
+            }
+            else
+            {
+                V_DrawPatch(0, 134, PatchH2BAR);
+            }
+
             oldhealth = -1;
         }
         DrawCommonBar();
