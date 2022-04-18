@@ -627,10 +627,13 @@ static void RefreshBackground()
     V_CopyRect(0, 0, st_backing_screen, SCREENWIDTH >> crispy->hires, 42, 0, 158);
 }
 
+#define CRISPY_WIDGET_ON(x) (crispy->x == WIDGETS_ALWAYS\
+                             || (crispy->x == WIDGETS_AUTOMAP && automapactive))
 void SB_Drawer(void)
 {
     int frame;
     static boolean hitCenterFrame;
+    int spinfly_x, spinbook_x; // [crispy]
 
     // Sound info debug stuff
     if (DebugSound == true)
@@ -699,10 +702,16 @@ void SB_Drawer(void)
         }
     }
     SB_PaletteFlash();
-
     // Flight icons
     if (CPlayer->powers[pw_flight])
     {
+        spinfly_x = 20 - WIDESCREENDELTA; // [crispy]
+
+        if (CRISPY_WIDGET_ON(automapstats))
+        {
+            spinfly_x += 50;
+        }
+
         if (CPlayer->powers[pw_flight] > BLINKTHRESHOLD
             || !(CPlayer->powers[pw_flight] & 16))
         {
@@ -711,13 +720,15 @@ void SB_Drawer(void)
             {
                 if (hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    V_DrawPatch(20, 17, W_CacheLumpNum(spinflylump + 15,
-                                                       PU_CACHE));
+                    V_DrawPatch(spinfly_x, 17,
+                                W_CacheLumpNum(spinflylump + 15,
+                                                PU_CACHE));
                 }
                 else
                 {
-                    V_DrawPatch(20, 17, W_CacheLumpNum(spinflylump + frame,
-                                                       PU_CACHE));
+                    V_DrawPatch(spinfly_x, 17,
+                                W_CacheLumpNum(spinflylump + frame,
+                                                PU_CACHE));
                     hitCenterFrame = false;
                 }
             }
@@ -725,14 +736,16 @@ void SB_Drawer(void)
             {
                 if (!hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    V_DrawPatch(20, 17, W_CacheLumpNum(spinflylump + frame,
-                                                       PU_CACHE));
+                    V_DrawPatch(spinfly_x, 17,
+                                W_CacheLumpNum(spinflylump + frame,
+                                                PU_CACHE));
                     hitCenterFrame = false;
                 }
                 else
                 {
-                    V_DrawPatch(20, 17, W_CacheLumpNum(spinflylump + 15,
-                                                       PU_CACHE));
+                    V_DrawPatch(spinfly_x, 17,
+                                W_CacheLumpNum(spinflylump + 15,
+                                                PU_CACHE));
                     hitCenterFrame = true;
                 }
             }
@@ -748,11 +761,19 @@ void SB_Drawer(void)
 
     if (CPlayer->powers[pw_weaponlevel2] && !CPlayer->chickenTics)
     {
+        spinbook_x = 300 + WIDESCREENDELTA; // [crispy]
+
+        if (CRISPY_WIDGET_ON(playercoords)
+                || (CPlayer->cheats & CF_SHOWFPS && !automapactive))
+        {
+            spinbook_x -= 70;
+        }
+
         if (CPlayer->powers[pw_weaponlevel2] > BLINKTHRESHOLD
             || !(CPlayer->powers[pw_weaponlevel2] & 16))
         {
             frame = (leveltime / 3) & 15;
-            V_DrawPatch(300, 17,
+            V_DrawPatch(spinbook_x, 17,
                         W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
             BorderTopRefresh = true;
             UpdateState |= I_MESSAGES;
