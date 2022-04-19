@@ -162,6 +162,8 @@ void DrawCenterMessage(void)
 //
 //---------------------------------------------------------------------------
 
+int left_widget_w, right_widget_w; // [crispy]
+
 static void CrispyDrawStats (void)
 {
     static short height, coord_x;
@@ -169,13 +171,14 @@ static void CrispyDrawStats (void)
     player_t *const player = &players[consoleplayer];
     int left_widget_x, right_widget_x;
 
-    if (!height || !coord_x)
+    if (!height || !coord_x || !right_widget_w)
     {
 	const int FontABaseLump = W_GetNumForName(DEH_String("FONTA_S")) + 1;
 	const patch_t *const p = W_CacheLumpNum(FontABaseLump + 'A' - 33, PU_CACHE);
 
 	height = SHORT(p->height) + 1;
-	coord_x = ORIGWIDTH - 7 * SHORT(p->width);
+        right_widget_w = 7 * SHORT(p->width);
+	coord_x = ORIGWIDTH - right_widget_w;
     }
 
     left_widget_x = 0 - WIDESCREENDELTA;
@@ -185,6 +188,7 @@ static void CrispyDrawStats (void)
     {
 	M_snprintf(str, sizeof(str), "K %d/%d", player->killcount, totalkills);
 	MN_DrTextA(str, left_widget_x, 1*height);
+        left_widget_w = MN_TextAWidth(str); // Assume that kills is longest string
 
 	M_snprintf(str, sizeof(str), "I %d/%d", player->itemcount, totalitems);
 	MN_DrTextA(str, left_widget_x, 2*height);
