@@ -881,10 +881,13 @@ static void DrawAnimatedIcons(void)
 {
     int frame;
     static boolean hitCenterFrame;
+    int spinfly_x, spinspeed_x, spindefense_x, spinminotaur_x; // [crispy]
 
     // Wings of wrath
     if (CPlayer->powers[pw_flight])
     {
+        spinfly_x = 20 - WIDESCREENDELTA; // [crispy]
+
         if (CPlayer->powers[pw_flight] > BLINKTHRESHOLD
             || !(CPlayer->powers[pw_flight] & 16))
         {
@@ -893,13 +896,15 @@ static void DrawAnimatedIcons(void)
             {
                 if (hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    V_DrawPatch(20, 19, W_CacheLumpNum(SpinFlylump + 15,
-                                                       PU_CACHE));
+                    V_DrawPatch(spinfly_x, 19,
+                                W_CacheLumpNum(SpinFlylump + 15,
+                                                PU_CACHE));
                 }
                 else
                 {
-                    V_DrawPatch(20, 19, W_CacheLumpNum(SpinFlylump + frame,
-                                                       PU_CACHE));
+                    V_DrawPatch(spinfly_x, 19,
+                                W_CacheLumpNum(SpinFlylump + frame,
+                                                PU_CACHE));
                     hitCenterFrame = false;
                 }
             }
@@ -907,14 +912,16 @@ static void DrawAnimatedIcons(void)
             {
                 if (!hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    V_DrawPatch(20, 19, W_CacheLumpNum(SpinFlylump + frame,
-                                                       PU_CACHE));
+                    V_DrawPatch(spinfly_x, 19,
+                                W_CacheLumpNum(SpinFlylump + frame,
+                                                PU_CACHE));
                     hitCenterFrame = false;
                 }
                 else
                 {
-                    V_DrawPatch(20, 19, W_CacheLumpNum(SpinFlylump + 15,
-                                                       PU_CACHE));
+                    V_DrawPatch(spinfly_x, 19,
+                                W_CacheLumpNum(SpinFlylump + 15,
+                                                PU_CACHE));
                     hitCenterFrame = true;
                 }
             }
@@ -926,12 +933,15 @@ static void DrawAnimatedIcons(void)
     // Speed Boots
     if (CPlayer->powers[pw_speed])
     {
+        spinspeed_x = 60 - WIDESCREENDELTA; // [crispy]
+
         if (CPlayer->powers[pw_speed] > BLINKTHRESHOLD
             || !(CPlayer->powers[pw_speed] & 16))
         {
             frame = (leveltime / 3) & 15;
-            V_DrawPatch(60, 19, W_CacheLumpNum(SpinSpeedLump + frame,
-                                               PU_CACHE));
+            V_DrawPatch(spinspeed_x, 19,
+                        W_CacheLumpNum(SpinSpeedLump + frame,
+                                        PU_CACHE));
         }
         BorderTopRefresh = true;
         UpdateState |= I_MESSAGES;
@@ -940,12 +950,15 @@ static void DrawAnimatedIcons(void)
     // Defensive power
     if (CPlayer->powers[pw_invulnerability])
     {
+        spindefense_x = 260 + WIDESCREENDELTA; // [crispy]
+
         if (CPlayer->powers[pw_invulnerability] > BLINKTHRESHOLD
             || !(CPlayer->powers[pw_invulnerability] & 16))
         {
             frame = (leveltime / 3) & 15;
-            V_DrawPatch(260, 19, W_CacheLumpNum(SpinDefenseLump + frame,
-                                                PU_CACHE));
+            V_DrawPatch(spindefense_x, 19,
+                        W_CacheLumpNum(SpinDefenseLump + frame,
+                                        PU_CACHE));
         }
         BorderTopRefresh = true;
         UpdateState |= I_MESSAGES;
@@ -954,12 +967,15 @@ static void DrawAnimatedIcons(void)
     // Minotaur Active
     if (CPlayer->powers[pw_minotaur])
     {
+        spinminotaur_x = 300 + WIDESCREENDELTA; // [crispy]
+
         if (CPlayer->powers[pw_minotaur] > BLINKTHRESHOLD
             || !(CPlayer->powers[pw_minotaur] & 16))
         {
             frame = (leveltime / 3) & 15;
-            V_DrawPatch(300, 19, W_CacheLumpNum(SpinMinotaurLump + frame,
-                                                PU_CACHE));
+            V_DrawPatch(spinminotaur_x, 19,
+                        W_CacheLumpNum(SpinMinotaurLump + frame,
+                                        PU_CACHE));
         }
         BorderTopRefresh = true;
         UpdateState |= I_MESSAGES;
