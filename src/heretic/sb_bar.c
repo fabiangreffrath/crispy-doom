@@ -704,6 +704,7 @@ void SB_Drawer(void)
         }
     }
     SB_PaletteFlash();
+
     // Flight icons
     if (CPlayer->powers[pw_flight])
     {
