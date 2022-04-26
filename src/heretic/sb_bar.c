@@ -629,8 +629,6 @@ static void RefreshBackground()
 
 extern int left_widget_w, right_widget_w; // [crispy]
 
-#define CRISPY_WIDGET_ON(x) (crispy->x == WIDGETS_ALWAYS\
-                             || (crispy->x == WIDGETS_AUTOMAP && automapactive))
 void SB_Drawer(void)
 {
     int frame;
@@ -710,11 +708,9 @@ void SB_Drawer(void)
     {
         spinfly_x = 20 - WIDESCREENDELTA; // [crispy]
 
-        // [crispy] Move flight icon out of the way of stats widget
-        if (CRISPY_WIDGET_ON(automapstats))
-        {
-            spinfly_x += left_widget_w;
-        }
+        // [crispy] Move flight icon out of the way of stats widget.
+        // left_widget_w is 0 if stats widget is off.
+        spinfly_x += left_widget_w;
 
         if (CPlayer->powers[pw_flight] > BLINKTHRESHOLD
             || !(CPlayer->powers[pw_flight] & 16))
@@ -768,12 +764,8 @@ void SB_Drawer(void)
         spinbook_x = 300 + WIDESCREENDELTA; // [crispy]
 
         // [crispy] Move tome icon out of the way of coordinates widget and fps
-        // counter
-        if (CRISPY_WIDGET_ON(playercoords)
-                || (CPlayer->cheats & CF_SHOWFPS && !automapactive))
-        {
-            spinbook_x -= right_widget_w;
-        }
+        // counter. right_widget_w is 0 if those are off.
+        spinbook_x -= right_widget_w;
 
         if (CPlayer->powers[pw_weaponlevel2] > BLINKTHRESHOLD
             || !(CPlayer->powers[pw_weaponlevel2] & 16))

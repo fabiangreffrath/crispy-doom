@@ -166,21 +166,22 @@ int left_widget_w, right_widget_w; // [crispy]
 
 static void CrispyDrawStats (void)
 {
-    static short height, coord_x;
+    static short height, coord_x, coord_w;
     char str[32];
     player_t *const player = &players[consoleplayer];
     int left_widget_x, right_widget_x;
 
-    if (!height || !coord_x || !right_widget_w)
+    if (!height || !coord_x || !coord_w)
     {
         const int FontABaseLump = W_GetNumForName(DEH_String("FONTA_S")) + 1;
         const patch_t *const p = W_CacheLumpNum(FontABaseLump + 'A' - 33, PU_CACHE);
 
         height = SHORT(p->height) + 1;
-        right_widget_w = 7 * SHORT(p->width);
-        coord_x = ORIGWIDTH - right_widget_w;
+        coord_w = 7 * SHORT(p->width);
+        coord_x = ORIGWIDTH - coord_w;
     }
 
+    left_widget_w = right_widget_w = 0;
     left_widget_x = 0 - WIDESCREENDELTA;
     right_widget_x = coord_x + WIDESCREENDELTA;
 
@@ -207,6 +208,8 @@ static void CrispyDrawStats (void)
 
     if (crispy->playercoords == WIDGETS_ALWAYS || (automapactive && crispy->playercoords == WIDGETS_AUTOMAP))
     {
+        right_widget_w = coord_w;
+
         M_snprintf(str, sizeof(str), "X %-5d", player->mo->x>>FRACBITS);
         MN_DrTextA(str, right_widget_x, 1*height);
 
