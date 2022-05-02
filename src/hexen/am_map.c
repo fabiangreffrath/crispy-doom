@@ -503,28 +503,28 @@ boolean AM_Responder(event_t * ev)
 
         if (key == key_map_east)                 // pan right
         {
-            if (!followplayer)
+            if (!followplayer && !crispy->automapoverlay)
                 m_paninc.x = FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
         }
         else if (key == key_map_west)                   // pan left
         {
-            if (!followplayer)
+            if (!followplayer && !crispy->automapoverlay)
                 m_paninc.x = -FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
         }
         else if (key == key_map_north)             // pan up
         {
-            if (!followplayer)
+            if (!followplayer && !crispy->automapoverlay)
                 m_paninc.y = FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
         }
         else if (key == key_map_south)                   // pan down
         {
-            if (!followplayer)
+            if (!followplayer && !crispy->automapoverlay)
                 m_paninc.y = -FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
