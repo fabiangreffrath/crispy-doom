@@ -983,6 +983,11 @@ static void DrawAndBlit(void)
             {
                 R_RenderPlayerView(&players[displayplayer]);
             }
+            if (automapactive && crispy->automapoverlay)
+            {
+                AM_Drawer();
+                BorderNeedRefresh = true;
+            }
             CT_Drawer();
             UpdateState |= I_FULLVIEW;
             SB_Drawer();

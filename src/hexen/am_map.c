@@ -551,6 +551,18 @@ boolean AM_Responder(event_t * ev)
                          followplayer ? AMSTR_FOLLOWON : AMSTR_FOLLOWOFF,
                          true);
         }
+        else if (key == key_map_overlay)
+        {
+            // [crispy] force redraw status bar
+            UpdateState |= I_FULLSCRN;
+            SB_state = -1;
+
+            crispy->automapoverlay = !crispy->automapoverlay;
+            if (crispy->automapoverlay)
+                P_SetMessage(plr, AMSTR_OVERLAYON, true);
+            else
+                P_SetMessage(plr, AMSTR_OVERLAYOFF, true);
+        }
         else
         {
             rc = false;
@@ -1434,7 +1446,10 @@ void AM_Drawer(void)
         return;
 
     UpdateState |= I_FULLSCRN;
-    AM_clearFB(BACKGROUND);
+    if (!crispy->automapoverlay)
+    {
+        AM_clearFB(BACKGROUND);
+    }
     if (grid)
         AM_drawGrid(GRIDCOLORS);
     AM_drawWalls();
