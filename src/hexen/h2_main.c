@@ -973,8 +973,10 @@ static void DrawAndBlit(void)
             {
                 break;
             }
-            if (automapactive)
+            if (automapactive && !crispy->automapoverlay)
             {
+                // [crispy] update automap while playing
+                R_RenderPlayerView(&players[displayplayer]);
                 AM_Drawer();
             }
             else
