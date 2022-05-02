@@ -660,9 +660,9 @@ boolean AM_Responder(event_t * ev)
 
             crispy->automapoverlay = !crispy->automapoverlay;
             if (crispy->automapoverlay)
-                plr->message = DEH_String(AMSTR_OVERLAYON);
+                P_SetMessage(plr, DEH_String(AMSTR_OVERLAYON), true);
             else
-                plr->message = DEH_String(AMSTR_OVERLAYOFF);
+                P_SetMessage(plr, DEH_String(AMSTR_OVERLAYOFF), true);
         }
         else
         {
