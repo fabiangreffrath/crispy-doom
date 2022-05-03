@@ -87,12 +87,21 @@ static unsigned ShowKillsCount = 0;
 
 extern boolean viewactive;
 
-static byte antialias[NUMALIAS][8] = {
+// [crispy] gradient table for map normal mode
+static byte antialias_normal[NUMALIAS][8] = {
     {83, 84, 85, 86, 87, 88, 89, 90},
     {96, 96, 95, 94, 93, 92, 91, 90},
     {107, 108, 109, 110, 111, 112, 89, 90}
 };
 
+// [crispy] gradient table for map overlay mode
+static byte antialias_overlay[NUMALIAS][8] = {
+    {86, 85, 84, 83, 82, 81, 100, 99},
+    {96, 93, 90, 87, 85, 83, 81, 99},
+    {107, 105, 104, 103, 102, 101, 100, 99}
+};
+
+static byte (*antialias)[NUMALIAS][8]; // [crispy]
 /*
 static byte *aliasmax[NUMALIAS] = {
 	&antialias[0][7], &antialias[1][7], &antialias[2][7]
@@ -343,6 +352,10 @@ void AM_initVariables(void)
         }
     }
 
+    // [crispy]
+    antialias = crispy->automapoverlay
+                 ? &antialias_overlay : &antialias_normal;
+
     // inform the status bar of the change
 //c  ST_Responder(&st_notify);
 }
@@ -573,9 +586,15 @@ boolean AM_Responder(event_t * ev)
 
             crispy->automapoverlay = !crispy->automapoverlay;
             if (crispy->automapoverlay)
+            {
                 P_SetMessage(plr, AMSTR_OVERLAYON, true);
+                antialias = &antialias_overlay;
+            }
             else
+            {
                 P_SetMessage(plr, AMSTR_OVERLAYOFF, true);
+                antialias = &antialias_normal;
+            }
         }
         else if (key == key_map_rotate)
         {
@@ -941,15 +960,15 @@ void AM_drawFline(fline_t * fl, int color)
     {
         case WALLCOLORS:
             DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y,
-                       &antialias[0][0], 8, 3);
+                       &(*antialias)[0][0], 8, 3);
             break;
         case FDWALLCOLORS:
             DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y,
-                       &antialias[1][0], 8, 3);
+                       &(*antialias)[1][0], 8, 3);
             break;
         case CDWALLCOLORS:
             DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y,
-                       &antialias[2][0], 8, 3);
+                       &(*antialias)[2][0], 8, 3);
             break;
         default:
             {
