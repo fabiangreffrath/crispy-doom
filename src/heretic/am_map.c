@@ -148,12 +148,21 @@ static byte cheatcount = 0;
 
 extern boolean viewactive;
 
-static byte antialias[NUMALIAS][8] = {
+// [crispy] gradient table for map normal mode
+static byte antialias_normal[NUMALIAS][8] = {
     {96, 97, 98, 99, 100, 101, 102, 103},
     {110, 109, 108, 107, 106, 105, 104, 103},
     {75, 76, 77, 78, 79, 80, 81, 103}
 };
 
+// [crispy] gradient table for map overlay mode
+static byte antialias_overlay[NUMALIAS][8] = {
+    {100, 99, 98, 97, 96, 95, 95, 95},
+    {110, 109, 108, 105, 102, 99, 97, 95},
+    {75, 74, 73, 72, 71, 70, 69, 95}
+};
+
+static byte (*antialias)[NUMALIAS][8]; // [crispy]
 /*
 static byte *aliasmax[NUMALIAS] = {
 	&antialias[0][7], &antialias[1][7], &antialias[2][7]
@@ -417,6 +426,10 @@ void AM_initVariables(void)
         }
     }
 
+    // [crispy]
+    antialias = crispy->automapoverlay
+                 ? &antialias_overlay : &antialias_normal;
+
     // inform the status bar of the change
 //c  ST_Responder(&st_notify);
 }
@@ -674,9 +687,15 @@ boolean AM_Responder(event_t * ev)
 
             crispy->automapoverlay = !crispy->automapoverlay;
             if (crispy->automapoverlay)
+            {
                 P_SetMessage(plr, DEH_String(AMSTR_OVERLAYON), true);
+                antialias = &antialias_overlay;
+            }
             else
+            {
                 P_SetMessage(plr, DEH_String(AMSTR_OVERLAYOFF), true);
+                antialias = &antialias_normal;
+            }
         }
         else if (key == key_map_rotate)
         {
@@ -1042,15 +1061,15 @@ void AM_drawFline(fline_t * fl, int color)
     switch (color)
     {
         case WALLCOLORS:
-            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &antialias[0][0],
+            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &(*antialias)[0][0],
                        8, 3);
             break;
         case FDWALLCOLORS:
-            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &antialias[1][0],
+            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &(*antialias)[1][0],
                        8, 3);
             break;
         case CDWALLCOLORS:
-            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &antialias[2][0],
+            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, &(*antialias)[2][0],
                        8, 3);
             break;
         default:
