@@ -769,7 +769,7 @@ void AM_clearFB(int color)
 //                      dmapx=0;  //goes into the automap.
 
         // [crispy] Disable map background scroll in rotate mode. The
-        // combination of the two effects is unappealing and slighly
+        // combination of the two effects is unappealing and slightly
         // nauseating.
         if (!crispy->automaprotate)
         {
