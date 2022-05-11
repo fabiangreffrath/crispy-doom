@@ -235,6 +235,12 @@ byte *R_BrightmapForSprite (const int type)
                 return hellstaff_world;
                 break;
             }
+            // Chandeiler
+            case SPR_CHDL:
+            // Fire Brazier
+            case SPR_KFR1:
+            // Serpent Torch
+            case SPR_SRTC:
             // Torch (artifact)
             case SPR_TRCH:
             {
@@ -274,14 +280,6 @@ byte *R_BrightmapForSprite (const int type)
             case SPR_AMP1:
             // Infernal Orb
             case SPR_AMP2:
-            // Wall Torch
-            case SPR_WTRH:
-            // Serpent Torch
-            case SPR_SRTC:
-            // Fire Blazier
-            case SPR_KFR1:
-            // Candeiler
-            case SPR_CHDL:
             // Volcano
             case SPR_VLCO:
             // Sabreclaw
@@ -306,10 +304,8 @@ byte *R_BrightmapForSprite (const int type)
     {
         switch (type)
         {
-            // Fire Blazier
+            // Fire Brazier
             case SPR_KFR1:
-            // Wall Torch
-            case SPR_WTRH:
             // Torch (artifact)
             case SPR_TRCH:
             {
