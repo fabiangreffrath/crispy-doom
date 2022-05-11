@@ -27,7 +27,6 @@
 
 static byte nobrightmap[256] = {0};
 
-/*
 static byte fullbright[256] =
 {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -47,7 +46,6 @@ static byte fullbright[256] =
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
-*/
 
 static byte surfaces[256] =
 {
@@ -69,7 +67,7 @@ static byte surfaces[256] =
     0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
 };
 
-/*
+
 static byte consumables[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -114,7 +112,7 @@ static byte ethereal[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -149,7 +147,6 @@ static byte energy[256] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
-*/
 
 byte *dc_brightmap = nobrightmap;
 
@@ -316,7 +313,7 @@ byte *R_BrightmapForFlatNum (const int num)
 
 byte *R_BrightmapForState (const int state)
 {
-    /* [JN] TODO
+
     if (crispy->brightmaps & BRIGHTMAPS_SPRITES)
     {
         switch (state)
@@ -418,25 +415,29 @@ byte *R_BrightmapForState (const int state)
                 break;
             }
             // Hell Staff:
-            case S_HORNRODATK1_1:
-            case S_HORNRODATK1_2:
-            case S_HORNRODATK1_3:
-            case S_HORNRODATK2_1:
-            case S_HORNRODATK2_2:
-            case S_HORNRODATK2_3:
-            case S_HORNRODATK2_4:
-            case S_HORNRODATK2_5:
-            case S_HORNRODATK2_6:
-            case S_HORNRODATK2_7:
-            case S_HORNRODATK2_8:
-            case S_HORNRODATK2_9:
-            // Phoenix Rod
+            // case S_HORNRODATK1_1:
+            // case S_HORNRODATK1_2:
+            // case S_HORNRODATK1_3:
+            // case S_HORNRODATK2_1:
+            // case S_HORNRODATK2_2:
+            // case S_HORNRODATK2_3:
+            // case S_HORNRODATK2_4:
+            // case S_HORNRODATK2_5:
+            // case S_HORNRODATK2_6:
+            // case S_HORNRODATK2_7:
+            // case S_HORNRODATK2_8:
+            // case S_HORNRODATK2_9:
+            // {
+            //     return consumables;
+            //     break;
+            // }
+            // Phoenix Rod (idle)
             case S_PHOENIXREADY:
             {
                 return consumables;
                 break;
             }
-            // Phoenix Rod
+            // Phoenix Rod (attack)
             case S_PHOENIXATK1_1:
             case S_PHOENIXATK1_2:
             case S_PHOENIXATK1_3:
@@ -447,12 +448,11 @@ byte *R_BrightmapForState (const int state)
             case S_PHOENIXATK2_3:
             case S_PHOENIXATK2_4:
             {
-                return flame;
+                return fullbright;
                 break;
             }
         }
 	}
-    */
 
     return nobrightmap;
 }
