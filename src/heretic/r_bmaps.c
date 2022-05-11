@@ -158,7 +158,7 @@ typedef struct
     byte *colormask;
 } fullbright_t;
 
-static const fullbright_t fullbright_doom[] = {
+static const fullbright_t fullbright_walls[] = {
     // [crispy] common textures
     {"DOOREXIT", surfaces},
     {"GRSKULL3", surfaces},
@@ -172,9 +172,9 @@ byte *R_BrightmapForTexName (const char *texname)
 {
     int i;
 
-    for (i = 0; i < arrlen(fullbright_doom); i++)
+    for (i = 0; i < arrlen(fullbright_walls); i++)
     {
-        const fullbright_t *fullbright = &fullbright_doom[i];
+        const fullbright_t *fullbright = &fullbright_walls[i];
 
         if (!strncasecmp(fullbright->texture, texname, 8))
         {
