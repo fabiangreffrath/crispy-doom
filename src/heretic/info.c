@@ -112,9 +112,10 @@ state_t states[NUMSTATES] = {
     {SPR_FX01, 32774, 3, NULL, S_EGGFXI1_4, 0, 0},      // S_EGGFXI1_3
     {SPR_FX01, 32775, 3, NULL, S_NULL, 0, 0},   // S_EGGFXI1_4
     {SPR_SPHL, 0, 350, NULL, S_ARTI_SPHL1, 0, 0},       // S_ARTI_SPHL1
-    {SPR_TRCH, 32768, 3, NULL, S_ARTI_TRCH2, 0, 0},     // S_ARTI_TRCH1
-    {SPR_TRCH, 32769, 3, NULL, S_ARTI_TRCH3, 0, 0},     // S_ARTI_TRCH2
-    {SPR_TRCH, 32770, 3, NULL, S_ARTI_TRCH1, 0, 0},     // S_ARTI_TRCH3
+    // [crispy] disable full bright for Torch, use brightmap instead
+    {SPR_TRCH, 0, 3, NULL, S_ARTI_TRCH2, 0, 0},     // S_ARTI_TRCH1
+    {SPR_TRCH, 1, 3, NULL, S_ARTI_TRCH3, 0, 0},     // S_ARTI_TRCH2
+    {SPR_TRCH, 2, 3, NULL, S_ARTI_TRCH1, 0, 0},     // S_ARTI_TRCH3
     {SPR_FBMB, 4, 350, NULL, S_ARTI_FBMB1, 0, 0},       // S_ARTI_FBMB1
     {SPR_FBMB, 0, 10, NULL, S_FIREBOMB2, 0, 0}, // S_FIREBOMB1
     {SPR_FBMB, 1, 10, NULL, S_FIREBOMB3, 0, 0}, // S_FIREBOMB2

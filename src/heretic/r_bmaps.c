@@ -88,6 +88,26 @@ static byte consumables[256] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
+static byte hellstaff_world[256] =
+{
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
 static byte flame[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -189,11 +209,41 @@ byte *R_BrightmapForTexName (const char *texname)
 
 byte *R_BrightmapForSprite (const int type)
 {
-    /* [JN] TODO
     if (crispy->brightmaps & BRIGHTMAPS_SPRITES)
     {
         switch (type)
         {
+            // Enchanted Shield
+            case SPR_SHD2:
+            // Morph Ovum
+            case SPR_EGGC:
+            // Ring of Invincibility
+            case SPR_INVU:
+            // Chaos Device
+            case SPR_ATLP:
+            // Ethereal Crossbow
+            case SPR_WBOW:
+            // Phoenix Rod
+            case SPR_WPHX:
+            {
+                return consumables;
+                break;
+            }
+            // Hell Staff
+            case SPR_WSKL:
+            {
+                return hellstaff_world;
+                break;
+            }
+            // Torch (artifact)
+            case SPR_TRCH:
+            {
+                return flame;
+                break;
+            }
+
+
+            /* [JN] TODO
             // Wand Crystal
             case SPR_AMG1:
             // Crystal Geode
@@ -214,20 +264,6 @@ byte *R_BrightmapForSprite (const int type)
             }
             // Quiver of Ethereal Arrows
             case SPR_AMC2:
-            // Ethereal Crossbow
-            case SPR_WBOW:
-            // Phoenix Rod
-            case SPR_WPHX:
-            // Hell Staff
-            case SPR_WSKL:
-            // Enchanted Shield
-            case SPR_SHD2:
-            // Morph Ovum
-            case SPR_EGGC:
-            // Ring of Invincibility
-            case SPR_INVU:
-            // Chaos Device
-            case SPR_ATLP:
             // Iron Lich
             case SPR_HEAD:
             {
@@ -246,8 +282,6 @@ byte *R_BrightmapForSprite (const int type)
             case SPR_KFR1:
             // Candeiler
             case SPR_CHDL:
-            // Torch (artifact)
-            case SPR_TRCH:
             // Volcano
             case SPR_VLCO:
             // Sabreclaw
@@ -265,6 +299,7 @@ byte *R_BrightmapForSprite (const int type)
                 return energy;
                 break;
             }
+            */
         }
     }
     else
@@ -283,7 +318,6 @@ byte *R_BrightmapForSprite (const int type)
             }
         }
     }
-    */
 
     return nobrightmap;
 }
