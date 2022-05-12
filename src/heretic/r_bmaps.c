@@ -225,6 +225,8 @@ byte *R_BrightmapForSprite (const int type)
             case SPR_WBOW:
             // Phoenix Rod
             case SPR_WPHX:
+            // Iron Lich
+            case SPR_HEAD:
             {
                 return consumables;
                 break;
@@ -243,11 +245,22 @@ byte *R_BrightmapForSprite (const int type)
             case SPR_SRTC:
             // Torch (artifact)
             case SPR_TRCH:
+            // Volcano
+            case SPR_VLCO:
+            // Sabreclaw
+            case SPR_CLNK:
             {
                 return flame;
                 break;
             }
-
+            // D'Sparil
+            case SPR_SRCR:
+            case SPR_SOR2:
+            case SPR_SDTH:
+            {
+                return energy;
+                break;
+            }
 
             /* [JN] TODO
             // Wand Crystal
@@ -270,8 +283,6 @@ byte *R_BrightmapForSprite (const int type)
             }
             // Quiver of Ethereal Arrows
             case SPR_AMC2:
-            // Iron Lich
-            case SPR_HEAD:
             {
                 return consumables;
                 break;
@@ -280,19 +291,12 @@ byte *R_BrightmapForSprite (const int type)
             case SPR_AMP1:
             // Infernal Orb
             case SPR_AMP2:
-            // Volcano
-            case SPR_VLCO:
-            // Sabreclaw
-            case SPR_CLNK:
             {
                 return flame;
                 break;
             }
             // Disciple of D'Sparil
             case SPR_WZRD:
-            // D'Sparil
-            case SPR_SOR2:
-            case SPR_SDTH:
             {
                 return energy;
                 break;
