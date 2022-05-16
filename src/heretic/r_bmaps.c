@@ -108,6 +108,26 @@ static byte hellstaff_world[256] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
+static byte hellstaff_attack[256] =
+{
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+};
+
 static byte flame[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -168,6 +188,46 @@ static byte energy[256] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
+static byte iron_lich_1[256] =
+{
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+static byte iron_lich_2[256] =
+{
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 1, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1,
+    1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
 byte *dc_brightmap = nobrightmap;
 
 // [crispy] brightmaps for textures
@@ -207,98 +267,202 @@ byte *R_BrightmapForTexName (const char *texname)
 
 // [crispy] brightmaps for sprites
 
-byte *R_BrightmapForSprite (const int type)
+byte *R_BrightmapForSprite (const int state)
 {
     if (crispy->brightmaps & BRIGHTMAPS_SPRITES)
     {
-        switch (type)
+        switch (state)
         {
             // Enchanted Shield
-            case SPR_SHD2:
+            case S_ITEM_SHD2_1:
             // Morph Ovum
-            case SPR_EGGC:
+            case S_ARTI_EGGC1:
+            case S_ARTI_EGGC2:
+            case S_ARTI_EGGC3:
+            case S_ARTI_EGGC4:
             // Ring of Invincibility
-            case SPR_INVU:
+            case S_ARTI_INVU1:
+            case S_ARTI_INVU2:
+            case S_ARTI_INVU3:
+            case S_ARTI_INVU4:
             // Chaos Device
-            case SPR_ATLP:
+            case S_ARTI_ATLP1:
+            case S_ARTI_ATLP2:
+            case S_ARTI_ATLP3:
+            case S_ARTI_ATLP4:
             // Ethereal Crossbow
-            case SPR_WBOW:
+            case S_WBOW:
             // Phoenix Rod
-            case SPR_WPHX:
-            // Iron Lich
-            case SPR_HEAD:
+            case S_WPHX:
             {
                 return consumables;
                 break;
             }
-            // Hell Staff
-            case SPR_WSKL:
+
+            // Hell Staff (world)
+            case S_WSKL:
             {
                 return hellstaff_world;
                 break;
             }
+
             // Chandeiler
-            case SPR_CHDL:
+            case S_CHANDELIER1:
+            case S_CHANDELIER2:
+            case S_CHANDELIER3:
             // Fire Brazier
-            case SPR_KFR1:
+            case S_FIREBRAZIER1:
+            case S_FIREBRAZIER2:
+            case S_FIREBRAZIER3:
+            case S_FIREBRAZIER4:
+            case S_FIREBRAZIER5:
+            case S_FIREBRAZIER6:
+            case S_FIREBRAZIER7:
+            case S_FIREBRAZIER8:
             // Serpent Torch
-            case SPR_SRTC:
+            case S_SERPTORCH1:
+            case S_SERPTORCH2:
+            case S_SERPTORCH3:
             // Torch (artifact)
-            case SPR_TRCH:
+            case S_ARTI_TRCH1:
+            case S_ARTI_TRCH2:
+            case S_ARTI_TRCH3:
             // Volcano
-            case SPR_VLCO:
-            // Sabreclaw
-            case SPR_CLNK:
+            case S_VOLCANO1:
+            case S_VOLCANO2:
+            case S_VOLCANO3:
+            case S_VOLCANO4:
+            case S_VOLCANO5:
+            case S_VOLCANO6:
+            case S_VOLCANO7:
+            case S_VOLCANO8:
+            case S_VOLCANO9:
+            // Sabreclaw (death states)
+            case S_CLINK_DIE1:
+            case S_CLINK_DIE2:
+            case S_CLINK_DIE3:
+            case S_CLINK_DIE4:
+            case S_CLINK_DIE5:
+            case S_CLINK_DIE6:
             {
                 return flame;
                 break;
             }
-            // D'Sparil
-            case SPR_SRCR:
-            case SPR_SOR2:
-            case SPR_SDTH:
+
+            // Iron Lich (idle and attack states)
+            case S_HEAD_LOOK:
+            case S_HEAD_FLOAT:
+            case S_HEAD_ATK1:
+            case S_HEAD_ATK2:
+            {
+                return iron_lich_1;
+                break;
+            }
+
+            // Iron Lich (death states)
+            case S_HEAD_DIE1:
+            case S_HEAD_DIE2:
+            case S_HEAD_DIE3:
+            case S_HEAD_DIE4:
+            case S_HEAD_DIE5:
+            case S_HEAD_DIE6:
+            {
+                return iron_lich_2;
+                break;
+            }
+
+            // Disciple of D'Sparil (attack, pain and death states)
+            case S_WIZARD_ATK1:
+            case S_WIZARD_ATK2:
+            case S_WIZARD_ATK3:
+            case S_WIZARD_ATK4:
+            case S_WIZARD_ATK5:
+            case S_WIZARD_ATK6:
+            case S_WIZARD_ATK7:
+            case S_WIZARD_ATK8:
+            case S_WIZARD_ATK9:
+            case S_WIZARD_PAIN1:
+            case S_WIZARD_PAIN2:
+            case S_WIZARD_DIE1:
+            case S_WIZARD_DIE2:
+            case S_WIZARD_DIE3:
+            case S_WIZARD_DIE4:
+            case S_WIZARD_DIE5:
+            case S_WIZARD_DIE6:
+            case S_WIZARD_DIE7:
+            // D'Sparil on Serpent (death states)
+            case S_SRCR1_DIE9:
+            case S_SRCR1_DIE10:
+            case S_SRCR1_DIE11:
+            case S_SRCR1_DIE12:
+            case S_SRCR1_DIE13:
+            case S_SRCR1_DIE14:
+            case S_SRCR1_DIE15:
+            // Walking D'Sparil (attack states)
+            case S_SOR2_ATK1:
+            case S_SOR2_ATK2:
+            case S_SOR2_ATK3:
+            // Walking D'Sparil (death states)
+            case S_SOR2_DIE1:
+            case S_SOR2_DIE2:
+            case S_SOR2_DIE3:
+            case S_SOR2_DIE4:
+            case S_SOR2_DIE5:
+            case S_SOR2_DIE6:
+            case S_SOR2_DIE7:
+            case S_SOR2_DIE8:
+            case S_SOR2_DIE9:
             {
                 return energy;
                 break;
             }
-
-            /* [JN] TODO
+            
+            /*
+            // [JN] TODO - ammo pickups should use half-brights.
             // Wand Crystal
-            case SPR_AMG1:
+            case S_AMG1:
             // Crystal Geode
-            case SPR_AMG2:
+            case S_AMG2_1:
+            case S_AMG2_2:
+            case S_AMG2_3:
             // Ethereal Arrows
-            case SPR_AMC1:
+            case S_AMC1:
             // Claw Orb
-            case SPR_AMB1:
+            case S_AMB1_1:
+            case S_AMB1_2:
+            case S_AMB1_3:
             // Energy Orb
-            case SPR_AMB2:
+            case S_AMB2_1:
+            case S_AMB2_2:
+            case S_AMB2_3:
             // Lesser Runes:
-            case SPR_AMS1:
+            case S_AMS1_1:
+            case S_AMS1_2:
             // Greater Runes:
-            case SPR_AMS2:
+            case S_AMS2_1:
+            case S_AMS2_2:
             {
                 return fullbright;
                 break;
             }
             // Quiver of Ethereal Arrows
-            case SPR_AMC2:
+            case S_AMC2_1:
+            case S_AMC2_2:
+            case S_AMC2_3:
             {
                 return consumables;
                 break;
             }
             // Flame Orb
-            case SPR_AMP1:
+            case S_AMP1_1:
+            case S_AMP1_2:
+            case S_AMP1_3:
             // Infernal Orb
-            case SPR_AMP2:
+            case S_AMP2_1:
+            case S_AMP2_2:
+            case S_AMP2_3:
             {
                 return flame;
-                break;
-            }
-            // Disciple of D'Sparil
-            case SPR_WZRD:
-            {
-                return energy;
                 break;
             }
             */
@@ -306,12 +470,21 @@ byte *R_BrightmapForSprite (const int type)
     }
     else
     {
-        switch (type)
+        switch (state)
         {
             // Fire Brazier
-            case SPR_KFR1:
+            case S_FIREBRAZIER1:
+            case S_FIREBRAZIER2:
+            case S_FIREBRAZIER3:
+            case S_FIREBRAZIER4:
+            case S_FIREBRAZIER5:
+            case S_FIREBRAZIER6:
+            case S_FIREBRAZIER7:
+            case S_FIREBRAZIER8:
             // Torch (artifact)
-            case SPR_TRCH:
+            case S_ARTI_TRCH1:
+            case S_ARTI_TRCH2:
+            case S_ARTI_TRCH3:
             {
                 return fullbright;
                 break;
@@ -449,22 +622,22 @@ byte *R_BrightmapForState (const int state)
                 break;
             }
             // Hell Staff:
-            // case S_HORNRODATK1_1:
-            // case S_HORNRODATK1_2:
-            // case S_HORNRODATK1_3:
-            // case S_HORNRODATK2_1:
-            // case S_HORNRODATK2_2:
-            // case S_HORNRODATK2_3:
-            // case S_HORNRODATK2_4:
-            // case S_HORNRODATK2_5:
-            // case S_HORNRODATK2_6:
-            // case S_HORNRODATK2_7:
-            // case S_HORNRODATK2_8:
-            // case S_HORNRODATK2_9:
-            // {
-            //     return consumables;
-            //     break;
-            // }
+            case S_HORNRODATK1_1:
+            case S_HORNRODATK1_2:
+            case S_HORNRODATK1_3:
+            case S_HORNRODATK2_1:
+            case S_HORNRODATK2_2:
+            case S_HORNRODATK2_3:
+            case S_HORNRODATK2_4:
+            case S_HORNRODATK2_5:
+            case S_HORNRODATK2_6:
+            case S_HORNRODATK2_7:
+            case S_HORNRODATK2_8:
+            case S_HORNRODATK2_9:
+            {
+                return hellstaff_attack;
+                break;
+            }
             // Phoenix Rod (idle)
             case S_PHOENIXREADY:
             {
