@@ -659,7 +659,7 @@ void R_ProjectSprite(mobj_t * thing)
         vis->colormap[1] = colormaps;
     }
 
-    vis->brightmap = R_BrightmapForSprite(thing->sprite);
+    vis->brightmap = R_BrightmapForSprite(thing->state - states);
 }
 
 
