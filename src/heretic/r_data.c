@@ -62,7 +62,7 @@ int *texturecompositesize;
 short **texturecolumnlump;
 unsigned short **texturecolumnofs;
 byte **texturecomposite;
-byte **texturebrightmap;        // [crispy] brightmaps
+const byte **texturebrightmap;  // [crispy] brightmaps
 
 int *flattranslation;           // for global animation
 int *texturetranslation;        // for global animation

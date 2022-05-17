@@ -229,7 +229,7 @@ typedef struct vissprite_s
     int patch;
     // [crispy] brightmaps for select sprites
     lighttable_t *colormap[2];
-    byte *brightmap;
+    const byte *brightmap;
     int mobjflags;              // for color translation and shadow draw
     boolean psprite;            // true if psprite
     fixed_t footclip;           // foot clipping
@@ -479,7 +479,7 @@ extern fixed_t dc_iscale;
 extern fixed_t dc_texturemid;
 extern int dc_texheight;
 extern byte *dc_source;         // first pixel in a column
-extern byte *dc_brightmap;      // [crispy] brightmaps
+extern const byte *dc_brightmap;  // [crispy] brightmaps
 
 void R_DrawColumn(void);
 void R_DrawColumnLow(void);
@@ -498,7 +498,7 @@ extern fixed_t ds_yfrac;
 extern fixed_t ds_xstep;
 extern fixed_t ds_ystep;
 extern byte *ds_source;         // start of a 64*64 tile image
-extern byte *ds_brightmap;      // [crispy] brightmaps
+extern const byte *ds_brightmap;  // [crispy] brightmaps
 
 extern byte *translationtables;
 extern byte *dc_translation;

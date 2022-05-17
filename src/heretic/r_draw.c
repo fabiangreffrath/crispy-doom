@@ -353,7 +353,7 @@ fixed_t ds_yfrac;
 fixed_t ds_xstep;
 fixed_t ds_ystep;
 byte *ds_source;                // start of a 64*64 tile image
-byte *ds_brightmap;             // [crispy] brightmaps
+const byte *ds_brightmap;       // [crispy] brightmaps
 
 int dscount;                    // just for profiling
 

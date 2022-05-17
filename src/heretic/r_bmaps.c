@@ -25,9 +25,9 @@
 
 // [crispy] brightmap data
 
-static byte nobrightmap[256] = {0};
+static const byte nobrightmap[256] = {0};
 
-static byte fullbright[256] =
+static const byte fullbright[256] =
 {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -47,7 +47,7 @@ static byte fullbright[256] =
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 
-static byte surfaces[256] =
+static const byte surfaces[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -68,7 +68,7 @@ static byte surfaces[256] =
 };
 
 
-static byte consumables[256] =
+static const byte consumables[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -88,7 +88,7 @@ static byte consumables[256] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static byte hellstaff_world[256] =
+static const byte hellstaff_world[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -108,7 +108,7 @@ static byte hellstaff_world[256] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static byte hellstaff_attack[256] =
+static const byte hellstaff_attack[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -128,7 +128,7 @@ static byte hellstaff_attack[256] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 };
 
-static byte flame[256] =
+static const byte flame[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -148,7 +148,7 @@ static byte flame[256] =
     0, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static byte ethereal[256] =
+static const byte ethereal[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -168,7 +168,7 @@ static byte ethereal[256] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static byte energy[256] =
+static const byte energy[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -188,7 +188,7 @@ static byte energy[256] =
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static byte iron_lich_1[256] =
+static const byte iron_lich_1[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -208,7 +208,7 @@ static byte iron_lich_1[256] =
     0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-static byte iron_lich_2[256] =
+static const byte iron_lich_2[256] =
 {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -228,14 +228,14 @@ static byte iron_lich_2[256] =
     0, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-byte *dc_brightmap = nobrightmap;
+const byte *dc_brightmap = nobrightmap;
 
 // [crispy] brightmaps for textures
 
 typedef struct
 {
     const char *const texture;
-    byte *colormask;
+    const byte *colormask;
 } fullbright_t;
 
 static const fullbright_t fullbright_walls[] = {
@@ -248,7 +248,7 @@ static const fullbright_t fullbright_walls[] = {
     {"SW2OFF",   surfaces},
 };
 
-byte *R_BrightmapForTexName (const char *texname)
+const byte *R_BrightmapForTexName (const char *texname)
 {
     int i;
 
@@ -267,7 +267,7 @@ byte *R_BrightmapForTexName (const char *texname)
 
 // [crispy] brightmaps for sprites
 
-byte *R_BrightmapForSprite (const int state)
+const byte *R_BrightmapForSprite (const int state)
 {
     if (crispy->brightmaps & BRIGHTMAPS_SPRITES)
     {
@@ -499,7 +499,7 @@ byte *R_BrightmapForSprite (const int state)
 
 static int bmapflatnum[12];
 
-byte *R_BrightmapForFlatNum (const int num)
+const byte *R_BrightmapForFlatNum (const int num)
 {
     if (crispy->brightmaps & BRIGHTMAPS_TEXTURES)
     {
@@ -518,7 +518,7 @@ byte *R_BrightmapForFlatNum (const int num)
 
 // [crispy] brightmaps for states
 
-byte *R_BrightmapForState (const int state)
+const byte *R_BrightmapForState (const int state)
 {
 
     if (crispy->brightmaps & BRIGHTMAPS_SPRITES)
