@@ -306,6 +306,14 @@ const byte *R_BrightmapForSprite (const int state)
                 break;
             }
 
+            // Flame Orb
+            case S_AMP1_1:
+            case S_AMP1_2:
+            case S_AMP1_3:
+            // Infernal Orb
+            case S_AMP2_1:
+            case S_AMP2_2:
+            case S_AMP2_3:
             // Chandeiler
             case S_CHANDELIER1:
             case S_CHANDELIER2:
@@ -416,6 +424,48 @@ const byte *R_BrightmapForSprite (const int state)
                 return energy;
                 break;
             }
+
+            // Initially unlit objects:
+            // Weredragon fireball
+            case S_BEASTBALL1:
+            case S_BEASTBALL2:
+            case S_BEASTBALL3:
+            case S_BEASTBALL4:
+            case S_BEASTBALL5:
+            case S_BEASTBALL6:
+            // Iron Lich flame wall
+            case S_HEADFX3_1:
+            case S_HEADFX3_2:
+            case S_HEADFX3_3:
+            case S_HEADFX3_4:
+            case S_HEADFX3_5:
+            case S_HEADFX3_6:
+            case S_HEADFXI3_1:
+            case S_HEADFXI3_2:
+            case S_HEADFXI3_3:
+            case S_HEADFXI3_4:
+            // Volcano fireball
+            case S_VOLCANOBALL1:
+            case S_VOLCANOBALL2:
+            case S_VOLCANOBALLX1:
+            case S_VOLCANOBALLX2:
+            case S_VOLCANOBALLX3:
+            case S_VOLCANOBALLX4:
+            case S_VOLCANOBALLX5:
+            case S_VOLCANOBALLX6:
+            case S_VOLCANOTBALL1:
+            case S_VOLCANOTBALL2:
+            case S_VOLCANOTBALLX1:
+            case S_VOLCANOTBALLX2:
+            case S_VOLCANOTBALLX3:
+            case S_VOLCANOTBALLX4:
+            case S_VOLCANOTBALLX5:
+            case S_VOLCANOTBALLX6:
+            case S_VOLCANOTBALLX7:
+            {
+                return fullbright;
+                break;
+            }
             
             /*
             // [JN] TODO - ammo pickups should use half-brights.
@@ -451,18 +501,6 @@ const byte *R_BrightmapForSprite (const int state)
             case S_AMC2_3:
             {
                 return consumables;
-                break;
-            }
-            // Flame Orb
-            case S_AMP1_1:
-            case S_AMP1_2:
-            case S_AMP1_3:
-            // Infernal Orb
-            case S_AMP2_1:
-            case S_AMP2_2:
-            case S_AMP2_3:
-            {
-                return flame;
                 break;
             }
             */
