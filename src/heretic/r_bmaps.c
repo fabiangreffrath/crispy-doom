@@ -298,14 +298,12 @@ const byte *R_BrightmapForSprite (const int state)
                 return consumables;
                 break;
             }
-
             // Hell Staff (world)
             case S_WSKL:
             {
                 return hellstaff_world;
                 break;
             }
-
             // Flame Orb
             case S_AMP1_1:
             case S_AMP1_2:
@@ -356,7 +354,6 @@ const byte *R_BrightmapForSprite (const int state)
                 return flame;
                 break;
             }
-
             // Iron Lich (idle and attack states)
             case S_HEAD_LOOK:
             case S_HEAD_FLOAT:
@@ -366,7 +363,6 @@ const byte *R_BrightmapForSprite (const int state)
                 return iron_lich_1;
                 break;
             }
-
             // Iron Lich (death states)
             case S_HEAD_DIE1:
             case S_HEAD_DIE2:
@@ -378,7 +374,6 @@ const byte *R_BrightmapForSprite (const int state)
                 return iron_lich_2;
                 break;
             }
-
             // Disciple of D'Sparil (attack, pain and death states)
             case S_WIZARD_ATK1:
             case S_WIZARD_ATK2:
@@ -466,44 +461,6 @@ const byte *R_BrightmapForSprite (const int state)
                 return fullbright;
                 break;
             }
-            
-            /*
-            // [JN] TODO - ammo pickups should use half-brights.
-            // Wand Crystal
-            case S_AMG1:
-            // Crystal Geode
-            case S_AMG2_1:
-            case S_AMG2_2:
-            case S_AMG2_3:
-            // Ethereal Arrows
-            case S_AMC1:
-            // Claw Orb
-            case S_AMB1_1:
-            case S_AMB1_2:
-            case S_AMB1_3:
-            // Energy Orb
-            case S_AMB2_1:
-            case S_AMB2_2:
-            case S_AMB2_3:
-            // Lesser Runes:
-            case S_AMS1_1:
-            case S_AMS1_2:
-            // Greater Runes:
-            case S_AMS2_1:
-            case S_AMS2_2:
-            {
-                return fullbright;
-                break;
-            }
-            // Quiver of Ethereal Arrows
-            case S_AMC2_1:
-            case S_AMC2_2:
-            case S_AMC2_3:
-            {
-                return consumables;
-                break;
-            }
-            */
         }
     }
     else
