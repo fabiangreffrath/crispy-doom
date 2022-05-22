@@ -690,8 +690,15 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
         testcontrols_mousespeed = 0;
     }
 
-    if (!novert)
+    if (crispy->mouselook)
+    {
+        cmd->lookdir = mouse_y_invert ? -mousey : mousey;
+        cmd->lookdir /= 8;
+    }
+    else if (!novert)
+    {
         forward += mousey;
+    }
     mousex = mousex2 = mousey = 0;
 
     if (forward > MAXPLMOVE)
