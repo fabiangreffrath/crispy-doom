@@ -693,7 +693,6 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
     if (crispy->mouselook)
     {
         cmd->lookdir = mouse_y_invert ? -mousey : mousey;
-        cmd->lookdir /= 8;
     }
     else if (!novert)
     {

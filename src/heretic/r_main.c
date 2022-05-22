@@ -19,6 +19,7 @@
 #include <math.h>
 #include "doomdef.h"
 #include "m_bbox.h"
+#include "p_local.h" // [crispy] MLOOKUNIT
 #include "r_local.h"
 #include "tables.h"
 #include "v_video.h" // [crispy] V_DrawFilledBox for HOM detector
@@ -815,7 +816,9 @@ void R_SetupFrame(player_t * player)
     }
 
     extralight = player->extralight;
-    tempCentery = viewheight / 2 + ((player->lookdir) << crispy->hires) * screenblocks / 10;
+    tempCentery = viewheight / 2 +
+                    ((player->lookdir / MLOOKUNIT) << crispy->hires) *
+                    screenblocks / 10;
     if (centery != tempCentery)
     {
         centery = tempCentery;
