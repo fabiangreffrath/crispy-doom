@@ -122,6 +122,8 @@ static boolean CrispySecretMessage(int option);
 static boolean CrispyMouselook(int option);
 static boolean CrispyUncapped(int option);
 static boolean CrispyVsync(int option);
+static boolean CrispyNextPage(int option);
+static boolean CrispyPrevPage(int option);
 static void DrawMainMenu(void);
 static void DrawEpisodeMenu(void);
 static void DrawSkillMenu(void);
@@ -134,6 +136,7 @@ static void DrawLoadMenu(void);
 static void DrawSaveMenu(void);
 static void DrawSlider(Menu_t * menu, int item, int width, int slot);
 static void DrawMouseMenu(void);
+static void DrawCrispness(void);
 static void DrawCrispness1(void);
 static void DrawCrispness2(void);
 void MN_LoadSlotText(void);
@@ -330,6 +333,10 @@ static Menu_t Options2Menu = {
     MENU_OPTIONS
 };
 
+static int crispnessmenupage;
+
+#define NUM_CRISPNESS_MENUS 2
+
 static MenuItem_t Crispness1Items[] = {
     {ITT_LRFUNC, "HIGH RESOLUTION RENDERING:", CrispyHires, 0, MENU_NONE},
     {ITT_LRFUNC, "ASPECT RATIO:", CrispyToggleWidescreen, 0, MENU_NONE},
@@ -346,12 +353,12 @@ static MenuItem_t Crispness1Items[] = {
     {ITT_LRFUNC, "SHOW PLAYER COORDS:", CrispyPlayerCoords, 0, MENU_NONE},
     {ITT_LRFUNC, "REPORT REVEALED SECRETS:", CrispySecretMessage, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_SETMENU, "NEXT PAGE", CrispySecretMessage, 0, MENU_CRISPNESS2},
+    {ITT_EFUNC, "NEXT PAGE", CrispyNextPage, 0, MENU_NONE},
 };
 
 static Menu_t Crispness1Menu = {
     68, 35,
-    DrawCrispness1,
+    DrawCrispness,
     16, Crispness1Items,
     0,
     MENU_OPTIONS
@@ -360,15 +367,25 @@ static Menu_t Crispness1Menu = {
 static MenuItem_t Crispness2Items[] = {
     {ITT_LRFUNC, "PERMANENT MOUSELOOK:", CrispyMouselook, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_SETMENU, "PREV PAGE", NULL, 0, MENU_CRISPNESS1},
+    {ITT_EFUNC, "PREV PAGE", CrispyPrevPage, 0, MENU_NONE},
 };
 
 static Menu_t Crispness2Menu = {
     68, 35,
-    DrawCrispness2,
+    DrawCrispness,
     3, Crispness2Items,
     0,
     MENU_OPTIONS
+};
+
+static void (*CrispnessMenuDrawers[])(void) = {
+    &DrawCrispness1,
+    &DrawCrispness2,
+};
+
+static MenuType_t CrispnessMenus[] = {
+    MENU_CRISPNESS1,
+    MENU_CRISPNESS2,
 };
 
 static Menu_t *Menus[] = {
@@ -681,8 +698,7 @@ void MN_Drawer(void)
         {
             if (item->type != ITT_EMPTY && item->text)
             {
-                if (CurrentMenu == &Crispness1Menu ||
-                        CurrentMenu == &Crispness2Menu)
+                if (CurrentMenu->drawFunc == DrawCrispness)
                 {
                 // [JN] Crispness menu: use small "A" font
                 MN_DrTextA(DEH_String(item->text), x, y);
@@ -692,8 +708,7 @@ void MN_Drawer(void)
                 MN_DrTextB(DEH_String(item->text), x, y);
                 }
             }
-            if (CurrentMenu == &Crispness1Menu ||
-                    CurrentMenu == &Crispness2Menu)
+            if (CurrentMenu->drawFunc == DrawCrispness)
             {
             // [JN] Crispness menu: use 10px vertical spacing for small font
             y += ITEM_HEIGHT/2;
@@ -704,8 +719,7 @@ void MN_Drawer(void)
             }
             item++;
         }
-        if (CurrentMenu == &Crispness1Menu ||
-                CurrentMenu == &Crispness2Menu)
+        if (CurrentMenu->drawFunc == DrawCrispness)
         {
         // [JN] Crispness menu: use small blue gem instead of big red arrow.
         // Blinks a bit faster and shifted right, closer to the text.
@@ -1404,6 +1418,20 @@ static boolean CrispySecretMessage(int option)
 static boolean CrispyMouselook(int option)
 {
     crispy->mouselook = !crispy->mouselook;
+    return true;
+}
+
+static boolean CrispyNextPage(int option)
+{
+    crispnessmenupage++;
+    crispnessmenupage %= NUM_CRISPNESS_MENUS;
+    return true;
+}
+
+static boolean CrispyPrevPage(int option)
+{
+    crispnessmenupage--;
+    crispnessmenupage %= NUM_CRISPNESS_MENUS;
     return true;
 }
 
@@ -2206,17 +2234,33 @@ static void M_DrawCrispnessBackground(void)
     SB_state = -1;
 }
 
-static void DrawCrispness1(void)
+static void DrawCrispness(void)
 {
     static const char *title;
+    char menupage[6];
+
+    SetMenu(CrispnessMenus[crispnessmenupage]);
 
     // Background
     M_DrawCrispnessBackground();
 
     // Title
-    title = DEH_String("CRISPNESS 1/2");
+    title = DEH_String("CRISPNESS");
     MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 2);
 
+    // Page number
+    dp_translation = cr[CR_GREEN];
+    M_snprintf(menupage, sizeof(menupage), "%d / %d", crispnessmenupage + 1,
+                NUM_CRISPNESS_MENUS);
+    MN_DrTextA(menupage, 320 - MN_TextAWidth(menupage) - 20, 10);
+
+    (*CrispnessMenuDrawers[crispnessmenupage])();
+
+    dp_translation = NULL;
+}
+
+static void DrawCrispness1(void)
+{
     // Subheaders
     dp_translation = cr[CR_GOLD];
     MN_DrTextA("RENDERING", 63, 25);
@@ -2272,15 +2316,6 @@ static void DrawCrispness1(void)
 
 static void DrawCrispness2(void)
 {
-    static const char *title;
-
-    // Background
-    M_DrawCrispnessBackground();
-
-    // Title
-    title = DEH_String("CRISPNESS 2/2");
-    MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 2);
-
     // Subheaders
     dp_translation = cr[CR_GOLD];
     MN_DrTextA("TACTICAL", 63, 25);
