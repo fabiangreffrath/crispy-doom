@@ -1354,7 +1354,7 @@ void G_PlayerFinishLevel(int player)
     }
     p->messageTics = 0;
     p->centerMessageTics = 0;
-    p->lookdir = 0;
+    p->lookdir = p->oldlookdir = 0;
     p->mo->flags &= ~MF_SHADOW; // Remove invisibility
     p->extralight = 0;          // Remove weapon flashes
     p->fixedcolormap = 0;       // Remove torch

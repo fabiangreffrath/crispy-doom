@@ -552,6 +552,7 @@ void P_PlayerThink(player_t * player)
     player->mo->oldz = player->mo->z;
     player->mo->oldangle = player->mo->angle;
     player->oldviewz = player->viewz;
+    player->oldlookdir = player->lookdir;
     // player->oldlookdir = player->lookdir;
     // player->oldrecoilpitch = player->recoilpitch;
 
