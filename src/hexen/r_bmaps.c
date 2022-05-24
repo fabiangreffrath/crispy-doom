@@ -521,7 +521,7 @@ const byte *R_BrightmapForState (const int state)
             case S_CFLAMEATK_3:
             case S_CFLAMEATK_7:
             case S_CFLAMEATK_8:
-            // Arc of Death
+            // Bloodscourge
             case S_MSTAFFREADY:
             case S_MSTAFFREADY2:
             case S_MSTAFFREADY3:

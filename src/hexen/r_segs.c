@@ -133,7 +133,7 @@ void R_RenderMaskedSegRange(drawseg_t * ds, int x1, int x2)
                 index = spryscale >> (LIGHTSCALESHIFT + crispy->hires);
                 if (index >= MAXLIGHTSCALE)
                     index = MAXLIGHTSCALE - 1;
-                // [JN] Brightmaps for two-sided midtextures.
+                // [crispy] brightmaps for mid-textures
                 dc_brightmap = texturebrightmap[texnum];
                 dc_colormap[0] = walllights[index];
                 dc_colormap[1] = (crispy->brightmaps & BRIGHTMAPS_TEXTURES) ? colormaps : dc_colormap[0];

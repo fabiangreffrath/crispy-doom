@@ -1383,7 +1383,7 @@ state_t states[NUMSTATES] = {
     {SPR_FHFX, 20, 4, NULL, S_HAMMERPUFF4, 0, 0},       // S_HAMMERPUFF3
     {SPR_FHFX, 21, 4, NULL, S_HAMMERPUFF5, 0, 0},       // S_HAMMERPUFF4
     {SPR_FHFX, 22, 4, NULL, S_NULL, 0, 0},      // S_HAMMERPUFF5
-    // [crispy] disable full bright for Fighter's Sword, use brightmap instead
+    // [crispy] disable full bright for Quietus, use brightmap instead
     {SPR_FSRD, 0, 1, A_WeaponReady, S_FSWORDREADY1, 0, 0},  // S_FSWORDREADY
     {SPR_FSRD, 0, 1, A_WeaponReady, S_FSWORDREADY2, 0, 0},  // S_FSWORDREADY1
     {SPR_FSRD, 0, 1, A_WeaponReady, S_FSWORDREADY3, 0, 0},  // S_FSWORDREADY2
@@ -1433,7 +1433,6 @@ state_t states[NUMSTATES] = {
     {SPR_FSFX, 32788, 3, NULL, S_FSWORD_FLAME9, 0, 0},  // S_FSWORD_FLAME8
     {SPR_FSFX, 32789, 3, NULL, S_FSWORD_FLAME10, 0, 0}, // S_FSWORD_FLAME9
     {SPR_FSFX, 32790, 3, NULL, S_NULL, 0, 0},   // S_FSWORD_FLAME10
-    
     {SPR_CMCE, 0, 1, A_WeaponReady, S_CMACEREADY, 0, 0},        // S_CMACEREADY
     {SPR_CMCE, 0, 1, A_Lower, S_CMACEDOWN, 0, 0},       // S_CMACEDOWN
     {SPR_CMCE, 0, 1, A_Raise, S_CMACEUP, 0, 0}, // S_CMACEUP
