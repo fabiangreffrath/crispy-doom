@@ -65,6 +65,7 @@ typedef enum
     MENU_FILES,
     MENU_LOAD,
     MENU_SAVE,
+    MENU_MOUSE,
     MENU_CRISPNESS,
     MENU_NONE
 } MenuType_t;
@@ -105,6 +106,8 @@ static void SCQuitGame(int option);
 static void SCClass(int option);
 static void SCSkill(int option);
 static void SCMouseSensi(int option);
+static void SCMouseSensiX2(int option);
+static void SCMouseSensiY(int option);
 static void SCSfxVolume(int option);
 static void SCMusicVolume(int option);
 static void SCScreenSize(int option);
@@ -114,6 +117,8 @@ static void CrispyToggleWidescreen(int option);
 static void CrispySmoothing(int option);
 static void CrispyUncapped(int option);
 static void CrispyVsync(int option);
+static void CrispyBrightmaps(int option);
+static void CrispyMouselook(int option);
 static void SCNetCheck2(int option);
 static void SCLoadGame(int option);
 static void SCSaveGame(int option);
@@ -131,6 +136,7 @@ static void MN_DrawInfo(void);
 static void DrawLoadMenu(void);
 static void DrawSaveMenu(void);
 static void DrawSlider(Menu_t * menu, int item, int width, int slot);
+static void DrawMouseMenu(void);
 static void DrawCrispnessMenu(void);
 void MN_LoadSlotText(void);
 
@@ -267,8 +273,7 @@ static Menu_t SkillMenu = {
 static MenuItem_t OptionsItems[] = {
     {ITT_EFUNC, "END GAME", SCEndGame, 0, MENU_NONE},
     {ITT_EFUNC, "MESSAGES : ", SCMessages, 0, MENU_NONE},
-    {ITT_LRFUNC, "MOUSE SENSITIVITY", SCMouseSensi, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_SETMENU, "MOUSE SENSITIVITY...", NULL, 0, MENU_MOUSE},
     {ITT_SETMENU, "MORE...", NULL, 0, MENU_OPTIONS2},
     {ITT_SETMENU, "CRISPNESS...", NULL, 0, MENU_CRISPNESS}
 };
@@ -276,11 +281,27 @@ static MenuItem_t OptionsItems[] = {
 static Menu_t OptionsMenu = {
     88, 30,
     DrawOptionsMenu,
-    6, OptionsItems,
+    5, OptionsItems,
     0,
     MENU_MAIN
 };
 
+static MenuItem_t MouseItems[] = {
+    {ITT_LRFUNC, "HORIZONTAL: TURN", SCMouseSensi, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_LRFUNC, "HORIZONTAL: STRAFE", SCMouseSensiX2, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_LRFUNC, "VERTICAL", SCMouseSensiY, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+};
+
+static Menu_t MouseMenu = {
+    90, 20,
+    DrawMouseMenu,
+    6, MouseItems,
+    0,
+    MENU_OPTIONS
+};
 static MenuItem_t Options2Items[] = {
     {ITT_LRFUNC, "SCREEN SIZE", SCScreenSize, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
@@ -303,13 +324,19 @@ static MenuItem_t CrispnessItems[] = {
     {ITT_LRFUNC, "ASPECT RATIO:", CrispyToggleWidescreen, 0, MENU_NONE},
     {ITT_LRFUNC, "SMOOTH PIXEL SCALING:", CrispySmoothing, 0, MENU_NONE},
     {ITT_LRFUNC, "UNCAPPED FRAMERATE:", CrispyUncapped, 0, MENU_NONE},
-    {ITT_LRFUNC, "ENABLE VSYNC:", CrispyVsync, 0, MENU_NONE}
+    {ITT_LRFUNC, "ENABLE VSYNC:", CrispyVsync, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_LRFUNC, "BRIGHTMAPS:", CrispyBrightmaps, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_LRFUNC, "PERMANENT MOUSELOOK:", CrispyMouselook, 0, MENU_NONE},
 };
 
 static Menu_t CrispnessMenu = {
     68, 40,
     DrawCrispnessMenu,
-    5, CrispnessItems,
+    11, CrispnessItems,
     0,
     MENU_OPTIONS
 };
@@ -323,6 +350,7 @@ static Menu_t *Menus[] = {
     &FilesMenu,
     &LoadMenu,
     &SaveMenu,
+    &MouseMenu,
     &CrispnessMenu
 };
 
@@ -832,7 +860,6 @@ static void DrawOptionsMenu(void)
     {
         MN_DrTextB("OFF", 196, 50);
     }
-    DrawSlider(&OptionsMenu, 3, 10, mouseSensitivity);
 }
 
 //---------------------------------------------------------------------------
@@ -1106,7 +1133,7 @@ static void SCMouseSensi(int option)
 {
     if (option == RIGHT_DIR)
     {
-        if (mouseSensitivity < 9)
+        if (mouseSensitivity < 255)
         {
             mouseSensitivity++;
         }
@@ -1114,6 +1141,48 @@ static void SCMouseSensi(int option)
     else if (mouseSensitivity)
     {
         mouseSensitivity--;
+    }
+}
+
+//---------------------------------------------------------------------------
+//
+// PROC SCMouseSensiX2
+//
+//---------------------------------------------------------------------------
+
+static void SCMouseSensiX2(int option)
+{
+    if (option == RIGHT_DIR)
+    {
+        if (mouseSensitivity_x2 < 255)
+        {
+            mouseSensitivity_x2++;
+        }
+    }
+    else if (mouseSensitivity_x2)
+    {
+        mouseSensitivity_x2--;
+    }
+}
+
+//---------------------------------------------------------------------------
+//
+// PROC SCMouseSensiY
+//
+//---------------------------------------------------------------------------
+
+static void SCMouseSensiY(int option)
+{
+    if (option == RIGHT_DIR)
+    {
+        if (mouseSensitivity_y < 255)
+        {
+            mouseSensitivity_y++;
+        }
+    }
+    else if (mouseSensitivity_y)
+    {
+        mouseSensitivity_y--;
     }
 }
 
@@ -1269,6 +1338,16 @@ static void CrispyVsyncHook(void)
 static void CrispyVsync(int option)
 {
     crispy->post_rendering_hook = CrispyVsyncHook;
+}
+
+static void CrispyBrightmaps(int option)
+{
+    crispy->brightmaps = (crispy->brightmaps + 1) % NUM_BRIGHTMAPS;
+}
+
+static void CrispyMouselook(int option)
+{
+    crispy->mouselook = !crispy->mouselook;
 }
 
 //---------------------------------------------------------------------------
@@ -1967,6 +2046,7 @@ static void DrawSlider(Menu_t * menu, int item, int width, int slot)
     int y;
     int x2;
     int count;
+    char num[4];
 
     x = menu->x + 24;
     y = menu->y + 2 + (item * ITEM_HEIGHT);
@@ -1977,8 +2057,33 @@ static void DrawSlider(Menu_t * menu, int item, int width, int slot)
                                            : "M_SLDMD2", PU_CACHE));
     }
     V_DrawPatch(x2, y, W_CacheLumpName("M_SLDRT", PU_CACHE));
+
+    // [crispy] print the value
+    M_snprintf(num, 4, "%3d", slot);
+    MN_DrTextA(num, x2 + 32, y + 3);
+
+    // [crispy] do not crash anymore if the value is out of bounds
+    if (slot >= width)
+    {
+        slot = width - 1;
+    }
+
     V_DrawPatch(x + 4 + slot * 8, y + 7,
                 W_CacheLumpName("M_SLDKB", PU_CACHE));
+}
+
+//---------------------------------------------------------------------------
+//
+// PROC DrawMouseMenu
+//
+//---------------------------------------------------------------------------
+
+static void DrawMouseMenu(void)
+{
+
+    DrawSlider(&MouseMenu, 1, 16, mouseSensitivity);
+    DrawSlider(&MouseMenu, 3, 16, mouseSensitivity_x2);
+    DrawSlider(&MouseMenu, 5, 16, mouseSensitivity_y);
 }
 
 //---------------------------------------------------------------------------
@@ -2026,6 +2131,8 @@ static void DrawCrispnessMenu(void)
     // Subheaders
     dp_translation = cr[CR_GREEN];
     MN_DrTextA("RENDERING", 63, 30);
+    MN_DrTextA("VISUAL", 63, 100);
+    MN_DrTextA("TACTICAL", 63, 130);
     dp_translation = cr[CR_GOLD];
 
     // Hires rendering
@@ -2046,6 +2153,15 @@ static void DrawCrispnessMenu(void)
 
     // Vsync
     MN_DrTextA(crispy->vsync ? "ON" : "OFF", 167, 80);
+
+    // Brightmaps
+    MN_DrTextA(crispy->brightmaps == BRIGHTMAPS_OFF ? "NONE" :
+               crispy->brightmaps == BRIGHTMAPS_TEXTURES ? "WALLS" :
+               crispy->brightmaps == BRIGHTMAPS_SPRITES ? "ITEMS" :
+                                                         "BOTH", 150, 110);
+
+    // Mouselook
+    MN_DrTextA(crispy->mouselook ? "ON" : "OFF", 220, 140);
 
     dp_translation = NULL;
 }
