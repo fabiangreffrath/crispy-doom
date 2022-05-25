@@ -136,7 +136,8 @@ void R_RenderMaskedSegRange(drawseg_t * ds, int x1, int x2)
                 // [crispy] brightmaps for mid-textures
                 dc_brightmap = texturebrightmap[texnum];
                 dc_colormap[0] = walllights[index];
-                dc_colormap[1] = (crispy->brightmaps & BRIGHTMAPS_TEXTURES) ? colormaps : dc_colormap[0];
+                dc_colormap[1] = (crispy->brightmaps & BRIGHTMAPS_TEXTURES) 
+                               && LevelUseFullBright ? colormaps : dc_colormap[0];
             }
 
             sprtopscreen = centeryfrac - FixedMul(dc_texturemid, spryscale);
@@ -235,7 +236,8 @@ void R_RenderSegLoop(void)
                 index = MAXLIGHTSCALE - 1;
             // [crispy] optional brightmaps
             dc_colormap[0] = walllights[index];
-            dc_colormap[1] = (!fixedcolormap && (crispy->brightmaps & BRIGHTMAPS_TEXTURES)) ? colormaps : dc_colormap[0];
+            dc_colormap[1] = (!fixedcolormap && (crispy->brightmaps & BRIGHTMAPS_TEXTURES)) 
+                           && LevelUseFullBright ? colormaps : dc_colormap[0];
             dc_x = rw_x;
             dc_iscale = 0xffffffffu / (unsigned) rw_scale;
         }
