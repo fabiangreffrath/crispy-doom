@@ -109,6 +109,8 @@ boolean precache = true;        // if true, load all graphics at start
 byte consistancy[MAXPLAYERS][BACKUPTICS];
 
 int mouseSensitivity = 5;
+int mouseSensitivity_x2 = 5; // [crispy]
+int mouseSensitivity_y = 5; // [crispy]
 
 int LeaveMap;
 static int LeavePosition;

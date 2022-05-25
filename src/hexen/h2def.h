@@ -683,6 +683,8 @@ extern mapthing_t playerstarts[MAX_PLAYER_STARTS][MAXPLAYERS];
 extern int maxplayers;
 
 extern int mouseSensitivity;
+extern int mouseSensitivity_x2; // [crispy]
+extern int mouseSensitivity_y; // [crispy]
 
 extern boolean precache;        // if true, load all graphics at level load
 
