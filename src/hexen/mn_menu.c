@@ -117,6 +117,7 @@ static void CrispyToggleWidescreen(int option);
 static void CrispySmoothing(int option);
 static void CrispyUncapped(int option);
 static void CrispyVsync(int option);
+static void CrispyMouselook(int option);
 static void SCNetCheck2(int option);
 static void SCLoadGame(int option);
 static void SCSaveGame(int option);
@@ -322,13 +323,16 @@ static MenuItem_t CrispnessItems[] = {
     {ITT_LRFUNC, "ASPECT RATIO:", CrispyToggleWidescreen, 0, MENU_NONE},
     {ITT_LRFUNC, "SMOOTH PIXEL SCALING:", CrispySmoothing, 0, MENU_NONE},
     {ITT_LRFUNC, "UNCAPPED FRAMERATE:", CrispyUncapped, 0, MENU_NONE},
-    {ITT_LRFUNC, "ENABLE VSYNC:", CrispyVsync, 0, MENU_NONE}
+    {ITT_LRFUNC, "ENABLE VSYNC:", CrispyVsync, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_LRFUNC, "PERMANENT MOUSELOOK:", CrispyMouselook, 0, MENU_NONE},
 };
 
 static Menu_t CrispnessMenu = {
     68, 40,
     DrawCrispnessMenu,
-    5, CrispnessItems,
+    8, CrispnessItems,
     0,
     MENU_OPTIONS
 };
@@ -1332,6 +1336,11 @@ static void CrispyVsync(int option)
     crispy->post_rendering_hook = CrispyVsyncHook;
 }
 
+static void CrispyMouselook(int option)
+{
+    crispy->mouselook = !crispy->mouselook;
+}
+
 //---------------------------------------------------------------------------
 //
 // FUNC MN_Responder
@@ -2113,6 +2122,7 @@ static void DrawCrispnessMenu(void)
     // Subheaders
     dp_translation = cr[CR_GREEN];
     MN_DrTextA("RENDERING", 63, 30);
+    MN_DrTextA("TACTICAL", 63, 100);
     dp_translation = cr[CR_GOLD];
 
     // Hires rendering
@@ -2133,6 +2143,9 @@ static void DrawCrispnessMenu(void)
 
     // Vsync
     MN_DrTextA(crispy->vsync ? "ON" : "OFF", 167, 80);
+
+    // Mouselook
+    MN_DrTextA(crispy->mouselook ? "ON" : "OFF", 220, 110);
 
     dp_translation = NULL;
 }
