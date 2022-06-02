@@ -37,6 +37,8 @@
 
 #define AM_STARTKEY     9
 
+#define MLOOKUNIT 8 // [crispy] for mouselook
+
 // Functions
 
 boolean G_CheckDemoStatus(void);
@@ -693,6 +695,7 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
     if (crispy->mouselook)
     {
         cmd->lookdir = mouse_y_invert ? -mousey : mousey;
+        cmd->lookdir /= MLOOKUNIT;
     }
     else if (!novert)
     {
