@@ -311,6 +311,8 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
     int look, arti;
     int flyheight;
 
+    static unsigned int mbmlookctrl = 0; // [crispy]
+
     extern boolean noartiskip;
 
     // haleyjd: removed externdriver crap
@@ -692,7 +694,7 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
         testcontrols_mousespeed = 0;
     }
 
-    if (crispy->mouselook)
+    if (crispy->mouselook || mousebuttons[mousebmouselook])
     {
         cmd->lookdir = mouse_y_invert ? -mousey : mousey;
         cmd->lookdir /= MLOOKUNIT;
@@ -701,6 +703,21 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
     {
         forward += mousey;
     }
+
+    // [crispy] single click on mouse look button centers view
+    if (mousebuttons[mousebmouselook]) // [crispy] clicked
+    {
+        mbmlookctrl += ticdup;
+    }
+    else if (mbmlookctrl) // [crispy] released
+    {
+        if (mbmlookctrl < SLOWTURNTICS) // [crispy] short click
+        {
+            look = TOCENTER;
+        }
+        mbmlookctrl = 0;
+    }
+
     mousex = mousex2 = mousey = 0;
 
     if (forward > MAXPLMOVE)
