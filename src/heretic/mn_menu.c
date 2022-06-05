@@ -119,6 +119,7 @@ static boolean CrispyAutomapStats(int option);
 static boolean CrispyLevelTime(int option);
 static boolean CrispyPlayerCoords(int option);
 static boolean CrispySecretMessage(int option);
+static boolean CrispyFreelook(int option);
 static boolean CrispyMouselook(int option);
 static boolean CrispyUncapped(int option);
 static boolean CrispyVsync(int option);
@@ -365,6 +366,7 @@ static Menu_t Crispness1Menu = {
 };
 
 static MenuItem_t Crispness2Items[] = {
+    {ITT_LRFUNC, "FREELOOK MODE:", CrispyFreelook, 0, MENU_NONE},
     {ITT_LRFUNC, "PERMANENT MOUSELOOK:", CrispyMouselook, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EFUNC, "PREV PAGE", CrispyPrevPage, 0, MENU_NONE},
@@ -373,7 +375,7 @@ static MenuItem_t Crispness2Items[] = {
 static Menu_t Crispness2Menu = {
     68, 35,
     DrawCrispness,
-    3, Crispness2Items,
+    4, Crispness2Items,
     0,
     MENU_OPTIONS
 };
@@ -1415,6 +1417,12 @@ static boolean CrispySecretMessage(int option)
     return true;
 }
 
+static boolean CrispyFreelook(int option)
+{
+    crispy->freelook_hh = (crispy->freelook_hh + 1) % NUM_FREELOOKS_HH;
+    return true;
+}
+
 static boolean CrispyMouselook(int option)
 {
     crispy->mouselook = !crispy->mouselook;
@@ -2321,8 +2329,11 @@ static void DrawCrispness2(void)
     MN_DrTextA("TACTICAL", 63, 25);
     dp_translation = cr[CR_GRAY];
 
+    // Freelook
+    MN_DrTextA(crispy->freelook_hh == FREELOOK_HH_LOCK ? "LOCK" : "SPRING", 175, 35);
+
     // Mouselook
-    MN_DrTextA(crispy->mouselook ? "ON" : "OFF", 220, 35);
+    MN_DrTextA(crispy->mouselook ? "ON" : "OFF", 220, 45);
 
     dp_translation = NULL;
 }

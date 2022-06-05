@@ -118,6 +118,7 @@ static void CrispySmoothing(int option);
 static void CrispyUncapped(int option);
 static void CrispyVsync(int option);
 static void CrispyBrightmaps(int option);
+static void CrispyFreelook(int option);
 static void CrispyMouselook(int option);
 static void SCNetCheck2(int option);
 static void SCLoadGame(int option);
@@ -330,13 +331,14 @@ static MenuItem_t CrispnessItems[] = {
     {ITT_LRFUNC, "BRIGHTMAPS:", CrispyBrightmaps, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_LRFUNC, "FREELOOK MODE:", CrispyFreelook, 0, MENU_NONE},
     {ITT_LRFUNC, "PERMANENT MOUSELOOK:", CrispyMouselook, 0, MENU_NONE},
 };
 
 static Menu_t CrispnessMenu = {
     68, 40,
     DrawCrispnessMenu,
-    11, CrispnessItems,
+    12, CrispnessItems,
     0,
     MENU_OPTIONS
 };
@@ -1345,6 +1347,11 @@ static void CrispyBrightmaps(int option)
     crispy->brightmaps = (crispy->brightmaps + 1) % NUM_BRIGHTMAPS;
 }
 
+static void CrispyFreelook(int option)
+{
+    crispy->freelook_hh = (crispy->freelook_hh + 1) % NUM_FREELOOKS_HH;
+}
+
 static void CrispyMouselook(int option)
 {
     crispy->mouselook = !crispy->mouselook;
@@ -2160,8 +2167,11 @@ static void DrawCrispnessMenu(void)
                crispy->brightmaps == BRIGHTMAPS_SPRITES ? "ITEMS" :
                                                          "BOTH", 150, 110);
 
+    // Freelook
+    MN_DrTextA(crispy->freelook_hh == FREELOOK_HH_LOCK ? "LOCK" : "SPRING", 175, 140);
+
     // Mouselook
-    MN_DrTextA(crispy->mouselook ? "ON" : "OFF", 220, 140);
+    MN_DrTextA(crispy->mouselook ? "ON" : "OFF", 220, 150);
 
     dp_translation = NULL;
 }
