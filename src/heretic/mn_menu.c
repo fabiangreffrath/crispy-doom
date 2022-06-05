@@ -103,6 +103,7 @@ static boolean SCSkill(int option);
 static boolean SCMouseSensi(int option);
 static boolean SCMouseSensiX2(int option);
 static boolean SCMouseSensiY(int option);
+static boolean SCMouseInvertY(int option);
 static boolean SCSfxVolume(int option);
 static boolean SCMusicVolume(int option);
 static boolean SCScreenSize(int option);
@@ -301,18 +302,19 @@ static Menu_t OptionsMenu = {
 };
 
 static MenuItem_t MouseItems[] = {
-    {ITT_LRFUNC, "HORIZONTAL: TURN", SCMouseSensi, 0, MENU_NONE},
+    {ITT_LRFUNC, "HORIZONTAL : TURN", SCMouseSensi, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_LRFUNC, "HORIZONTAL: STRAFE", SCMouseSensiX2, 0, MENU_NONE},
+    {ITT_LRFUNC, "HORIZONTAL : STRAFE", SCMouseSensiX2, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_LRFUNC, "VERTICAL", SCMouseSensiY, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_LRFUNC, "INVERT Y AXIS :", SCMouseInvertY, 0, MENU_NONE},
 };
 
 static Menu_t MouseMenu = {
-    90, 20,
+    90, 15,
     DrawMouseMenu,
-    6, MouseItems,
+    7, MouseItems,
     0,
     MENU_OPTIONS
 };
@@ -1218,6 +1220,12 @@ static boolean SCMouseSensiY(int option)
     {
         mouseSensitivity_y--;
     }
+    return true;
+}
+
+static boolean SCMouseInvertY(int option)
+{
+    mouse_y_invert = !mouse_y_invert;
     return true;
 }
 
@@ -2202,6 +2210,9 @@ static void DrawMouseMenu(void)
     DrawSlider(&MouseMenu, 1, 16, mouseSensitivity);
     DrawSlider(&MouseMenu, 3, 16, mouseSensitivity_x2);
     DrawSlider(&MouseMenu, 5, 16, mouseSensitivity_y);
+
+    // Invert mouse y
+    MN_DrTextB(mouse_y_invert ? "ON" : "OFF", 226, 135);
 }
 
 //---------------------------------------------------------------------------
