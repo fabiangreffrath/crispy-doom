@@ -599,7 +599,7 @@ void R_ExecuteSetViewSize(void)
 	{
 		const int widescreen_edge_aligner = (16 << crispy->hires) - 1;
 
-		scaledviewwidth = viewheight*SCREENWIDTH/(SCREENHEIGHT-(42<<crispy->hires));
+		scaledviewwidth = viewheight*SCREENWIDTH/(SCREENHEIGHT-SBARHEIGHT);
 		// [crispy] make sure scaledviewwidth is an integer multiple of the bezel patch width
 		scaledviewwidth = (scaledviewwidth + widescreen_edge_aligner) & (int)~widescreen_edge_aligner;
 		scaledviewwidth = MIN(scaledviewwidth, SCREENWIDTH);
