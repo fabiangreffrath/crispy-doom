@@ -352,11 +352,11 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
             cmd->angleturn += angleturn[tspeed];
     }
 
-    if (gamekeydown[key_up])
+    if (gamekeydown[key_up] || gamekeydown[key_alt_up]) // [crispy] add key_alt_*
     {
         forward += forwardmove[pClass][speed];
     }
-    if (gamekeydown[key_down])
+    if (gamekeydown[key_down] || gamekeydown[key_alt_down]) // [crispy] add key_alt_*
     {
         forward -= forwardmove[pClass][speed];
     }
@@ -368,12 +368,12 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
     {
         forward -= forwardmove[pClass][speed];
     }
-    if (gamekeydown[key_straferight] || mousebuttons[mousebstraferight]
+    if (gamekeydown[key_straferight] || gamekeydown[key_alt_straferight] || mousebuttons[mousebstraferight] // [crispy] add key_alt_*
      || joystrafemove > 0 || joybuttons[joybstraferight])
     {
         side += sidemove[pClass][speed];
     }
-    if (gamekeydown[key_strafeleft] || mousebuttons[mousebstrafeleft]
+    if (gamekeydown[key_strafeleft] || gamekeydown[key_alt_strafeleft] || mousebuttons[mousebstrafeleft] // [crispy] add key_alt_*
      || joystrafemove < 0 || joybuttons[joybstrafeleft])
     {
         side -= sidemove[pClass][speed];
