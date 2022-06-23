@@ -769,8 +769,8 @@ AM_Responder
 	if (!followplayer && (ev->data2 || ev->data3))
 	{
 		// [crispy] mouse sensitivity for strafe
-		m_paninc2.x = FTOM(ev->data2*(mouseSensitivity_x2+5)/80);
-		m_paninc2.y = FTOM(ev->data3*(mouseSensitivity_x2+5)/80);
+		m_paninc2.x = FTOM(ev->data2*(mouseSensitivity_x2+5)/(160 >> crispy->hires));
+		m_paninc2.y = FTOM(ev->data3*(mouseSensitivity_x2+5)/(160 >> crispy->hires));
 		rc = true;
 	}
     }
@@ -783,22 +783,28 @@ AM_Responder
         {
             // [crispy] keep the map static in overlay mode
             // if not following the player
-            if (!followplayer && !crispy->automapoverlay) m_paninc.x = crispy->fliplevels ? -FTOM(F_PANINC) : FTOM(F_PANINC);
+            if (!followplayer && !crispy->automapoverlay)
+                m_paninc.x = crispy->fliplevels ?
+                    -FTOM(F_PANINC << crispy->hires) : FTOM(F_PANINC << crispy->hires);
             else rc = false;
         }
         else if (key == key_map_west)     // pan left
         {
-            if (!followplayer && !crispy->automapoverlay) m_paninc.x = crispy->fliplevels ? FTOM(F_PANINC) : -FTOM(F_PANINC);
+            if (!followplayer && !crispy->automapoverlay)
+                m_paninc.x = crispy->fliplevels ?
+                    FTOM(F_PANINC << crispy->hires) : -FTOM(F_PANINC << crispy->hires);
             else rc = false;
         }
         else if (key == key_map_north)    // pan up
         {
-            if (!followplayer && !crispy->automapoverlay) m_paninc.y = FTOM(F_PANINC);
+            if (!followplayer && !crispy->automapoverlay)
+                m_paninc.y = FTOM(F_PANINC << crispy->hires);
             else rc = false;
         }
         else if (key == key_map_south)    // pan down
         {
-            if (!followplayer && !crispy->automapoverlay) m_paninc.y = -FTOM(F_PANINC);
+            if (!followplayer && !crispy->automapoverlay)
+                m_paninc.y = -FTOM(F_PANINC << crispy->hires);
             else rc = false;
         }
         else if (key == key_map_zoomout)  // zoom out
