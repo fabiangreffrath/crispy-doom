@@ -106,6 +106,7 @@ static byte *fb;                // pseudo-frame buffer
 static int amclock;
 
 static mpoint_t m_paninc;       // how far the window pans each tic (map coords)
+static mpoint_t m_paninc2;      // [crispy] mouse map panning
 static fixed_t mtof_zoommul;    // how far the window zooms in each tic (map coords)
 static fixed_t ftom_zoommul;    // how far the window zooms in each tic (fb coords)
 
@@ -298,14 +299,15 @@ void AM_changeWindowLoc(void)
 {
     fixed_t incx, incy;
 
-    if (m_paninc.x || m_paninc.y)
+    if (m_paninc.x || m_paninc.y || m_paninc2.x || m_paninc2.y)
     {
         followplayer = 0;
         f_oldloc.x = INT_MAX;
     }
 
-    incx = m_paninc.x;
-    incy = m_paninc.y;
+    // [crispy] accumulate automap panning by keyboard and mouse
+    incx = m_paninc.x + m_paninc2.x;
+    incy = m_paninc.y + m_paninc2.y;
     if (crispy->automaprotate)
     {
         AM_rotate(&incx, &incy, -mapangle);
@@ -316,30 +318,30 @@ void AM_changeWindowLoc(void)
     if (m_x + m_w / 2 > max_x)
     {
         m_x = max_x - m_w / 2;
-        m_paninc.x = 0;
+        incx = 0;
     }
     else if (m_x + m_w / 2 < min_x)
     {
         m_x = min_x - m_w / 2;
-        m_paninc.x = 0;
+        incx = 0;
     }
     if (m_y + m_h / 2 > max_y)
     {
         m_y = max_y - m_h / 2;
-        m_paninc.y = 0;
+        incy = 0;
     }
     else if (m_y + m_h / 2 < min_y)
     {
         m_y = min_y - m_h / 2;
-        m_paninc.y = 0;
+        incy = 0;
     }
 
     // The following code was commented out in the released Heretic source,
     // but I believe we need to do this here to stop the background moving
     // when we reach the map boundaries. (In the released source it's done
     // in AM_clearFB).
-    mapxstart += MTOF(m_paninc.x+FRACUNIT/2);
-    mapystart -= MTOF(m_paninc.y+FRACUNIT/2);
+    mapxstart += MTOF(incx+FRACUNIT/2);
+    mapystart -= MTOF(incy+FRACUNIT/2);
     // [crispy] Change background tile dimensions for hi-res
     if(mapxstart >= MAPBGROUNDWIDTH << crispy->hires)
         mapxstart -= MAPBGROUNDWIDTH << crispy->hires;
@@ -353,6 +355,9 @@ void AM_changeWindowLoc(void)
 
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
+
+    // [crispy] reset after moving with the mouse
+    m_paninc2.x = m_paninc2.y = 0;
 }
 
 void AM_initVariables(void)
@@ -370,7 +375,7 @@ void AM_initVariables(void)
     amclock = 0;
     lightlev = 0;
 
-    m_paninc.x = m_paninc.y = 0;
+    m_paninc.x = m_paninc.y = m_paninc2.x = m_paninc2.y = 0;
     ftom_zoommul = FRACUNIT;
     mtof_zoommul = FRACUNIT;
 
@@ -605,6 +610,13 @@ boolean AM_Responder(event_t * ev)
         {
             mtof_zoommul = M2_ZOOMIN;
             ftom_zoommul = M2_ZOOMOUT;
+            rc = true;
+        }
+        else if (!followplayer && (ev->data2 || ev->data3))
+        {
+            // [crispy] mouse sensitivity for strafe
+            m_paninc2.x = FTOM(ev->data2*(mouseSensitivity_x2+5)/(160 >> crispy->hires));
+            m_paninc2.y = FTOM(ev->data3*(mouseSensitivity_x2+5)/(160 >> crispy->hires));
             rc = true;
         }
     }
@@ -867,7 +879,7 @@ void AM_Ticker(void)
         AM_changeWindowScale();
 
     // Change x,y location
-    if (m_paninc.x || m_paninc.y)
+    if (m_paninc.x || m_paninc.y || m_paninc2.x || m_paninc2.y)
         AM_changeWindowLoc();
     // Update light level
 // AM_updateLightLev();
