@@ -777,6 +777,16 @@ AM_Responder
 		else AM_restoreScaleAndLoc();
 	}
 	else
+	if (mousebmapfollow >= 0 && ev->data1 & (1 << mousebmapfollow))
+	{
+		followplayer = !followplayer;
+		f_oldloc.x = INT_MAX;
+		if (followplayer)
+			plr->message = DEH_String(AMSTR_FOLLOWON);
+		else
+			plr->message = DEH_String(AMSTR_FOLLOWOFF);
+	}
+	else
 	if (!followplayer && (ev->data2 || ev->data3))
 	{
 		// [crispy] mouse sensitivity for strafe

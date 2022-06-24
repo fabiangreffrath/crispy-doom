@@ -541,6 +541,14 @@ boolean AM_Responder(event_t * ev)
             else
                 AM_restoreScaleAndLoc();
         }
+        else if (mousebmapfollow >= 0 && ev->data1 &(1 << mousebmapfollow))
+        {
+            followplayer = !followplayer;
+            f_oldloc.x = INT_MAX;
+            P_SetMessage(plr,
+                         followplayer ? AMSTR_FOLLOWON : AMSTR_FOLLOWOFF,
+                         true);
+        }
         else if (!followplayer && (ev->data2 || ev->data3))
         {
             // [crispy] mouse sensitivity for strafe
