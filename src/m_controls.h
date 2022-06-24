@@ -169,6 +169,9 @@ extern int mousebinvleft;
 extern int mousebinvright;
 extern int mousebuseartifact;
 
+extern int mousebmapzoomin; // [crispy]
+extern int mousebmapzoomout; // [crispy]
+
 extern int joybfire;
 extern int joybstrafe;
 extern int joybuse;

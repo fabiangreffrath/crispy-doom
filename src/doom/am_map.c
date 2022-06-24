@@ -752,14 +752,14 @@ AM_Responder
     // [crispy] zoom and move Automap with the mouse (wheel)
     else if (ev->type == ev_mouse && !crispy->automapoverlay && !menuactive && !inhelpscreens)
     {
-	if (mousebprevweapon >= 0 && ev->data1 & (1 << mousebprevweapon))
+	if (mousebmapzoomout >= 0 && ev->data1 & (1 << mousebmapzoomout))
 	{
 		mtof_zoommul = M2_ZOOMOUT;
 		ftom_zoommul = M2_ZOOMIN;
 		rc = true;
 	}
 	else
-	if (mousebnextweapon >= 0 && ev->data1 & (1 << mousebnextweapon))
+	if (mousebmapzoomin >= 0 && ev->data1 & (1 << mousebmapzoomin))
 	{
 		mtof_zoommul = M2_ZOOMIN;
 		ftom_zoommul = M2_ZOOMOUT;

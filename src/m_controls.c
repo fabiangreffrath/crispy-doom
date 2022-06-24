@@ -128,6 +128,8 @@ int mousebuse = -1;
 int mousebmouselook = -1; // [crispy]
 int mousebreverse = -1; // [crispy]
 
+int mousebmapzoomin = -1; // [crispy]
+int mousebmapzoomout = -1; // [crispy]
 int mousebprevweapon = 4; // [crispy]
 int mousebnextweapon = 3; // [crispy]
 int mousebinvleft = -1;
@@ -410,6 +412,8 @@ void M_BindMapControls(void)
     M_BindIntVariable("key_map_clearmark",  &key_map_clearmark);
     M_BindIntVariable("key_map_overlay",    &key_map_overlay); // [crispy]
     M_BindIntVariable("key_map_rotate",     &key_map_rotate); // [crispy]
+    M_BindIntVariable("mouseb_mapzoomin",   &mousebmapzoomin); // [crispy]
+    M_BindIntVariable("mouseb_mapzoomout",  &mousebmapzoomout); // [crispy]
 }
 
 void M_BindMenuControls(void)

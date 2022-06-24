@@ -1662,6 +1662,18 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_KEY(key_map_rotate),
 
     //!
+    // Mouse button to zoom in when in the map view.
+    //
+
+    CONFIG_VARIABLE_INT(mouseb_mapzoomin),
+
+    //!
+    // Mouse button to zoom out when in the map view.
+    //
+
+    CONFIG_VARIABLE_INT(mouseb_mapzoomout),
+
+    //!
     // Key to select weapon 1.
     //
 

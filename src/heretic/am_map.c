@@ -592,6 +592,22 @@ boolean AM_Responder(event_t * ev)
             rc = true;
         }
     }
+    // [crispy] automap mouse controls
+    else if (ev->type == ev_mouse && !crispy->automapoverlay)
+    {
+        if (mousebmapzoomout >= 0 && ev->data1 & (1 << mousebmapzoomout))
+        {
+            mtof_zoommul = M2_ZOOMOUT;
+            ftom_zoommul = M2_ZOOMIN;
+            rc = true;
+        }
+        else if (mousebmapzoomin >= 0 && ev->data1 & (1 << mousebmapzoomin))
+        {
+            mtof_zoommul = M2_ZOOMIN;
+            ftom_zoommul = M2_ZOOMOUT;
+            rc = true;
+        }
+    }
     else if (ev->type == ev_keydown)
     {
         rc = true;
@@ -763,6 +779,13 @@ void AM_changeWindowScale(void)
     // Change the scaling multipliers
     scale_mtof = FixedMul(scale_mtof, mtof_zoommul);
     scale_ftom = FixedDiv(FRACUNIT, scale_mtof);
+
+    // [crispy] reset after zooming with the mouse wheel
+    if (ftom_zoommul == M2_ZOOMIN || ftom_zoommul == M2_ZOOMOUT)
+    {
+        mtof_zoommul = FRACUNIT;
+        ftom_zoommul = FRACUNIT;
+    }
 
     if (scale_mtof < min_scale_mtof)
         AM_minOutWindowScale();
