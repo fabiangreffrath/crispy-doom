@@ -1674,6 +1674,12 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(mouseb_mapzoomout),
 
     //!
+    // Mouse button to zoom out the max amount when in the map view.
+    //
+
+    CONFIG_VARIABLE_INT(mouseb_mapmaxzoom),
+
+    //!
     // Key to select weapon 1.
     //
 

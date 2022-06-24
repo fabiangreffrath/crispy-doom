@@ -67,6 +67,7 @@ static int *game_mouse_buttons[] = {
 static int *map_mouse_buttons[] = {
     &mousebmapzoomin,
     &mousebmapzoomout,
+    &mousebmapmaxzoom,
 };
 
 static void MouseSetCallback(TXT_UNCAST_ARG(widget), TXT_UNCAST_ARG(variable))
@@ -186,6 +187,7 @@ static void ConfigExtraButtons(TXT_UNCAST_ARG(widget), TXT_UNCAST_ARG(unused))
 
         AddMouseMapControl(am_buttons_table, "Zoom in", &mousebmapzoomin);
         AddMouseMapControl(am_buttons_table, "Zoom out", &mousebmapzoomout);
+        AddMouseMapControl(am_buttons_table, "Max zoom out", &mousebmapmaxzoom);
     }
 }
 

@@ -766,6 +766,17 @@ AM_Responder
 		rc = true;
 	}
 	else
+	if (mousebmapmaxzoom >= 0 && ev->data1 & (1 << mousebmapmaxzoom))
+	{
+		bigstate = !bigstate;
+		if (bigstate)
+		{
+			AM_saveScaleAndLoc();
+			AM_minOutWindowScale();
+		}
+		else AM_restoreScaleAndLoc();
+	}
+	else
 	if (!followplayer && (ev->data2 || ev->data3))
 	{
 		// [crispy] mouse sensitivity for strafe
