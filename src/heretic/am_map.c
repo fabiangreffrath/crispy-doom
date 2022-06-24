@@ -627,28 +627,28 @@ boolean AM_Responder(event_t * ev)
         // [crispy] Ensure panning speed is same for hi-res
         if (key == key_map_east)                 // pan right
         {
-            if (!followplayer && !crispy->automapoverlay)
+            if (!followplayer)
                 m_paninc.x = FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
         }
         else if (key == key_map_west)            // pan left
         {
-            if (!followplayer && !crispy->automapoverlay)
+            if (!followplayer)
                 m_paninc.x = -FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
         }
         else if (key == key_map_north)           // pan up
         {
-            if (!followplayer && !crispy->automapoverlay)
+            if (!followplayer)
                 m_paninc.y = FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
         }
         else if (key == key_map_south)           // pan down
         {
-            if (!followplayer && !crispy->automapoverlay)
+            if (!followplayer)
                 m_paninc.y = -FTOM(F_PANINC << crispy->hires);
             else
                 rc = false;
