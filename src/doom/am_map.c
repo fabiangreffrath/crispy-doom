@@ -1774,6 +1774,8 @@ void AM_drawPlayers(void)
     int		their_color = -1;
     int		color;
     mpoint_t	pt;
+    // [crispy] smooth player arrow rotation
+    const angle_t smoothangle = crispy->automaprotate ? plr->mo->angle : viewangle;
 
     if (!netgame)
     {
@@ -1787,10 +1789,10 @@ void AM_drawPlayers(void)
 	if (cheating)
 	    AM_drawLineCharacter
 		(cheat_player_arrow, arrlen(cheat_player_arrow), 0,
-		 plr->mo->angle, WHITE, pt.x, pt.y);
+		 smoothangle, WHITE, pt.x, pt.y);
 	else
 	    AM_drawLineCharacter
-		(player_arrow, arrlen(player_arrow), 0, plr->mo->angle,
+		(player_arrow, arrlen(player_arrow), 0, smoothangle,
 		 WHITE, pt.x, pt.y);
 	return;
     }
