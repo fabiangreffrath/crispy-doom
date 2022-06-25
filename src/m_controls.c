@@ -128,8 +128,8 @@ int mousebuse = -1;
 int mousebmouselook = -1; // [crispy]
 int mousebreverse = -1; // [crispy]
 
-int mousebmapzoomin = -1; // [crispy]
-int mousebmapzoomout = -1; // [crispy]
+int mousebmapzoomin = 3; // [crispy]
+int mousebmapzoomout = 4; // [crispy]
 int mousebmapmaxzoom = -1; // [crispy]
 int mousebmapfollow = -1; // [crispy]
 int mousebprevweapon = 4; // [crispy]
