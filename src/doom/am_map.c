@@ -1849,8 +1849,17 @@ AM_drawThings
 		continue;
 	    }
 
+	    // [crispy] interpolate thing triangles movement
+	    if (leveltime > oldleveltime)
+	    {
+	    pt.x = t->oldx + FixedMul(t->x - t->oldx, fractionaltic);
+	    pt.y = t->oldy + FixedMul(t->y - t->oldy, fractionaltic);
+	    }
+	    else
+	    {
 	    pt.x = t->x;
 	    pt.y = t->y;
+	    }
 	    if (crispy->automaprotate)
 	    {
 		AM_rotatePoint(&pt);
