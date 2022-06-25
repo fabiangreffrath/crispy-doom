@@ -1697,16 +1697,18 @@ AM_rotate
 static void AM_rotatePoint (mpoint_t *pt)
 {
     int64_t tmpx;
+    // [crispy] smooth automap rotation
+    const angle_t smoothangle = followplayer ? ANG90 - viewangle : mapangle;
 
     pt->x -= mapcenter.x;
     pt->y -= mapcenter.y;
 
-    tmpx = (int64_t)FixedMul(pt->x, finecosine[mapangle>>ANGLETOFINESHIFT])
-         - (int64_t)FixedMul(pt->y, finesine[mapangle>>ANGLETOFINESHIFT])
+    tmpx = (int64_t)FixedMul(pt->x, finecosine[smoothangle>>ANGLETOFINESHIFT])
+         - (int64_t)FixedMul(pt->y, finesine[smoothangle>>ANGLETOFINESHIFT])
          + mapcenter.x;
 
-    pt->y = (int64_t)FixedMul(pt->x, finesine[mapangle>>ANGLETOFINESHIFT])
-          + (int64_t)FixedMul(pt->y, finecosine[mapangle>>ANGLETOFINESHIFT])
+    pt->y = (int64_t)FixedMul(pt->x, finesine[smoothangle>>ANGLETOFINESHIFT])
+          + (int64_t)FixedMul(pt->y, finecosine[smoothangle>>ANGLETOFINESHIFT])
           + mapcenter.y;
 
     pt->x = tmpx;
