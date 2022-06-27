@@ -740,12 +740,15 @@ boolean AM_Responder(event_t * ev)
                          followplayer ? AMSTR_FOLLOWON : AMSTR_FOLLOWOFF,
                          true);
         }
-        /*
         else if (key == key_map_grid)
         {
+            // [crispy] support for automap grid
             grid = !grid;
-            plr->message = grid ? AMSTR_GRIDON : AMSTR_GRIDOFF;
+            P_SetMessage(plr,
+                         grid ? AMSTR_GRIDON : AMSTR_GRIDOFF,
+                         true);
         }
+        /*
         else if (key == key_map_mark)
         {
             M_snprintf(buffer, sizeof(buffer), "%s %d",
@@ -1434,8 +1437,9 @@ void AM_drawGrid(int color)
     {
         start -= m_h / 2;
     }
+    // [crispy] fix losing grid lines near the automap boundary
     if ((start - bmaporgx) % (MAPBLOCKUNITS << FRACBITS))
-        start += (MAPBLOCKUNITS << FRACBITS)
+        start += // (MAPBLOCKUNITS << FRACBITS)
             - ((start - bmaporgx) % (MAPBLOCKUNITS << FRACBITS));
     end = m_x + m_w;
     if (crispy->automaprotate)
@@ -1467,8 +1471,9 @@ void AM_drawGrid(int color)
     {
         start -= m_w / 2;
     }
+    // [crispy] fix losing grid lines near the automap boundary
     if ((start - bmaporgy) % (MAPBLOCKUNITS << FRACBITS))
-        start += (MAPBLOCKUNITS << FRACBITS)
+        start += // (MAPBLOCKUNITS << FRACBITS)
             - ((start - bmaporgy) % (MAPBLOCKUNITS << FRACBITS));
     end = m_y + m_h;
     if (crispy->automaprotate)
