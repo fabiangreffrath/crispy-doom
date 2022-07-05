@@ -237,6 +237,7 @@ void AM_findMinMaxBoundaries(void)
         else if (vertexes[i].y > max_y)
             max_y = vertexes[i].y;
     }
+    // [crispy] cope with huge level dimensions which span the entire INT range
     max_w = (max_x >>= FRACTOMAPBITS) - (min_x >>= FRACTOMAPBITS);
     max_h = (max_y >>= FRACTOMAPBITS) - (min_y >>= FRACTOMAPBITS);
     min_w = 2 * MAPPLAYERRADIUS;
