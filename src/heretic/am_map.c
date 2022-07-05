@@ -353,8 +353,15 @@ void AM_changeWindowLoc(void)
     // but I believe we need to do this here to stop the background moving
     // when we reach the map boundaries. (In the released source it's done
     // in AM_clearFB).
-    mapxstart += MTOF(incx+FRACUNIT/2);
-    mapystart -= MTOF(incy+FRACUNIT/2);
+
+    // [crispy] Disable map background scroll in non-follow + non-rotate mode.
+    // The combination of the two effects is unappealing and slightly
+    // nauseating.
+    if (!crispy->automaprotate)
+    {
+        mapxstart += MTOF(incx+FRACUNIT/2);
+        mapystart -= MTOF(incy+FRACUNIT/2);
+    }
     // [crispy] Change background tile dimensions for hi-res
     if(mapxstart >= MAPBGROUNDWIDTH << crispy->hires)
         mapxstart -= MAPBGROUNDWIDTH << crispy->hires;
