@@ -256,7 +256,6 @@ void AM_restoreScaleAndLoc(void)
     {
         m_x = (plr->mo->x >> FRACTOMAPBITS) - m_w / 2;
         m_y = (plr->mo->y >> FRACTOMAPBITS) - m_h / 2;
-        
     }
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
