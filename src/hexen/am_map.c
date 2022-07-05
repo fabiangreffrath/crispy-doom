@@ -863,8 +863,8 @@ void AM_clearFB(int color)
 
     if (followplayer)
     {
-        dmapx = (MTOF(plr->mo->x) - MTOF(oldplr.x));    //fixed point
-        dmapy = (MTOF(oldplr.y) - MTOF(plr->mo->y));
+        dmapx = ((MTOF(plr->mo->x) >> FRACTOMAPBITS) - (MTOF(oldplr.x) >> FRACTOMAPBITS));    //fixed point
+        dmapy = ((MTOF(oldplr.y) >> FRACTOMAPBITS) - (MTOF(plr->mo->y) >> FRACTOMAPBITS));
 
         oldplr.x = plr->mo->x;
         oldplr.y = plr->mo->y;
