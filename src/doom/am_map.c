@@ -268,6 +268,7 @@ static fixed_t 	ftom_zoommul; // how far the window zooms in each tic (fb coords
 
 static int64_t 	m_x, m_y;   // LL x,y where the window is on the map (map coords)
 static int64_t 	m_x2, m_y2; // UR x,y where the window is on the map (map coords)
+static int64_t 	prev_m_x, prev_m_y; // [crispy] for interpolation
 
 //
 // width/height of window on map (map coords)
@@ -295,9 +296,6 @@ static fixed_t 	max_scale_mtof; // used to tell when to stop zooming in
 // old stuff for recovery later
 static int64_t old_m_w, old_m_h;
 static int64_t old_m_x, old_m_y;
-
-// old location used by the Follower routine
-static mpoint_t f_oldloc;
 
 // used by MTOF to scale from map-to-frame-buffer coords
 static fixed_t scale_mtof = (fixed_t)INITSCALEMTOF;
@@ -476,18 +474,25 @@ void AM_changeWindowLoc(void)
     if (m_paninc.x || m_paninc.y || m_paninc2.x || m_paninc2.y)
     {
 	followplayer = 0;
-	f_oldloc.x = INT_MAX;
     }
 
     // [crispy] accumulate automap panning by keyboard and mouse
-    incx = m_paninc.x + m_paninc2.x;
-    incy = m_paninc.y + m_paninc2.y;
+    if (crispy->uncapped && leveltime > oldleveltime)
+    {
+        incx = FixedMul(m_paninc.x + m_paninc2.x, fractionaltic);
+        incy = FixedMul(m_paninc.y + m_paninc2.y, fractionaltic);
+    }
+    else
+    {
+        incx = m_paninc.x + m_paninc2.x;
+        incy = m_paninc.y + m_paninc2.y;
+    }
     if (crispy->automaprotate)
     {
 	AM_rotate(&incx, &incy, -mapangle);
     }
-    m_x += incx;
-    m_y += incy;
+    m_x = prev_m_x + incx;
+    m_y = prev_m_y + incy;
 
     if (m_x + m_w/2 > max_x)
 	m_x = max_x - m_w/2;
@@ -518,7 +523,6 @@ void AM_initVariables(void)
     automapactive = true;
 //  fb = I_VideoBuffer; // [crispy] simplify
 
-    f_oldloc.x = INT_MAX;
     amclock = 0;
     lightlev = 0;
 
@@ -552,6 +556,7 @@ void AM_initVariables(void)
     m_x = (plr->mo->x >> FRACTOMAPBITS) - m_w/2;
     m_y = (plr->mo->y >> FRACTOMAPBITS) - m_h/2;
 
+    AM_Ticker(); // [crispy] initialize variables for interpolation
     AM_changeWindowLoc();
 
     // for saving & restoring
@@ -822,7 +827,6 @@ AM_Responder
 	if (mousebmapfollow >= 0 && ev->data1 & (1 << mousebmapfollow))
 	{
 		followplayer = !followplayer;
-		f_oldloc.x = INT_MAX;
 		if (followplayer)
 			plr->message = DEH_String(AMSTR_FOLLOWON);
 		else
@@ -899,7 +903,6 @@ AM_Responder
         else if (key == key_map_follow)
         {
             followplayer = !followplayer;
-            f_oldloc.x = INT_MAX;
             if (followplayer)
                 plr->message = DEH_String(AMSTR_FOLLOWON);
             else
@@ -1022,23 +1025,16 @@ void AM_changeWindowScale(void)
 void AM_doFollowPlayer(void)
 {
 
-    if (f_oldloc.x != plr->mo->x || f_oldloc.y != plr->mo->y)
-    {
-	// [JN] Prevent player arrow from jittering 
-	// by not using FTOM->MTOF conversion.
-	m_x = (plr->mo->x >> FRACTOMAPBITS) - m_w/2;
-	m_y = (plr->mo->y >> FRACTOMAPBITS) - m_h/2;
-	m_x2 = m_x + m_w;
-	m_y2 = m_y + m_h;
-	f_oldloc.x = plr->mo->x;
-	f_oldloc.y = plr->mo->y;
+    m_x = (viewx >> FRACTOMAPBITS) - m_w/2;
+    m_y = (viewy >> FRACTOMAPBITS) - m_h/2;
+    m_x2 = m_x + m_w;
+    m_y2 = m_y + m_h;
 
 	//  m_x = FTOM(MTOF(plr->mo->x - m_w/2));
 	//  m_y = FTOM(MTOF(plr->mo->y - m_h/2));
 	//  m_x = plr->mo->x - m_w/2;
 	//  m_y = plr->mo->y - m_h/2;
 
-    }
 
 }
 
@@ -1081,13 +1077,11 @@ void AM_Ticker (void)
     if (ftom_zoommul != FRACUNIT)
 	AM_changeWindowScale();
 
-    // Change x,y location
-    if (m_paninc.x || m_paninc.y || m_paninc2.x || m_paninc2.y)
-	AM_changeWindowLoc();
-
     // Update light level
     // AM_updateLightLev();
 
+    prev_m_x = m_x;
+    prev_m_y = m_y;
 }
 
 
@@ -1826,8 +1820,8 @@ void AM_drawPlayers(void)
 
     if (!netgame)
     {
-	// [crispy] interpolate player arrow in non-follow mode
-	if (!followplayer && leveltime > oldleveltime)
+	// [crispy] interpolate player arrow
+	if (crispy->uncapped && leveltime > oldleveltime)
 	{
 	pt.x = viewx >> FRACTOMAPBITS;
 	pt.y = viewy >> FRACTOMAPBITS;
@@ -2058,6 +2052,20 @@ void AM_drawCrosshair(int color)
 void AM_Drawer (void)
 {
     if (!automapactive) return;
+
+    // [crispy] move AM_doFollowPlayer and AM_changeWindowLoc
+    // from AM_Ticker for interpolation
+
+    if (followplayer)
+    {
+        AM_doFollowPlayer();
+    }
+
+    // Change X and Y location.
+    if (m_paninc.x || m_paninc.y)
+    {
+        AM_changeWindowLoc();
+    }
 
     // [crispy] required for AM_rotatePoint()
     if (crispy->automaprotate)
