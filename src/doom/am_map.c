@@ -506,9 +506,6 @@ void AM_changeWindowLoc(void)
 
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
-
-    // [crispy] reset after moving with the mouse
-    m_paninc2.x = m_paninc2.y = 0;
 }
 
 
@@ -2062,7 +2059,7 @@ void AM_Drawer (void)
     }
 
     // Change X and Y location.
-    if (m_paninc.x || m_paninc.y)
+    if (m_paninc.x || m_paninc.y || m_paninc2.x || m_paninc2.y)
     {
         AM_changeWindowLoc();
     }
