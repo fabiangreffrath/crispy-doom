@@ -1034,10 +1034,10 @@ void AM_changeWindowScale(void)
 void AM_doFollowPlayer(void)
 {
 
-    m_x = (viewx >> FRACTOMAPBITS) - m_w/2;
-    m_y = (viewy >> FRACTOMAPBITS) - m_h/2;
-    m_x2 = m_x + m_w;
-    m_y2 = m_y + m_h;
+	m_x = (viewx >> FRACTOMAPBITS) - m_w/2;
+	m_y = (viewy >> FRACTOMAPBITS) - m_h/2;
+	m_x2 = m_x + m_w;
+	m_y2 = m_y + m_h;
 
 	//  m_x = FTOM(MTOF(plr->mo->x - m_w/2));
 	//  m_y = FTOM(MTOF(plr->mo->y - m_h/2));
