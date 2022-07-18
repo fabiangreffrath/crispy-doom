@@ -263,6 +263,7 @@ static int 	lightlev; 		// used for funky strobing effect
 static int 	amclock;
 
 static mpoint_t m_paninc, m_paninc2; // how far the window pans each tic (map coords)
+static mpoint_t m_paninc_target; // [crispy] for interpolation
 static fixed_t 	mtof_zoommul; // how far the window zooms in each tic (map coords)
 static fixed_t 	ftom_zoommul; // how far the window zooms in each tic (fb coords)
 
@@ -470,8 +471,19 @@ void AM_findMinMaxBoundaries(void)
 void AM_changeWindowLoc(void)
 {
     int64_t incx, incy;
+    static int old_gametic;
 
-    if (m_paninc.x || m_paninc.y || m_paninc2.x || m_paninc2.y)
+    if (gametic > old_gametic)
+    {
+        m_paninc_target.x = m_paninc.x + m_paninc2.x;
+        m_paninc_target.y = m_paninc.y + m_paninc2.y;
+        old_gametic = gametic;
+
+        // [crispy] reset after moving with the mouse
+        m_paninc2.x = m_paninc2.y = 0;
+    }
+
+    if (m_paninc_target.x || m_paninc_target.y)
     {
 	followplayer = 0;
     }
@@ -479,13 +491,13 @@ void AM_changeWindowLoc(void)
     // [crispy] accumulate automap panning by keyboard and mouse
     if (crispy->uncapped && leveltime > oldleveltime)
     {
-        incx = FixedMul(m_paninc.x + m_paninc2.x, fractionaltic);
-        incy = FixedMul(m_paninc.y + m_paninc2.y, fractionaltic);
+        incx = FixedMul(m_paninc_target.x, fractionaltic);
+        incy = FixedMul(m_paninc_target.y, fractionaltic);
     }
     else
     {
-        incx = m_paninc.x + m_paninc2.x;
-        incy = m_paninc.y + m_paninc2.y;
+        incx = m_paninc_target.x;
+        incy = m_paninc_target.y;
     }
     if (crispy->automaprotate)
     {
@@ -2059,7 +2071,8 @@ void AM_Drawer (void)
     }
 
     // Change X and Y location.
-    if (m_paninc.x || m_paninc.y || m_paninc2.x || m_paninc2.y)
+    if (m_paninc.x || m_paninc.y || m_paninc2.x || m_paninc2.y
+    ||  m_paninc_target.x || m_paninc_target.y)
     {
         AM_changeWindowLoc();
     }
