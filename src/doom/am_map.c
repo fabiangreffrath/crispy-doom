@@ -2070,7 +2070,7 @@ void AM_Drawer (void)
         AM_doFollowPlayer();
     }
 
-    // Change X and Y location.
+    // Change x,y location
     if (m_paninc.x || m_paninc.y || m_paninc2.x || m_paninc2.y
     ||  m_paninc_target.x || m_paninc_target.y)
     {
