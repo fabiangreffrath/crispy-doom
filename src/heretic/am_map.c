@@ -658,17 +658,18 @@ boolean AM_Responder(event_t * ev)
     // [crispy] automap mouse controls
     else if (ev->type == ev_mouse && !crispy->automapoverlay)
     {
-        mousewheelzoom = true;
         if (mousebmapzoomout >= 0 && ev->data1 & (1 << mousebmapzoomout))
         {
             mtof_zoommul = m_zoomout_mouse;
             ftom_zoommul = m_zoomin_mouse;
+            mousewheelzoom = true;
             rc = true;
         }
         else if (mousebmapzoomin >= 0 && ev->data1 & (1 << mousebmapzoomin))
         {
             mtof_zoommul = m_zoomin_mouse;
             ftom_zoommul = m_zoomout_mouse;
+            mousewheelzoom = true;
             rc = true;
         }
         else if (mousebmapmaxzoom >= 0 && ev->data1 & (1 << mousebmapmaxzoom))

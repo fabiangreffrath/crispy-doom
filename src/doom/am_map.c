@@ -807,11 +807,11 @@ AM_Responder
     // [crispy] zoom and move Automap with the mouse (wheel)
     else if (ev->type == ev_mouse && !crispy->automapoverlay && !menuactive && !inhelpscreens)
     {
-    mousewheelzoom = true;
 	if (mousebmapzoomout >= 0 && ev->data1 & (1 << mousebmapzoomout))
 	{
 		mtof_zoommul = m_zoomout_mouse;
 		ftom_zoommul = m_zoomin_mouse;
+		mousewheelzoom = true;
 		rc = true;
 	}
 	else
@@ -819,6 +819,7 @@ AM_Responder
 	{
 		mtof_zoommul = m_zoomin_mouse;
 		ftom_zoommul = m_zoomout_mouse;
+		mousewheelzoom = true;
 		rc = true;
 	}
 	else
