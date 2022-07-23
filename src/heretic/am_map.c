@@ -1017,8 +1017,8 @@ void AM_clearFB(int color)
 
     if (followplayer)
     {
-        dmapx = (MTOF(plr->mo->x) - MTOF(plr->mo->oldx)) >> FRACTOMAPBITS;
-        dmapy = (MTOF(plr->mo->oldy) - MTOF(plr->mo->y)) >> FRACTOMAPBITS;
+        dmapx = (MTOF(plr->mo->x) >> FRACTOMAPBITS) - (MTOF(plr->mo->oldx) >> FRACTOMAPBITS);
+        dmapy = (MTOF(plr->mo->oldy) >> FRACTOMAPBITS) - (MTOF(plr->mo->y) >> FRACTOMAPBITS);
 
 //              if(f_oldloc.x == INT_MAX) //to eliminate an error when the user first
 //                      dmapx=0;  //goes into the automap.
