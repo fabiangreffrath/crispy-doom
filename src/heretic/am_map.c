@@ -135,7 +135,6 @@ static fixed_t scale_mtof = (fixed_t)INITSCALEMTOF;
 static fixed_t scale_ftom;
 
 static player_t *plr;           // the player represented by an arrow
-static vertex_t oldplr;
 
 // [crispy] toggleable pan/zoom speed
 static int f_paninc;
@@ -463,8 +462,6 @@ void AM_initVariables(void)
             if (playeringame[pnum])
                 break;
     plr = &players[pnum];
-    oldplr.x = plr->mo->x;
-    oldplr.y = plr->mo->y;
     next_m_x = (plr->mo->x >> FRACTOMAPBITS) - m_w / 2;
     next_m_y = (plr->mo->y >> FRACTOMAPBITS) - m_h / 2;
     AM_Ticker(); // [crispy] initialize variables for interpolation
@@ -1020,11 +1017,9 @@ void AM_clearFB(int color)
 
     if (followplayer)
     {
-        dmapx = ((MTOF(plr->mo->x) >> FRACTOMAPBITS) - (MTOF(oldplr.x) >> FRACTOMAPBITS));    //fixed point
-        dmapy = ((MTOF(oldplr.y) >> FRACTOMAPBITS) - (MTOF(plr->mo->y) >> FRACTOMAPBITS));
+        dmapx = (MTOF(plr->mo->x) - MTOF(plr->mo->oldx)) >> FRACTOMAPBITS;
+        dmapy = (MTOF(plr->mo->oldy) - MTOF(plr->mo->y)) >> FRACTOMAPBITS;
 
-        oldplr.x = plr->mo->x;
-        oldplr.y = plr->mo->y;
 //              if(f_oldloc.x == INT_MAX) //to eliminate an error when the user first
 //                      dmapx=0;  //goes into the automap.
 
@@ -1033,8 +1028,8 @@ void AM_clearFB(int color)
         // nauseating.
         if (!crispy->automaprotate)
         {
-            mapxstart += dmapx >> 1;
-            mapystart += dmapy >> 1;
+            mapxstart = prev_mapxstart + (dmapx >> 1);
+            mapystart = prev_mapystart + (dmapy >> 1);
         }
 
         // [crispy] Change background tile dimensions for hi-res
