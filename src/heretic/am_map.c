@@ -335,7 +335,7 @@ static void AM_changeWindowLocTick(void)
     next_m_x += incx;
     next_m_y += incy;
 
-    // next_m_x and next_m_y clipping happen int AM_changeWindowLoc
+    // next_m_x and next_m_y clipping happen in AM_changeWindowLoc
 
     // [crispy] Disable map background scroll in non-follow + non-rotate mode.
     // The combination of the two effects is unappealing and slightly
