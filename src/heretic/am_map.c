@@ -336,7 +336,7 @@ static void AM_changeWindowLocTick(void)
 
     // next_m_x and next_m_y clipping happen in AM_changeWindowLoc
 
-    // [crispy] Disable map background scroll in non-follow + non-rotate mode.
+    // [crispy] Disable map background scroll in non-follow + rotate mode.
     // The combination of the two effects is unappealing and slightly
     // nauseating.
     if (!crispy->automaprotate)
@@ -356,7 +356,6 @@ static void AM_changeWindowLocTick(void)
         next_mapystart -= MAPBGROUNDHEIGHT >> crispy->hires;
     if(next_mapystart < 0)
         next_mapystart += MAPBGROUNDHEIGHT >> crispy->hires;
-    // - end of code that was commented-out
 }
 
 void AM_changeWindowLoc(void)
@@ -406,12 +405,7 @@ void AM_changeWindowLoc(void)
         incy = 0;
     }
 
-    // The following code was commented out in the released Heretic source,
-    // but I believe we need to do this here to stop the background moving
-    // when we reach the map boundaries. (In the released source it's done
-    // in AM_clearFB).
-
-    // [crispy] Disable map background scroll in non-follow + non-rotate mode.
+    // [crispy] Disable map background scroll in non-follow + rotate mode.
     // The combination of the two effects is unappealing and slightly
     // nauseating.
     if (!crispy->automaprotate)
@@ -419,6 +413,12 @@ void AM_changeWindowLoc(void)
         mapxstart = incx ? prev_mapxstart + MTOF(incx + MAPUNIT/2) : mapxstart;
         mapystart = incy ? prev_mapystart - MTOF(incy + MAPUNIT/2) : mapystart;
     }
+
+    // The following code was commented out in the released Heretic source,
+    // but I believe we need to do this here to stop the background moving
+    // when we reach the map boundaries. (In the released source it's done
+    // in AM_clearFB).
+
     // [crispy] Change background tile dimensions for hi-res
     if(mapxstart >= MAPBGROUNDWIDTH << crispy->hires)
         mapxstart -= MAPBGROUNDWIDTH << crispy->hires;
