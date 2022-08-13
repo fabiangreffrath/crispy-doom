@@ -1896,8 +1896,18 @@ void AM_drawPlayers(void)
 	else
 	    color = their_colors[their_color];
 	
-	pt.x = p->mo->x >> FRACTOMAPBITS;
-	pt.y = p->mo->y >> FRACTOMAPBITS;
+	// [crispy] interpolate other player arrows
+	if (crispy->uncapped && leveltime > oldleveltime)
+	{
+	    pt.x = (p->mo->oldx + FixedMul(p->mo->x - p->mo->oldx, fractionaltic)) >> FRACTOMAPBITS;
+	    pt.y = (p->mo->oldy + FixedMul(p->mo->y - p->mo->oldy, fractionaltic)) >> FRACTOMAPBITS;
+	}
+	else
+	{
+	    pt.x = p->mo->x >> FRACTOMAPBITS;
+	    pt.y = p->mo->y >> FRACTOMAPBITS;
+	}
+
 	if (crispy->automaprotate)
 	{
 	    AM_rotatePoint(&pt);
