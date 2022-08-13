@@ -773,7 +773,8 @@ P_KillMobj
 	target->player->fixedcolormap = target->player->powers[pw_infrared] ? 1 : 0;
 
 	if (target->player == &players[consoleplayer]
-	    && automapactive)
+	    && automapactive
+	    && !demoplayback) // [crispy] killough 11/98: don't switch out in demos, though
 	{
 	    // don't die in auto map,
 	    // switch view prior to dying
