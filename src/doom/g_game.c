@@ -3092,7 +3092,7 @@ void G_DoPlayDemo (void)
 
 	while (*demo_ptr != DEMOMARKER && (demo_ptr - demobuffer) < lumplength)
 	{
-	    demo_ptr += numplayersingame * (longtics ? 5 : 4);
+	    demo_ptr += (longtics ? 5 : 4);
 	    deftotaldemotics++;
 	}
     }
