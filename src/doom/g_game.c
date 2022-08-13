@@ -1018,6 +1018,9 @@ boolean G_Responder (event_t* ev)
 	    if (displayplayer == MAXPLAYERS) 
 		displayplayer = 0; 
 	} while (!playeringame[displayplayer] && displayplayer != consoleplayer); 
+	// [crispy] re-init automap variables for correct player arrow angle
+	if (automapactive)
+	AM_initVariables();
 	return true; 
     }
     
