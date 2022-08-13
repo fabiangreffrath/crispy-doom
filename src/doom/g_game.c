@@ -2628,7 +2628,7 @@ G_InitNew
 #define DEMOMARKER		0x80
 
 // [crispy] demo progress bar and timer widget
-int defdemotics = 0, deftotaldemotics;
+int defdemotics = 0, deftotaldemotics, numplayersingame;
 // [crispy] moved here
 static const char *defdemoname;
 
@@ -3077,8 +3077,10 @@ void G_DoPlayDemo (void)
 
     // [crispy] demo progress bar
     {
-	int i, numplayersingame = 0;
+	int i;
 	byte *demo_ptr = demo_p;
+
+	numplayersingame = 0;
 
 	for (i = 0; i < MAXPLAYERS; i++)
 	{

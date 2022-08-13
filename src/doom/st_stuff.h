@@ -35,7 +35,7 @@
 
 // [crispy] Demo Timer widget
 extern void ST_DrawDemoTimer (const int time);
-extern int defdemotics, deftotaldemotics;
+extern int defdemotics, deftotaldemotics, numplayersingame;
 
 //
 // STATUS BAR

@@ -898,7 +898,7 @@ void HU_Drawer(void)
     // [crispy] demo timer widget
     if (demoplayback && (crispy->demotimer & DEMOTIMER_PLAYBACK))
     {
-	ST_DrawDemoTimer(crispy->demotimerdir ? (deftotaldemotics - defdemotics) : defdemotics);
+	ST_DrawDemoTimer((crispy->demotimerdir ? (deftotaldemotics - defdemotics) : defdemotics) / numplayersingame);
     }
     else
     if (demorecording && (crispy->demotimer & DEMOTIMER_RECORD))
