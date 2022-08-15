@@ -1866,8 +1866,8 @@ void AM_drawPlayers(void)
 
     for (i=0;i<MAXPLAYERS;i++)
     {
-    // [crispy] interpolate other player arrows angle
-    angle_t theirangle;
+	// [crispy] interpolate other player arrows angle
+	angle_t theirangle;
 
 	their_color++;
 	p = &players[i];
