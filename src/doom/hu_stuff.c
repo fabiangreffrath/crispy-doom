@@ -594,7 +594,7 @@ void HU_Start(void)
     if (headsupactive)
 	HU_Stop();
 
-    plr = &players[consoleplayer];
+    plr = &players[displayplayer];
     message_on = false;
     message_dontfuckwithme = false;
     message_nottobefuckedwith = false;
@@ -898,7 +898,7 @@ void HU_Drawer(void)
     // [crispy] demo timer widget
     if (demoplayback && (crispy->demotimer & DEMOTIMER_PLAYBACK))
     {
-	ST_DrawDemoTimer((crispy->demotimerdir ? (deftotaldemotics - defdemotics) : defdemotics) / numplayersingame);
+	ST_DrawDemoTimer(crispy->demotimerdir ? (deftotaldemotics - defdemotics) : defdemotics);
     }
     else
     if (demorecording && (crispy->demotimer & DEMOTIMER_RECORD))
