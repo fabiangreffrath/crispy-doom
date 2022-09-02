@@ -499,7 +499,7 @@ void I_BindSoundVariables(void)
     extern char *snd_dmxoption;
     extern int use_libsamplerate;
     extern float libsamplerate_scale;
-    extern int *fluidsynth_force_off; // force Fluidsynth off
+    extern int fluidsynth_force_off; // force Fluidsynth off
 
     M_BindIntVariable("snd_musicdevice",         &snd_musicdevice);
     M_BindIntVariable("snd_sfxdevice",           &snd_sfxdevice);
