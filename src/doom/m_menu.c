@@ -575,7 +575,6 @@ static menuitem_t Crispness3Menu[]=
     {1,"",	M_CrispyTogglePitch,'w'},
     {1,"",	M_CrispyToggleNeghealth,'n'},
     {1,"",	M_CrispyToggleDefaultSkill,'d'},
-
     {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {1,"",	M_CrispyToggleCrosshair,'d'},
