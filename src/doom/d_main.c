@@ -2150,7 +2150,12 @@ void D_DoomMain (void)
     D_ConnectNetGame();
 
     // get skill / episode / map from parms
-    startskill = sk_medium;
+
+    // HMP (or skill #2) being the default, had to be placed at index 0 when drawn in the menu,
+    // so all difficulties 'real' positions had to be scaled by -2, hence +2 being added
+    // below in order to get the correct skill.
+    startskill = (crispy->defaultskill + 2) % 5;
+
     startepisode = 1;
     startmap = 1;
     autostart = false;
