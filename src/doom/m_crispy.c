@@ -116,11 +116,11 @@ multiitem_t multiitem_secretmessage[NUM_SECRETMESSAGE] =
 
 multiitem_t multiitem_difficulties[NUM_SKILLS] =
 {
-    {SKILLS_HMP, "HMP"},
-    {SKILLS_UV, "UV"},
-    {SKILLS_NIGHTMARE, "NIGHTMARE"},
-    {SKILLS_ITYTD, "ITYTD"},
-    {SKILLS_HNTR, "HNTR"},
+    {SKILL_HMP, "HMP"},
+    {SKILL_UV, "UV"},
+    {SKILL_NIGHTMARE, "NIGHTMARE"},
+    {SKILL_ITYTD, "ITYTD"},
+    {SKILL_HNTR, "HNTR"},
 };
 
 multiitem_t multiitem_statsformat[NUM_STATSFORMATS] =

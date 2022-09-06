@@ -249,11 +249,11 @@ enum
 
 enum
 {
-    SKILLS_ITYTD,
-    SKILLS_HNTR,
-    SKILLS_HMP,
-    SKILLS_UV,
-    SKILLS_NIGHTMARE,
+    SKILL_ITYTD,
+    SKILL_HNTR,
+    SKILL_HMP,
+    SKILL_UV,
+    SKILL_NIGHTMARE,
     NUM_SKILLS
 };
 

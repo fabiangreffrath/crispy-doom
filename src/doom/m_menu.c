@@ -3108,7 +3108,7 @@ void M_Init (void)
     // HMP (or skill #2) being the default, had to be placed at index 0 when drawn in the menu,
     // so all difficulties 'real' positions had to be scaled by -2, hence +2 being added
     // below in order to get the correct skill index when getting it from the skill enum.
-    NewDef.lastOn = ((crispy->defaultskill) + 2 ) % 5;
+    NewDef.lastOn = ((crispy->defaultskill) + SKILL_HMP ) % NUM_SKILLS;
 
     // Here we could catch other version dependencies,
     //  like HELP1/2, and four episodes.
