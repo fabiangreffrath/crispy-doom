@@ -114,13 +114,13 @@ multiitem_t multiitem_secretmessage[NUM_SECRETMESSAGE] =
     {SECRETMESSAGE_COUNT, "count"},
 };
 
-multiitem_t multiitem_difficulties[NUM_DIFFICULTIES] =
+multiitem_t multiitem_difficulties[NUM_SKILLS] =
 {
-    {DIFFICULTIES_HMP, "HMP"},
-    {DIFFICULTIES_UV, "UV"},
-    {DIFFICULTIES_NIGHTMARE, "NIGHTMARE"},
-    {DIFFICULTIES_ITYTD, "ITYTD"},
-    {DIFFICULTIES_HNTR, "HNTR"},
+    {SKILLS_HMP, "HMP"},
+    {SKILLS_UV, "UV"},
+    {SKILLS_NIGHTMARE, "NIGHTMARE"},
+    {SKILLS_ITYTD, "ITYTD"},
+    {SKILLS_HNTR, "HNTR"},
 };
 
 multiitem_t multiitem_statsformat[NUM_STATSFORMATS] =
@@ -416,10 +416,10 @@ void M_CrispyToggleNeghealth(int choice)
     crispy->neghealth = !crispy->neghealth;
 }
 
-void M_CrispyToggleDefDifficulty(int choice)
+void M_CrispyToggleDefaultSkill(int choice)
 {
     choice = 0;
-    crispy->defdifficulty = (crispy->defdifficulty + 1) % NUM_DIFFICULTIES;
+    crispy->defaultskill = (crispy->defaultskill + 1) % NUM_SKILLS;
 }
 
 void M_CrispyToggleOverunder(int choice)

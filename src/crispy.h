@@ -39,7 +39,7 @@ typedef struct
 	int automapoverlay;
 	int automaprotate;
 	int automapstats;
-	int defdifficulty;
+	int defaultskill;
 	int bobfactor;
 	int brightmaps;
 	int btusetimer;
@@ -249,12 +249,12 @@ enum
 
 enum
 {
-    DIFFICULTIES_ITYTD,
-    DIFFICULTIES_HNTR,
-    DIFFICULTIES_HMP,
-    DIFFICULTIES_UV,
-    DIFFICULTIES_NIGHTMARE,
-    NUM_DIFFICULTIES
+    SKILLS_ITYTD,
+    SKILLS_HNTR,
+    SKILLS_HMP,
+    SKILLS_UV,
+    SKILLS_NIGHTMARE,
+    NUM_SKILLS
 };
 
 enum

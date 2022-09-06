@@ -22,7 +22,6 @@
 #include <ctype.h>
 
 
-#include "crispy.h"
 #include "doomdef.h"
 #include "doomkeys.h"
 #include "dstrings.h"
@@ -357,6 +356,8 @@ menu_t  NewDef =
     hurtme		// lastOn
 };
 
+
+
 //
 // OPTIONS MENU
 //
@@ -549,7 +550,7 @@ enum
     crispness_centerweapon,
     crispness_pitch,
     crispness_neghealth,
-    crispness_defdifficulty,
+    crispness_defaultskill,
     crispness_sep_tactical_,
 
     crispness_sep_crosshair,
@@ -573,7 +574,7 @@ static menuitem_t Crispness3Menu[]=
     {1,"",	M_CrispyToggleCenterweapon,'c'},
     {1,"",	M_CrispyTogglePitch,'w'},
     {1,"",	M_CrispyToggleNeghealth,'n'},
-    {1,"",	M_CrispyToggleDefDifficulty,'d'},
+    {1,"",	M_CrispyToggleDefaultSkill,'d'},
 
     {-1,"",0,'\0'},
     {-1,"",0,'\0'},
@@ -1565,7 +1566,7 @@ static void M_DrawCrispness3(void)
     M_DrawCrispnessMultiItem(crispness_centerweapon, "Weapon Attack Alignment", multiitem_centerweapon, crispy->centerweapon, crispy->bobfactor != BOBFACTOR_OFF);
     M_DrawCrispnessItem(crispness_pitch, "Weapon Recoil Pitch", crispy->pitch, true);
     M_DrawCrispnessItem(crispness_neghealth, "Negative Player Health", crispy->neghealth, true);
-    M_DrawCrispnessMultiItem(crispness_defdifficulty, "Default Difficulty", multiitem_difficulties, crispy->defdifficulty, true);
+    M_DrawCrispnessMultiItem(crispness_defaultskill, "Default Difficulty", multiitem_difficulties, crispy->defaultskill, true);
 
     M_DrawCrispnessSeparator(crispness_sep_crosshair, "Crosshair");
 
@@ -3104,7 +3105,10 @@ void M_Init (void)
     quickSaveSlot = -1;
 
     // [crispy] pre-select default difficulty
-    NewDef.lastOn = ((crispy->defdifficulty) +2)  % 5;
+    // HMP (or skill #2) being the default, had to be placed at index 0 when drawn in the menu,
+    // so all difficulties 'real' positions had to be scaled by -2, hence +2 being added
+    // below in order to get the correct skill index when getting it from the skill enum.
+    NewDef.lastOn = ((crispy->defaultskill) + 2 ) % 5;
 
     // Here we could catch other version dependencies,
     //  like HELP1/2, and four episodes.

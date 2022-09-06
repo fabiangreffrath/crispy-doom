@@ -2194,15 +2194,15 @@ static default_t extra_defaults_list[] =
     //!
     // @game doom
     //
-    // Players may walk over and under shootable things.
+    // Set the default difficulty when starting a new game
     //
 
-    CONFIG_VARIABLE_INT(crispy_defdifficulty),
+    CONFIG_VARIABLE_INT(crispy_defaultskill),
 
     //!
     // @game doom
     //
-    // Set the default difficulty when starting a new game
+    // Players may walk over and under shootable things.
     //
 
     CONFIG_VARIABLE_INT(crispy_overunder),
