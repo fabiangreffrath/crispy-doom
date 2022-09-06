@@ -39,6 +39,7 @@ typedef struct
 	int automapoverlay;
 	int automaprotate;
 	int automapstats;
+	int defdifficulty;
 	int bobfactor;
 	int brightmaps;
 	int btusetimer;
@@ -244,6 +245,16 @@ enum
     STATSFORMAT_PERCENT,
     STATSFORMAT_BOOLEAN,
     NUM_STATSFORMATS
+};
+
+enum
+{
+    DIFFICULTIES_ITYTD,
+    DIFFICULTIES_HNTR,
+    DIFFICULTIES_HMP,
+    DIFFICULTIES_UV,
+    DIFFICULTIES_NIGHTMARE,
+    NUM_DIFFICULTIES
 };
 
 enum

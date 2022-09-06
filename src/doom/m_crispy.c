@@ -17,6 +17,7 @@
 //	[crispy] Crispness menu
 //
 
+#include "crispy.h"
 #include "doomstat.h"
 #include "p_local.h" // [crispy] thinkercap
 #include "s_sound.h"
@@ -111,6 +112,15 @@ multiitem_t multiitem_secretmessage[NUM_SECRETMESSAGE] =
     {SECRETMESSAGE_OFF, "off"},
     {SECRETMESSAGE_ON, "on"},
     {SECRETMESSAGE_COUNT, "count"},
+};
+
+multiitem_t multiitem_difficulties[NUM_DIFFICULTIES] =
+{
+    {DIFFICULTIES_HMP, "HMP"},
+    {DIFFICULTIES_UV, "UV"},
+    {DIFFICULTIES_NIGHTMARE, "NIGHTMARE"},
+    {DIFFICULTIES_ITYTD, "ITYTD"},
+    {DIFFICULTIES_HNTR, "HNTR"},
 };
 
 multiitem_t multiitem_statsformat[NUM_STATSFORMATS] =
@@ -404,6 +414,12 @@ void M_CrispyToggleNeghealth(int choice)
 {
     choice = 0;
     crispy->neghealth = !crispy->neghealth;
+}
+
+void M_CrispyToggleDefDifficulty(int choice)
+{
+    choice = 0;
+    crispy->defdifficulty = (crispy->defdifficulty + 1) % NUM_DIFFICULTIES;
 }
 
 void M_CrispyToggleOverunder(int choice)
