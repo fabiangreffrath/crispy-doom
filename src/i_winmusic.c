@@ -26,9 +26,7 @@
 #include "m_misc.h"
 #include "midifile.h"
 
-#ifndef BETWEEN
-#define BETWEEN(l,u,x) (((l)>(x))?(l):((x)>(u))?(u):(x))
-#endif
+#include "crispy.h"
 
 #define REVERB_MIN 0
 #define REVERB_MAX 127
