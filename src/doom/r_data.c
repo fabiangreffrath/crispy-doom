@@ -955,7 +955,7 @@ void R_InitTextures (void)
 		// [crispy] make non-fatal
 		fprintf (stderr, "R_InitTextures: Missing patch in texture %s\n",
 			 texturename);
-		patch->patch = 0;
+		patch->patch = 0; //
 	    }
 	}		
 	texturecolumnlump[i] = Z_Malloc (texture->width*sizeof(**texturecolumnlump), PU_STATIC,0);
