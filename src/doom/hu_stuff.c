@@ -62,11 +62,11 @@
 #define HU_TITLE_CHEX   (mapnames_chex[(gameepisode-1)*9+gamemap-1])
 #define HU_TITLEHEIGHT	1
 #define HU_TITLEX	(0 - WIDESCREENDELTA)
-#define HU_TITLEY	(167 - SHORT(hu_font[0]->height))
+#define HU_TITLEY	(167 - SHORT(hu_font['A'-HU_FONTSTART]->height))
 
 #define HU_INPUTTOGGLE	't'
 #define HU_INPUTX	HU_MSGX
-#define HU_INPUTY	(HU_MSGY + HU_MSGHEIGHT*(SHORT(hu_font[0]->height) +1))
+#define HU_INPUTY	(HU_MSGY + HU_MSGHEIGHT*(SHORT(hu_font['A'-HU_FONTSTART]->height) +1))
 #define HU_INPUTWIDTH	64
 #define HU_INPUTHEIGHT	1
 
@@ -625,7 +625,7 @@ void HU_Start(void)
 
     // [crispy] create the generic map title, kills, items, secrets and level time widgets
     HUlib_initTextLine(&w_map,
-		       HU_TITLEX, HU_TITLEY - SHORT(hu_font[0]->height + 1),
+		       HU_TITLEX, HU_TITLEY - SHORT(hu_font['A'-HU_FONTSTART]->height + 1),
 		       hu_font,
 		       HU_FONTSTART);
 
@@ -716,10 +716,10 @@ void HU_Start(void)
 
     // [crispy] explicitely display (episode and) map if the
     // map is from a PWAD or if the map title string has been dehacked
-    if (DEH_HasStringReplacement(s) ||
-        (!W_IsIWADLump(maplumpinfo) &&
-        !(crispy->havenerve && gamemission == pack_nerve) &&
-        !(crispy->havemaster && gamemission == pack_master)))
+    if (!W_IsIWADLump(maplumpinfo) &&
+        (DEH_HasStringReplacement(s) ||
+        (!(crispy->havenerve && gamemission == pack_nerve) &&
+        !(crispy->havemaster && gamemission == pack_master))))
     {
 	char *m;
 
