@@ -1617,9 +1617,13 @@ void AM_drawWalls(void)
 	    AM_rotatePoint(&l.a);
 	    AM_rotatePoint(&l.b);
 	}
+
 	if (cheating || (lines[i].flags & ML_MAPPED))
 	{
-	    if ((lines[i].flags & LINE_NEVERSEE) && !cheating)
+	    if ((lines[i].flags & LINE_NEVERSEE) && !cheating && // [SoDOOManiac] [crispy] force mapping of secret sector lines
+	    !((lines[i].backsector && // upon seeing even if they're neversee like in REKKR
+	    (lines[i].frontsector->oldspecial == 9 || lines[i].backsector->oldspecial == 9 || lines[i].frontsector->special == 9 || lines[i].backsector->special == 9)) || 
+	    (!lines[i].backsector && (lines[i].frontsector->oldspecial == 9 || lines[i].frontsector->special == 9))))
 		continue;
 	    {
 		// [crispy] draw keyed doors in their respective colors
@@ -1664,7 +1668,7 @@ void AM_drawWalls(void)
 		    cheating && (lines[i].frontsector->special == 9))
 		    AM_drawMline(&l, SECRETWALLCOLORS);
 #if defined CRISPY_HIGHLIGHT_REVEALED_SECRETS
-		// [crispy] draw revealed secret sector boundaries in green
+		// [crispy] draw revealed secret sector boundaries in bright green
 		else
 		if (crispy->extautomap &&
 		    crispy->secretmessage && (lines[i].frontsector->oldspecial == 9))
@@ -1691,7 +1695,7 @@ void AM_drawWalls(void)
 		    else AM_drawMline(&l, WALLCOLORS+lightlev);
 		}
 #if defined CRISPY_HIGHLIGHT_REVEALED_SECRETS
-		// [crispy] draw revealed secret sector boundaries in green
+		// [crispy] draw revealed secret sector boundaries in bright green
 		else if (crispy->extautomap && crispy->secretmessage &&
 		    (lines[i].backsector->oldspecial == 9 ||
 		    lines[i].frontsector->oldspecial == 9))
@@ -1706,6 +1710,15 @@ void AM_drawWalls(void)
 		{
 		    AM_drawMline(&l, SECRETWALLCOLORS);
 		}
+
+		// [SoDOOManiac] [crispy] if no IDDT, no extended automap colors and no secret report, draw 2S secret sector boundaries in gray if no floor/ceiling level change
+		else if (lines[i].backsector->floorheight == lines[i].frontsector->floorheight && lines[i].backsector->ceilingheight == lines[i].frontsector->ceilingheight &&
+		    ((lines[i].frontsector->oldspecial == 9 || lines[i].backsector->oldspecial == 9 ||
+		    lines[i].frontsector->special == 9 || lines[i].backsector->special == 9))) // revealed secret boundaries are greened, exclude them
+		{
+		    AM_drawMline(&l, TSWALLCOLORS+lightlev);
+		}
+
 		else if (lines[i].backsector->floorheight
 			   != lines[i].frontsector->floorheight) {
 		    AM_drawMline(&l, FDWALLCOLORS + lightlev); // floor level change

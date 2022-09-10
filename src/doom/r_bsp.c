@@ -363,12 +363,17 @@ void R_AddLine (seg_t*	line)
 	|| backsector->interpfloorheight != frontsector->interpfloorheight)
 	goto clippass;	
 		
+    // [SoDOOManiac] [crispy] all lines that belong to secret sectors should get mapped when in field of view, so that hidden secret lines in e.g. REKKR are mapped upon seeing
+    if (frontsector->oldspecial == 9 || backsector->oldspecial == 9 || frontsector->special == 9 || backsector->special == 9)
+	goto clippass;
+	
     // Reject empty lines used for triggers
-    //  and special events.
+    // and special events.
     // Identical floor and ceiling on both sides,
     // identical light levels on both sides,
     // and no middle texture.
-    if (backsector->ceilingpic == frontsector->ceilingpic
+    // [SoDOOManiac] added else because there are some lines for which both last conditions are met
+    else if (backsector->ceilingpic == frontsector->ceilingpic
 	&& backsector->floorpic == frontsector->floorpic
 	&& backsector->lightlevel == frontsector->lightlevel
 	&& curline->sidedef->midtexture == 0)
