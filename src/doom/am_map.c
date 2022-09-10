@@ -1714,7 +1714,7 @@ void AM_drawWalls(void)
 		// [SoDOOManiac] [crispy] if no IDDT, no extended automap colors and no secret report, draw 2S secret sector boundaries in gray if no floor/ceiling level change
 		else if (lines[i].backsector->floorheight == lines[i].frontsector->floorheight && lines[i].backsector->ceilingheight == lines[i].frontsector->ceilingheight &&
 		    ((lines[i].frontsector->oldspecial == 9 || lines[i].backsector->oldspecial == 9 ||
-		    lines[i].frontsector->special == 9 || lines[i].backsector->special == 9))) // revealed secret boundaries are greened, exclude them
+		    lines[i].frontsector->special == 9 || lines[i].backsector->special == 9)))
 		{
 		    AM_drawMline(&l, TSWALLCOLORS+lightlev);
 		}
