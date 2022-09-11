@@ -590,6 +590,8 @@ void HU_Start(void)
     const char *s;
     // [crispy] string buffers for map title and WAD file name
     char	buf[8], *ptr;
+    // [crispy] shift widgets one line down so chat typing line may appear
+    const int net_y = netgame ? 8 : 0;
 
     if (headsupactive)
 	HU_Stop();
@@ -630,22 +632,22 @@ void HU_Start(void)
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_kills,
-		       HU_TITLEX, HU_MSGY + 1 * 8,
+		       HU_TITLEX, HU_MSGY + 1 * 8 + net_y,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_items,
-		       HU_TITLEX, HU_MSGY + 2 * 8,
+		       HU_TITLEX, HU_MSGY + 2 * 8 + net_y,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_scrts,
-		       HU_TITLEX, HU_MSGY + 3 * 8,
+		       HU_TITLEX, HU_MSGY + 3 * 8 + net_y,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_ltime,
-		       HU_TITLEX, HU_MSGY + 4 * 8,
+		       HU_TITLEX, HU_MSGY + 4 * 8 + net_y,
 		       hu_font,
 		       HU_FONTSTART);
 
@@ -1073,8 +1075,6 @@ void HU_Ticker(void)
     {
 	crispy_statsline_func_t crispy_statsline = crispy_statslines[crispy->statsformat];
 
-	w_kills.y = HU_TITLEY;
-
 	crispy_statsline(str, sizeof(str), "K ", plr->killcount, totalkills, extrakills);
 	HUlib_clearTextLine(&w_kills);
 	s = str;
@@ -1095,8 +1095,6 @@ void HU_Ticker(void)
     if ((crispy->automapstats & WIDGETS_ALWAYS) || (automapactive && crispy->automapstats == WIDGETS_AUTOMAP))
     {
 	crispy_statsline_func_t crispy_statsline = crispy_statslines[crispy->statsformat];
-
-	w_kills.y = HU_MSGY + 1 * 8;
 
 	crispy_statsline(str, sizeof(str), kills, plr->killcount, totalkills, extrakills);
 	HUlib_clearTextLine(&w_kills);
