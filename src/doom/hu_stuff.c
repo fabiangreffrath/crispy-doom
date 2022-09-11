@@ -591,7 +591,7 @@ void HU_Start(void)
     // [crispy] string buffers for map title and WAD file name
     char	buf[8], *ptr;
     // [crispy] shift widgets one line down so chat typing line may appear
-    const int net_y = netgame ? 8 : 0;
+    const int net_chatline = netgame ? 8 : 0;
 
     if (headsupactive)
 	HU_Stop();
@@ -632,37 +632,37 @@ void HU_Start(void)
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_kills,
-		       HU_TITLEX, HU_MSGY + 1 * 8 + net_y,
+		       HU_TITLEX, HU_MSGY + 1 * 8 + net_chatline,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_items,
-		       HU_TITLEX, HU_MSGY + 2 * 8 + net_y,
+		       HU_TITLEX, HU_MSGY + 2 * 8 + net_chatline,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_scrts,
-		       HU_TITLEX, HU_MSGY + 3 * 8 + net_y,
+		       HU_TITLEX, HU_MSGY + 3 * 8 + net_chatline,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_ltime,
-		       HU_TITLEX, HU_MSGY + 4 * 8 + net_y,
+		       HU_TITLEX, HU_MSGY + 4 * 8 + net_chatline,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_coordx,
-		       HU_COORDX, HU_MSGY + 1 * 8,
+		       HU_COORDX, HU_MSGY + 1 * 8 + net_chatline,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_coordy,
-		       HU_COORDX, HU_MSGY + 2 * 8,
+		       HU_COORDX, HU_MSGY + 2 * 8 + net_chatline,
 		       hu_font,
 		       HU_FONTSTART);
 
     HUlib_initTextLine(&w_coorda,
-		       HU_COORDX, HU_MSGY + 3 * 8,
+		       HU_COORDX, HU_MSGY + 3 * 8 + net_chatline,
 		       hu_font,
 		       HU_FONTSTART);
 
