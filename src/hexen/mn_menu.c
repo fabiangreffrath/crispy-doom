@@ -1045,8 +1045,8 @@ static void SCSaveGame(int option)
         // [crispy] generate a default save slot name when saving to an empty slot
         if (!oldSlotText[0] || (strlen(oldSlotText) >= 3 && !strncmp(oldSlotText, "HUB", 3)))
         {
-          M_snprintf(ptr, sizeof(oldSlotText), "HUB %d (%s)",
-                     P_GetMapCluster(gamemap),
+          M_snprintf(ptr, sizeof(oldSlotText), "HUB %d.%d, %s",
+                     P_GetMapCluster(gamemap), gamemap,
                      class_str[PlayerClass[consoleplayer]]);
         }
         while (*ptr)
