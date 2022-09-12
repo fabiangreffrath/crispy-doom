@@ -1030,8 +1030,6 @@ static void SCDeleteGame(int option)
     SV_ClearSaveSlot(option);
     MN_LoadSlotText();
     BorderNeedRefresh = true;
-
-    return;
 }
 
 //---------------------------------------------------------------------------
