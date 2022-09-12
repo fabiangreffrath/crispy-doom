@@ -581,6 +581,51 @@ static void HU_SetSpecialLevelName (const char *wad, const char **name)
     }
 }
 
+static void HU_InitWidgets (const boolean shift_down)
+{
+    const int chat_line = shift_down ? 8 : 0;
+
+    HUlib_initTextLine(&w_kills,
+		       HU_TITLEX, HU_MSGY + 1 * 8 + chat_line,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_items,
+		       HU_TITLEX, HU_MSGY + 2 * 8 + chat_line,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_scrts,
+		       HU_TITLEX, HU_MSGY + 3 * 8 + chat_line,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_ltime,
+		       HU_TITLEX, HU_MSGY + 4 * 8 + chat_line,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_coordx,
+		       HU_COORDX, HU_MSGY + 1 * 8 + chat_line,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_coordy,
+		       HU_COORDX, HU_MSGY + 2 * 8 + chat_line,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_coorda,
+		       HU_COORDX, HU_MSGY + 3 * 8 + chat_line,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_fps,
+		       HU_COORDX, HU_MSGY,
+		       hu_font,
+		       HU_FONTSTART);
+}
+
 static int hu_widescreendelta;
 
 void HU_Start(void)
@@ -590,8 +635,6 @@ void HU_Start(void)
     const char *s;
     // [crispy] string buffers for map title and WAD file name
     char	buf[8], *ptr;
-    // [crispy] shift widgets one line down so chat typing line may appear
-    const int net_chatline = netgame ? 8 : 0;
 
     if (headsupactive)
 	HU_Stop();
@@ -631,45 +674,8 @@ void HU_Start(void)
 		       hu_font,
 		       HU_FONTSTART);
 
-    HUlib_initTextLine(&w_kills,
-		       HU_TITLEX, HU_MSGY + 1 * 8 + net_chatline,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_items,
-		       HU_TITLEX, HU_MSGY + 2 * 8 + net_chatline,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_scrts,
-		       HU_TITLEX, HU_MSGY + 3 * 8 + net_chatline,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_ltime,
-		       HU_TITLEX, HU_MSGY + 4 * 8 + net_chatline,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_coordx,
-		       HU_COORDX, HU_MSGY + 1 * 8 + net_chatline,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_coordy,
-		       HU_COORDX, HU_MSGY + 2 * 8 + net_chatline,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_coorda,
-		       HU_COORDX, HU_MSGY + 3 * 8 + net_chatline,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_fps,
-		       HU_COORDX, HU_MSGY,
-		       hu_font,
-		       HU_FONTSTART);
+    // [crispy] initialize widgets, no shifting initially
+    HU_InitWidgets(false);
 
     
     switch ( logical_gamemission )
@@ -1060,6 +1066,9 @@ void HU_Ticker(void)
 		players[i].cmd.chatchar = 0;
 	    }
 	}
+    // [crispy] shift widgets one line down so chat typing line may appear
+    if (chat_on)
+    HU_InitWidgets(true);
     }
 
     if (automapactive)
@@ -1230,6 +1239,8 @@ static void StopChatInput(void)
 {
     chat_on = false;
     I_StopTextInput();
+    // [crispy] input stopped, back widgets to standard position
+    HU_InitWidgets(false);
 }
 
 boolean HU_Responder(event_t *ev)
