@@ -668,6 +668,7 @@ void HU_Start(void)
 		       HU_COORDX, HU_MSGY,
 		       hu_font,
 		       HU_FONTSTART);
+
     
     switch ( logical_gamemission )
     {
@@ -1065,7 +1066,8 @@ void HU_Ticker(void)
         w_kills.y = HU_MSGY + 1 * 8 + chat_line;
         w_items.y = HU_MSGY + 2 * 8 + chat_line;
         w_scrts.y = HU_MSGY + 3 * 8 + chat_line;
-        w_ltime.y = HU_MSGY + 4 * 8 + chat_line;
+        // [crispy] do not shift level time widget if no stats widget is used
+        w_ltime.y = HU_MSGY + 4 * 8 + (crispy->automapstats ? chat_line : 0);
         w_coordx.y = HU_MSGY + 1 * 8 + chat_line;
         w_coordy.y = HU_MSGY + 2 * 8 + chat_line;
         w_coorda.y = HU_MSGY + 3 * 8 + chat_line;
@@ -1085,7 +1087,6 @@ void HU_Ticker(void)
     {
 	crispy_statsline_func_t crispy_statsline = crispy_statslines[crispy->statsformat];
 
-	if (crispy->automapstats == WIDGETS_STBAR)
 	w_kills.y = HU_TITLEY;
 
 	crispy_statsline(str, sizeof(str), "K ", plr->killcount, totalkills, extrakills);
