@@ -581,51 +581,6 @@ static void HU_SetSpecialLevelName (const char *wad, const char **name)
     }
 }
 
-static void HU_InitWidgets (const boolean shift_down)
-{
-    const int chat_line = shift_down ? 8 : 0;
-
-    HUlib_initTextLine(&w_kills,
-		       HU_TITLEX, HU_MSGY + 1 * 8 + chat_line,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_items,
-		       HU_TITLEX, HU_MSGY + 2 * 8 + chat_line,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_scrts,
-		       HU_TITLEX, HU_MSGY + 3 * 8 + chat_line,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_ltime,
-		       HU_TITLEX, HU_MSGY + 4 * 8 + chat_line,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_coordx,
-		       HU_COORDX, HU_MSGY + 1 * 8 + chat_line,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_coordy,
-		       HU_COORDX, HU_MSGY + 2 * 8 + chat_line,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_coorda,
-		       HU_COORDX, HU_MSGY + 3 * 8 + chat_line,
-		       hu_font,
-		       HU_FONTSTART);
-
-    HUlib_initTextLine(&w_fps,
-		       HU_COORDX, HU_MSGY,
-		       hu_font,
-		       HU_FONTSTART);
-}
-
 static int hu_widescreendelta;
 
 void HU_Start(void)
@@ -674,9 +629,45 @@ void HU_Start(void)
 		       hu_font,
 		       HU_FONTSTART);
 
-    // [crispy] initialize widgets, no shifting initially
-    HU_InitWidgets(false);
+    HUlib_initTextLine(&w_kills,
+		       HU_TITLEX, HU_MSGY + 1 * 8,
+		       hu_font,
+		       HU_FONTSTART);
 
+    HUlib_initTextLine(&w_items,
+		       HU_TITLEX, HU_MSGY + 2 * 8,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_scrts,
+		       HU_TITLEX, HU_MSGY + 3 * 8,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_ltime,
+		       HU_TITLEX, HU_MSGY + 4 * 8,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_coordx,
+		       HU_COORDX, HU_MSGY + 1 * 8,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_coordy,
+		       HU_COORDX, HU_MSGY + 2 * 8,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_coorda,
+		       HU_COORDX, HU_MSGY + 3 * 8,
+		       hu_font,
+		       HU_FONTSTART);
+
+    HUlib_initTextLine(&w_fps,
+		       HU_COORDX, HU_MSGY,
+		       hu_font,
+		       HU_FONTSTART);
     
     switch ( logical_gamemission )
     {
@@ -1067,8 +1058,18 @@ void HU_Ticker(void)
 	    }
 	}
     // [crispy] shift widgets one line down so chat typing line may appear
-    if (chat_on)
-    HU_InitWidgets(true);
+    if (crispy->automapstats != WIDGETS_STBAR)
+    {
+        const int chat_line = chat_on ? 8 : 0;
+
+        w_kills.y = HU_MSGY + 1 * 8 + chat_line;
+        w_items.y = HU_MSGY + 2 * 8 + chat_line;
+        w_scrts.y = HU_MSGY + 3 * 8 + chat_line;
+        w_ltime.y = HU_MSGY + 4 * 8 + chat_line;
+        w_coordx.y = HU_MSGY + 1 * 8 + chat_line;
+        w_coordy.y = HU_MSGY + 2 * 8 + chat_line;
+        w_coorda.y = HU_MSGY + 3 * 8 + chat_line;
+    }
     }
 
     if (automapactive)
@@ -1083,6 +1084,9 @@ void HU_Ticker(void)
     if (crispy->automapstats == WIDGETS_STBAR && (!automapactive || w_title.y != HU_TITLEY))
     {
 	crispy_statsline_func_t crispy_statsline = crispy_statslines[crispy->statsformat];
+
+	if (crispy->automapstats == WIDGETS_STBAR)
+	w_kills.y = HU_TITLEY;
 
 	crispy_statsline(str, sizeof(str), "K ", plr->killcount, totalkills, extrakills);
 	HUlib_clearTextLine(&w_kills);
@@ -1104,6 +1108,9 @@ void HU_Ticker(void)
     if ((crispy->automapstats & WIDGETS_ALWAYS) || (automapactive && crispy->automapstats == WIDGETS_AUTOMAP))
     {
 	crispy_statsline_func_t crispy_statsline = crispy_statslines[crispy->statsformat];
+
+	if (crispy->automapstats == WIDGETS_STBAR)
+	w_kills.y = HU_MSGY + 1 * 8;
 
 	crispy_statsline(str, sizeof(str), kills, plr->killcount, totalkills, extrakills);
 	HUlib_clearTextLine(&w_kills);
@@ -1239,8 +1246,6 @@ static void StopChatInput(void)
 {
     chat_on = false;
     I_StopTextInput();
-    // [crispy] input stopped, back widgets to standard position
-    HU_InitWidgets(false);
 }
 
 boolean HU_Responder(event_t *ev)
