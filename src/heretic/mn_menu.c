@@ -791,7 +791,7 @@ static void DrawFilesMenu(void)
 }
 
 // [crispy] support additional pages of savegames
-static void DrawSaveLoadBottomLine(Menu_t * menu)
+static void DrawSaveLoadBottomLine(const Menu_t *menu)
 {
     char pagestr[16];
     static short width;
