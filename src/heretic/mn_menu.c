@@ -912,9 +912,6 @@ static void DrawFileSlots(Menu_t * menu)
         }
         y += ITEM_HEIGHT;
     }
-    // [crispy] refresh the status bar and border
-    SB_state = -1;
-    BorderNeedRefresh = true;
 }
 
 //---------------------------------------------------------------------------
