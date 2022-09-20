@@ -177,9 +177,9 @@ boolean askforquit;
 static int typeofask;
 static boolean FileMenuKeySteal;
 static boolean slottextloaded;
-static char SlotText[8][SLOTTEXTLEN + 2];
+static char SlotText[SAVES_PER_PAGE][SLOTTEXTLEN + 2];
 static char oldSlotText[SLOTTEXTLEN + 2];
-static int SlotStatus[8];
+static int SlotStatus[SAVES_PER_PAGE];
 static int slotptr;
 static int currentSlot;
 static int quicksave;
@@ -869,7 +869,7 @@ void MN_LoadSlotText(void)
     int i;
     char *filename;
 
-    for (i = 0; i < 8; i++)
+    for (i = 0; i < SAVES_PER_PAGE; i++)
     {
         int retval;
         filename = SV_Filename(i);
