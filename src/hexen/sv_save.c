@@ -132,7 +132,6 @@ static void SV_WriteByte(byte val);
 static void SV_WriteWord(unsigned short val);
 static void SV_WriteLong(unsigned int val);
 static void SV_WritePtr(void *ptr);
-static void ClearSaveSlot(int slot);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -1924,11 +1923,17 @@ static void StreamOut_floorWaggle_t(floorWaggle_t *str)
 //
 //==========================================================================
 
-static void SaveGame(int slot, const char *description)
+void SV_SaveGame(int slot, const char *description)
 {
     char fileName[100];
     char versionText[HXS_VERSION_TEXT_LENGTH];
     unsigned int i;
+
+    // [crispy] get expanded save slot number
+    if (slot != BASE_SLOT && slot != REBORN_SLOT)
+    {
+        slot += savepage * 10;
+    }
 
     // Open the output file
     M_snprintf(fileName, sizeof(fileName), "%shex%d.hxs", SavePath, BASE_SLOT);
@@ -1972,16 +1977,10 @@ static void SaveGame(int slot, const char *description)
     SV_SaveMap(true);           // true = save player info
 
     // Clear all save files at destination slot
-    ClearSaveSlot(slot);
+    SV_ClearSaveSlot(slot);
 
     // Copy base slot to destination slot
     CopySaveSlot(BASE_SLOT, slot);
-}
-
-
-void SV_SaveGame(int slot, const char *description)
-{
-    SaveGame(slot + savepage * 10, description);
 }
 
 //==========================================================================
@@ -2031,7 +2030,7 @@ void SV_SaveMap(boolean savePlayers)
 //
 //==========================================================================
 
-static void LoadGame(int slot)
+void SV_LoadGame(int slot)
 {
     int i;
     char fileName[100];
@@ -2039,10 +2038,16 @@ static void LoadGame(int slot)
     player_t playerBackup[MAXPLAYERS];
     mobj_t *mobj;
 
+    // [crispy] get expanded save slot number
+    if (slot != BASE_SLOT && slot != REBORN_SLOT)
+    {
+        slot += savepage * 10;
+    }
+
     // Copy all needed save files to the base slot
     if (slot != BASE_SLOT)
     {
-        ClearSaveSlot(BASE_SLOT);
+        SV_ClearSaveSlot(BASE_SLOT);
         CopySaveSlot(slot, BASE_SLOT);
     }
 
@@ -2118,18 +2123,6 @@ static void LoadGame(int slot)
     }
 }
 
-void SV_LoadGame(int slot)
-{
-    if (slot == REBORN_SLOT || slot == BASE_SLOT)
-    {
-        LoadGame(slot);
-    }
-    else
-    {
-        LoadGame(slot + savepage * 10);
-    }
-}
-
 //==========================================================================
 //
 // SV_UpdateRebornSlot
@@ -2140,7 +2133,7 @@ void SV_LoadGame(int slot)
 
 void SV_UpdateRebornSlot(void)
 {
-    ClearSaveSlot(REBORN_SLOT);
+    SV_ClearSaveSlot(REBORN_SLOT);
     CopySaveSlot(BASE_SLOT, REBORN_SLOT);
 }
 
@@ -2152,7 +2145,7 @@ void SV_UpdateRebornSlot(void)
 
 void SV_ClearRebornSlot(void)
 {
-    ClearSaveSlot(REBORN_SLOT);
+    SV_ClearSaveSlot(REBORN_SLOT);
 }
 
 //==========================================================================
@@ -2186,7 +2179,7 @@ void SV_MapTeleport(int map, int position)
         }
         else
         {                       // Entering new cluster - clear base slot
-            ClearSaveSlot(BASE_SLOT);
+            SV_ClearSaveSlot(BASE_SLOT);
         }
     }
 
@@ -2331,7 +2324,7 @@ void SV_MapTeleport(int map, int position)
     // For single play, save immediately into the reborn slot
     if (!netgame)
     {
-        SaveGame(REBORN_SLOT, REBORN_DESCRIPTION);
+        SV_SaveGame(REBORN_SLOT, REBORN_DESCRIPTION);
     }
 }
 
@@ -2413,7 +2406,7 @@ void SV_LoadMap(void)
 
 void SV_InitBaseSlot(void)
 {
-    ClearSaveSlot(BASE_SLOT);
+    SV_ClearSaveSlot(BASE_SLOT);
 }
 
 //==========================================================================
@@ -3219,10 +3212,16 @@ static void AssertSegment(gameArchiveSegment_t segType)
 //
 //==========================================================================
 
-static void ClearSaveSlot(int slot)
+void SV_ClearSaveSlot(int slot)
 {
     int i;
     char fileName[100];
+
+    // [crispy] get expanded save slot number
+    if (slot != BASE_SLOT && slot != REBORN_SLOT)
+    {
+        slot += savepage * 10;
+    }
 
     for (i = 0; i < MAX_MAPS; i++)
     {
@@ -3232,11 +3231,6 @@ static void ClearSaveSlot(int slot)
     }
     M_snprintf(fileName, sizeof(fileName), "%shex%d.hxs", SavePath, slot);
     M_remove(fileName);
-}
-
-void SV_ClearSaveSlot(int slot)
-{
-    ClearSaveSlot(slot + savepage * 10);
 }
 
 //==========================================================================
