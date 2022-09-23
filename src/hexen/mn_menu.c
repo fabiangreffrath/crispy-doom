@@ -1068,7 +1068,7 @@ static void SCDeleteGame(int option)
 
 static const char *const class_str[NUMCLASSES] =
 {
-    "FIGHTER",
+    "FIGHTR",
     "CLERIC",
     "MAGE",
     "PIG",
