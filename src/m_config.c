@@ -2116,7 +2116,7 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(crispy_crosshairtype),
 
     //!
-    // @game doom
+    // @game doom heretic
     //
     // Set the default difficulty when starting a new game
     //
