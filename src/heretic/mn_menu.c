@@ -1346,6 +1346,20 @@ static boolean SCInfo(int option)
 //
 //---------------------------------------------------------------------------
 
+static void ChangeSettingEnum(int *setting, int option, int num_values)
+{
+    if (option == RIGHT_DIR)
+    {
+        *setting += 1;
+    }
+    else
+    {
+        *setting += num_values - 1;
+    }
+
+    *setting %= num_values;
+}
+
 static void CrispyHiresHook(void)
 {
     crispy->hires = !crispy->hires;
@@ -1371,25 +1385,23 @@ static boolean CrispyHires(int option)
     return true;
 }
 
+static int hookoption;
 static void CrispyToggleWidescreenHook (void)
 {
-    crispy->widescreen = (crispy->widescreen + 1) % NUM_RATIOS;
-
-    // [crispy] no need to re-init when switching from wide to compact
-    {
-	// [crispy] re-initialize framebuffers, textures and renderer
-	I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
-	// [crispy] re-calculate framebuffer coordinates
-	R_ExecuteSetViewSize();
-	// [crispy] re-calculate automap coordinates
-        AM_LevelInit(true);
-        if (automapactive) {
-            AM_initVariables();
-        }
+    ChangeSettingEnum(&crispy->widescreen, hookoption, NUM_RATIOS);
+    // [crispy] re-initialize framebuffers, textures and renderer
+    I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
+    // [crispy] re-calculate framebuffer coordinates
+    R_ExecuteSetViewSize();
+    // [crispy] re-calculate automap coordinates
+    AM_LevelInit(true);
+    if (automapactive) {
+        AM_initVariables();
     }
 }
 static boolean CrispyToggleWidescreen(int option)
 {
+    hookoption = option;
     crispy->post_rendering_hook = CrispyToggleWidescreenHook;
 
     return true;
@@ -1421,37 +1433,39 @@ static boolean CrispyVsync(int option)
 
 static boolean CrispyBrightmaps(int option)
 {
-    crispy->brightmaps = (crispy->brightmaps + 1) % NUM_BRIGHTMAPS;
+    ChangeSettingEnum(&crispy->brightmaps, option, NUM_BRIGHTMAPS);
     return true;
 }
 
 static boolean CrispyAutomapStats(int option)
 {
-    crispy->automapstats = (crispy->automapstats + 1) % (NUM_WIDGETS);
+    ChangeSettingEnum(&crispy->automapstats, option, NUM_WIDGETS);
     return true;
 }
 
 static boolean CrispyLevelTime(int option)
 {
-    crispy->leveltime = (crispy->leveltime + 1) % (NUM_WIDGETS - 1);
+    // disable "status bar" setting
+    ChangeSettingEnum(&crispy->leveltime, option, NUM_WIDGETS - 1);
     return true;
 }
 
 static boolean CrispyPlayerCoords(int option)
 {
-    crispy->playercoords = (crispy->playercoords + 1) % (NUM_WIDGETS - 2); // [crispy] disable "always" setting
+    // disable "always" and "status bar" setting
+    ChangeSettingEnum(&crispy->playercoords, option, NUM_WIDGETS - 2);
     return true;
 }
 
 static boolean CrispySecretMessage(int option)
 {
-    crispy->secretmessage = (crispy->secretmessage + 1) % NUM_SECRETMESSAGE; // [crispy] enable secret message
+    ChangeSettingEnum(&crispy->secretmessage, option, NUM_SECRETMESSAGE);
     return true;
 }
 
 static boolean CrispyFreelook(int option)
 {
-    crispy->freelook_hh = (crispy->freelook_hh + 1) % NUM_FREELOOKS_HH;
+    ChangeSettingEnum(&crispy->freelook_hh, option, NUM_FREELOOKS_HH);
     return true;
 }
 
@@ -1463,17 +1477,8 @@ static boolean CrispyMouselook(int option)
 
 static boolean CrispyDefaultskill(int option)
 {
-    if (option == RIGHT_DIR)
-    {
-        crispy->defaultskill = (crispy->defaultskill + 1) % NUM_SKILLS;
-    }
-    else
-    {
-        crispy->defaultskill = (crispy->defaultskill + NUM_SKILLS - 1) % NUM_SKILLS;
-    }
-
+    ChangeSettingEnum(&crispy->defaultskill, option, NUM_SKILLS);
     SkillMenu.oldItPos = (crispy->defaultskill + SKILL_HMP) % NUM_SKILLS;
-
     return true;
 }
 
