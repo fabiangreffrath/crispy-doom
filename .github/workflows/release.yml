@@ -61,7 +61,7 @@ jobs:
           make
 
       - name: Release
-        uses: ncipollo/release-action@v1.11.1
+        uses: ncipollo/release-action@v1
         with:
           name: Crispy Doom ${{ env.VERSION }}
           bodyFile: CHANGELOG.md
