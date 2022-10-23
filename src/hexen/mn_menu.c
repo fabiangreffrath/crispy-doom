@@ -91,6 +91,13 @@ typedef struct
     MenuType_t prevMenu;
 } Menu_t;
 
+// [crispy]
+typedef struct
+{
+    int value;
+    const char *name;
+} multiitem_t;
+
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 extern void I_ReInitGraphics(int reinit); // [crispy]
 extern void R_ExecuteSetViewSize(void); // [crispy]
@@ -343,6 +350,38 @@ static Menu_t CrispnessMenu = {
     13, CrispnessItems,
     0,
     MENU_OPTIONS
+};
+
+static multiitem_t multiitem_brightmaps[NUM_BRIGHTMAPS] =
+{
+    {BRIGHTMAPS_OFF, "NONE"},
+    {BRIGHTMAPS_TEXTURES, "WALLS"},
+    {BRIGHTMAPS_SPRITES, "ITEMS"},
+    {BRIGHTMAPS_BOTH, "BOTH"},
+};
+
+static multiitem_t multiitem_widescreen[NUM_RATIOS] =
+{
+    {RATIO_ORIG, "ORIGINAL"},
+    {RATIO_MATCH_SCREEN, "MATCH SCREEN"},
+    {RATIO_16_10, "16:10"},
+    {RATIO_16_9, "16:9"},
+    {RATIO_21_9, "21:9"},
+};
+
+static multiitem_t multiitem_freelook_hh[NUM_FREELOOKS_HH] =
+{
+    {FREELOOK_HH_LOCK, "LOCK"},
+    {FREELOOK_HH_SPRING, "SPRING"},
+};
+
+static multiitem_t multiitem_difficulties[NUM_SKILLS] =
+{
+    {SKILL_HMP, "MEDIUM"},
+    {SKILL_UV, "HARD"},
+    {SKILL_NIGHTMARE, "VERY HARD"},
+    {SKILL_ITYTD, "VERY EASY"},
+    {SKILL_HNTR, "EASY"},
 };
 
 static Menu_t *Menus[] = {
@@ -2281,10 +2320,27 @@ static void M_DrawCrispnessBackground(void)
     SB_state = -1;
 }
 
+static void DrawCrispnessSubheader(const char *name, int y)
+{
+    dp_translation = cr[CR_GREEN];
+    MN_DrTextA(name, 63, y);
+}
+
+static void DrawCrispnessItem(boolean item, int x, int y)
+{
+    dp_translation = item ? cr[CR_GOLD] : cr[CR_GRAY];
+    MN_DrTextA(item ? "ON" : "OFF", x, y);
+}
+
+static void DrawCrispnessMultiItem(int item, int x, int y, const multiitem_t *multi)
+{
+    dp_translation = item ? cr[CR_GOLD] : cr[CR_GRAY];
+    MN_DrTextA(multi[item].name, x, y);
+}
+
 static void DrawCrispnessMenu(void)
 {
     static const char *title;
-    int skill;
 
     // Background
     M_DrawCrispnessBackground();
@@ -2293,51 +2349,38 @@ static void DrawCrispnessMenu(void)
     title = "CRISPNESS";
     MN_DrTextB(title, 160 - MN_TextBWidth(title) / 2, 6);
 
-    // Subheaders
-    dp_translation = cr[CR_GREEN];
-    MN_DrTextA("RENDERING", 63, 30);
-    MN_DrTextA("VISUAL", 63, 100);
-    MN_DrTextA("TACTICAL", 63, 130);
-    dp_translation = cr[CR_GOLD];
+    DrawCrispnessSubheader("RENDERING", 30);
 
     // Hires rendering
-    MN_DrTextA(crispy->hires ? "ON" : "OFF", 254, 40);
+    DrawCrispnessItem(crispy->hires, 254, 40);
 
     // Widescreen
-    MN_DrTextA((crispy->widescreen == RATIO_ORIG || aspect_ratio_correct != 1) ? "ORIGINAL" :
-               crispy->widescreen == RATIO_MATCH_SCREEN ? "MATCH SCREEN" :
-               crispy->widescreen == RATIO_16_10 ? "16:10" :
-               crispy->widescreen == RATIO_16_9 ? "16:9" :
-                                                  "21:9", 164, 50);
+    DrawCrispnessMultiItem(crispy->widescreen, 164, 50, multiitem_widescreen);
 
     // Smooth pixel scaling
-    MN_DrTextA(crispy->smoothscaling ? "ON" : "OFF", 216, 60);
+    DrawCrispnessItem(crispy->smoothscaling, 216, 60);
 
     // Uncapped framerate
-    MN_DrTextA(crispy->uncapped ? "ON" : "OFF", 217, 70);
+    DrawCrispnessItem(crispy->uncapped, 217, 70);
 
     // Vsync
-    MN_DrTextA(crispy->vsync ? "ON" : "OFF", 167, 80);
+    DrawCrispnessItem(crispy->vsync, 167, 80);
+
+    DrawCrispnessSubheader("VISUAL", 100);
 
     // Brightmaps
-    MN_DrTextA(crispy->brightmaps == BRIGHTMAPS_OFF ? "NONE" :
-               crispy->brightmaps == BRIGHTMAPS_TEXTURES ? "WALLS" :
-               crispy->brightmaps == BRIGHTMAPS_SPRITES ? "ITEMS" :
-                                                         "BOTH", 150, 110);
+    DrawCrispnessMultiItem(crispy->brightmaps, 150, 110, multiitem_brightmaps);
+
+    DrawCrispnessSubheader("TACTICAL", 130);
 
     // Freelook
-    MN_DrTextA(crispy->freelook_hh == FREELOOK_HH_LOCK ? "LOCK" : "SPRING", 175, 140);
+    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 140, multiitem_freelook_hh);
 
     // Mouselook
-    MN_DrTextA(crispy->mouselook ? "ON" : "OFF", 220, 150);
+    DrawCrispnessItem(crispy->mouselook, 220, 150);
 
     // Default difficulty
-    skill = (crispy->defaultskill + SKILL_HMP) % NUM_SKILLS;
-    MN_DrTextA(skill == SKILL_ITYTD ? "VERY EASY" :
-               skill == SKILL_HNTR ? "EASY" :
-               skill == SKILL_HMP ? "MEDIUM" :
-               skill == SKILL_UV ? "HARD" :
-                                    "VERY HARD" , 200, 160);
+    DrawCrispnessMultiItem(crispy->defaultskill, 200, 160, multiitem_difficulties);
 
     dp_translation = NULL;
 }
