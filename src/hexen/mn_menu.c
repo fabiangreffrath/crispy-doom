@@ -1355,6 +1355,20 @@ static void SCInfo(int option)
 //
 //---------------------------------------------------------------------------
 
+static void ChangeSettingEnum(int *setting, int option, int num_values)
+{
+    if (option == RIGHT_DIR)
+    {
+        *setting += 1;
+    }
+    else
+    {
+        *setting += num_values - 1;
+    }
+
+    *setting %= num_values;
+}
+
 static void CrispyHiresHook(void)
 {
     crispy->hires = !crispy->hires;
@@ -1378,25 +1392,23 @@ static void CrispyHires(int option)
     crispy->post_rendering_hook = CrispyHiresHook;
 }
 
+static int hookoption;
 static void CrispyToggleWidescreenHook (void)
 {
-    crispy->widescreen = (crispy->widescreen + 1) % NUM_RATIOS;
-
-    // [crispy] no need to re-init when switching from wide to compact
-    {
-	// [crispy] re-initialize framebuffers, textures and renderer
-	I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
-	// [crispy] re-calculate framebuffer coordinates
-	R_ExecuteSetViewSize();
-	// [crispy] re-calculate automap coordinates
-        AM_LevelInit(true);
-        if (automapactive) {
-            AM_initVariables();
-        }
+    ChangeSettingEnum(&crispy->widescreen, hookoption, NUM_RATIOS);
+    // [crispy] re-initialize framebuffers, textures and renderer
+    I_ReInitGraphics(REINIT_FRAMEBUFFERS | REINIT_TEXTURES | REINIT_ASPECTRATIO);
+    // [crispy] re-calculate framebuffer coordinates
+    R_ExecuteSetViewSize();
+    // [crispy] re-calculate automap coordinates
+    AM_LevelInit(true);
+    if (automapactive) {
+        AM_initVariables();
     }
 }
 static void CrispyToggleWidescreen(int option)
 {
+    hookoption = option;
     crispy->post_rendering_hook = CrispyToggleWidescreenHook;
 }
 
@@ -1423,12 +1435,12 @@ static void CrispyVsync(int option)
 
 static void CrispyBrightmaps(int option)
 {
-    crispy->brightmaps = (crispy->brightmaps + 1) % NUM_BRIGHTMAPS;
+    ChangeSettingEnum(&crispy->brightmaps, option, NUM_BRIGHTMAPS);
 }
 
 static void CrispyFreelook(int option)
 {
-    crispy->freelook_hh = (crispy->freelook_hh + 1) % NUM_FREELOOKS_HH;
+    ChangeSettingEnum(&crispy->freelook_hh, option, NUM_FREELOOKS_HH);
 }
 
 static void CrispyMouselook(int option)
@@ -1438,15 +1450,7 @@ static void CrispyMouselook(int option)
 
 static void CrispyDefaultskill(int option)
 {
-    if (option == RIGHT_DIR)
-    {
-        crispy->defaultskill = (crispy->defaultskill + 1) % NUM_SKILLS;
-    }
-    else
-    {
-        crispy->defaultskill = (crispy->defaultskill + NUM_SKILLS - 1) % NUM_SKILLS;
-    }
-
+    ChangeSettingEnum(&crispy->defaultskill, option, NUM_SKILLS);
     SkillMenu.oldItPos = (crispy->defaultskill + SKILL_HMP) % NUM_SKILLS;
 }
 
