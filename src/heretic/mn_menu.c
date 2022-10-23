@@ -1545,7 +1545,7 @@ static boolean CrispyNextPage(int option)
 
 static boolean CrispyPrevPage(int option)
 {
-    crispnessmenupage--;
+    crispnessmenupage += NUM_CRISPNESS_MENUS - 1;
     crispnessmenupage %= NUM_CRISPNESS_MENUS;
     return true;
 }
@@ -2060,10 +2060,15 @@ boolean MN_Responder(event_t * event)
             }
             return (true);
         }
-        // [crispy] next/prev savegame page
+        // [crispy] next/prev Crispness menu or savegame page
         else if (key == KEY_PGUP)
         {
-            if (CurrentMenu == &LoadMenu || CurrentMenu == &SaveMenu)
+            if (CurrentMenu->drawFunc == DrawCrispness)
+            {
+                CrispyPrevPage(0);
+                S_StartSound(NULL, sfx_switch);
+            }
+            else if (CurrentMenu == &LoadMenu || CurrentMenu == &SaveMenu)
             {
                 if (savepage > 0)
                 {
@@ -2077,7 +2082,12 @@ boolean MN_Responder(event_t * event)
         }
         else if (key == KEY_PGDN)
         {
-            if (CurrentMenu == &LoadMenu || CurrentMenu == &SaveMenu)
+            if (CurrentMenu->drawFunc == DrawCrispness)
+            {
+                CrispyNextPage(0);
+                S_StartSound(NULL, sfx_switch);
+            }
+            else if (CurrentMenu == &LoadMenu || CurrentMenu == &SaveMenu)
             {
                 if (savepage < SAVEPAGE_MAX)
                 {
