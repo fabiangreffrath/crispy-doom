@@ -44,6 +44,7 @@ extern multiitem_t multiitem_translucency[NUM_TRANSLUCENCY];
 extern multiitem_t multiitem_widgets[NUM_WIDGETS];
 extern multiitem_t multiitem_widescreen[NUM_RATIOS];
 extern multiitem_t multiitem_difficulties[NUM_SKILLS];
+extern multiitem_t multiitem_caps[NUM_CAPS];
 
 extern void M_CrispyToggleAutomapstats(int choice);
 extern void M_CrispyToggleBobfactor(int choice);
