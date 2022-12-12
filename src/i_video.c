@@ -894,10 +894,29 @@ void I_FinishUpdate (void)
 
     SDL_RenderPresent(renderer);
 
-    // [AM] Figure out how far into the current tic we're in as a fixed_t.
     if (crispy->uncapped)
     {
-	fractionaltic = I_GetFracRealTime();
+        int framecap = crispy_framecaps[crispy->uncapped];
+
+        // Limit framerate
+        if (framecap)
+        {
+            static uint64_t last_frame;
+            uint64_t current_frame;
+
+            current_frame = (I_GetTimeMS() * framecap) / 1000;
+
+            while (current_frame == last_frame)
+            {
+                I_Sleep(1);
+                current_frame = (I_GetTimeMS() * framecap) / 1000;
+            }
+
+            last_frame = current_frame;
+        }
+
+        // [AM] Figure out how far into the current tic we're in as a fixed_t.
+        fractionaltic = I_GetFracRealTime();
     }
 
     // Restore background and undo the disk indicator, if it was drawn.
