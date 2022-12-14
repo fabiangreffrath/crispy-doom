@@ -50,18 +50,3 @@ void CheckCrispySingleplayer (boolean singleplayer)
 		critical = &critical_s;
 	}
 }
-
-int crispy_framecaps[NUM_CAPS] = {
-    0,
-    0,
-    60,
-    75,
-    120,
-    144,
-    150,
-    180,
-    225,
-    240,
-    288,
-    300,
-};

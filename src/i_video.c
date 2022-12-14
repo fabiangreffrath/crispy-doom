@@ -896,20 +896,18 @@ void I_FinishUpdate (void)
 
     if (crispy->uncapped)
     {
-        int framecap = crispy_framecaps[crispy->uncapped];
-
         // Limit framerate
-        if (framecap)
+        if (crispy->fpslimit > 0)
         {
             static uint64_t last_frame;
             uint64_t current_frame;
 
-            current_frame = (I_GetTimeMS() * framecap) / 1000;
+            current_frame = (I_GetTimeMS() * crispy->fpslimit) / 1000;
 
             while (current_frame == last_frame)
             {
                 I_Sleep(1);
-                current_frame = (I_GetTimeMS() * framecap) / 1000;
+                current_frame = (I_GetTimeMS() * crispy->fpslimit) / 1000;
             }
 
             last_frame = current_frame;

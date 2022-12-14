@@ -55,6 +55,7 @@ typedef struct
 	int demobar;
 	int extautomap;
 	int flipcorpses;
+	int fpslimit;
 	int freeaim;
 	int freelook;
 	int freelook_hh;
@@ -266,24 +267,5 @@ enum
     RATIO_21_9,
     NUM_RATIOS
 };
-
-enum
-{
-    CAP_35,
-    CAP_NONE,
-    CAP_60,
-    CAP_75,
-    CAP_120,
-    CAP_144,
-    CAP_150,
-    CAP_180,
-    CAP_225,
-    CAP_240,
-    CAP_288,
-    CAP_300,
-    NUM_CAPS
-};
-
-extern int crispy_framecaps[NUM_CAPS];
 
 #endif
