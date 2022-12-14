@@ -164,22 +164,6 @@ multiitem_t multiitem_widescreen[NUM_RATIOS] =
     {RATIO_21_9, "21:9"},
 };
 
-multiitem_t multiitem_caps[NUM_CAPS] =
-{
-    {CAP_35, "35"},
-    {CAP_NONE, "Uncapped"},
-    {CAP_60, "60"},
-    {CAP_75, "75"},
-    {CAP_120, "120"},
-    {CAP_144, "144"},
-    {CAP_150, "150"},
-    {CAP_180, "180"},
-    {CAP_180, "225"},
-    {CAP_240, "240"},
-    {CAP_288, "288"},
-    {CAP_300, "300"},
-};
-
 extern void AM_LevelInit (boolean reinit);
 extern void EnableLoadingDisk (void);
 extern void P_SegLengths (boolean contrast_only);
@@ -544,7 +528,7 @@ void M_CrispyToggleUncapped(int choice)
 {
     choice = 0;
 
-    crispy->uncapped = (crispy->uncapped + 1) % NUM_CAPS;
+    crispy->uncapped = !crispy->uncapped;
 }
 
 void M_CrispyToggleVsyncHook (void)
