@@ -226,6 +226,9 @@ static const unsigned int *icon_data;
 static int icon_w;
 static int icon_h;
 
+// If true, we limit the framerate when running uncapped.
+static boolean limit_framerate = false;
+
 static boolean MouseShouldBeGrabbed()
 {
     // never grab the mouse when in screensaver mode
@@ -897,7 +900,7 @@ void I_FinishUpdate (void)
     if (crispy->uncapped)
     {
         // Limit framerate
-        if (crispy->fpslimit > 0)
+        if (limit_framerate)
         {
             static uint64_t last_frame;
             uint64_t current_frame;
@@ -1426,10 +1429,14 @@ static void SetVideoMode(void)
     // Turn on vsync if we aren't in a -timedemo
     if (!singletics && mode.refresh_rate > 0)
     {
-      if (crispy->vsync) // [crispy] uncapped vsync
-      {
-        renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
-      }
+        if (crispy->vsync) // [crispy] uncapped vsync
+        {
+            renderer_flags |= SDL_RENDERER_PRESENTVSYNC;
+        }
+        else if (crispy->fpslimit > 0)
+        {
+            limit_framerate = true;
+        }
     }
 
     if (force_software_renderer)
@@ -1437,6 +1444,7 @@ static void SetVideoMode(void)
         renderer_flags |= SDL_RENDERER_SOFTWARE;
         renderer_flags &= ~SDL_RENDERER_PRESENTVSYNC;
         crispy->vsync = false;
+        limit_framerate = (crispy->fpslimit > 0);
     }
 
     if (renderer != NULL)
@@ -1810,10 +1818,12 @@ void I_ReInitGraphics (int reinit)
 		if (crispy->vsync && !(flags & SDL_RENDERER_SOFTWARE))
 		{
 			flags |= SDL_RENDERER_PRESENTVSYNC;
+			limit_framerate = false;
 		}
 		else
 		{
 			flags &= ~SDL_RENDERER_PRESENTVSYNC;
+			limit_framerate = (crispy->fpslimit > 0);
 		}
 
 		SDL_DestroyRenderer(renderer);
