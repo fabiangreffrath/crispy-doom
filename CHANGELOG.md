@@ -6,7 +6,7 @@
 * Add framerate limiting through crispy_fpslimit config variable (@mikeday0).
 
 **Bug Fixes**
-* Fix crosshair position shifting when changing resolution.
+* Fix crosshair shifting position after changing resolution.
 * Fix Automap line jitter in low res mode (@mikeday0).
 * Widescreen rendering now requires aspect ratio correction.
 * Fix widgets obscuring chat line (@JNechaevsky).
@@ -16,7 +16,7 @@
 * Fix bogus linedef numbers in P_LoadSegs warning (thanks @tpoppins).
 
 **Crispy Doom**
-* Add support for loading Rekkr as IWAD. (@SoDOOManiac)
+* Add support for loading REKKR as IWAD (@SoDOOManiac).
 * Do not show the "WAD: map" Automap widget for IWAD levels.
 * Improve brightmap for COMPUTE1 texture (@JNechaevsky).
 * Interpolate weapon bobbing (@rrPKrr).
