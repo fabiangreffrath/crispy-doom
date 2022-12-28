@@ -2379,8 +2379,12 @@ static void G_AddDemoFooter(void)
         return;
     }
 
-    tmp = M_StringJoin(PACKAGE_SHORTNAME, " Heretic ", PACKAGE_VERSION,
-        DEMO_FOOTER_SEPARATOR, "-iwad \"", M_BaseName(filenames[0]), "\"", NULL);
+    tmp = M_StringReplace(PACKAGE_STRING, "Doom", "Heretic");
+    mem_fputs(tmp, stream);
+    free(tmp);
+
+    tmp = M_StringJoin(DEMO_FOOTER_SEPARATOR, "-iwad \"",
+        M_BaseName(filenames[0]), "\"", NULL);
     mem_fputs(tmp, stream);
     free(tmp);
 
