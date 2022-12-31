@@ -182,12 +182,6 @@ static boolean I_SDL_InitMusic(void)
 {
     boolean fluidsynth_sf_is_set = false;
 
-    // [crispy] Don't run initialization more than once
-    if (music_initialized)
-    {
-        return true;
-    }
-
     // If SDL_mixer is not initialized, we have to initialize it
     // and have the responsibility to shut it down later on.
 
