@@ -590,6 +590,7 @@ typedef struct player_s
 #define CF_NOCLIP		1
 #define	CF_GODMODE		2
 #define	CF_NOMOMENTUM	4       // not really a cheat, just a debug aid
+#define CF_SHOWFPS      8       // [crispy] "Cheat" to show FPS
 
 #define ORIGSBARHEIGHT          39 // [crispy]
 #define	SBARHEIGHT	(ORIGSBARHEIGHT << crispy->hires)      // status bar height at bottom of screen
