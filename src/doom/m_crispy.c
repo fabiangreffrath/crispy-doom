@@ -334,6 +334,25 @@ static void M_CrispyToggleSkyHook (void)
     R_InitSkyMap();
 }
 
+void M_CrispyToggleFpsLimit(int choice)
+{
+    if (!crispy->uncapped)
+    {
+        return;
+    }
+
+    crispy->fpslimit += choice ? 1 : -1;
+
+    if (crispy->fpslimit < CRISPY_FPSLIMIT_MIN)
+    {
+        crispy->fpslimit = choice ? CRISPY_FPSLIMIT_MIN : 0;
+    }
+    else if (crispy->fpslimit > CRISPY_FPSLIMIT_MAX)
+    {
+        crispy->fpslimit = CRISPY_FPSLIMIT_MAX;
+    }
+}
+
 void M_CrispyToggleFreelook(int choice)
 {
     ChangeSettingEnum(&crispy->freelook, choice, NUM_FREELOOKS);

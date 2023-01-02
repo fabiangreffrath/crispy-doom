@@ -431,6 +431,7 @@ enum
     crispness_hires,
     crispness_widescreen,
     crispness_uncapped,
+    crispness_fpslimit,
     crispness_vsync,
     crispness_smoothscaling,
     crispness_sep_rendering_,
@@ -455,6 +456,7 @@ static menuitem_t Crispness1Menu[]=
     {2,"",	M_CrispyToggleHires,'h'},
     {2,"",	M_CrispyToggleWidescreen,'w'},
     {2,"",	M_CrispyToggleUncapped,'u'},
+    {2,"",	M_CrispyToggleFpsLimit,'f'},
     {2,"",	M_CrispyToggleVsync,'v'},
     {2,"",	M_CrispyToggleSmoothScaling,'s'},
     {-1,"",0,'\0'},
@@ -476,7 +478,7 @@ static menu_t  Crispness1Def =
     &OptionsDef,
     Crispness1Menu,
     M_DrawCrispness1,
-    48,28,
+    48,18,
     1
 };
 
@@ -531,7 +533,7 @@ static menu_t  Crispness2Def =
     &OptionsDef,
     Crispness2Menu,
     M_DrawCrispness2,
-    48,28,
+    48,18,
     1
 };
 
@@ -586,7 +588,7 @@ static menu_t  Crispness3Def =
     &OptionsDef,
     Crispness3Menu,
     M_DrawCrispness3,
-    48,28,
+    48,18,
     1
 };
 
@@ -634,7 +636,7 @@ static menu_t  Crispness4Def =
     &OptionsDef,
     Crispness4Menu,
     M_DrawCrispness4,
-    48,28,
+    48,18,
     1
 };
 
@@ -1456,7 +1458,7 @@ static void M_DrawCrispnessHeader(const char *item)
 {
     M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
                "%s%s", crstr[CR_GOLD], item);
-    M_WriteText(ORIGWIDTH/2 - M_StringWidth(item) / 2, 12, crispy_menu_text);
+    M_WriteText(ORIGWIDTH/2 - M_StringWidth(item) / 2, 2, crispy_menu_text);
 }
 
 static void M_DrawCrispnessSeparator(int y, const char *item)
@@ -1484,6 +1486,17 @@ static void M_DrawCrispnessMultiItem(int y, const char *item, multiitem_t *multi
     M_WriteText(currentMenu->x, currentMenu->y + CRISPY_LINEHEIGHT * y, crispy_menu_text);
 }
 
+static void M_DrawCrispnessNumericItem(int y, const char *item, int feat, const char *zero, boolean cond, const char *disabled)
+{
+    char number[6];
+    M_snprintf(number, 6, "%d", feat);
+
+    M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
+               "%s%s: %s%s", cond ? crstr[CR_NONE] : crstr[CR_DARK], item,
+               cond ? (feat ? crstr[CR_GREEN] : crstr[CR_DARK]) : crstr[CR_DARK],
+               cond ? (feat ? number : zero) : disabled);
+    M_WriteText(currentMenu->x, currentMenu->y + CRISPY_LINEHEIGHT * y, crispy_menu_text);
+}
 static void M_DrawCrispnessGoto(int y, const char *item)
 {
     M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
@@ -1501,6 +1514,7 @@ static void M_DrawCrispness1(void)
     M_DrawCrispnessItem(crispness_hires, "High Resolution Rendering", crispy->hires, true);
     M_DrawCrispnessMultiItem(crispness_widescreen, "Widescreen Aspect Ratio", multiitem_widescreen, crispy->widescreen, aspect_ratio_correct == 1);
     M_DrawCrispnessItem(crispness_uncapped, "Uncapped Framerate", crispy->uncapped, true);
+    M_DrawCrispnessNumericItem(crispness_fpslimit, "FPS Limit", crispy->fpslimit, "None", crispy->uncapped, "35");
     M_DrawCrispnessItem(crispness_vsync, "Enable VSync", crispy->vsync, !force_software_renderer);
     M_DrawCrispnessItem(crispness_smoothscaling, "Smooth Pixel Scaling", crispy->smoothscaling, !force_software_renderer);
 
