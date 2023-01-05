@@ -1458,7 +1458,7 @@ static void M_DrawCrispnessHeader(const char *item)
 {
     M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
                "%s%s", crstr[CR_GOLD], item);
-    M_WriteText(ORIGWIDTH/2 - M_StringWidth(item) / 2, 2, crispy_menu_text);
+    M_WriteText(ORIGWIDTH/2 - M_StringWidth(item) / 2, 6, crispy_menu_text);
 }
 
 static void M_DrawCrispnessSeparator(int y, const char *item)
