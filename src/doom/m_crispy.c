@@ -339,7 +339,6 @@ void M_CrispyToggleFpsLimit(int choice)
 {
     if (!crispy->uncapped)
     {
-        numeric_enter = false;
         return;
     }
 
