@@ -60,6 +60,8 @@ extern int screenblocks;
 extern boolean inhelpscreens;
 extern int showMessages;
 
-extern boolean numeric_enter; // [crispy]
+// [crispy] Numeric entry
+extern boolean numeric_enter;
+extern int numeric_entry;
 
 #endif

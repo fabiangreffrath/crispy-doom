@@ -125,7 +125,8 @@ char			saveOldString[SAVESTRINGSIZE];
 // [crispy] for entering numeric values
 #define NUMERIC_ENTRY_NUMDIGITS 3
 boolean numeric_enter;
-static char numeric_entry[NUMERIC_ENTRY_NUMDIGITS + 1];
+int numeric_entry;
+static char numeric_entry_str[NUMERIC_ENTRY_NUMDIGITS + 1];
 static int numeric_entry_index;
 
 boolean			inhelpscreens;
@@ -163,7 +164,6 @@ typedef struct
     //   choice=0:leftarrow,1:rightarrow
     // [crispy] if status = 3,
     //   choice=0:leftarrow,1:rightarrow,2:enter
-    //   choice=numeric value after entry is complete
     void	(*routine)(int choice);
     
     // hotkey in menu
@@ -1503,7 +1503,7 @@ static void M_DrawCrispnessNumericItem(int y, const char *item, int feat, const 
 
     if (numeric_enter)
     {
-        M_snprintf(number, size, "%s_", numeric_entry);
+        M_snprintf(number, size, "%s_", numeric_entry_str);
     }
     else
     {
@@ -2541,7 +2541,7 @@ boolean M_Responder (event_t* ev)
                 if (numeric_entry_index > 0)
                 {
                     numeric_entry_index--;
-                    numeric_entry[numeric_entry_index] = '\0';
+                    numeric_entry_str[numeric_entry_index] = '\0';
                 }
                 break;
             case KEY_ESCAPE:
@@ -2549,9 +2549,10 @@ boolean M_Responder (event_t* ev)
                 I_StopTextInput();
                 break;
             case KEY_ENTER:
-                if (numeric_entry[0] != '\0')
+                if (numeric_entry_str[0] != '\0')
                 {
-                    currentMenu->menuitems[itemOn].routine(atoi(numeric_entry));
+                    numeric_entry = atoi(numeric_entry_str);
+                    currentMenu->menuitems[itemOn].routine(2);
                 }
                 else
                 {
@@ -2577,8 +2578,8 @@ boolean M_Responder (event_t* ev)
                 if (ch >= '0' && ch <= '9' &&
                         numeric_entry_index < NUMERIC_ENTRY_NUMDIGITS)
                 {
-                    numeric_entry[numeric_entry_index++] = ch;
-                    numeric_entry[numeric_entry_index] = '\0';
+                    numeric_entry_str[numeric_entry_index++] = ch;
+                    numeric_entry_str[numeric_entry_index] = '\0';
                 }
                 else
                 {
@@ -2835,7 +2836,7 @@ boolean M_Responder (event_t* ev)
             {
                 currentMenu->menuitems[itemOn].routine(2); // enter key
                 numeric_entry_index = 0;
-                numeric_entry[0] = '\0';
+                numeric_entry_str[0] = '\0';
                 S_StartSoundOptional(NULL, sfx_mnuact, sfx_pistol);
             }
 	    else

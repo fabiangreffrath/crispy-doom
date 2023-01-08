@@ -342,13 +342,7 @@ void M_CrispyToggleFpsLimit(int choice)
         return;
     }
 
-    if (numeric_enter)
-    {
-        crispy->fpslimit = choice;
-        numeric_enter = false;
-        I_StopTextInput();
-    }
-    else if (choice == 0)
+    if (choice == 0)
     {
         crispy->fpslimit--;
 
@@ -363,8 +357,18 @@ void M_CrispyToggleFpsLimit(int choice)
     }
     else if (choice == 2)
     {
-        numeric_enter = true;
-        I_StartTextInput(0, 0, 0, 0);
+        if (numeric_enter)
+        {
+            crispy->fpslimit = numeric_entry;
+            numeric_enter = false;
+            I_StopTextInput();
+        }
+        else
+        {
+            numeric_enter = true;
+            I_StartTextInput(0, 0, 0, 0);
+            return;
+        }
     }
 
     if (crispy->fpslimit && crispy->fpslimit < CRISPY_FPSLIMIT_MIN)
