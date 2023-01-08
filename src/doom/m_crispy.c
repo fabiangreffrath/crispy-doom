@@ -19,6 +19,7 @@
 
 #include "crispy.h"
 #include "doomstat.h"
+#include "i_input.h" // [crispy] start/stop text input
 #include "m_menu.h" // [crispy] M_SetDefaultDifficulty()
 #include "p_local.h" // [crispy] thinkercap
 #include "s_sound.h"
@@ -338,14 +339,38 @@ void M_CrispyToggleFpsLimit(int choice)
 {
     if (!crispy->uncapped)
     {
+        numeric_enter = false;
         return;
     }
 
-    crispy->fpslimit += choice ? 1 : -1;
-
-    if (crispy->fpslimit < CRISPY_FPSLIMIT_MIN)
+    if (numeric_enter)
     {
-        crispy->fpslimit = choice ? CRISPY_FPSLIMIT_MIN : 0;
+        crispy->fpslimit = choice;
+        numeric_enter = false;
+        I_StopTextInput();
+    }
+    else if (choice == 0)
+    {
+        crispy->fpslimit--;
+
+        if (crispy->fpslimit < CRISPY_FPSLIMIT_MIN)
+        {
+            crispy->fpslimit = 0;
+        }
+    }
+    else if (choice == 1)
+    {
+        crispy->fpslimit++;
+    }
+    else if (choice == 2)
+    {
+        numeric_enter = true;
+        I_StartTextInput(0, 0, 0, 0);
+    }
+
+    if (crispy->fpslimit && crispy->fpslimit < CRISPY_FPSLIMIT_MIN)
+    {
+        crispy->fpslimit = CRISPY_FPSLIMIT_MIN;
     }
     else if (crispy->fpslimit > CRISPY_FPSLIMIT_MAX)
     {

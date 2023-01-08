@@ -122,6 +122,12 @@ static boolean          joypadSave = false; // was the save action initiated by 
 // old save description before edit
 char			saveOldString[SAVESTRINGSIZE];  
 
+// [crispy] for entering numeric values
+#define NUMERIC_ENTRY_NUMDIGITS 3
+boolean numeric_enter;
+static char numeric_entry[NUMERIC_ENTRY_NUMDIGITS + 1];
+static int numeric_entry_index;
+
 boolean			inhelpscreens;
 boolean			menuactive;
 
@@ -147,6 +153,7 @@ extern boolean speedkeydown (void);
 typedef struct
 {
     // 0 = no cursor here, 1 = ok, 2 = arrows ok
+    // [crispy] 3 = arrows ok, enter for numeric entry
     short	status;
     
     char	name[10];
@@ -154,6 +161,8 @@ typedef struct
     // choice = menu item #.
     // if status = 2,
     //   choice=0:leftarrow,1:rightarrow
+    // [crispy] if status = 3,
+    //   choice=0:leftarrow,1:rightarrow,3:enter
     void	(*routine)(int choice);
     
     // hotkey in menu
@@ -456,7 +465,7 @@ static menuitem_t Crispness1Menu[]=
     {2,"",	M_CrispyToggleHires,'h'},
     {2,"",	M_CrispyToggleWidescreen,'w'},
     {2,"",	M_CrispyToggleUncapped,'u'},
-    {2,"",	M_CrispyToggleFpsLimit,'f'},
+    {3,"",	M_CrispyToggleFpsLimit,'f'},
     {2,"",	M_CrispyToggleVsync,'v'},
     {2,"",	M_CrispyToggleSmoothScaling,'s'},
     {-1,"",0,'\0'},
@@ -1488,13 +1497,22 @@ static void M_DrawCrispnessMultiItem(int y, const char *item, multiitem_t *multi
 
 static void M_DrawCrispnessNumericItem(int y, const char *item, int feat, const char *zero, boolean cond, const char *disabled)
 {
-    char number[6];
-    M_snprintf(number, 6, "%d", feat);
+    const int size = NUMERIC_ENTRY_NUMDIGITS + 2;
+    char number[size];
+
+    if (numeric_enter)
+    {
+        M_snprintf(number, size, "%s_", numeric_entry);
+    }
+    else
+    {
+        M_snprintf(number, size, "%d", feat);
+    }
 
     M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
                "%s%s: %s%s", cond ? crstr[CR_NONE] : crstr[CR_DARK], item,
-               cond ? (feat ? crstr[CR_GREEN] : crstr[CR_DARK]) : crstr[CR_DARK],
-               cond ? (feat ? number : zero) : disabled);
+               cond ? (feat || numeric_enter ? crstr[CR_GREEN] : crstr[CR_DARK]) : crstr[CR_DARK],
+               cond ? (feat || numeric_enter ? number : zero) : disabled);
     M_WriteText(currentMenu->x, currentMenu->y + CRISPY_LINEHEIGHT * y, crispy_menu_text);
 }
 static void M_DrawCrispnessGoto(int y, const char *item)
@@ -2513,6 +2531,62 @@ boolean M_Responder (event_t* ev)
 	return true;
     }
 
+    // [crispy] Enter numeric value
+    if (numeric_enter)
+    {
+        switch(key)
+        {
+            case KEY_BACKSPACE:
+                if (numeric_entry_index > 0)
+                {
+                    numeric_entry_index--;
+                    numeric_entry[numeric_entry_index] = '\0';
+                }
+                break;
+            case KEY_ESCAPE:
+                numeric_enter = false;
+                I_StopTextInput();
+                break;
+            case KEY_ENTER:
+                if (numeric_entry[0] != '\0')
+                {
+                    currentMenu->menuitems[itemOn].routine(atoi(numeric_entry));
+                }
+                else
+                {
+                    numeric_enter = false;
+                    I_StopTextInput();
+                }
+                break;
+            default:
+                if (ev->type != ev_keydown)
+                {
+                    break;
+                }
+
+                if (vanilla_keyboard_mapping)
+                {
+                    ch = ev->data1;
+                }
+                else
+                {
+                    ch = ev->data3;
+                }
+
+                if (ch >= '0' && ch <= '9' &&
+                        numeric_entry_index < NUMERIC_ENTRY_NUMDIGITS)
+                {
+                    numeric_entry[numeric_entry_index++] = ch;
+                    numeric_entry[numeric_entry_index] = '\0';
+                }
+                else
+                {
+                    break;
+                }
+        }
+        return true;
+    }
+
     // Take care of any messages that need input
     if (messageToPrint)
     {
@@ -2724,7 +2798,7 @@ boolean M_Responder (event_t* ev)
         // Slide slider left
 
 	if (currentMenu->menuitems[itemOn].routine &&
-	    currentMenu->menuitems[itemOn].status == 2)
+	    currentMenu->menuitems[itemOn].status >= 2)
 	{
 	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
 	    currentMenu->menuitems[itemOn].routine(0);
@@ -2736,7 +2810,7 @@ boolean M_Responder (event_t* ev)
         // Slide slider right
 
 	if (currentMenu->menuitems[itemOn].routine &&
-	    currentMenu->menuitems[itemOn].status == 2)
+	    currentMenu->menuitems[itemOn].status >= 2)
 	{
 	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
 	    currentMenu->menuitems[itemOn].routine(1);
@@ -2756,6 +2830,13 @@ boolean M_Responder (event_t* ev)
 		currentMenu->menuitems[itemOn].routine(1);      // right arrow
 		S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
 	    }
+            else if (currentMenu->menuitems[itemOn].status == 3) // [crispy]
+            {
+                currentMenu->menuitems[itemOn].routine(2); // enter key
+                numeric_entry_index = 0;
+                numeric_entry[0] = '\0';
+                S_StartSoundOptional(NULL, sfx_mnuact, sfx_pistol);
+            }
 	    else
 	    {
 		currentMenu->menuitems[itemOn].routine(itemOn);
