@@ -162,7 +162,8 @@ typedef struct
     // if status = 2,
     //   choice=0:leftarrow,1:rightarrow
     // [crispy] if status = 3,
-    //   choice=0:leftarrow,1:rightarrow,3:enter
+    //   choice=0:leftarrow,1:rightarrow,2:enter
+    //   choice=numeric value after entry is complete
     void	(*routine)(int choice);
     
     // hotkey in menu
