@@ -1516,6 +1516,7 @@ static void M_DrawCrispnessNumericItem(int y, const char *item, int feat, const 
                cond ? (feat || numeric_enter ? number : zero) : disabled);
     M_WriteText(currentMenu->x, currentMenu->y + CRISPY_LINEHEIGHT * y, crispy_menu_text);
 }
+
 static void M_DrawCrispnessGoto(int y, const char *item)
 {
     M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
