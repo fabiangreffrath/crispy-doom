@@ -40,7 +40,7 @@
 
 #define LEFT_DIR 0
 #define RIGHT_DIR 1
-#define ENTER_NUMBER 2
+#define ENTER_NUMBER 2 // [crispy] numeric entry
 #define ITEM_HEIGHT 20
 #define SELECTOR_XOFFSET (-28)
 #define SELECTOR_YOFFSET (-1)
@@ -55,7 +55,7 @@ typedef enum
     ITT_EFUNC,
     ITT_LRFUNC,
     ITT_SETMENU,
-    ITT_NUMFUNC,
+    ITT_NUMFUNC, // [crispy] numeric entry
     ITT_INERT
 } ItemType_t;
 
@@ -2074,6 +2074,7 @@ boolean MN_Responder(event_t * event)
                         }
                     }
                 }
+                // [crispy] numeric entry
                 else if (item->type == ITT_NUMFUNC && item->func != NULL)
                 {
                     item->func(ENTER_NUMBER);
@@ -2244,7 +2245,7 @@ boolean MN_Responder(event_t * event)
         }
         return (true);
     }
-    else if (numeric_enter)
+    else if (numeric_enter) // [crispy] numeric entry
     {
         switch(key)
         {
