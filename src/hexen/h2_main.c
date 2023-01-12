@@ -1127,7 +1127,7 @@ static void CrispyDrawStats (void)
     if (player->cheats & CF_SHOWFPS)
     {
         right_widget_w = coord_w;
-        right_widget_h = height;
+        right_widget_h = height + 2;
 
         M_snprintf(str, sizeof(str), "%d FPS", crispy->fps);
         MN_DrTextA(str, right_widget_x, 1*height);
