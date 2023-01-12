@@ -1939,8 +1939,6 @@ static void DrawWorldTimer(void)
     char timeBuffer[15];
     char dayBuffer[20];
 
-    extern int right_widget_h; // [crispy]
-
     worldTimer = players[consoleplayer].worldTimer;
 
     worldTimer /= 35;

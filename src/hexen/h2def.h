@@ -713,6 +713,8 @@ extern int vanilla_demo_limit;
 
 extern boolean usearti;
 
+extern int right_widget_h; // [crispy]
+
 
 /*
 ===============================================================================
