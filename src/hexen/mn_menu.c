@@ -2464,7 +2464,7 @@ static void DrawCrispnessNumericItem(int item, int x, int y, const char *zero,
     }
 
     dp_translation = cond ? cr[CR_DARK] :
-                    (item || numeric_enter) ? cr[CR_GREEN] : cr[CR_GRAY];
+                    (item || numeric_enter) ? cr[CR_GOLD] : cr[CR_GRAY];
 
     if (cond)
     {
