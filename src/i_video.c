@@ -1247,6 +1247,22 @@ void I_GraphicsCheckCommandLine(void)
     {
         SetScaleFactor(3);
     }
+
+
+    //!
+    // @category video
+    // @arg <x>
+    //
+    // Specify the display number on which to show the screen.
+    //
+
+    i = M_CheckParmWithArgs("-display", 1);
+    if (i > 0)
+    {
+        int display = atoi(myargv[i + 1]);
+        if (display >= 0)
+            video_display = display;
+    }
 }
 
 // Check if we have been invoked as a screensaver by xscreensaver.
