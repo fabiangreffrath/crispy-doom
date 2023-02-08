@@ -1564,12 +1564,12 @@ A_PainShootSkull
 	P_DamageMobj (newmobj,actor,actor,10000);	
 	return;
     }
-	
+		
     // [crispy] Lost Souls bleed Puffs
     // needed because NOBLOOD flag in
     // M_CrispyToggleColoredblood (m_crispy.c) won't apply
     // when changing colored blood option from the menu
-    if (crispy->coloredblood > 1)
+    if (crispy->coloredblood == COLOREDBLOOD_ALL)
         newmobj->flags |= MF_NOBLOOD;
 
     newmobj->target = actor->target;

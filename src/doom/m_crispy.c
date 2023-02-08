@@ -46,8 +46,7 @@ multiitem_t multiitem_brightmaps[NUM_BRIGHTMAPS] =
 multiitem_t multiitem_coloredblood[NUM_COLOREDBLOOD] =
 {
     {COLOREDBLOOD_OFF, "off"},
-    {COLOREDBLOOD_ON, "on"},
-    {COLOREDBLOOD_BOTH, "blood+puffs"},
+    {COLOREDBLOOD_BLOOD, "blood"},
     {COLOREDBLOOD_ALL, "all"}
 };
 

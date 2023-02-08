@@ -1077,7 +1077,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
     // needed because NOBLOOD flag in
     // M_CrispyToggleColoredblood (m_crispy.c) won't apply
     // when changing colored blood option from the menu
-    if (crispy->coloredblood > 1 && i == MT_SKULL)
+    if (crispy->coloredblood == COLOREDBLOOD_ALL && i == MT_SKULL)
         mobj->flags |= MF_NOBLOOD;
 
     // [crispy] blinking key or skull in the status bar
@@ -1166,7 +1166,7 @@ P_SpawnBlood
     th->target = target;
 
     // [crispy] Spectres bleed spectre blood
-    if (crispy->coloredblood == 3)
+    if (crispy->coloredblood == COLOREDBLOOD_ALL)
         th->flags |= (target->flags & MF_SHADOW);
 }
 
