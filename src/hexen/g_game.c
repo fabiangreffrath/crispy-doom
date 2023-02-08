@@ -656,15 +656,19 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
     {
         if (demorecording || lowres_turn)
         {
-            // [crispy] Map mouse movement to look variable when recording
-            look += mouse_y_invert ? -mousey / MLOOKUNITLOWRES
-                                        : mousey / MLOOKUNITLOWRES;
+            // [Dasperal] Skip mouse look if it is TOCENTER cmd
+            if (look != TOCENTER)
+            {
+                // [crispy] Map mouse movement to look variable when recording
+                look += mouse_y_invert ? -mousey / MLOOKUNITLOWRES
+                                       :  mousey / MLOOKUNITLOWRES;
 
-            // [crispy] Limit to max speed of keyboard look up/down
-            if (look > 2)
-                look = 2;
-            else if (look < -2)
-                look = -2;
+                // [crispy] Limit to max speed of keyboard look up/down
+                if (look > 2)
+                    look = 2;
+                else if (look < -2)
+                    look = -2;
+            }
         }
         else
         {
