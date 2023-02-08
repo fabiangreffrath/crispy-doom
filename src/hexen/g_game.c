@@ -673,7 +673,11 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
         else
         {
             cmd->lookdir = mouse_y_invert ? -mousey : mousey;
-            cmd->lookdir /= MLOOKUNIT;
+            // [Dasperal] Allow precise vertical look with near 0 mouse movement
+            if (cmd->lookdir > 0)
+                cmd->lookdir = (cmd->lookdir + MLOOKUNIT - 1) / MLOOKUNIT;
+            else
+                cmd->lookdir = (cmd->lookdir - MLOOKUNIT + 1) / MLOOKUNIT;
         }
     }
     else if (!novert)
