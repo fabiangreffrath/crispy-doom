@@ -1074,9 +1074,6 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	mobj->health = 1000 + musid;
     }
     // [crispy] Lost Souls bleed Puffs
-    // needed because NOBLOOD flag in
-    // M_CrispyToggleColoredblood (m_crispy.c) won't apply
-    // when changing colored blood option from the menu
     if (crispy->coloredblood == COLOREDBLOOD_ALL && i == MT_SKULL)
         mobj->flags |= MF_NOBLOOD;
 

@@ -1566,9 +1566,6 @@ A_PainShootSkull
     }
 		
     // [crispy] Lost Souls bleed Puffs
-    // needed because NOBLOOD flag in
-    // M_CrispyToggleColoredblood (m_crispy.c) won't apply
-    // when changing colored blood option from the menu
     if (crispy->coloredblood == COLOREDBLOOD_ALL)
         newmobj->flags |= MF_NOBLOOD;
 
