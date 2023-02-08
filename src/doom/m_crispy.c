@@ -233,7 +233,7 @@ void M_CrispyToggleColoredblood(int choice)
 
 		if (mobj->type == MT_SKULL)
 		{
-			if (crispy->coloredblood > 1)
+			if (crispy->coloredblood == COLOREDBLOOD_ALL)
 			{
 				mobj->flags |= MF_NOBLOOD;
 			}
