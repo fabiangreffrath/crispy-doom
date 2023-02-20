@@ -2177,6 +2177,7 @@ boolean MN_Responder(event_t * event)
                     savepage--;
                     quicksave = -1;
                     MN_LoadSlotText();
+                    S_StartSound(NULL, SFX_FIGHTER_HAMMER_HITWALL);
                 }
                 return true;
             }
@@ -2195,6 +2196,7 @@ boolean MN_Responder(event_t * event)
                     savepage++;
                     quicksave = -1;
                     MN_LoadSlotText();
+                    S_StartSound(NULL, SFX_FIGHTER_HAMMER_HITWALL);
                 }
                 return true;
             }
