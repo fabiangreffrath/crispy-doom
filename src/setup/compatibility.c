@@ -121,6 +121,7 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("crispy_fpslimit",        &crispy->fpslimit);
         M_BindIntVariable("crispy_freelook",        &crispy->freelook_hh);
         M_BindIntVariable("crispy_hires",           &crispy->hires);
+        M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
         M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
         M_BindIntVariable("crispy_uncapped",        &crispy->uncapped);
         M_BindIntVariable("crispy_vsync",           &crispy->vsync);
