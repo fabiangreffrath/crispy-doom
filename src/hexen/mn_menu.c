@@ -132,6 +132,7 @@ static void CrispyUncapped(int option);
 static void CrispyFpsLimit(int option);
 static void CrispyVsync(int option);
 static void CrispyBrightmaps(int option);
+static void CrispySoundMono(int option);
 static void CrispyPlayerCoords(int options);
 static void CrispyFreelook(int option);
 static void CrispyMouselook(int option);
@@ -361,7 +362,7 @@ static MenuItem_t Crispness1Items[] = {
     {ITT_LRFUNC2, "BRIGHTMAPS:", CrispyBrightmaps, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_LRFUNC2, "SHOW PLAYER COORDS:", CrispyPlayerCoords, 0, MENU_NONE},
+    {ITT_LRFUNC2, "MONO SFX:", CrispySoundMono, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EFUNC, "NEXT PAGE", CrispyNextPage, 0, MENU_NONE},
 };
@@ -375,6 +376,9 @@ static Menu_t Crispness1Menu = {
 };
 
 static MenuItem_t Crispness2Items[] = {
+    {ITT_LRFUNC2, "SHOW PLAYER COORDS:", CrispyPlayerCoords, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_LRFUNC2, "FREELOOK MODE:", CrispyFreelook, 0, MENU_NONE},
     {ITT_LRFUNC2, "PERMANENT MOUSELOOK:", CrispyMouselook, 0, MENU_NONE},
     {ITT_LRFUNC2, "DEFAULT DIFFICULTY:", CrispyDefaultskill, 0, MENU_NONE},
@@ -385,7 +389,7 @@ static MenuItem_t Crispness2Items[] = {
 static Menu_t Crispness2Menu = {
     68, 35,
     DrawCrispnessMenu,
-    5, Crispness2Items,
+    8, Crispness2Items,
     0,
     MENU_OPTIONS
 };
@@ -1580,6 +1584,11 @@ static void CrispyBrightmaps(int option)
     ChangeSettingEnum(&crispy->brightmaps, option, NUM_BRIGHTMAPS);
 }
 
+static void CrispySoundMono(int option)
+{
+    crispy->soundmono = !crispy->soundmono;
+}
+
 static void CrispyPlayerCoords(int option)
 {
     // disable "always" and "status bar" setting
@@ -2590,9 +2599,6 @@ static void DrawCrispnessNumericItem(int item, int x, int y, const char *zero,
 
 static void DrawCrispness1(void)
 {
-    // Background
-    M_DrawCrispnessBackground();
-
     DrawCrispnessHeader("CRISPNESS 1/2");
 
     DrawCrispnessSubheader("RENDERING", 25);
@@ -2620,26 +2626,29 @@ static void DrawCrispness1(void)
     // Brightmaps
     DrawCrispnessMultiItem(crispy->brightmaps, 150, 115, multiitem_brightmaps);
 
-    DrawCrispnessSubheader("NAVIGATIONAL", 135);
+    DrawCrispnessSubheader("AUDIBLE", 135);
 
-    // Player coordinates
-    DrawCrispnessMultiItem(crispy->playercoords, 211, 145, multiitem_widgets);
-
-    dp_translation = NULL;
+    // Mono SFX
+    DrawCrispnessItem(crispy->soundmono, 137, 145);
 }
 
 static void DrawCrispness2(void)
 {
     DrawCrispnessHeader("CRISPNESS 2/2");
 
-    DrawCrispnessSubheader("TACTICAL", 25);
+    DrawCrispnessSubheader("NAVIGATIONAL", 25);
+
+    // Player coordinates
+    DrawCrispnessMultiItem(crispy->playercoords, 211, 35, multiitem_widgets);
+
+    DrawCrispnessSubheader("TACTICAL", 55);
 
     // Freelook
-    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 35, multiitem_freelook_hh);
+    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 65, multiitem_freelook_hh);
 
     // Mouselook
-    DrawCrispnessItem(crispy->mouselook, 220, 45);
+    DrawCrispnessItem(crispy->mouselook, 220, 75);
 
     // Default difficulty
-    DrawCrispnessMultiItem(crispy->defaultskill, 200, 55, multiitem_difficulties);
+    DrawCrispnessMultiItem(crispy->defaultskill, 200, 85, multiitem_difficulties);
 }

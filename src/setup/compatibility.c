@@ -109,6 +109,7 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
         M_BindIntVariable("crispy_secretmessage",   &crispy->secretmessage);
         M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
+        M_BindIntVariable("crispy_soundmono",       &crispy->soundmono);
         M_BindIntVariable("crispy_uncapped",        &crispy->uncapped);
         M_BindIntVariable("crispy_vsync",           &crispy->vsync);
         M_BindIntVariable("crispy_widescreen",      &crispy->widescreen);
@@ -123,6 +124,7 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("crispy_hires",           &crispy->hires);
         M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
         M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
+        M_BindIntVariable("crispy_soundmono",       &crispy->soundmono);
         M_BindIntVariable("crispy_uncapped",        &crispy->uncapped);
         M_BindIntVariable("crispy_vsync",           &crispy->vsync);
         M_BindIntVariable("crispy_widescreen",      &crispy->widescreen);

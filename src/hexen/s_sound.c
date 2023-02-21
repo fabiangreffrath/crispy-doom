@@ -477,7 +477,7 @@ void S_StartSoundAtVolume(mobj_t * origin, int sound_id, int volume)
     Channel[i].mo = origin;
 
     vol = (SoundCurve[dist] * (snd_MaxVolume * 8) * volume) >> 14;
-    if (origin == listener)
+    if (origin == listener || crispy->soundmono)
     {
         sep = 128;
 //              vol = (volume*(snd_MaxVolume+1)*8)>>7;
@@ -754,7 +754,7 @@ void S_UpdateSounds(mobj_t * listener)
             vol =
                 (SoundCurve[dist] * (snd_MaxVolume * 8) *
                  Channel[i].volume) >> 14;
-            if (Channel[i].mo == listener)
+            if (Channel[i].mo == listener || crispy->soundmono)
             {
                 sep = 128;
             }

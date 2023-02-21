@@ -260,7 +260,7 @@ void S_StartSound(void *_origin, int sound_id)
 //      vol = (snd_MaxVolume*16 + dist*(-snd_MaxVolume*16)/MAX_SND_DIST)>>9;
     vol = soundCurve[dist];
 
-    if (origin == listener)
+    if (origin == listener || crispy->soundmono)
     {
         sep = 128;
     }
@@ -502,14 +502,21 @@ void S_UpdateSounds(mobj_t * listener)
 //          vol = (*((byte *)W_CacheLumpName("SNDCURVE", PU_CACHE)+dist)*(snd_MaxVolume*8))>>7;
             vol = soundCurve[dist];
 
-            angle = R_PointToAngle2(listener->x, listener->y,
-                                    channel[i].mo->x, channel[i].mo->y);
-            angle = (angle - viewangle) >> 24;
-            sep = angle * 2 - 128;
-            if (sep < 64)
-                sep = -sep;
-            if (sep > 192)
-                sep = 512 - sep;
+            if (crispy->soundmono)
+            {
+                sep = 128;
+            }
+            else
+            {
+                angle = R_PointToAngle2(listener->x, listener->y,
+                                        channel[i].mo->x, channel[i].mo->y);
+                angle = (angle - viewangle) >> 24;
+                sep = angle * 2 - 128;
+                if (sep < 64)
+                    sep = -sep;
+                if (sep > 192)
+                    sep = 512 - sep;
+            }
             // TODO: Pitch shifting.
             I_UpdateSoundParams(channel[i].handle, vol, sep);
             priority = S_sfx[channel[i].sound_id].priority;

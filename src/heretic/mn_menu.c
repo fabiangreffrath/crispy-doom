@@ -127,6 +127,7 @@ static boolean CrispyHires(int option);
 static boolean CrispyToggleWidescreen(int option);
 static boolean CrispySmoothing(int option);
 static boolean CrispyBrightmaps(int option);
+static boolean CrispySoundMono(int option);
 static boolean CrispyAutomapStats(int option);
 static boolean CrispyLevelTime(int option);
 static boolean CrispyPlayerCoords(int option);
@@ -361,8 +362,7 @@ static MenuItem_t Crispness1Items[] = {
     {ITT_LRFUNC2, "APPLY BRIGHTMAPS TO:", CrispyBrightmaps, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_LRFUNC2, "SHOW LEVEL STATS:", CrispyAutomapStats, 0, MENU_NONE},
-    {ITT_LRFUNC2, "SHOW LEVEL TIME:", CrispyLevelTime, 0, MENU_NONE},
+    {ITT_LRFUNC2, "MONO SFX:", CrispySoundMono, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EFUNC, "NEXT PAGE", CrispyNextPage, 0, MENU_NONE},
 };
@@ -370,12 +370,14 @@ static MenuItem_t Crispness1Items[] = {
 static Menu_t Crispness1Menu = {
     68, 35,
     DrawCrispness,
-    15, Crispness1Items,
+    14, Crispness1Items,
     0,
     MENU_OPTIONS
 };
 
 static MenuItem_t Crispness2Items[] = {
+    {ITT_LRFUNC2, "SHOW LEVEL STATS:", CrispyAutomapStats, 0, MENU_NONE},
+    {ITT_LRFUNC2, "SHOW LEVEL TIME:", CrispyLevelTime, 0, MENU_NONE},
     {ITT_LRFUNC2, "SHOW PLAYER COORDS:", CrispyPlayerCoords, 0, MENU_NONE},
     {ITT_LRFUNC2, "REPORT REVEALED SECRETS:", CrispySecretMessage, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
@@ -390,7 +392,7 @@ static MenuItem_t Crispness2Items[] = {
 static Menu_t Crispness2Menu = {
     68, 35,
     DrawCrispness,
-    9, Crispness2Items,
+    11, Crispness2Items,
     0,
     MENU_OPTIONS
 };
@@ -1547,6 +1549,12 @@ static boolean CrispyBrightmaps(int option)
     return true;
 }
 
+static boolean CrispySoundMono(int option)
+{
+    crispy->soundmono = !crispy->soundmono;
+    return true;
+}
+
 static boolean CrispyAutomapStats(int option)
 {
     ChangeSettingEnum(&crispy->automapstats, option, NUM_WIDGETS);
@@ -2609,35 +2617,37 @@ static void DrawCrispness1(void)
     // Brightmaps
     DrawCrispnessMultiItem(crispy->brightmaps, 213, 115, multiitem_brightmaps);
 
-    DrawCrispnessSubheader("NAVIGATIONAL", 135);
+    DrawCrispnessSubheader("AUDIBLE", 135);
 
-    // Show level stats
-    DrawCrispnessMultiItem(crispy->automapstats, 190, 145, multiitem_widgets);
-
-    // Show level time
-    DrawCrispnessMultiItem(crispy->leveltime, 179, 155, multiitem_widgets);
+    // Mono SFX
+    DrawCrispnessItem(crispy->soundmono, 137, 145);
 }
 
 static void DrawCrispness2(void)
 {
     DrawCrispnessHeader("CRISPNESS 2/2");
 
-    DrawCrispnessSubheader("NAVIGATIONAL CONT.", 25);
+    DrawCrispnessSubheader("NAVIGATIONAL", 25);
 
+    // Show level stats
+    DrawCrispnessMultiItem(crispy->automapstats, 190, 35, multiitem_widgets);
+
+    // Show level time
+    DrawCrispnessMultiItem(crispy->leveltime, 179, 45, multiitem_widgets);
     // Show player coords
-    DrawCrispnessMultiItem(crispy->playercoords, 211, 35, multiitem_widgets);
+    DrawCrispnessMultiItem(crispy->playercoords, 211, 55, multiitem_widgets);
 
     // Show secret message
-    DrawCrispnessMultiItem(crispy->secretmessage, 250, 45, multiitem_secretmessage);
+    DrawCrispnessMultiItem(crispy->secretmessage, 250, 65, multiitem_secretmessage);
 
-    DrawCrispnessSubheader("TACTICAL", 65);
+    DrawCrispnessSubheader("TACTICAL", 85);
 
     // Freelook
-    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 75, multiitem_freelook_hh);
+    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 95, multiitem_freelook_hh);
 
     // Mouselook
-    DrawCrispnessItem(crispy->mouselook, 220, 85);
+    DrawCrispnessItem(crispy->mouselook, 220, 105);
 
     // Default difficulty
-    DrawCrispnessMultiItem(crispy->defaultskill, 200, 95, multiitem_difficulties);
+    DrawCrispnessMultiItem(crispy->defaultskill, 200, 115, multiitem_difficulties);
 }
