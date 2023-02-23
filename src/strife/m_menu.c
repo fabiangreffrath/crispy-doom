@@ -2533,6 +2533,14 @@ boolean M_Responder (event_t* ev)
     }
     */
 
+    // [crispy] clean screenshot
+    if (key != 0 && key == key_menu_cleanscreenshot)
+    {
+        crispy->cleanscreenshot = (screenblocks > 10) ? 2 : 1;
+        G_ScreenShot();
+        return true;
+    }
+
     // F-Keys
     if (!menuactive)
     {

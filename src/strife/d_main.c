@@ -356,6 +356,18 @@ void D_Display (void)
         }
     }
 
+    // [crispy] draw neither pause pic nor menu when taking a clean screenshot
+    if (crispy->cleanscreenshot && !wipe)
+    {
+        I_FinishUpdate();
+        if (crispy->post_rendering_hook)
+        {
+            crispy->post_rendering_hook();
+            crispy->post_rendering_hook = NULL;
+        }
+        return;
+    }
+
     // draw pause pic
     if (paused)
     {

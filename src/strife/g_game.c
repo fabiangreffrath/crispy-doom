@@ -1051,6 +1051,16 @@ boolean G_Responder (event_t* ev)
     return false; 
 } 
 
+// [crispy] take a screenshot after rendering the next frame
+static void G_CrispyScreenShot()
+{
+    // [crispy] increase screenshot filename limit
+    V_ScreenShot("STRIFE%04i.%s"); // [STRIFE] file name, message
+    players[consoleplayer].message = DEH_String("STRIFE  by Rogue entertainment");
+    crispy->cleanscreenshot = 0;
+    crispy->screenshotmsg = 2;
+}
+
 //
 // G_Ticker
 // Make ticcmd_ts for the players.
@@ -1100,8 +1110,16 @@ void G_Ticker (void)
             G_DoWorldDone (); 
             break; 
         case ga_screenshot: 
-            V_ScreenShot("STRIFE%02i.%s"); // [STRIFE] file name, message
-            players[consoleplayer].message = DEH_String("STRIFE  by Rogue entertainment");
+            // [crispy] redraw view without weapons and HUD
+            if (gamestate == GS_LEVEL && (crispy->cleanscreenshot || crispy->screenshotmsg == 1))
+            {
+                crispy->screenshotmsg = 4;
+                crispy->post_rendering_hook = G_CrispyScreenShot;
+            }
+            else
+            {
+                G_CrispyScreenShot();
+            }
             gameaction = ga_nothing; 
             break; 
         case ga_nothing: 

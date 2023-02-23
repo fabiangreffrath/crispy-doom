@@ -1519,6 +1519,10 @@ boolean ST_DrawExternal(void)
 {
     int i;
 
+    // [crispy] don't draw fullscreen HUD for a clean screenshot
+    if (crispy->cleanscreenshot && !st_statusbaron)
+        return false;
+
     if(st_statusbaron)
     {
         // [crispy] support wide status bars with 0 offset
@@ -1548,7 +1552,8 @@ boolean ST_DrawExternal(void)
             ST_drawNumFontY2(310, 194, plyr->ammo[ammo]);
     }
 
-    if(!st_displaypopup)
+    // [crispy] don't draw popups for a clean screenshot
+    if (!st_displaypopup || crispy->cleanscreenshot)
         return false;
 
     // villsa [STRIFE] added 20100926
