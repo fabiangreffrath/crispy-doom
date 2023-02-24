@@ -187,7 +187,13 @@ static void P_WakeUpThing(mobj_t* puncher, mobj_t* bystander)
     {
         bystander->target = puncher;
         if(bystander->info->seesound)
+        {
             S_StartSound(bystander, bystander->info->seesound);
+
+            // [crispy] make seesounds uninterruptible
+            if (crispy->soundfull)
+                S_UnlinkSound(bystander);
+        }
         P_SetMobjState(bystander, bystander->info->seestate);
     }
 }
@@ -901,7 +907,15 @@ seeyou:
         if (actor->type == MT_INQUISITOR)
             emitter = NULL;
 
-        S_StartSound (emitter, sound);
+        // [crispy] prevent from adding up volume
+        if (crispy->soundfull && actor->type == MT_INQUISITOR)
+            S_StartSoundOnce(NULL, sound);
+        else
+            S_StartSound(emitter, sound);
+
+        // [crispy] make seesounds uninterruptible
+        if (crispy->soundfull)
+            S_UnlinkSound(actor);
     }
 
     // [STRIFE] Set threshold (kinda odd as it's still set to 0 above...)
@@ -2233,7 +2247,11 @@ void A_Scream(mobj_t* actor)
 
     // Check for bosses.
     if(actor->type == MT_ENTITY || actor->type == MT_INQUISITOR)
-        S_StartSound(NULL, actor->info->deathsound);   // full volume
+    {
+        // [crispy] prevent from adding up volume
+        crispy->soundfull ? S_StartSoundOnce(NULL, actor->info->deathsound)
+                          : S_StartSound(NULL, actor->info->deathsound);
+    }
     else
         S_StartSound(actor, actor->info->deathsound);
 }

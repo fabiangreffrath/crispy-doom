@@ -41,6 +41,7 @@ void M_CrispyToggleCrosshairHealth(int choice);
 void M_CrispyToggleDefaultSkill(int choice);
 void M_CrispyToggleFpsLimit(int choice);
 void M_CrispyToggleFreelook(int choice);
+void M_CrispyToggleFullsounds(int choice);
 void M_CrispyToggleHires(int choice);
 void M_CrispyToggleLeveltime(int choice);
 void M_CrispyToggleMouseLook(int choice);

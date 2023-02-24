@@ -148,6 +148,7 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("crispy_smoothmap",       &crispy->smoothmap);
         M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
         M_BindIntVariable("crispy_soundfix",        &crispy->soundfix);
+        M_BindIntVariable("crispy_soundfull",       &crispy->soundfull);
         M_BindIntVariable("crispy_soundmono",       &crispy->soundmono);
         M_BindIntVariable("crispy_uncapped",        &crispy->uncapped);
         M_BindIntVariable("crispy_vsync",           &crispy->vsync);
