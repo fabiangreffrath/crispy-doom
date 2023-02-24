@@ -3280,7 +3280,27 @@ void A_ActiveSound(mobj_t* actor)
 {
     if(actor->info->activesound)
     {
-        if(!(leveltime & 7)) // haleyjd: added parens
+        int soundtime = leveltime; // [crispy]
+
+        // [crispy] fix ambient sounds to play consistently (haleyjd)
+        if (crispy->soundfix)
+        {
+            switch (actor->type)
+            {
+                case MT_MISC_03: // [crispy] thing 103: floor water drip
+                case MT_MISC_13: // [crispy] thing 104: water splash
+                case MT_MISC_07: // [crispy] thing 112: fountain
+                case MT_TREE7:   // [crispy] thing 215: stick in water
+                    soundtime -= (leveltime % actor->tics);
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        // [crispy] use soundtime
+        if(!(soundtime & 7)) // haleyjd: added parens
             S_StartSound(actor, actor->info->activesound);
     }
 }

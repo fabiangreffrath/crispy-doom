@@ -373,7 +373,11 @@ void P_ZMovement (mobj_t* mo)
                 // [crispy] center view when not using mouse look
                 if (!critical->mouselook)
                     mo->player->centerview = 1;
+                // [crispy] dead men don't say "oof"
+                if (mo->health > 0 || !crispy->soundfix)
+                {
                 S_StartSound (mo, sfx_oof);
+                }
             }
             mo->momz = 0;
         }

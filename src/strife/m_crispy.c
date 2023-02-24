@@ -278,6 +278,13 @@ void M_CrispyToggleSndChannels(int choice)
     S_UpdateSndChannels(choice);
 }
 
+void M_CrispyToggleSoundfixes(int choice)
+{
+    choice = 0;
+
+    crispy->soundfix = !crispy->soundfix;
+}
+
 void M_CrispyToggleSoundMono(int choice)
 {
     choice = 0;

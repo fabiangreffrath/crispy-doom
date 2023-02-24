@@ -950,7 +950,13 @@ boolean G_Responder (event_t* ev)
             if(devparm && ev->data1 == 'g')
                 D_PageTicker(); // [STRIFE]: wat? o_O
             else
+            {
+                // [crispy] play a sound if the menu is activated with a different key than ESC
+                if (!menuactive && crispy->soundfix)
+                    S_StartSound(NULL, sfx_swtchn);
+
                 M_StartControlPanel (); 
+            }
             return true; 
         } 
         return false; 

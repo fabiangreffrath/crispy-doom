@@ -466,6 +466,7 @@ static menu_t Crispness1Def =
 enum
 {
     crispness_sep_audible,
+    crispness_soundfix,
     crispness_sndchannels,
     crispness_soundmono,
     crispness_sep_audible_,
@@ -484,6 +485,7 @@ enum
 static menuitem_t Crispness2Menu[] =
 {
     {-1, "", 0, '\0'},
+    {2, "", M_CrispyToggleSoundfixes, 'm'},
     {2, "", M_CrispyToggleSndChannels, 's'},
     {2, "", M_CrispyToggleSoundMono, 'm'},
     {-1, "", 0, '\0'},
@@ -1497,6 +1499,7 @@ static void M_DrawCrispness2(void)
     M_DrawCrispnessHeader("Crispness 2/3");
 
     M_DrawCrispnessSeparator(crispness_sep_audible, "Audible");
+    M_DrawCrispnessItem(crispness_soundfix, "Misc. Sound Fixes", crispy->soundfix, true);
     M_DrawCrispnessMultiItem(crispness_sndchannels, "Sound Channels", multiitem_sndchannels, snd_channels >> 4, snd_sfxdevice != SNDDEVICE_PCSPEAKER);
     M_DrawCrispnessItem(crispness_soundmono, "Mono SFX", crispy->soundmono, true);
 
