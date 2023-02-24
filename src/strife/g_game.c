@@ -1857,6 +1857,8 @@ void G_LoadGame (char* name)
 void G_DoLoadGame (boolean userload) 
 {
     int savedleveltime;
+    skill_t currentskill; // [crispy]
+    skill_t skill; // [crispy]
 
     gameaction = ga_nothing;
 
@@ -1871,11 +1873,18 @@ void G_DoLoadGame (boolean userload)
 
     savegame_error = false;
 
+    // [crispy] save current gameskill before calling P_ReadSaveGameHeader()
+    currentskill = gameskill;
+
     if (!P_ReadSaveGameHeader())
     {
         fclose(save_stream);
         return;
     }
+
+    // [crispy] fix skill and gameskill checks in G_InitNew() (haleyjd)
+    skill = gameskill;
+    gameskill = currentskill;
 
     // haleyjd: A comment would be good here, fraggle...
     // Evidently this is a Choco-ism, necessitated by reading the savegame
@@ -1886,7 +1895,7 @@ void G_DoLoadGame (boolean userload)
 
     // STRIFE-TODO: ????
     if(userload)
-        G_InitNew(gameskill, gamemap); 
+        G_InitNew(skill, gamemap); // [crispy] use skill
     else
         G_DoLoadLevel();
  
@@ -2144,6 +2153,7 @@ G_InitNew
     // BUG: None of this code runs properly when loading save games, so
     // basically it's impossible to play any skill level properly unless
     // you never quit and reload from the command line.
+    // [crispy] fixed in G_DoLoadGame()
     if(!skill && gameskill)
     {
         // Setting to Baby skill... make things easier.
