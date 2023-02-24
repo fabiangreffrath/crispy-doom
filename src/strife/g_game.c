@@ -1899,6 +1899,7 @@ void G_DoLoadGame (boolean userload)
     P_UnArchiveWorld (); 
     P_UnArchiveThinkers (); 
     P_UnArchiveSpecials (); 
+    P_RestoreTargets (); // [crispy] restore mobj->target and mobj->tracer pointers
  
     if (!P_ReadSaveGameEOF())
         I_Error ("Bad savegame");
