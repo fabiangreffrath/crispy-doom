@@ -366,7 +366,8 @@ boolean ST_Responder(event_t* ev)
              if(!st_popupdisplaytics)
              {
                  st_displaypopup = false;
-                 if(st_dosizedisplay)
+                 // [crispy] resize only when using original fullscreen HUD
+                 if(st_dosizedisplay && screenblocks == 10)
                      M_SizeDisplay(true);
 
                  st_dosizedisplay = false;
@@ -453,8 +454,8 @@ boolean ST_Responder(event_t* ev)
         if(st_showkeys || st_showobjective || st_showinvpop)
         {
             st_displaypopup = true;
-            // [crispy] don't resize screen for popups when using Crispy HUD
-            if(viewheight == SCREENHEIGHT && !st_crispyhud)
+            // [crispy] resize only when using original fullscreen HUD
+            if(screenblocks == 11)
             {
                 M_SizeDisplay(false);
                 st_dosizedisplay = true;
@@ -859,7 +860,8 @@ void ST_Ticker (void)
             st_showkeys = false;
             st_keypage = -1;
 
-            if(st_dosizedisplay)
+            // [crispy] resize only when using original fullscreen HUD
+            if(st_dosizedisplay && screenblocks == 10)
                 M_SizeDisplay(true);  // mondo hack?
 
             st_dosizedisplay = false;
