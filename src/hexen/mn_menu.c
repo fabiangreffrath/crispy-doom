@@ -133,6 +133,7 @@ static void CrispyFpsLimit(int option);
 static void CrispyVsync(int option);
 static void CrispyBrightmaps(int option);
 static void CrispySoundMono(int option);
+static void CrispySndChannels(int option);
 static void CrispyPlayerCoords(int options);
 static void CrispyFreelook(int option);
 static void CrispyMouselook(int option);
@@ -363,6 +364,7 @@ static MenuItem_t Crispness1Items[] = {
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_LRFUNC2, "MONO SFX:", CrispySoundMono, 0, MENU_NONE},
+    {ITT_LRFUNC2, "SOUND CHANNELS:", CrispySndChannels, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EFUNC, "NEXT PAGE", CrispyNextPage, 0, MENU_NONE},
 };
@@ -370,7 +372,7 @@ static MenuItem_t Crispness1Items[] = {
 static Menu_t Crispness1Menu = {
     68, 35,
     DrawCrispnessMenu,
-    14, Crispness1Items,
+    15, Crispness1Items,
     0,
     MENU_OPTIONS
 };
@@ -442,6 +444,13 @@ static multiitem_t multiitem_difficulties[NUM_SKILLS] =
     {SKILL_NIGHTMARE, "VERY HARD"},
     {SKILL_ITYTD, "VERY EASY"},
     {SKILL_HNTR, "EASY"},
+};
+
+static multiitem_t multiitem_sndchannels[3] =
+{
+    {8, "8"},
+    {16, "16"},
+    {32, "32"},
 };
 
 static Menu_t *Menus[] = {
@@ -1589,6 +1598,11 @@ static void CrispySoundMono(int option)
     crispy->soundmono = !crispy->soundmono;
 }
 
+static void CrispySndChannels(int option)
+{
+    S_UpdateSndChannels(option);
+}
+
 static void CrispyPlayerCoords(int option)
 {
     // disable "always" and "status bar" setting
@@ -2630,6 +2644,9 @@ static void DrawCrispness1(void)
 
     // Mono SFX
     DrawCrispnessItem(crispy->soundmono, 137, 145);
+
+    // Sound Channels
+    DrawCrispnessMultiItem(snd_Channels >> 4, 181, 155, multiitem_sndchannels);
 }
 
 static void DrawCrispness2(void)
