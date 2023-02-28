@@ -753,7 +753,7 @@ void R_DrawPSprite(pspdef_t * psp)
 //
 // calculate edges of the shape
 //
-    tx = psp->sx - 160 * FRACUNIT;
+    tx = psp->sx2 - 160 * FRACUNIT;
 
     tx -= spriteoffset[lump];
     if (viewangleoffset)
@@ -783,7 +783,7 @@ void R_DrawPSprite(pspdef_t * psp)
     vis->psprite = true;
     vis->floorclip = 0;
     vis->texturemid = (BASEYCENTER << FRACBITS) /* + FRACUNIT / 2 */
-        - (psp->sy - spritetopoffset[lump]);
+        - (psp->sy2 - spritetopoffset[lump]);
     if (viewheight == SCREENHEIGHT)
     {
         vis->texturemid -= PSpriteSY[viewplayer->class]

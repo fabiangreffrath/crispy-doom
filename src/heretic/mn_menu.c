@@ -135,6 +135,8 @@ static boolean CrispyPlayerCoords(int option);
 static boolean CrispySecretMessage(int option);
 static boolean CrispyFreelook(int option);
 static boolean CrispyMouselook(int option);
+static boolean CrispyBobfactor(int option);
+static boolean CrispyCenterWeapon(int option);
 static boolean CrispyDefaultskill(int option);
 static boolean CrispyUncapped(int option);
 static boolean CrispyFpsLimit(int option);
@@ -386,6 +388,8 @@ static MenuItem_t Crispness2Items[] = {
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_LRFUNC2, "FREELOOK MODE:", CrispyFreelook, 0, MENU_NONE},
     {ITT_LRFUNC2, "PERMANENT MOUSELOOK:", CrispyMouselook, 0, MENU_NONE},
+    {ITT_LRFUNC2, "PLAYER VIEW/WEAPON BOBBING:", CrispyBobfactor, 0, MENU_NONE},
+    {ITT_LRFUNC2, "WEAPON ATTACK ALIGNMENT:", CrispyCenterWeapon, 0, MENU_NONE},
     {ITT_LRFUNC2, "DEFAULT DIFFICULTY:", CrispyDefaultskill, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EFUNC, "PREV PAGE", CrispyPrevPage, 0, MENU_NONE},
@@ -394,7 +398,7 @@ static MenuItem_t Crispness2Items[] = {
 static Menu_t Crispness2Menu = {
     68, 35,
     DrawCrispness,
-    11, Crispness2Items,
+    13, Crispness2Items,
     0,
     MENU_OPTIONS
 };
@@ -409,12 +413,26 @@ static MenuType_t CrispnessMenus[] = {
     MENU_CRISPNESS2,
 };
 
+static multiitem_t multiitem_bobfactor[NUM_BOBFACTORS] =
+{
+    {BOBFACTOR_FULL, "FULL"},
+    {BOBFACTOR_75, "75%"},
+    {BOBFACTOR_OFF, "OFF"},
+};
+
 static multiitem_t multiitem_brightmaps[NUM_BRIGHTMAPS] =
 {
     {BRIGHTMAPS_OFF, "NONE"},
     {BRIGHTMAPS_TEXTURES, "WALLS"},
     {BRIGHTMAPS_SPRITES, "ITEMS"},
     {BRIGHTMAPS_BOTH, "BOTH"},
+};
+
+static multiitem_t multiitem_centerweapon[NUM_CENTERWEAPON] =
+{
+    {CENTERWEAPON_OFF, "OFF"},
+    {CENTERWEAPON_CENTER, "CENTERED"},
+    {CENTERWEAPON_BOB, "BOBBING"},
 };
 
 static multiitem_t multiitem_widescreen[NUM_RATIOS] =
@@ -1608,6 +1626,18 @@ static boolean CrispyMouselook(int option)
     return true;
 }
 
+static boolean CrispyBobfactor(int option)
+{
+    ChangeSettingEnum(&crispy->bobfactor, option, NUM_BOBFACTORS);
+    return true;
+}
+
+static boolean CrispyCenterWeapon(int option)
+{
+    ChangeSettingEnum(&crispy->centerweapon, option, NUM_CENTERWEAPON);
+    return true;
+}
+
 static boolean CrispyDefaultskill(int option)
 {
     ChangeSettingEnum(&crispy->defaultskill, option, NUM_SKILLS);
@@ -2565,10 +2595,12 @@ static void DrawCrispnessItem(boolean item, int x, int y)
     MN_DrTextA(item ? "ON" : "OFF", x, y);
 }
 
-static void DrawCrispnessMultiItem(int item, int x, int y, const multiitem_t *multi)
+static void DrawCrispnessMultiItem(int item, int x, int y, const multiitem_t *multi,
+        boolean cond)
 {
-    dp_translation = item ? cr[CR_GREEN] : cr[CR_DARK];
-    MN_DrTextA(multi[item].name, x, y);
+    dp_translation = cond ? cr[CR_GRAY] :
+                     item ? cr[CR_GREEN] : cr[CR_DARK];
+    MN_DrTextA(cond ? multi[0].name : multi[item].name, x, y);
 }
 
 static void DrawCrispnessNumericItem(int item, int x, int y, const char *zero,
@@ -2613,7 +2645,7 @@ static void DrawCrispness1(void)
     DrawCrispnessItem(crispy->hires, 254, 35);
 
     // Widescreen
-    DrawCrispnessMultiItem(crispy->widescreen, 164, 45, multiitem_widescreen);
+    DrawCrispnessMultiItem(crispy->widescreen, 164, 45, multiitem_widescreen, false);
 
     // Smooth pixel scaling
     DrawCrispnessItem(crispy->smoothscaling, 216, 55);
@@ -2630,7 +2662,7 @@ static void DrawCrispness1(void)
     DrawCrispnessSubheader("VISUAL", 105);
 
     // Brightmaps
-    DrawCrispnessMultiItem(crispy->brightmaps, 213, 115, multiitem_brightmaps);
+    DrawCrispnessMultiItem(crispy->brightmaps, 213, 115, multiitem_brightmaps, false);
 
     DrawCrispnessSubheader("AUDIBLE", 135);
 
@@ -2638,7 +2670,7 @@ static void DrawCrispness1(void)
     DrawCrispnessItem(crispy->soundmono, 137, 145);
 
     // Sound Channels
-    DrawCrispnessMultiItem(snd_Channels >> 4, 181, 155, multiitem_sndchannels);
+    DrawCrispnessMultiItem(snd_Channels >> 4, 181, 155, multiitem_sndchannels, false);
 }
 
 static void DrawCrispness2(void)
@@ -2648,24 +2680,31 @@ static void DrawCrispness2(void)
     DrawCrispnessSubheader("NAVIGATIONAL", 25);
 
     // Show level stats
-    DrawCrispnessMultiItem(crispy->automapstats, 190, 35, multiitem_widgets);
+    DrawCrispnessMultiItem(crispy->automapstats, 190, 35, multiitem_widgets, false);
 
     // Show level time
-    DrawCrispnessMultiItem(crispy->leveltime, 179, 45, multiitem_widgets);
+    DrawCrispnessMultiItem(crispy->leveltime, 179, 45, multiitem_widgets, false);
     // Show player coords
-    DrawCrispnessMultiItem(crispy->playercoords, 211, 55, multiitem_widgets);
+    DrawCrispnessMultiItem(crispy->playercoords, 211, 55, multiitem_widgets, false);
 
     // Show secret message
-    DrawCrispnessMultiItem(crispy->secretmessage, 250, 65, multiitem_secretmessage);
+    DrawCrispnessMultiItem(crispy->secretmessage, 250, 65, multiitem_secretmessage, false);
 
     DrawCrispnessSubheader("TACTICAL", 85);
 
     // Freelook
-    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 95, multiitem_freelook_hh);
+    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 95, multiitem_freelook_hh, false);
 
     // Mouselook
     DrawCrispnessItem(crispy->mouselook, 220, 105);
 
+    // Bobfactor
+    DrawCrispnessMultiItem(crispy->bobfactor, 265, 115, multiitem_bobfactor, false);
+
+    // Weapon attack alignment
+    DrawCrispnessMultiItem(crispy->centerweapon, 245, 125, multiitem_centerweapon,
+            crispy->bobfactor == BOBFACTOR_OFF);
+
     // Default difficulty
-    DrawCrispnessMultiItem(crispy->defaultskill, 200, 115, multiitem_difficulties);
+    DrawCrispnessMultiItem(crispy->defaultskill, 200, 135, multiitem_difficulties, false);
 }
