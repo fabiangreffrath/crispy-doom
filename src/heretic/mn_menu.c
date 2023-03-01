@@ -413,14 +413,14 @@ static MenuType_t CrispnessMenus[] = {
     MENU_CRISPNESS2,
 };
 
-static multiitem_t multiitem_bobfactor[NUM_BOBFACTORS] =
+static const multiitem_t multiitem_bobfactor[NUM_BOBFACTORS] =
 {
     {BOBFACTOR_FULL, "FULL"},
     {BOBFACTOR_75, "75%"},
     {BOBFACTOR_OFF, "OFF"},
 };
 
-static multiitem_t multiitem_brightmaps[NUM_BRIGHTMAPS] =
+static const multiitem_t multiitem_brightmaps[NUM_BRIGHTMAPS] =
 {
     {BRIGHTMAPS_OFF, "NONE"},
     {BRIGHTMAPS_TEXTURES, "WALLS"},
@@ -428,14 +428,14 @@ static multiitem_t multiitem_brightmaps[NUM_BRIGHTMAPS] =
     {BRIGHTMAPS_BOTH, "BOTH"},
 };
 
-static multiitem_t multiitem_centerweapon[NUM_CENTERWEAPON] =
+static const multiitem_t multiitem_centerweapon[NUM_CENTERWEAPON] =
 {
     {CENTERWEAPON_OFF, "OFF"},
     {CENTERWEAPON_CENTER, "CENTERED"},
     {CENTERWEAPON_BOB, "BOBBING"},
 };
 
-static multiitem_t multiitem_widescreen[NUM_RATIOS] =
+static const multiitem_t multiitem_widescreen[NUM_RATIOS] =
 {
     {RATIO_ORIG, "ORIGINAL"},
     {RATIO_MATCH_SCREEN, "MATCH SCREEN"},
@@ -444,7 +444,7 @@ static multiitem_t multiitem_widescreen[NUM_RATIOS] =
     {RATIO_21_9, "21:9"},
 };
 
-static multiitem_t multiitem_widgets[NUM_WIDGETS] =
+static const multiitem_t multiitem_widgets[NUM_WIDGETS] =
 {
     {WIDGETS_OFF, "NEVER"},
     {WIDGETS_AUTOMAP, "IN AUTOMAP"},
@@ -452,20 +452,20 @@ static multiitem_t multiitem_widgets[NUM_WIDGETS] =
     {WIDGETS_STBAR, "STATUS BAR"},
 };
 
-static multiitem_t multiitem_secretmessage[NUM_SECRETMESSAGE] =
+static const multiitem_t multiitem_secretmessage[NUM_SECRETMESSAGE] =
 {
     {SECRETMESSAGE_OFF, "OFF"},
     {SECRETMESSAGE_ON, "ON"},
     {SECRETMESSAGE_COUNT, "COUNT"},
 };
 
-static multiitem_t multiitem_freelook_hh[NUM_FREELOOKS_HH] =
+static const multiitem_t multiitem_freelook_hh[NUM_FREELOOKS_HH] =
 {
     {FREELOOK_HH_LOCK, "LOCK"},
     {FREELOOK_HH_SPRING, "SPRING"},
 };
 
-static multiitem_t multiitem_difficulties[NUM_SKILLS] =
+static const multiitem_t multiitem_difficulties[NUM_SKILLS] =
 {
     {SKILL_HMP, "BRINGEST"},
     {SKILL_UV, "SMITE-MEISTER"},
@@ -474,7 +474,7 @@ static multiitem_t multiitem_difficulties[NUM_SKILLS] =
     {SKILL_HNTR, "YELLOWBELLIES"},
 };
 
-static multiitem_t multiitem_sndchannels[3] =
+static const multiitem_t multiitem_sndchannels[3] =
 {
     {8, "8"},
     {16, "16"},
