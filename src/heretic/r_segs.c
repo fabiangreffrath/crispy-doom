@@ -345,11 +345,10 @@ void R_RenderSegLoop(void)
 
 void R_StoreWallRange(int start, int stop)
 {
-    fixed_t hyp;
-    fixed_t sineval;
-    angle_t distangle, offsetangle;
     fixed_t vtop;
     int lightnum;
+    int64_t dx, dy, dx1, dy1, dist; // [crispy] fix long wall wobble
+    const uint32_t len = curline->length;
     extern boolean automapactive;
 
     // [crispy] remove MAXDRAWSEGS limit
@@ -386,14 +385,17 @@ void R_StoreWallRange(int start, int stop)
 // calculate rw_distance for scale calculation
 //
     rw_normalangle = curline->angle + ANG90;
-    offsetangle = abs((int) rw_normalangle - (int) rw_angle1);
-    if (offsetangle > ANG90)
-        offsetangle = ANG90;
-    distangle = ANG90 - offsetangle;
-    hyp = R_PointToDist(curline->v1->x, curline->v1->y);
-    sineval = finesine[distangle >> ANGLETOFINESHIFT];
-    rw_distance = FixedMul(hyp, sineval);
 
+    // [crispy] fix long wall wobble
+    // thank you very much Linguica, e6y and kb1
+    // http://www.doomworld.com/vb/post/1340718
+    // shift right to avoid possibility of int64 overflow in rw_distance calculation
+    dx = ((int64_t)curline->v2->x - curline->v1->x) >> 1;
+    dy = ((int64_t)curline->v2->y - curline->v1->y) >> 1;
+    dx1 = ((int64_t)viewx - curline->v1->x) >> 1;
+    dy1 = ((int64_t)viewy - curline->v1->y) >> 1;
+    dist = ((dy * dx1 - dx * dy1) / len) << 1;
+    rw_distance = (fixed_t)BETWEEN(INT_MIN, INT_MAX, dist);
 
     ds_p->x1 = rw_x = start;
     ds_p->x2 = stop;
@@ -578,15 +580,9 @@ void R_StoreWallRange(int start, int stop)
 
     if (segtextured)
     {
-        offsetangle = rw_normalangle - rw_angle1;
-        if (offsetangle > ANG180)
-            offsetangle = -offsetangle;
-        if (offsetangle > ANG90)
-            offsetangle = ANG90;
-        sineval = finesine[offsetangle >> ANGLETOFINESHIFT];
-        rw_offset = FixedMul(hyp, sineval);
-        if (rw_normalangle - rw_angle1 < ANG180)
-            rw_offset = -rw_offset;
+        // [crispy] fix long wall wobble
+        rw_offset = (fixed_t)(((dx * dx1 + dy * dy1) / len) << 1);
+
         rw_offset += sidedef->textureoffset + curline->offset;
         rw_centerangle = ANG90 + viewangle - rw_normalangle;
 

@@ -161,6 +161,23 @@ void P_LoadSegs(int lump)
     W_ReleaseLumpNum(lump);
 }
 
+// [crispy] fix long wall wobble
+
+static void P_SegLengths(void)
+{
+    int i;
+
+    for (i = 0; i < numsegs; i++)
+    {
+        seg_t *const li = &segs[i];
+        int64_t dx, dy;
+
+        dx = li->v2->x - li->v1->x;
+        dy = li->v2->y - li->v1->y;
+
+        li->length = (uint32_t)(sqrt((double)dx * dx + (double)dy * dy) / 2);
+    }
+}
 
 /*
 =================
@@ -746,6 +763,9 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 
     // [crispy] remove slime trails
     P_RemoveSlimeTrails();
+
+    // [crispy] fix long wall wobble
+    P_SegLengths();
 
     bodyqueslot = 0;
     deathmatch_p = deathmatchstarts;
