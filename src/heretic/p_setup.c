@@ -163,6 +163,17 @@ void P_LoadSegs(int lump)
 
 // [crispy] fix long wall wobble
 
+static angle_t anglediff(angle_t a, angle_t b)
+{
+    if (b > a)
+        return anglediff(b, a);
+
+    if (a - b < ANG180)
+        return a - b;
+    else // [crispy] wrap around
+        return b - a;
+}
+
 static void P_SegLengths(void)
 {
     int i;
@@ -172,10 +183,21 @@ static void P_SegLengths(void)
         seg_t *const li = &segs[i];
         int64_t dx, dy;
 
-        dx = li->v2->x - li->v1->x;
-        dy = li->v2->y - li->v1->y;
+        dx = li->v2->r_x - li->v1->r_x;
+        dy = li->v2->r_y - li->v1->r_y;
 
         li->length = (uint32_t)(sqrt((double)dx * dx + (double)dy * dy) / 2);
+
+        // [crispy] re-calculate angle used for rendering
+        viewx = li->v1->r_x;
+        viewy = li->v1->r_y;
+        li->r_angle = R_PointToAngleCrispy(li->v2->r_x, li->v2->r_y);
+        // [crispy] more than just a little adjustment?
+        // back to the original angle then
+        if (anglediff(li->r_angle, li->angle) > ANG60/2)
+        {
+            li->r_angle = li->angle;
+        }
     }
 }
 
