@@ -322,12 +322,12 @@ vissprite_t *R_NewVisSprite(void)
 int *mfloorclip;  // [crispy] 32-bit integer math
 int *mceilingclip;  // [crispy] 32-bit integer math
 fixed_t spryscale;
-fixed_t sprtopscreen;
+int64_t sprtopscreen; // [crispy] WiggleFix
 fixed_t sprbotscreen;
 
 void R_DrawMaskedColumn(column_t * column, signed int baseclip)
 {
-    int topscreen, bottomscreen;
+    int64_t topscreen, bottomscreen; // [crispy] WiggleFix
     fixed_t basetexturemid;
     int top = -1; // [crispy]
 
@@ -349,8 +349,8 @@ void R_DrawMaskedColumn(column_t * column, signed int baseclip)
 // calculate unclipped screen coordinates for post
         topscreen = sprtopscreen + spryscale * top;
         bottomscreen = topscreen + spryscale * column->length;
-        dc_yl = (topscreen + FRACUNIT - 1) >> FRACBITS;
-        dc_yh = (bottomscreen - 1) >> FRACBITS;
+        dc_yl = (int)((topscreen + FRACUNIT - 1) >> FRACBITS); // [crispy] WiggleFix
+        dc_yh = (int)((bottomscreen - 1) >> FRACBITS); // [crispy] WiggleFix
 
         if (dc_yh >= mfloorclip[dc_x])
             dc_yh = mfloorclip[dc_x] - 1;

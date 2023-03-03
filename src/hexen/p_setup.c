@@ -315,6 +315,9 @@ void P_LoadSectors(int lump)
         ss->thinglist = NULL;
         ss->seqType = SEQTYPE_STONE;    // default seqType
 
+        // [crispy] WiggleFix: [kb] for R_FixWiggle()
+        ss->cachedheight = 0;
+
         // [AM] Sector interpolation.  Even if we're
         //      not running uncapped, the renderer still
         //      uses this data.
