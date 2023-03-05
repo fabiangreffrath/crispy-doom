@@ -1634,6 +1634,11 @@ static boolean CrispyBobfactor(int option)
 
 static boolean CrispyCenterWeapon(int option)
 {
+    if (crispy->bobfactor == BOBFACTOR_OFF)
+    {
+        return true;
+    }
+
     ChangeSettingEnum(&crispy->centerweapon, option, NUM_CENTERWEAPON);
     return true;
 }
