@@ -194,8 +194,10 @@ static boolean CheckNerveLoaded (void)
 
 	if ((i = W_GetNumForName("MAP01")) != -1 &&
 	    (j = W_GetNumForName("MAP09")) != -1 &&
-	    !strcasecmp(W_WadNameForLump(lumpinfo[i]), "NERVE.WAD") &&
-	    !strcasecmp(W_WadNameForLump(lumpinfo[j]), "NERVE.WAD"))
+	    (!strcasecmp(W_WadNameForLump(lumpinfo[i]), "NERVE.WAD") ||
+	     !strcasecmp(W_WadNameForLump(lumpinfo[i]), "Nerve_demo.wad")) &&
+	    (!strcasecmp(W_WadNameForLump(lumpinfo[j]), "NERVE.WAD") ||
+	     !strcasecmp(W_WadNameForLump(lumpinfo[j]), "Nerve_demo.wad")))
 	{
 		gamemission = pack_nerve;
 
@@ -203,7 +205,8 @@ static boolean CheckNerveLoaded (void)
 		i = W_GetNumForName("INTERPIC");
 		j = W_GetNumForName("TITLEPIC");
 		if (W_IsIWADLump(lumpinfo[i]) &&
-		    strcasecmp(W_WadNameForLump(lumpinfo[j]), "NERVE.WAD"))
+		    strcasecmp(W_WadNameForLump(lumpinfo[j]), "NERVE.WAD") &&
+		    strcasecmp(W_WadNameForLump(lumpinfo[j]), "Nerve_demo.wad"))
 		{
 			DEH_AddStringReplacement ("TITLEPIC", "INTERPIC");
 		}
@@ -218,8 +221,13 @@ static boolean CheckNerveLoaded (void)
 static void CheckLoadNerve (void)
 {
 	const char *nerve_basename;
-	char *autoload_dir;
+	char *dirname, *autoload_dir;
 	int i, j;
+
+	const char *const nerve_wads[] = {
+		"NERVE.WAD",
+		"Nerve_demo.wad"
+	};
 
 	static const struct {
 		const char *name;
@@ -236,23 +244,26 @@ static void CheckLoadNerve (void)
 		return;
 	}
 
-	if (strrchr(iwadfile, DIR_SEPARATOR) != NULL)
+	// [crispy] load NERVE.WAD
+	dirname = M_DirName(iwadfile);
+	for (i = 0; i < arrlen(nerve_wads); i++)
 	{
-		char *dir;
-		dir = M_DirName(iwadfile);
-		crispy->havenerve = M_StringJoin(dir, DIR_SEPARATOR_S, "NERVE.WAD", NULL);
-		free(dir);
-	}
-	else
-	{
-		crispy->havenerve = M_StringDuplicate("NERVE.WAD");
-	}
+		crispy->havenerve = M_StringJoin(dirname, DIR_SEPARATOR_S, nerve_wads[i], NULL);
 
-	if (!M_FileExists(crispy->havenerve))
-	{
+		if (M_FileExists(crispy->havenerve))
+		{
+			break;
+		}
+
 		free(crispy->havenerve);
-		crispy->havenerve = D_FindWADByName("NERVE.WAD");
+		crispy->havenerve = D_FindWADByName(nerve_wads[i]);
+
+		if (crispy->havenerve)
+		{
+			break;
+		}
 	}
+	free(dirname);
 
 	if (crispy->havenerve == NULL)
 	{
