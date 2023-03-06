@@ -2609,7 +2609,7 @@ static void DrawCrispnessItem(boolean item, int x, int y)
 static void DrawCrispnessMultiItem(int item, int x, int y, const multiitem_t *multi,
         boolean cond)
 {
-    dp_translation = cond ? cr[CR_GRAY] :
+    dp_translation = cond ? NULL :
                      item ? cr[CR_GREEN] : cr[CR_DARK];
     MN_DrTextA(cond ? multi[0].name : multi[item].name, x, y);
 }
@@ -2629,7 +2629,7 @@ static void DrawCrispnessNumericItem(int item, int x, int y, const char *zero,
         M_snprintf(number, size, "%d", item);
     }
 
-    dp_translation = cond ? cr[CR_GRAY] :
+    dp_translation = cond ? NULL :
                     (item || numeric_enter) ? cr[CR_GREEN] : cr[CR_DARK];
 
     if (cond)
