@@ -359,7 +359,7 @@ static MenuItem_t Crispness1Items[] = {
     {ITT_LRFUNC2, "ASPECT RATIO:", CrispyToggleWidescreen, 0, MENU_NONE},
     {ITT_LRFUNC2, "SMOOTH PIXEL SCALING:", CrispySmoothing, 0, MENU_NONE},
     {ITT_LRFUNC2, "UNCAPPED FRAMERATE:", CrispyUncapped, 0, MENU_NONE},
-    {ITT_NUMFUNC, "FPS LIMIT:", CrispyFpsLimit, 0, MENU_NONE},
+    {ITT_NUMFUNC, "FRAMERATE LIMIT:", CrispyFpsLimit, 0, MENU_NONE},
     {ITT_LRFUNC2, "ENABLE VSYNC:", CrispyVsync, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
@@ -2661,8 +2661,8 @@ static void DrawCrispness1(void)
     // Uncapped framerate
     DrawCrispnessItem(crispy->uncapped, 217, 65);
 
-    // FPS limit
-    DrawCrispnessNumericItem(crispy->fpslimit, 134, 75, "NONE", !crispy->uncapped, "35");
+    // Framerate limit
+    DrawCrispnessNumericItem(crispy->fpslimit, 181, 75, "NONE", !crispy->uncapped, "35");
 
     // Vsync
     DrawCrispnessItem(crispy->vsync, 167, 85);
