@@ -23,6 +23,7 @@
 #include "i_input.h"
 #include "i_system.h"
 #include "i_swap.h"
+#include "i_timer.h" // [crispy] TICRATE
 #include "i_video.h"
 #include "m_controls.h"
 #include "m_misc.h"
@@ -1559,15 +1560,17 @@ static void CrispyFpsLimit(int option)
     if (option == LEFT_DIR)
     {
         crispy->fpslimit--;
-
-        if (crispy->fpslimit < CRISPY_FPSLIMIT_MIN)
-        {
-            crispy->fpslimit = 0;
-        }
     }
     else if (option == RIGHT_DIR)
     {
-        crispy->fpslimit++;
+        if (crispy->fpslimit < TICRATE)
+        {
+            crispy->fpslimit = TICRATE;
+        }
+        else
+        {
+            crispy->fpslimit++;
+        }
     }
     else if (option == ENTER_NUMBER)
     {
@@ -1585,9 +1588,9 @@ static void CrispyFpsLimit(int option)
         }
     }
 
-    if (crispy->fpslimit && crispy->fpslimit < CRISPY_FPSLIMIT_MIN)
+    if (crispy->fpslimit < TICRATE)
     {
-        crispy->fpslimit = CRISPY_FPSLIMIT_MIN;
+        crispy->fpslimit = 0;
     }
     else if (crispy->fpslimit > CRISPY_FPSLIMIT_MAX)
     {
