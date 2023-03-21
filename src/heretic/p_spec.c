@@ -182,13 +182,8 @@ int *AmbientSfx[] = {
     AmbSndSeq9,                 // Laughter
     AmbSndSeq10                 // FastFootsteps
 };
-
-//
-//      source animation definition
-//
 // Animating textures and planes
 // [crispy] moving ANIMATED support from doom branch here
-//
 typedef struct
 {
     boolean     istexture;
@@ -196,7 +191,6 @@ typedef struct
     int         basepic;
     int         numpics;
     int         speed;
-    
 } anim_t;
 
 typedef PACKED_STRUCT (
@@ -221,12 +215,6 @@ static size_t   maxanims;
 
 short   numlinespecials;
 line_t* linespeciallist[MAXLINEANIMS];
-
-
-
-
-
-
 animdef_t animdefs_vanilla[] = {
     // false = flat
     // true = texture
@@ -311,7 +299,6 @@ void P_InitPicAnims(void)
 {
     int i;
     boolean init_swirl = false;
-
     // [crispy] add support for ANIMATED lumps
     animdef_t *animdefs;
     const boolean from_lump = (W_CheckNumForName("ANIMATED") != -1);
@@ -327,7 +314,7 @@ void P_InitPicAnims(void)
     
     //  Init animation
     lastanim = anims;
-    for (i = 0 ; animdefs[i].istexture != -1; i++)
+    for (i = 0; animdefs[i].istexture != -1; i++)
     {
         const char *startname, *endname;
 
