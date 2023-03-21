@@ -21,18 +21,23 @@
 #include "doomdef.h"
 #include "deh_str.h"
 #include "i_system.h"
+#include "i_swap.h" // [crispy] LONG() 
 #include "i_timer.h"
 #include "m_misc.h" // [crispy] So M_sprintf can be used
 #include "m_random.h"
+#include "w_wad.h"
+#include "r_swirl.h" // [crispy] R_InitDistortedFlats()
+ 
 #include "p_local.h"
 #include "s_sound.h"
 #include "v_video.h"
+
 
 // Macros
 
 #define MAX_AMBIENT_SFX 8       // Per level
 
-#define HUSTR_SECRETFOUND	"A SECRET IS REVEALED!" // [crispy] Secret message
+#define HUSTR_SECRETFOUND       "A SECRET IS REVEALED!" // [crispy] Secret message
 
 // Types
 
@@ -180,7 +185,51 @@ int *AmbientSfx[] = {
     AmbSndSeq10                 // FastFootsteps
 };
 
-animdef_t animdefs[] = {
+//
+//      source animation definition
+//
+// Animating textures and planes
+// [crispy] moving ANIMATED support from doom branch here
+//
+typedef struct
+{
+    boolean     istexture;
+    int         picnum;
+    int         basepic;
+    int         numpics;
+    int         speed;
+    
+} anim_t;
+
+typedef PACKED_STRUCT (
+{
+    signed char istexture;      // if false, it is a flat
+    char        endname[9];
+    char        startname[9];
+    int         speed;
+}) animdef_t;
+
+#define MAXANIMS 32
+
+// [crispy] remove MAXANIMS limit
+anim_t*  anims;
+anim_t*  lastanim;
+static size_t   maxanims;
+
+//
+//      Animating line specials
+//
+#define MAXLINEANIMS            64*256
+
+short   numlinespecials;
+line_t* linespeciallist[MAXLINEANIMS];
+
+
+
+
+
+
+animdef_t animdefs_vanilla[] = {
     // false = flat
     // true = texture
     {false, "FLTWAWA3", "FLTWAWA1", 8}, // Water
@@ -191,11 +240,9 @@ animdef_t animdefs[] = {
     {false, "FLATHUH4", "FLATHUH1", 8}, // Super Lava
     {true, "LAVAFL3", "LAVAFL1", 6},    // Texture: Lavaflow
     {true, "WATRWAL3", "WATRWAL1", 4},  // Texture: Waterfall
-    {-1}
+    {-1,        "",             "",             0},
 };
 
-anim_t anims[MAXANIMS];
-anim_t *lastanim;
 
 int *TerrainTypes;
 struct
@@ -262,52 +309,96 @@ void P_InitTerrainTypes(void)
 //
 //----------------------------------------------------------------------------
 
-void P_InitPicAnims(void)
+void P_InitPicAnims (void)
 {
-    const char *startname;
-    const char *endname;
-    int i;
+    int         i;
+    boolean init_swirl = false;
 
-    lastanim = anims;
-    for (i = 0; animdefs[i].istexture != -1; i++)
+    // [crispy] add support for ANIMATED lumps
+    animdef_t *animdefs;
+    const boolean from_lump = (W_CheckNumForName("ANIMATED") != -1);
+
+    if (from_lump)
     {
+        animdefs = W_CacheLumpName("ANIMATED", PU_STATIC);
+    }
+    else
+    {
+        animdefs = animdefs_vanilla;
+    }
+    
+    //  Init animation
+    lastanim = anims;
+    for (i=0 ; animdefs[i].istexture != -1 ; i++)
+    {
+        const char *startname, *endname;
+
+        // [crispy] remove MAXANIMS limit
+        if (lastanim >= anims + maxanims)
+        {
+            size_t newmax = maxanims ? 2 * maxanims : MAXANIMS;
+            anims = I_Realloc(anims, newmax * sizeof(*anims));
+            lastanim = anims + maxanims;
+            maxanims = newmax;
+        }
+
         startname = DEH_String(animdefs[i].startname);
         endname = DEH_String(animdefs[i].endname);
 
         if (animdefs[i].istexture)
-        {                       // Texture animation
+        {
+            // different episode ?
             if (R_CheckTextureNumForName(startname) == -1)
-            {                   // Texture doesn't exist
-                continue;
-            }
+                continue;       
+
             lastanim->picnum = R_TextureNumForName(endname);
             lastanim->basepic = R_TextureNumForName(startname);
         }
         else
-        {                       // Flat animation
+        {
             if (W_CheckNumForName(startname) == -1)
-            {                   // Flat doesn't exist
                 continue;
-            }
+
             lastanim->picnum = R_FlatNumForName(endname);
             lastanim->basepic = R_FlatNumForName(startname);
         }
+
         lastanim->istexture = animdefs[i].istexture;
         lastanim->numpics = lastanim->picnum - lastanim->basepic + 1;
+        lastanim->speed = from_lump ? LONG(animdefs[i].speed) : animdefs[i].speed;
+
+        // [crispy] add support for SMMU swirling flats
+        if (lastanim->speed > 65535 || lastanim->numpics == 1)
+        {
+                init_swirl = true;
+        }
+        else
         if (lastanim->numpics < 2)
         {
-            I_Error("P_InitPicAnims: bad cycle from %s to %s",
-                    startname, endname);
+            // [crispy] make non-fatal, skip invalid animation sequences
+            fprintf (stderr, "P_InitPicAnims: bad cycle from %s to %s\n",
+                     startname, endname);
+            continue;
         }
-        lastanim->speed = animdefs[i].speed;
+        
         lastanim++;
+    }
+        
+    if (from_lump)
+    {
+        W_ReleaseLumpName("ANIMATED");
+    }
+
+    if (init_swirl)
+    {
+        R_InitDistortedFlats();
     }
 }
 
 /*
 ==============================================================================
 
-							UTILITIES
+                                                        UTILITIES
 
 ==============================================================================
 */
@@ -543,7 +634,7 @@ int P_FindMinSurroundingLight(sector_t * sector, int max)
 /*
 ==============================================================================
 
-							EVENTS
+                                                        EVENTS
 
 Events are operations triggered by using, crossing, or shooting special lines, or by timed thinkers
 
@@ -991,47 +1082,54 @@ void P_PlayerInSpecialSector(player_t * player)
 
 void P_UpdateSpecials(void)
 {
-    int i;
-    int pic;
-    anim_t *anim;
-    line_t *line;
+    anim_t* anim;
+    int         pic;
+    int         i;
+    line_t*     line;
 
-    // Animate flats and textures
-    for (anim = anims; anim < lastanim; anim++)
+    
+    //  ANIMATE FLATS AND TEXTURES GLOBALLY
+    for (anim = anims ; anim < lastanim ; anim++)
     {
-        for (i = anim->basepic; i < anim->basepic + anim->numpics; i++)
+        for (i=anim->basepic ; i<anim->basepic+anim->numpics ; i++)
         {
-            pic =
-                anim->basepic +
-                ((leveltime / anim->speed + i) % anim->numpics);
+            pic = anim->basepic + ( (leveltime/anim->speed + i)%anim->numpics );
             if (anim->istexture)
-            {
                 texturetranslation[i] = pic;
-            }
             else
             {
+                // [crispy] add support for SMMU swirling flats
+                if (anim->speed > 65535 || anim->numpics == 1)
+                {
+                    flattranslation[i] = -1;
+                }
+                else
                 flattranslation[i] = pic;
             }
         }
     }
-    // Update scrolling texture offsets
+
+    
+    //  ANIMATE LINE SPECIALS
     for (i = 0; i < numlinespecials; i++)
     {
         line = linespeciallist[i];
-        switch (line->special)
+        switch(line->special)
         {
-            case 48:           // Effect_Scroll_Left
-                // [crispy] smooth texture scrolling
-                sides[line->sidenum[0]].basetextureoffset += FRACUNIT;
-                sides[line->sidenum[0]].textureoffset =
-                    sides[line->sidenum[0]].basetextureoffset;
-                break;
-            case 99:           // Effect_Scroll_Right
-                // [crispy] smooth texture scrolling
-                sides[line->sidenum[0]].basetextureoffset -= FRACUNIT;
-                sides[line->sidenum[0]].textureoffset =
-                    sides[line->sidenum[0]].basetextureoffset;
-                break;
+          case 48:
+            // EFFECT FIRSTCOL SCROLL +
+            // [crispy] smooth texture scrolling
+            sides[line->sidenum[0]].basetextureoffset += FRACUNIT;
+            sides[line->sidenum[0]].textureoffset =
+            sides[line->sidenum[0]].basetextureoffset;
+            break;
+          case 85:
+            // [JN] (Boom) Scroll Texture Right
+            // [crispy] smooth texture scrolling
+            sides[line->sidenum[0]].basetextureoffset -= FRACUNIT;
+            sides[line->sidenum[0]].textureoffset =
+            sides[line->sidenum[0]].basetextureoffset;
+            break;
         }
     }
     // Handle buttons
@@ -1165,7 +1263,7 @@ int EV_DoDonut(line_t * line)
 /*
 ==============================================================================
 
-							SPECIAL SPAWNING
+                                                        SPECIAL SPAWNING
 
 ==============================================================================
 */

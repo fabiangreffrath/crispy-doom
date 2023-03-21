@@ -19,48 +19,15 @@
 /*
 ===============================================================================
 
-							P_SPEC
+                                                        P_SPEC
 
 ===============================================================================
 */
 
-//
-//      Animating textures and planes
-//
-typedef struct
-{
-    boolean istexture;
-    int picnum;
-    int basepic;
-    int numpics;
-    int speed;
-} anim_t;
-
-//
-//      source animation definition
-//
-typedef struct
-{
-    int istexture;          // if false, it's a flat
-    char endname[9];
-    char startname[9];
-    int speed;
-} animdef_t;
-
-#define	MAXANIMS		32
-
-extern anim_t anims[MAXANIMS], *lastanim;
 extern int *TerrainTypes;
 
-//
-//      Animating line specials
-//
-#define	MAXLINEANIMS		64*256
-extern short numlinespecials;
-extern line_t *linespeciallist[MAXLINEANIMS];
-
 //      Define values for map objects
-#define	MO_TELEPORTMAN		14
+#define MO_TELEPORTMAN          14
 
 // at game start
 void P_InitPicAnims(void);
@@ -103,7 +70,7 @@ int EV_DoDonut(line_t * line);
 /*
 ===============================================================================
 
-							P_LIGHTS
+                                                        P_LIGHTS
 
 ===============================================================================
 */
@@ -138,10 +105,10 @@ typedef struct
     int direction;
 } glow_t;
 
-#define GLOWSPEED		8
-#define	STROBEBRIGHT	5
-#define	FASTDARK		15
-#define	SLOWDARK		35
+#define GLOWSPEED               8
+#define STROBEBRIGHT    5
+#define FASTDARK                15
+#define SLOWDARK                35
 
 void T_LightFlash(thinker_t *thinker);
 void P_SpawnLightFlash(sector_t * sector);
@@ -156,7 +123,7 @@ void P_SpawnGlowingLight(sector_t * sector);
 /*
 ===============================================================================
 
-							P_SWITCH
+                                                        P_SWITCH
 
 ===============================================================================
 */
@@ -183,9 +150,9 @@ typedef struct
     void *soundorg;
 } button_t;
 
-#define	MAXSWITCHES	50      // max # of wall switches in a level
-#define	MAXBUTTONS	16      // 4 players, 4 buttons each at once, max.
-#define BUTTONTIME	35      // 1 second
+#define MAXSWITCHES     50      // max # of wall switches in a level
+#define MAXBUTTONS      16      // 4 players, 4 buttons each at once, max.
+#define BUTTONTIME      35      // 1 second
 
 extern button_t buttonlist[MAXBUTTONS];
 
@@ -195,7 +162,7 @@ void P_InitSwitchList(void);
 /*
 ===============================================================================
 
-							P_PLATS
+                                                        P_PLATS
 
 ===============================================================================
 */
@@ -231,9 +198,9 @@ typedef struct
     plattype_e type;
 } plat_t;
 
-#define	PLATWAIT	3
-#define	PLATSPEED	FRACUNIT
-#define	MAXPLATS	30*256
+#define PLATWAIT        3
+#define PLATSPEED       FRACUNIT
+#define MAXPLATS        30*256
 
 extern plat_t *activeplats[MAXPLATS];
 
@@ -247,7 +214,7 @@ void P_ActivateInStasis(int tag);
 /*
 ===============================================================================
 
-							P_DOORS
+                                                        P_DOORS
 
 ===============================================================================
 */
@@ -273,8 +240,8 @@ typedef struct
     int topcountdown;           // when it reaches 0, start going down
 } vldoor_t;
 
-#define	VDOORSPEED	FRACUNIT*2
-#define	VDOORWAIT		150
+#define VDOORSPEED      FRACUNIT*2
+#define VDOORWAIT               150
 
 void EV_VerticalDoor(line_t * line, mobj_t * thing);
 int EV_DoDoor(line_t * line, vldoor_e type, fixed_t speed);
@@ -285,7 +252,7 @@ void P_SpawnDoorRaiseIn5Mins(sector_t * sec, int secnum);
 /*
 ===============================================================================
 
-							P_CEILNG
+                                                        P_CEILNG
 
 ===============================================================================
 */
@@ -311,9 +278,9 @@ typedef struct
     int olddirection;
 } ceiling_t;
 
-#define	CEILSPEED		FRACUNIT
-#define	CEILWAIT		150
-#define MAXCEILINGS		30
+#define CEILSPEED               FRACUNIT
+#define CEILWAIT                150
+#define MAXCEILINGS             30
 
 extern ceiling_t *activeceilings[MAXCEILINGS];
 
@@ -327,7 +294,7 @@ void P_ActivateInStasisCeiling(line_t * line);
 /*
 ===============================================================================
 
-							P_FLOOR
+                                                        P_FLOOR
 
 ===============================================================================
 */
@@ -361,7 +328,7 @@ typedef struct
     fixed_t speed;
 } floormove_t;
 
-#define	FLOORSPEED	FRACUNIT
+#define FLOORSPEED      FRACUNIT
 
 typedef enum
 {
@@ -381,7 +348,7 @@ void T_MoveFloor(thinker_t *thinker);
 /*
 ===============================================================================
 
-							P_TELEPT
+                                                        P_TELEPT
 
 ===============================================================================
 */

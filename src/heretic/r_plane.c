@@ -22,6 +22,9 @@
 #include "r_bmaps.h" // [crispy] R_BrightmapForTexName()
 #include "r_local.h"
 
+#include "r_swirl.h" // [crispy] R_DistortedFlat()
+
+
 planefunction_t floorfunc, ceilingfunc;
 
 //
@@ -140,7 +143,7 @@ void R_MapPlane(int y, int x1, int x2)
 
     if (!(dy = abs(centery - y)))
     {
-	return;
+        return;
     }
 
     if (planeheight != cachedheight[y])
@@ -225,23 +228,23 @@ static void R_RaiseVisplanes (visplane_t** vp)
 {
     if (lastvisplane - visplanes == numvisplanes)
     {
-	int numvisplanes_old = numvisplanes;
-	visplane_t* visplanes_old = visplanes;
+        int numvisplanes_old = numvisplanes;
+        visplane_t* visplanes_old = visplanes;
 
-	numvisplanes = numvisplanes ? 2 * numvisplanes : MAXVISPLANES;
-	visplanes = I_Realloc(visplanes, numvisplanes * sizeof(*visplanes));
-	memset(visplanes + numvisplanes_old, 0, (numvisplanes - numvisplanes_old) * sizeof(*visplanes));
+        numvisplanes = numvisplanes ? 2 * numvisplanes : MAXVISPLANES;
+        visplanes = I_Realloc(visplanes, numvisplanes * sizeof(*visplanes));
+        memset(visplanes + numvisplanes_old, 0, (numvisplanes - numvisplanes_old) * sizeof(*visplanes));
 
-	lastvisplane = visplanes + numvisplanes_old;
-	floorplane = visplanes + (floorplane - visplanes_old);
-	ceilingplane = visplanes + (ceilingplane - visplanes_old);
+        lastvisplane = visplanes + numvisplanes_old;
+        floorplane = visplanes + (floorplane - visplanes_old);
+        ceilingplane = visplanes + (ceilingplane - visplanes_old);
 
-	if (numvisplanes_old)
-	    fprintf(stderr, "R_FindPlane: Hit MAXVISPLANES limit at %d, raised to %d.\n", numvisplanes_old, numvisplanes);
+        if (numvisplanes_old)
+            fprintf(stderr, "R_FindPlane: Hit MAXVISPLANES limit at %d, raised to %d.\n", numvisplanes_old, numvisplanes);
 
-	// keep the pointer passed as argument in relation to the visplanes pointer
-	if (vp)
-	    *vp = visplanes + (*vp - visplanes_old);
+        // keep the pointer passed as argument in relation to the visplanes pointer
+        if (vp)
+            *vp = visplanes + (*vp - visplanes_old);
     }
 }
 
@@ -431,6 +434,8 @@ void R_DrawPlanes(void)
 
     for (pl = visplanes; pl < lastvisplane; pl++)
     {
+        boolean swirling; //[crispy] added from doom branch
+
         if (pl->minx > pl->maxx)
             continue;
         //
@@ -507,12 +512,12 @@ void R_DrawPlanes(void)
             }
             continue;
         }
-
-        //
+        swirling = (flattranslation[pl->picnum] == -1); //[crispy] adapting swirling to heretic branch from doom's one
         // regular flat
-        //
-        lumpnum = firstflat + flattranslation[pl->picnum];
-
+        lumpnum = firstflat + (swirling ? pl->picnum : flattranslation[pl->picnum]);
+        // [crispy] add support for SMMU swirling flats
+        ds_source = swirling ? R_DistortedFlat(lumpnum) : W_CacheLumpNum(lumpnum, PU_STATIC);
+        if (!swirling){
         tempSource = W_CacheLumpNum(lumpnum, PU_STATIC);
 
         switch (pl->special)
@@ -553,6 +558,7 @@ void R_DrawPlanes(void)
                 break;
             default:
                 ds_source = tempSource;
+        }
         }
         ds_brightmap = R_BrightmapForFlatNum(lumpnum-firstflat);
         planeheight = abs(pl->height - viewz);
