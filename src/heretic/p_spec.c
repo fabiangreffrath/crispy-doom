@@ -332,10 +332,10 @@ void P_InitPicAnims(void)
 
         if (animdefs[i].istexture)
         {                       // Texture animation
-            // different episode ?
             if (R_CheckTextureNumForName(startname) == -1)
-                continue;       
-
+            {                   // Texture doesn't exist
+                continue;
+            }
             lastanim->picnum = R_TextureNumForName(endname);
             lastanim->basepic = R_TextureNumForName(startname);
         }
@@ -1078,9 +1078,13 @@ void P_UpdateSpecials(void)
     {
         for (i = anim->basepic; i < anim->basepic + anim->numpics; i++)
         {
-            pic = anim->basepic + ( (leveltime/anim->speed + i)%anim->numpics );
+            pic =
+                anim->basepic +
+                ((leveltime / anim->speed + i) % anim->numpics);
             if (anim->istexture)
+            {
                 texturetranslation[i] = pic;
+            }
             else
             {
                 // [crispy] add support for SMMU swirling flats
