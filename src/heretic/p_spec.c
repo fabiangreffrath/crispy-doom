@@ -366,8 +366,7 @@ void P_InitPicAnims(void)
             fprintf (stderr, "P_InitPicAnims: bad cycle from %s to %s\n",
                      startname, endname);
             continue;
-        }
-        
+        }        
         lastanim++;
     }
         
@@ -1075,9 +1074,9 @@ void P_UpdateSpecials(void)
     line_t *line;
 
     // Animate flats and textures
-    for (anim = anims ; anim < lastanim ; anim++)
+    for (anim = anims; anim < lastanim; anim++)
     {
-        for (i=anim->basepic ; i<anim->basepic+anim->numpics ; i++)
+        for (i = anim->basepic; i < anim->basepic + anim->numpics; i++)
         {
             pic = anim->basepic + ( (leveltime/anim->speed + i)%anim->numpics );
             if (anim->istexture)
