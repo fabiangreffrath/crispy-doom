@@ -27,17 +27,15 @@
 #include "m_random.h"
 #include "w_wad.h"
 #include "r_swirl.h" // [crispy] R_InitDistortedFlats()
- 
 #include "p_local.h"
 #include "s_sound.h"
 #include "v_video.h"
-
 
 // Macros
 
 #define MAX_AMBIENT_SFX 8       // Per level
 
-#define HUSTR_SECRETFOUND       "A SECRET IS REVEALED!" // [crispy] Secret message
+#define HUSTR_SECRETFOUND	"A SECRET IS REVEALED!" // [crispy] Secret message
 
 // Types
 
@@ -309,9 +307,9 @@ void P_InitTerrainTypes(void)
 //
 //----------------------------------------------------------------------------
 
-void P_InitPicAnims (void)
+void P_InitPicAnims(void)
 {
-    int         i;
+    int i;
     boolean init_swirl = false;
 
     // [crispy] add support for ANIMATED lumps
@@ -329,7 +327,7 @@ void P_InitPicAnims (void)
     
     //  Init animation
     lastanim = anims;
-    for (i=0 ; animdefs[i].istexture != -1 ; i++)
+    for (i = 0 ; animdefs[i].istexture != -1; i++)
     {
         const char *startname, *endname;
 
@@ -346,7 +344,7 @@ void P_InitPicAnims (void)
         endname = DEH_String(animdefs[i].endname);
 
         if (animdefs[i].istexture)
-        {
+        {                       // Texture animation
             // different episode ?
             if (R_CheckTextureNumForName(startname) == -1)
                 continue;       
@@ -355,9 +353,11 @@ void P_InitPicAnims (void)
             lastanim->basepic = R_TextureNumForName(startname);
         }
         else
-        {
+        {                       // Flat animation
             if (W_CheckNumForName(startname) == -1)
+            {                   // Flat doesn't exist
                 continue;
+            }
 
             lastanim->picnum = R_FlatNumForName(endname);
             lastanim->basepic = R_FlatNumForName(startname);
@@ -398,7 +398,7 @@ void P_InitPicAnims (void)
 /*
 ==============================================================================
 
-                                                        UTILITIES
+							UTILITIES
 
 ==============================================================================
 */
@@ -634,7 +634,7 @@ int P_FindMinSurroundingLight(sector_t * sector, int max)
 /*
 ==============================================================================
 
-                                                        EVENTS
+							EVENTS
 
 Events are operations triggered by using, crossing, or shooting special lines, or by timed thinkers
 
@@ -1082,13 +1082,12 @@ void P_PlayerInSpecialSector(player_t * player)
 
 void P_UpdateSpecials(void)
 {
-    anim_t* anim;
-    int         pic;
-    int         i;
-    line_t*     line;
+    int i;
+    int pic;
+    anim_t *anim;
+    line_t *line;
 
-    
-    //  ANIMATE FLATS AND TEXTURES GLOBALLY
+    // Animate flats and textures
     for (anim = anims ; anim < lastanim ; anim++)
     {
         for (i=anim->basepic ; i<anim->basepic+anim->numpics ; i++)
@@ -1108,28 +1107,24 @@ void P_UpdateSpecials(void)
             }
         }
     }
-
-    
-    //  ANIMATE LINE SPECIALS
+    // Update scrolling texture offsets
     for (i = 0; i < numlinespecials; i++)
     {
         line = linespeciallist[i];
-        switch(line->special)
+        switch (line->special)
         {
-          case 48:
-            // EFFECT FIRSTCOL SCROLL +
-            // [crispy] smooth texture scrolling
-            sides[line->sidenum[0]].basetextureoffset += FRACUNIT;
-            sides[line->sidenum[0]].textureoffset =
-            sides[line->sidenum[0]].basetextureoffset;
-            break;
-          case 99:
-            // [JN] (Boom) Scroll Texture Right
-            // [crispy] smooth texture scrolling
-            sides[line->sidenum[0]].basetextureoffset -= FRACUNIT;
-            sides[line->sidenum[0]].textureoffset =
-            sides[line->sidenum[0]].basetextureoffset;
-            break;
+            case 48:           // Effect_Scroll_Left
+                // [crispy] smooth texture scrolling
+                sides[line->sidenum[0]].basetextureoffset += FRACUNIT;
+                sides[line->sidenum[0]].textureoffset =
+                    sides[line->sidenum[0]].basetextureoffset;
+                break;
+            case 99:           // Effect_Scroll_Right
+                // [crispy] smooth texture scrolling
+                sides[line->sidenum[0]].basetextureoffset -= FRACUNIT;
+                sides[line->sidenum[0]].textureoffset =
+                    sides[line->sidenum[0]].basetextureoffset;
+                break;
         }
     }
     // Handle buttons
@@ -1263,7 +1258,7 @@ int EV_DoDonut(line_t * line)
 /*
 ==============================================================================
 
-                                                        SPECIAL SPAWNING
+							SPECIAL SPAWNING
 
 ==============================================================================
 */

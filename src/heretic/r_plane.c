@@ -23,8 +23,6 @@
 #include "r_local.h"
 
 #include "r_swirl.h" // [crispy] R_DistortedFlat()
-
-
 planefunction_t floorfunc, ceilingfunc;
 
 //
@@ -143,7 +141,7 @@ void R_MapPlane(int y, int x1, int x2)
 
     if (!(dy = abs(centery - y)))
     {
-        return;
+	return;
     }
 
     if (planeheight != cachedheight[y])
@@ -228,23 +226,23 @@ static void R_RaiseVisplanes (visplane_t** vp)
 {
     if (lastvisplane - visplanes == numvisplanes)
     {
-        int numvisplanes_old = numvisplanes;
-        visplane_t* visplanes_old = visplanes;
+	int numvisplanes_old = numvisplanes;
+	visplane_t* visplanes_old = visplanes;
 
-        numvisplanes = numvisplanes ? 2 * numvisplanes : MAXVISPLANES;
-        visplanes = I_Realloc(visplanes, numvisplanes * sizeof(*visplanes));
-        memset(visplanes + numvisplanes_old, 0, (numvisplanes - numvisplanes_old) * sizeof(*visplanes));
+	numvisplanes = numvisplanes ? 2 * numvisplanes : MAXVISPLANES;
+	visplanes = I_Realloc(visplanes, numvisplanes * sizeof(*visplanes));
+	memset(visplanes + numvisplanes_old, 0, (numvisplanes - numvisplanes_old) * sizeof(*visplanes));
 
-        lastvisplane = visplanes + numvisplanes_old;
-        floorplane = visplanes + (floorplane - visplanes_old);
-        ceilingplane = visplanes + (ceilingplane - visplanes_old);
+	lastvisplane = visplanes + numvisplanes_old;
+	floorplane = visplanes + (floorplane - visplanes_old);
+	ceilingplane = visplanes + (ceilingplane - visplanes_old);
 
-        if (numvisplanes_old)
-            fprintf(stderr, "R_FindPlane: Hit MAXVISPLANES limit at %d, raised to %d.\n", numvisplanes_old, numvisplanes);
+	if (numvisplanes_old)
+	    fprintf(stderr, "R_FindPlane: Hit MAXVISPLANES limit at %d, raised to %d.\n", numvisplanes_old, numvisplanes);
 
         // keep the pointer passed as argument in relation to the visplanes pointer
-        if (vp)
-            *vp = visplanes + (*vp - visplanes_old);
+	if (vp)
+	    *vp = visplanes + (*vp - visplanes_old);
     }
 }
 
