@@ -1183,6 +1183,11 @@ void D_DoomMain(void)
         }
     }
 
+    if (W_CheckNumForName("HEREHACK") != -1)
+    {
+        DEH_LoadLumpByName("HEREHACK", true, true);
+    }
+
     //!
     // @arg <demo>
     // @category demo
