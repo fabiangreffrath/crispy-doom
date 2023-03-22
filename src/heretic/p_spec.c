@@ -194,7 +194,7 @@ animdef_t animdefs_vanilla[] = {
     {false, "FLATHUH4", "FLATHUH1", 8}, // Super Lava
     {true, "LAVAFL3", "LAVAFL1", 6},    // Texture: Lavaflow
     {true, "WATRWAL3", "WATRWAL1", 4},  // Texture: Waterfall
-    {-1},
+    {-1}
 };
 
 // [crispy] remove MAXANIMS limit
