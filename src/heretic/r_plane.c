@@ -510,7 +510,6 @@ void R_DrawPlanes(void)
             continue;
         }
 
-
         swirling = (flattranslation[pl->picnum] == -1); //[crispy] adapting swirling to heretic branch from doom's one
         //
         // regular flat
