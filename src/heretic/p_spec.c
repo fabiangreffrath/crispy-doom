@@ -21,15 +21,15 @@
 #include "doomdef.h"
 #include "deh_str.h"
 #include "i_system.h"
-#include "i_swap.h" // [crispy] LONG() 
 #include "i_timer.h"
 #include "m_misc.h" // [crispy] So M_sprintf can be used
 #include "m_random.h"
-#include "w_wad.h"
-#include "r_swirl.h" // [crispy] R_InitDistortedFlats()
 #include "p_local.h"
 #include "s_sound.h"
 #include "v_video.h"
+#include "i_swap.h" // [crispy] LONG()
+#include "w_wad.h"
+#include "r_swirl.h"
 
 // Macros
 
@@ -182,39 +182,7 @@ int *AmbientSfx[] = {
     AmbSndSeq9,                 // Laughter
     AmbSndSeq10                 // FastFootsteps
 };
-// Animating textures and planes
-// [crispy] moving ANIMATED support from doom branch here
-typedef struct
-{
-    boolean     istexture;
-    int         picnum;
-    int         basepic;
-    int         numpics;
-    int         speed;
-} anim_t;
 
-typedef PACKED_STRUCT (
-{
-    signed char istexture;      // if false, it is a flat
-    char        endname[9];
-    char        startname[9];
-    int         speed;
-}) animdef_t;
-
-#define MAXANIMS 32
-
-// [crispy] remove MAXANIMS limit
-anim_t*  anims;
-anim_t*  lastanim;
-static size_t   maxanims;
-
-//
-//      Animating line specials
-//
-#define MAXLINEANIMS            64*256
-
-short   numlinespecials;
-line_t* linespeciallist[MAXLINEANIMS];
 animdef_t animdefs_vanilla[] = {
     // false = flat
     // true = texture
@@ -226,9 +194,14 @@ animdef_t animdefs_vanilla[] = {
     {false, "FLATHUH4", "FLATHUH1", 8}, // Super Lava
     {true, "LAVAFL3", "LAVAFL1", 6},    // Texture: Lavaflow
     {true, "WATRWAL3", "WATRWAL1", 4},  // Texture: Waterfall
-    {-1,        "",             "",             0},
+    {-1, "", "", 0},
 };
 
+// [crispy] remove MAXANIMS limit
+
+anim_t* anims;
+anim_t* lastanim;
+static size_t maxanims;
 
 int *TerrainTypes;
 struct

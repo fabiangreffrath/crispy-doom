@@ -24,7 +24,39 @@
 ===============================================================================
 */
 
+//
+//      Animating textures and planes
+//
+typedef struct
+{
+    boolean istexture;
+    int picnum;
+    int basepic;
+    int numpics;
+    int speed;
+} anim_t;
+
+//
+//      source animation definition
+//
+typedef PACKED_STRUCT (
+{
+    signed char istexture;      // if false, it is a flat
+    char endname[9];
+    char startname[9];
+    int speed;
+}) animdef_t;
+
+#define	MAXANIMS		32
+
 extern int *TerrainTypes;
+
+//
+//      Animating line specials
+//
+#define	MAXLINEANIMS		64*256
+extern short numlinespecials;
+extern line_t *linespeciallist[MAXLINEANIMS];
 
 //      Define values for map objects
 #define	MO_TELEPORTMAN		14
