@@ -297,7 +297,6 @@ void P_InitPicAnims(void)
             lastanim = anims + maxanims;
             maxanims = newmax;
         }
-
         startname = DEH_String(animdefs[i].startname);
         endname = DEH_String(animdefs[i].endname);
 
@@ -316,15 +315,12 @@ void P_InitPicAnims(void)
             {                   // Flat doesn't exist
                 continue;
             }
-
             lastanim->picnum = R_FlatNumForName(endname);
             lastanim->basepic = R_FlatNumForName(startname);
         }
-
         lastanim->istexture = animdefs[i].istexture;
         lastanim->numpics = lastanim->picnum - lastanim->basepic + 1;
         lastanim->speed = from_lump ? LONG(animdefs[i].speed) : animdefs[i].speed;
-
         // [crispy] add support for SMMU swirling flats
         if (lastanim->speed > 65535 || lastanim->numpics == 1)
         {
@@ -340,12 +336,10 @@ void P_InitPicAnims(void)
         }        
         lastanim++;
     }
-        
     if (from_lump)
     {
         W_ReleaseLumpName("ANIMATED");
     }
-
     if (init_swirl)
     {
         R_InitDistortedFlats();
