@@ -510,16 +510,18 @@ void R_DrawPlanes(void)
             continue;
         }
 
-        swirling = (flattranslation[pl->picnum] == -1); //[crispy] adapting swirling to heretic branch from doom's one
+        swirling = (flattranslation[pl->picnum] == -1); //[crispy] adapt swirl from src/doom to src/heretic
         //
         // regular flat
         //
-        lumpnum = firstflat + (swirling ? pl->picnum : flattranslation[pl->picnum]);
+        //lumpnum = firstflat + (swirling ? pl->picnum : flattranslation[pl->picnum]);
 
         // [crispy] add support for SMMU swirling flats
-        ds_source = swirling ? R_DistortedFlat(lumpnum) : W_CacheLumpNum(lumpnum, PU_STATIC);
+        //ds_source = swirling ? R_DistortedFlat(lumpnum) : W_CacheLumpNum(lumpnum, PU_STATIC);
         if (!swirling){
-        tempSource = W_CacheLumpNum(lumpnum, PU_STATIC);
+        lumpnum = firstflat + flattranslation[pl->picnum];
+        ds_source = W_CacheLumpNum(lumpnum, PU_STATIC);
+        tempSource = ds_source;
 
         switch (pl->special)
         {
@@ -560,6 +562,11 @@ void R_DrawPlanes(void)
             default:
                 ds_source = tempSource;
         }
+        }
+        else 
+        {
+            lumpnum = firstflat + pl->picnum;
+            ds_source = R_DistortedFlat(lumpnum);
         }
         ds_brightmap = R_BrightmapForFlatNum(lumpnum-firstflat);
         planeheight = abs(pl->height - viewz);
