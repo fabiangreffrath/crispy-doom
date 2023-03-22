@@ -1183,9 +1183,9 @@ void D_DoomMain(void)
         }
     }
 
-    if (W_CheckNumForName("HEREHACK") != -1)
+    if (W_CheckNumForName("HEHACKED") != -1)
     {
-        DEH_LoadLumpByName("HEREHACK", true, true);
+        DEH_LoadLumpByName("HEHACKED", true, true);
     }
 
     //!
