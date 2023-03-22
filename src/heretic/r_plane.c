@@ -515,7 +515,6 @@ void R_DrawPlanes(void)
         // regular flat
         //
 
-        // [crispy] add support for SMMU swirling flats
         if (!swirling){
         lumpnum = firstflat + flattranslation[pl->picnum];
         ds_source = W_CacheLumpNum(lumpnum, PU_STATIC);
