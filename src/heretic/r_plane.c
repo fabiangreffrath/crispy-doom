@@ -432,7 +432,7 @@ void R_DrawPlanes(void)
 
     for (pl = visplanes; pl < lastvisplane; pl++)
     {
-        boolean swirling; //[crispy] added from doom branch
+        boolean swirling; // [crispy] added from src/doom
         if (pl->minx > pl->maxx)
             continue;
         //
@@ -510,12 +510,13 @@ void R_DrawPlanes(void)
             continue;
         }
 
-        swirling = (flattranslation[pl->picnum] == -1); //[crispy] adapt swirl from src/doom to src/heretic
+        swirling = (flattranslation[pl->picnum] == -1); // [crispy] adapt swirl from src/doom to src/heretic
         //
         // regular flat
         //
 
-        if (!swirling){
+        if (!swirling)
+        {
         lumpnum = firstflat + flattranslation[pl->picnum];
         ds_source = W_CacheLumpNum(lumpnum, PU_STATIC);
         tempSource = ds_source;
