@@ -514,10 +514,8 @@ void R_DrawPlanes(void)
         //
         // regular flat
         //
-        //lumpnum = firstflat + (swirling ? pl->picnum : flattranslation[pl->picnum]);
 
         // [crispy] add support for SMMU swirling flats
-        //ds_source = swirling ? R_DistortedFlat(lumpnum) : W_CacheLumpNum(lumpnum, PU_STATIC);
         if (!swirling){
         lumpnum = firstflat + flattranslation[pl->picnum];
         ds_source = W_CacheLumpNum(lumpnum, PU_STATIC);
