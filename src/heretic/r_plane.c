@@ -433,7 +433,6 @@ void R_DrawPlanes(void)
     for (pl = visplanes; pl < lastvisplane; pl++)
     {
         boolean swirling; //[crispy] added from doom branch
-
         if (pl->minx > pl->maxx)
             continue;
         //
@@ -510,7 +509,7 @@ void R_DrawPlanes(void)
             }
             continue;
         }
-        
+
         //
         swirling = (flattranslation[pl->picnum] == -1); //[crispy] adapting swirling to heretic branch from doom's one
         // regular flat

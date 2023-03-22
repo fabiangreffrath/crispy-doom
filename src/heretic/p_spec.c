@@ -198,7 +198,6 @@ animdef_t animdefs_vanilla[] = {
 };
 
 // [crispy] remove MAXANIMS limit
-
 anim_t* anims;
 anim_t* lastanim;
 static size_t maxanims;
@@ -270,6 +269,8 @@ void P_InitTerrainTypes(void)
 
 void P_InitPicAnims(void)
 {
+    const char *startname;
+    const char *endname;
     int i;
     boolean init_swirl = false;
     // [crispy] add support for ANIMATED lumps
@@ -284,13 +285,10 @@ void P_InitPicAnims(void)
     {
         animdefs = animdefs_vanilla;
     }
-    
     //  Init animation
     lastanim = anims;
     for (i = 0; animdefs[i].istexture != -1; i++)
     {
-        const char *startname, *endname;
-
         // [crispy] remove MAXANIMS limit
         if (lastanim >= anims + maxanims)
         {
