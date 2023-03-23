@@ -518,7 +518,6 @@ void R_DrawPlanes(void)
 
         tempSource = W_CacheLumpNum(lumpnum, PU_STATIC);
 
-        
         switch (pl->special)
         {
             case 25:
