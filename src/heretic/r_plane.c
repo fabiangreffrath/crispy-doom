@@ -514,11 +514,10 @@ void R_DrawPlanes(void)
         //
         lumpnum = firstflat + flattranslation[pl->picnum];
 
+        tempSource = W_CacheLumpNum(lumpnum, PU_STATIC);
+        
         if (flattranslation[pl->picnum] != -1) // [crispy] adapt swirl from src/doom to src/heretic
         {
-        ds_source = W_CacheLumpNum(lumpnum, PU_STATIC);
-        tempSource = ds_source;
-
         switch (pl->special)
         {
             case 25:
