@@ -512,11 +512,9 @@ void R_DrawPlanes(void)
         //
         // regular flat
         //
-
+        lumpnum = firstflat + flattranslation[pl->picnum];
         if (flattranslation[pl->picnum] != -1) // [crispy] adapt swirl from src/doom to src/heretic
         {
-        lumpnum = firstflat + flattranslation[pl->picnum];
-        
         ds_source = W_CacheLumpNum(lumpnum, PU_STATIC);
         tempSource = ds_source;
 
@@ -562,7 +560,6 @@ void R_DrawPlanes(void)
         }
         else 
         {
-            lumpnum = firstflat + pl->picnum;
             ds_source = R_DistortedFlat(lumpnum);
         }
         ds_brightmap = R_BrightmapForFlatNum(lumpnum-firstflat);
