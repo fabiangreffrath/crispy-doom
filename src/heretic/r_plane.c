@@ -560,7 +560,7 @@ void R_DrawPlanes(void)
         }
         else 
         {
-            ds_source = R_DistortedFlat(lumpnum);
+            ds_source = R_DistortedFlat(firstflat+pl->picnum);
         }
         ds_brightmap = R_BrightmapForFlatNum(lumpnum-firstflat);
         planeheight = abs(pl->height - viewz);
