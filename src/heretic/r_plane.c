@@ -406,6 +406,7 @@ void R_MakeSpans(int x, unsigned int t1, unsigned int b1, unsigned int t2, unsig
 
 void R_DrawPlanes(void)
 {
+    boolean swirling;
     visplane_t *pl;
     int light;
     int x, stop;
@@ -512,11 +513,12 @@ void R_DrawPlanes(void)
         //
         // regular flat
         //
+        swirling = flattranslation[pl->picnum] == -1;
         lumpnum = firstflat + flattranslation[pl->picnum];
 
         tempSource = W_CacheLumpNum(lumpnum, PU_STATIC);
 
-        if (flattranslation[pl->picnum] != -1) // [crispy] adapt swirl from src/doom to src/heretic
+        if (!swirling) // [crispy] adapt swirl from src/doom to src/heretic
         {
         switch (pl->special)
         {
@@ -578,7 +580,8 @@ void R_DrawPlanes(void)
         for (x = pl->minx; x <= stop; x++)
             R_MakeSpans(x, pl->top[x - 1], pl->bottom[x - 1], pl->top[x],
                         pl->bottom[x]);
-
+		
+        if(!swirling)
         W_ReleaseLumpNum(lumpnum);
     }
 }
