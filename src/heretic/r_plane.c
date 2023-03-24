@@ -582,6 +582,6 @@ void R_DrawPlanes(void)
                         pl->bottom[x]);
 
         if(notswirling)
-            W_ReleaseLumpNum(lumpnum);
+        W_ReleaseLumpNum(lumpnum);
     }
 }
