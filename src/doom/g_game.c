@@ -437,9 +437,9 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
             joybspeed = MAX_JOY_BUTTONS;
         }
 
-        M_snprintf(playermessage, sizeof(playermessage), "ALWAYS RUN %s%s",
+        M_snprintf(playermessage, sizeof(playermessage), "ALWAYS RUN %s%s%s",
             crstr[CR_GREEN],
-            (joybspeed >= MAX_JOY_BUTTONS) ? "ON" : "OFF");
+            (joybspeed >= MAX_JOY_BUTTONS) ? "ON" : "OFF", crstr[CR_NONE]);
         player->message = playermessage;
         S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
 
