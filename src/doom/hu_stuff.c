@@ -1017,7 +1017,7 @@ void HU_Ticker(void)
 
     } // else message_on = false;
 
-	w_kills.y = HU_MSGY + 1 * 8;
+    w_kills.y = HU_MSGY + 1 * 8;
 
     // check for incoming chat characters
     if (netgame)
