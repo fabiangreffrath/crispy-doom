@@ -33,8 +33,8 @@ static struct
     { pack_chex, retail,     1, 5 },
     { doom,      shareware,  1, 9 },
     { doom,      registered, 3, 9 },
-    { doom,      retail,     4, 9 },
-    { doom2,     commercial, 1, 32 },
+    { doom,      retail,     5, 9 }, // [crispy] extended for Sigil
+    { doom2,     commercial, 3, 32 }, // [crispy] extended for NRFTL / The Master Levels
     { pack_tnt,  commercial, 1, 32 },
     { pack_plut, commercial, 1, 32 },
     { pack_hacx, commercial, 1, 32 },
