@@ -1664,6 +1664,12 @@ void I_GetScreenDimensions (void)
 	WIDESCREENDELTA = ((SCREENWIDTH - NONWIDEWIDTH) >> crispy->hires) / 2;
 }
 
+// [crispy] calls native SDL vsync toggle
+void I_ToggleVsync (void)
+{
+    SDL_RenderSetVSync(renderer, crispy->vsync);
+}
+
 void I_InitGraphics(void)
 {
     SDL_Event dummy;
