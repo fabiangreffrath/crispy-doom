@@ -114,9 +114,9 @@ After successful compilation the resulting binaries can be found in the `src/` d
 
 ## Documentation
 
- * **[New Cheat Codes](https://github.com/fabiangreffrath/crispy-doom) (With default bindings)**
+ * **[New Cheat Codes](https://github.com/fabiangreffrath/crispy-doom)**
  * **[New Command-Line Parameters](https://github.com/fabiangreffrath/crispy-doom)**
- * **[New Controls](https://github.com/fabiangreffrath/crispy-doom)**
+ * **[New Controls](https://github.com/fabiangreffrath/crispy-doom) (With default bindings)**
  * **[Crispness](https://github.com/fabiangreffrath/crispy-doom/wiki/Crispness)**
  * **[Changelog](https://github.com/fabiangreffrath/crispy-doom/wiki/Changelog)**
  * **[Compatibility](https://github.com/fabiangreffrath/crispy-doom/wiki/Compatibility)**
