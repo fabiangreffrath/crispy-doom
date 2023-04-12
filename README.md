@@ -92,35 +92,20 @@ or cloned via
  git clone https://github.com/fabiangreffrath/crispy-doom.git
 ```
 
-Brief instructions to set up a build system on Windows can be found [in the Crispy Doom Wiki](https://github.com/fabiangreffrath/crispy-doom/wiki/Building-on-Windows). A much more detailed guide is provided [in the Chocolate Doom Wiki](https://www.chocolate-doom.org/wiki/index.php/Building_Chocolate_Doom_on_Windows), but applies to Crispy Doom as well for most parts.
 
-Compilation on Debian systems (Debian 10 "buster" or later) should be as simple as
+ * Brief instructions to set up a build system on Windows can be found [in the Crispy Doom Wiki](https://github.com/fabiangreffrath/crispy-doom/docs/build-windows.md). A much more detailed guide is provided [in the Chocolate Doom Wiki](https://www.chocolate-doom.org/wiki/index.php/Building_Chocolate_Doom_on_Windows), but applies to Crispy Doom as well for most parts.
+ * There are also instructions for building on [Linux](https://github.com/fabiangreffrath/crispy-doom/docs/build-linux.md) and [MacOS](https://github.com/fabiangreffrath/crispy-doom/docs/build-macos.md)
 
-```
- sudo apt install build-essential automake git
- sudo apt build-dep crispy-doom
-```
-
-to install the prerequisites and then
-
-```
- cd crispy-doom
- autoreconf -fiv
- ./configure
- make
-```
-
-After successful compilation the resulting binaries can be found in the `src/` directory.
 
 ## Documentation
 
- * **[New Cheat Codes](https://github.com/fabiangreffrath/crispy-doom)**
- * **[New Command-Line Parameters](https://github.com/fabiangreffrath/crispy-doom)**
- * **[New Controls](https://github.com/fabiangreffrath/crispy-doom) (With default bindings)**
- * **[Crispness](https://github.com/fabiangreffrath/crispy-doom/wiki/Crispness)**
- * **[Changelog](https://github.com/fabiangreffrath/crispy-doom/wiki/Changelog)**
- * **[Compatibility](https://github.com/fabiangreffrath/crispy-doom/wiki/Compatibility)**
- * **[FAQ](https://github.com/fabiangreffrath/crispy-doom/wiki/FAQ)**
+ * **[New Cheat Codes](https://github.com/fabiangreffrath/crispy-doom/docs/cheats.md)**
+ * **[New Command-Line Parameters](https://github.com/fabiangreffrath/crispy-doom/docs/params.md)**
+ * **[New Controls](https://github.com/fabiangreffrath/crispy-doom/docs/controls.md) (With default bindings)**
+ * **[Crispness](https://github.com/fabiangreffrath/crispy-doom/docs/crispness.md)**
+ * **[Changelog](https://github.com/fabiangreffrath/crispy-doom/docs/changelog-current.md)**
+ * **[Compatibility](https://github.com/fabiangreffrath/crispy-doom/docs/compatibility.md)**
+ * **[FAQ](https://github.com/fabiangreffrath/crispy-doom/docs/faq.md)**
 
 ## Contact
 
