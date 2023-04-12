@@ -52,7 +52,7 @@ Furthermore, the following optional user-visible and audible features are availa
  * Demo recording and/or playback timers and progress bar.
  * Demo continue and take-over features, handing controls over to the player when demo playback is finished or interrupted.
 
-Most of these features are disabled by default and need to get enabled either in the in-game "Crispness" menu, in the crispy-doom-setup tool or as command line parameters. They are implemented in a way that preserves demo-compatibility with Vanilla Doom and network game compatibility with Chocolate Doom. Furthermore, Crispy Doom's savegames and config files are compatible, though not identical (see the [Compatibility section in the Wiki](https://github.com/fabiangreffrath/crispy-doom/wiki/Compatibility)), to Vanilla Doom's.
+Most of these features are disabled by default and need to get enabled either in the in-game "Crispness" menu, in the crispy-doom-setup tool or as command line parameters. They are implemented in a way that preserves demo-compatibility with Vanilla Doom and network game compatibility with Chocolate Doom. Furthermore, Crispy Doom's savegames and config files are compatible, though not identical (see the [Compatibility section in the Wiki](https://github.com/fabiangreffrath/crispy-doom/docs/compatibility.md)), to Vanilla Doom's.
 
 Crispy Doom strives for maximum compatibility with all "limit-removing Vanilla" maps -- but not Boom or ZDoom maps. More specifically, Crispy Doom supports some select advanced features such as [ANIMATED](https://doomwiki.org/wiki/ANIMATED) and [SWITCHES](https://doomwiki.org/wiki/SWITCHES) lumps, MBF sky transfers, SMMU swirling flats and [MUSINFO](https://doomwiki.org/wiki/MUSINFO) -- but neither generalized linedef and sector types nor DECORATE and MAPINFO.
 
@@ -66,7 +66,7 @@ To install on OSX, get macports and then run "sudo port install crispy-doom".
 
 The most recent list of changes can be found in the [Changelog](https://github.com/fabiangreffrath/crispy-doom/blob/master/CHANGELOG.md).
 
-A complete history of changes and releases can be found in the [Wiki](https://github.com/fabiangreffrath/crispy-doom/wiki/Changelog) or on the [Releases](https://github.com/fabiangreffrath/crispy-doom/releases) page.
+A complete history of changes and releases can be found in the [Wiki](https://github.com/fabiangreffrath/crispy-doom/docs/changelog-history.md) or on the [Releases](https://github.com/fabiangreffrath/crispy-doom/releases) page.
 
 
 To install on Ubuntu ("Eoan Ermine" 19.10 and later)/Debian ("Buster" 10 and later) based systems:
