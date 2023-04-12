@@ -60,27 +60,18 @@ Many additional less user-visible features have been implemented, e.g. fixed eng
 
 ## Download
 
-Source code and Windows binaries (compatible with both x86 and x64 editions) for the latest release can be found on the [Release](https://github.com/fabiangreffrath/crispy-doom/releases/latest) page. 
+* Windows: [Get binaries of the latest release.](https://github.com/fabiangreffrath/crispy-doom/releases/latest), compatible with both x86 and x64 editions.
+* MacOS: Get macports and then run `sudo port install crispy-doom`.
+* Linux: To install on Ubuntu (“Eoan Ermine” 19.10 and later)/Debian (“Buster” 10 and later) based systems: `sudo apt-get install crispy-doom`
 
-To install on OSX, get macports and then run "sudo port install crispy-doom".
 
 The most recent list of changes can be found in the [Changelog](https://github.com/fabiangreffrath/crispy-doom/blob/master/CHANGELOG.md).
-
 A complete history of changes and releases can be found in the [Wiki](https://github.com/fabiangreffrath/crispy-doom/docs/changelog-history.md) or on the [Releases](https://github.com/fabiangreffrath/crispy-doom/releases) page.
-
-
-To install on Ubuntu ("Eoan Ermine" 19.10 and later)/Debian ("Buster" 10 and later) based systems:
-```bash
-sudo apt-get install crispy-doom
-```
-
 
 Daily builds of Crispy Doom can be found here:
 http://latest.chocolate-doom.org/
 
-
 Crispy Doom can play nearly all variants of Doom. If you don't own any, you may download the [Shareware version of Doom](http://cdn.debian.net/debian/pool/non-free/d/doom-wad-shareware/doom-wad-shareware_1.9.fixed.orig.tar.gz), extract it and copy the DOOM1.WAD file into your Crispy Doom directory. Alternatively, you may want to play Crispy Doom with [Freedoom](https://www.chocolate-doom.org/wiki/index.php/Freedoom) and a MegaWAD.
-
 ### Sources
 [![Open Hub](https://www.openhub.net/p/crispy-doom/widgets/project_thin_badge?style=flat&format=gif)](https://www.openhub.net/p/crispy-doom)
 

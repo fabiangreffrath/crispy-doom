@@ -5,8 +5,6 @@ Please create paragraphs by using indentation and lists.
 Features with more than a single on/off setting need one indented paragraph (each one holding one sentence) per individual setting.
 -->
 
-# The Crispness Menu
-
 Crispy Doom provides many optional features. Most if them are disabled by default, but can get enabled in the Crispness menu.
 
 ## Rendering

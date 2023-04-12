@@ -1,5 +1,3 @@
-# Beginner's Guide to Crispy Doom on Mac
-
 Crispy Doom is just the right middle ground between the original DOS Doom games and Doom source ports that are centered in modified/updated graphics and features.
 
 For Mac, there unfortunately isn't an installer containing an app that we can just drag and drop into our /Applications folder, double-click, and play.  To play Crispy Doom, you have to compile the software yourself from the source code.  But this isn't a bad thing; Crispy Doom is an "open-source" program, meaning that the code which makes it function is free and available to the public.  This allows people a lot more knowledgeable and talented than myself to maintain and update it.  It also allows for greater customization and personalization.
