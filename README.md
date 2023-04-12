@@ -60,7 +60,7 @@ Many additional less user-visible features have been implemented, e.g. fixed eng
 
 ## Download
 
-* Windows: [Get binaries of the latest release.](https://github.com/fabiangreffrath/crispy-doom/releases/latest), compatible with both x86 and x64 editions.
+* Windows: [Get binaries of the latest release](https://github.com/fabiangreffrath/crispy-doom/releases/latest), compatible with both x86 and x64 editions.
 * MacOS: Get macports and then run `sudo port install crispy-doom`.
 * Linux: To install on Ubuntu (“Eoan Ermine” 19.10 and later)/Debian (“Buster” 10 and later) based systems: `sudo apt-get install crispy-doom`
 
@@ -94,7 +94,6 @@ or cloned via
  * **[New Command-Line Parameters](https://github.com/fabiangreffrath/crispy-doom/docs/params.md)**
  * **[New Controls](https://github.com/fabiangreffrath/crispy-doom/docs/controls.md) (With default bindings)**
  * **[Crispness](https://github.com/fabiangreffrath/crispy-doom/docs/crispness.md)**
- * **[Changelog](https://github.com/fabiangreffrath/crispy-doom/docs/changelog-current.md)**
  * **[Compatibility](https://github.com/fabiangreffrath/crispy-doom/docs/compatibility.md)**
  * **[FAQ](https://github.com/fabiangreffrath/crispy-doom/docs/faq.md)**
 
