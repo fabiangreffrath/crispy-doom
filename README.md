@@ -90,8 +90,8 @@ or cloned via
 
 ## Documentation
 
- * **[New Cheat Codes](https://github.com/fabiangreffrath/crispy-doom/docs/cheats.md)**
- * **[New Command-Line Parameters](https://github.com/fabiangreffrath/crispy-doom/docs/params.md)**
+ * **[New Cheat Codes](./docs/cheats.md)**
+ * **[New Command-Line Parameters](./docs/params.md)**
  * **[New Controls](https://github.com/fabiangreffrath/crispy-doom/docs/controls.md) (With default bindings)**
  * **[Crispness](https://github.com/fabiangreffrath/crispy-doom/docs/crispness.md)**
  * **[Compatibility](https://github.com/fabiangreffrath/crispy-doom/docs/compatibility.md)**
