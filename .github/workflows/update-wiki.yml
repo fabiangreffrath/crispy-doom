@@ -27,16 +27,16 @@ jobs:
           path: wiki
       - name: Update files
         run: |
-          mv -f "./code/build-linux.md" "./wiki/Building-on-Linux.md"
-          mv -f "./code/build-windows.md" "./wiki/Building-on-Windows.md"
-          mv -f "./code/build-macos.md" "./wiki/Building-on-Mac.md"
-          mv -f "./code/cheats.md" "./wiki/New-Cheats.md"
-          mv -f "./code/controls.md" "./wiki/New-Controls.md"
-          mv -f "./code/crispness.md" "./wiki/Crispness-Menu.md"
-          mv -f "./code/params.md" "./wiki/New-Command-line-Parameters.md"
-          mv -f "./code/compatibility.md" "./wiki/Compatibility.md"
-          mv -f "./code/faq.md" "./wiki/FAQ.md"
-          mv -f "./code/changelog-history.md" "./wiki/Changelog-History.md"
+          mv -f "./code/docs/build-linux.md" "./wiki/Building-on-Linux.md"
+          mv -f "./code/docs/build-windows.md" "./wiki/Building-on-Windows.md"
+          mv -f "./code/docs/build-macos.md" "./wiki/Building-on-Mac.md"
+          mv -f "./code/docs/cheats.md" "./wiki/New-Cheats.md"
+          mv -f "./code/docs/controls.md" "./wiki/New-Controls.md"
+          mv -f "./code/docs/crispness.md" "./wiki/Crispness-Menu.md"
+          mv -f "./code/docs/params.md" "./wiki/New-Command-line-Parameters.md"
+          mv -f "./code/docs/compatibility.md" "./wiki/Compatibility.md"
+          mv -f "./code/docs/faq.md" "./wiki/FAQ.md"
+          mv -f "./code/docs/changelog-history.md" "./wiki/Changelog-History.md"
       - name: Push to wiki
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
