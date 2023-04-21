@@ -33,7 +33,7 @@ jobs:
           mv -f "./code/params.md" "./wiki/New-Command-line-Parameters.md"
           mv -f "./code/compatibility.md" "./wiki/Compatibility.md"
           mv -f "./code/faq.md" "./wiki/FAQ.md"
-          mv -f "./code/changelog-history.md" "./wiki/Changelog History.md"
+          mv -f "./code/changelog-history.md" "./wiki/Changelog-History.md"
       - name: Push to wiki
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
