@@ -14,7 +14,7 @@
   They are provided as a courtesy of @fragglet and can be found here: http://latest.chocolate-doom.org/.
   Crispy Doom's daily builds are built in the same environment as Chocolate Doom's daily builds and releases.
 
-  From version 6.0 on, Crispy Doom releases are automatically built in a MSYS2 environment using the latest GCC/MinGW compiler and library versions available at that time.
+  From version 6.0 on, Crispy Doom releases are automatically built in a MSYS2 environment using the latest GCC/MinGW compiler and library versions available at the time the release tag was pushed.
 
 - **I am having sound issues on Windows, e.g. distorted or high-pitched SFX or music.**
 
