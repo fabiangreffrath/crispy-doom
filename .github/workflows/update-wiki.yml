@@ -2,8 +2,11 @@ name: update wiki
 
 on:
   push:
-    branches: [ master ]
-    tags: ['*']
+    branches:
+      - "master"
+  pull_request:
+    branches:
+      - "master"
   workflow_dispatch:
 
 jobs:
