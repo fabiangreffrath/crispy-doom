@@ -8,7 +8,7 @@ on:
 
 jobs:
   update-wiki:
-    if: ${{ github.repository == 'fabiangreffrath/crispy-doom' }}
+    # if: ${{ github.repository == 'fabiangreffrath/crispy-doom' }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
