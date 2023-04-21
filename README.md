@@ -91,7 +91,7 @@ or cloned via
 ## Documentation
 
  * **[New Cheat Codes](https://github.com/fabiangreffrath/crispy-doom/wiki/New-Cheats)**
- * **[New Command-Line Parameters](https://github.com/fabiangreffrath/crispy-doom/wiki/New-Command-line-Parameters./wiki/params)**
+ * **[New Command-Line Parameters](https://github.com/fabiangreffrath/crispy-doom/wiki/New-Command-line-Parameters)**
  * **[New Controls](https://github.com/fabiangreffrath/crispy-doom/wiki/New-Controls) (With default bindings)**
  * **[Crispness](https://github.com/fabiangreffrath/crispy-doom/wiki/Crispness-Menu)**
  * **[Compatibility](https://github.com/fabiangreffrath/crispy-doom/wiki/Compatibility)**
