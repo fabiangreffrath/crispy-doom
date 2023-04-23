@@ -1995,6 +1995,13 @@ void D_DoomMain (void)
     W_GenerateHashTable();
 
     // [crispy] allow overriding of special-casing
+
+    //!
+    // @category mod
+    //
+    // Disable automatic loading of Master Levels, No Rest for the Living and
+    // Sigil.
+    //
     if (!M_ParmExists("-nosideload") && gamemode != shareware && !demolumpname[0])
     {
 	if (gamemode == retail &&
@@ -2015,13 +2022,13 @@ void D_DoomMain (void)
     // Load DEHACKED lumps from WAD files - but only if we give the right
     // command line parameter.
 
+    // [crispy] load DEHACKED lumps by default, but allow overriding
+
     //!
     // @category mod
     //
-    // Load Dehacked patches from DEHACKED lumps contained in one of the
-    // loaded PWAD files.
+    // Disable automatic loading of embedded DEHACKED lumps in wad files.
     //
-    // [crispy] load DEHACKED lumps by default, but allow overriding
     if (!M_ParmExists("-nodehlump") && !M_ParmExists("-nodeh"))
     {
         int i, loaded = 0;
