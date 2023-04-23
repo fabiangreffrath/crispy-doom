@@ -1756,7 +1756,6 @@ void D_DoomMain (void)
 
     //!
     // @category game
-    // @category mod
     //
     // Automatic pistol start when advancing from one level to the next. At the
     // beginning of each level, the player's health is reset to 100, their
@@ -1769,7 +1768,6 @@ void D_DoomMain (void)
 
     //!
     // @category game
-    // @category mod
     //
     // Double ammo pickup rate. This option is not allowed when recording a
     // demo, playing back a demo or when starting a network game.
