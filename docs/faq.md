@@ -5,7 +5,7 @@
   Why is this still not enabled by default?
 
   - The three non-Doom games are in no way prepared for it.
-  - This rendering mode only uses the first palette, so any mod with a custom PLAYPAL (or COLORMAP) will look differently that intended by its author.
+  - This rendering mode only uses the first palette, so any mod with a custom PLAYPAL (or COLORMAP) will look differently than intended by its author.
   - It cannot use the foreground/background lookup table for translucency anymore, so all values for all three RGB channels would have to be calculated for each translucent pixel during each rendered frame, which consumes quite a lot of computing time.
 
 - **How are the daily builds and releases created?**
