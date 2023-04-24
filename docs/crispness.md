@@ -1,10 +1,3 @@
-<!---
-Please keep yourself short and precise.
-Try not to use more than one sentence to describe a single item.
-Please create paragraphs by using indentation and lists.
-Features with more than a single on/off setting need one indented paragraph (each one holding one sentence) per individual setting.
--->
-
 Crispy Doom provides many optional features. Most if them are disabled by default, but can get enabled in the Crispness menu.
 
 ## Rendering
