@@ -27,7 +27,7 @@ These options affect the rendering of the internal frame buffer to the game wind
 
 * Framerate Limit
 
-  When Uncapped Framerate is on, limit the framerate to the value specified here. Press Enter to type in a number direclty. A value of "0" corresponds to no frame limit (default: none).
+  When Uncapped Framerate is on, limit the framerate to the value specified here. Press Enter to type in a number directly. A value of "0" corresponds to no frame limit (default: none).
 
 * Enable VSync
 
