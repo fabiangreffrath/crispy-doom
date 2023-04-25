@@ -1293,7 +1293,6 @@ void P_SpawnSpecials(void)
                 linespeciallist[numlinespecials] = &lines[i];
                 numlinespecials++;
                 break;
-
             // [crispy] add support for MBF sky transfers
             case 271:
             case 272:
