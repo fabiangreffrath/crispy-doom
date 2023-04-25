@@ -477,7 +477,7 @@ void R_Subsector(int num)
     if (frontsector->interpceilingheight > viewz
         || frontsector->ceilingpic == skyflatnum)
         ceilingplane = R_FindPlane(frontsector->interpceilingheight,
-                                   // [crispy] add support for MBF sky tranfers
+                                   // [crispy] add support for MBF sky transfers
                                    frontsector->ceilingpic == skyflatnum &&
                                    frontsector->sky & PL_SKYFLAT ? frontsector->sky :
                                    frontsector->ceilingpic,
