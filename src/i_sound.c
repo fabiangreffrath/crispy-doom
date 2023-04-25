@@ -56,15 +56,15 @@ int snd_musicdevice = SNDDEVICE_SB;
 int snd_sfxdevice = SNDDEVICE_SB;
 
 // Low-level sound and music modules we are using
-static sound_module_t *sound_module;
-static music_module_t *music_module;
+static const sound_module_t *sound_module;
+static const music_module_t *music_module;
 
 // If true, the music pack module was successfully initialized.
 static boolean music_packs_active = false;
 
 // This is either equal to music_module or &music_pack_module,
 // depending on whether the current track is substituted.
-static music_module_t *active_music_module;
+static const music_module_t *active_music_module;
 
 
 // DOS-specific options: These are unused but should be maintained
@@ -78,7 +78,7 @@ static int snd_mport = 0;
 
 // Compiled-in sound modules:
 
-static sound_module_t *sound_modules[] = 
+static const sound_module_t *sound_modules[] =
 {
 #ifndef DISABLE_SDL2MIXER
     &sound_sdl_module,
@@ -89,11 +89,14 @@ static sound_module_t *sound_modules[] =
 
 // Compiled-in music modules:
 
-static music_module_t *music_modules[] =
+static const music_module_t *music_modules[] =
 {
 #ifdef _WIN32
     &music_win_module,
 #endif
+#ifdef HAVE_FLUIDSYNTH
+    &music_fl_module,
+#endif // HAVE_FLUIDSYNTH
 #ifndef DISABLE_SDL2MIXER
     &music_sdl_module,
 #endif // DISABLE_SDL2MIXER
@@ -103,7 +106,7 @@ static music_module_t *music_modules[] =
 
 // Check if a sound device is in the given list of devices
 
-static boolean SndDeviceInList(snddevice_t device, snddevice_t *list,
+static boolean SndDeviceInList(snddevice_t device, const snddevice_t *list,
                                int len)
 {
     int i;
@@ -165,12 +168,10 @@ static void InitMusicModule(void)
                             music_modules[i]->num_sound_devices))
         {
         #ifdef _WIN32
-            // Skip the native Windows MIDI module if using Timidity or
-            // FluidSynth.
+            // Skip the native Windows MIDI module if using Timidity.
 
-            if ((strcmp(timidity_cfg_path, "")
-              || strcmp(fluidsynth_sf_path, ""))
-              && music_modules[i] == &music_win_module)
+            if (strcmp(timidity_cfg_path, "") &&
+                music_modules[i] == &music_win_module)
             {
                 continue;
             }
@@ -549,7 +550,6 @@ void I_BindSoundVariables(void)
     M_BindIntVariable("snd_pitchshift",          &snd_pitchshift);
 
     M_BindStringVariable("music_pack_path",      &music_pack_path);
-    M_BindStringVariable("fluidsynth_sf_path",   &fluidsynth_sf_path);
     M_BindStringVariable("timidity_cfg_path",    &timidity_cfg_path);
     M_BindStringVariable("gus_patch_path",       &gus_patch_path);
     M_BindIntVariable("gus_ram_kb",              &gus_ram_kb);
@@ -560,6 +560,22 @@ void I_BindSoundVariables(void)
     M_BindIntVariable("winmm_reverb_level",      &winmm_reverb_level);
     M_BindIntVariable("winmm_chorus_level",      &winmm_chorus_level);
 #endif
+
+#ifdef HAVE_FLUIDSYNTH
+    M_BindIntVariable("fsynth_chorus_active",       &fsynth_chorus_active);
+    M_BindFloatVariable("fsynth_chorus_depth",      &fsynth_chorus_depth);
+    M_BindFloatVariable("fsynth_chorus_level",      &fsynth_chorus_level);
+    M_BindIntVariable("fsynth_chorus_nr",           &fsynth_chorus_nr);
+    M_BindFloatVariable("fsynth_chorus_speed",      &fsynth_chorus_speed);
+    M_BindStringVariable("fsynth_midibankselect",   &fsynth_midibankselect);
+    M_BindIntVariable("fsynth_polyphony",           &fsynth_polyphony);
+    M_BindIntVariable("fsynth_reverb_active",       &fsynth_reverb_active);
+    M_BindFloatVariable("fsynth_reverb_damp",       &fsynth_reverb_damp);
+    M_BindFloatVariable("fsynth_reverb_level",      &fsynth_reverb_level);
+    M_BindFloatVariable("fsynth_reverb_roomsize",   &fsynth_reverb_roomsize);
+    M_BindFloatVariable("fsynth_reverb_width",      &fsynth_reverb_width);
+    M_BindStringVariable("fsynth_sf_path",          &fsynth_sf_path);
+#endif // HAVE_FLUIDSYNTH
 
     M_BindIntVariable("use_libsamplerate",       &use_libsamplerate);
     M_BindFloatVariable("libsamplerate_scale",   &libsamplerate_scale);

@@ -908,6 +908,20 @@ static boolean AddToBuffer(unsigned int delta_time, midi_event_t *event,
                     SendNOPMsg(delta_time);
                     break;
 
+                case MIDI_CONTROLLER_RESET_ALL_CTRLS:
+                    SendShortMsg(delta_time, MIDI_EVENT_CONTROLLER,
+                                 event->data.channel.channel,
+                                 MIDI_CONTROLLER_RESET_ALL_CTRLS, 0);
+
+                    // MS GS Wavetable Synth resets the channel volume after a
+                    // "reset all controllers" event, so reapply the volume
+                    if (MidiDevice == ms_gs_synth)
+                    {
+                        i = event->data.channel.channel;
+                        SendVolumeMsg(0, i, channel_volume[i]);
+                    }
+                    break;
+
                 default:
                     SendShortMsg(delta_time, MIDI_EVENT_CONTROLLER,
                                  event->data.channel.channel,
@@ -1085,6 +1099,17 @@ static void FillBuffer(void)
                     {
                         SendShortMsg(0, MIDI_EVENT_CONTROLLER, i, MIDI_CONTROLLER_RESET_ALL_CTRLS, 0);
                     }
+
+                    // MS GS Wavetable Synth resets the channel volume after a
+                    // "reset all controllers" event, so reapply the volume
+                    if (MidiDevice == ms_gs_synth)
+                    {
+                        for (i = 0; i < MIDI_CHANNELS_PER_TRACK; ++i)
+                        {
+                            SendVolumeMsg(0, i, channel_volume[i]);
+                        }
+                    }
+
                     RestartTracks();
                     continue;
                 }
@@ -1489,7 +1514,7 @@ static boolean I_WIN_MusicIsPlaying(void)
     return (song.num_tracks > 0);
 }
 
-static snddevice_t music_win_devices[] =
+static const snddevice_t music_win_devices[] =
 {
     SNDDEVICE_PAS,
     SNDDEVICE_WAVEBLASTER,
@@ -1498,7 +1523,7 @@ static snddevice_t music_win_devices[] =
     SNDDEVICE_AWE32,
 };
 
-music_module_t music_win_module =
+const music_module_t music_win_module =
 {
     music_win_devices,
     arrlen(music_win_devices),

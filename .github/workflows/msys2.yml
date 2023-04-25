@@ -4,11 +4,16 @@ on:
   push:
     branches:
       - "master"
+    tags:
+      - "*"
     paths-ignore:
       - "**.md"
   pull_request:
     branches:
       - "master"
+    paths-ignore:
+      - "**.md"
+      - "**.yml"
 
 jobs:
   build:
@@ -49,6 +54,7 @@ jobs:
             mingw-w64-${{matrix.env}}-SDL2_net
             mingw-w64-${{matrix.env}}-libpng
             mingw-w64-${{matrix.env}}-libsamplerate
+            mingw-w64-${{matrix.env}}-fluidsynth
 
       - uses: actions/checkout@v3
 

@@ -1,7 +1,7 @@
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 cmake_minimum_required(VERSION 3.7.2)
-project("Crispy Doom" VERSION 5.12.0 LANGUAGES C)
+project("Crispy Doom" VERSION 6.0.0 LANGUAGES C)
 
 # Autotools variables
 set(top_srcdir ${CMAKE_CURRENT_SOURCE_DIR})
@@ -59,6 +59,12 @@ endif()
 find_package(PNG)
 if(PNG_FOUND)
     set(HAVE_LIBPNG TRUE)
+endif()
+
+# Check for FluidSynth.
+find_package(FluidSynth 2.2.0)
+if(FluidSynth_FOUND AND ENABLE_SDL2_MIXER)
+    set(HAVE_FLUIDSYNTH TRUE)
 endif()
 
 find_package(m)
