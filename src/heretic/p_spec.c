@@ -1297,17 +1297,16 @@ void P_SpawnSpecials(void)
             case 271:
             case 272:
               {
-		            int secnum;
-
-		            for (secnum = 0; secnum < numsectors; secnum++)
-		              {
-		                if (sectors[secnum].tag == lines[i].tag)
-		                    {
-		                        sectors[secnum].sky = i | PL_SKYFLAT;
-		                    }
-		              }
-	            }
-	           break;
+                int secnum;
+                for (secnum = 0; secnum < numsectors; secnum++)
+                  {
+                    if (sectors[secnum].tag == lines[i].tag)
+                        {
+                            sectors[secnum].sky = i | PL_SKYFLAT;
+                        }
+                  }
+              }
+             break;
         }
     }
 
