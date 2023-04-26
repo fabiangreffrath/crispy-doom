@@ -458,10 +458,9 @@ void R_DrawPlanes(void)
 		dc_texturemid = skytexturemid;
 		flip = 0;
 	    }
-            dc_iscale = pspriteiscale>>detailshift;
+            dc_iscale = skyiscale;
             // [crispy] no brightmaps for sky
             dc_colormap[0] = dc_colormap[1] = colormaps;    // sky is allways drawn full bright
-//          dc_texturemid = skytexturemid;
             dc_texheight = textureheight[texture]>>FRACBITS;
 
             for (x = pl->minx; x <= pl->maxx; x++)
@@ -470,7 +469,7 @@ void R_DrawPlanes(void)
                 dc_yh = pl->bottom[x];
                 if ((unsigned) dc_yl <= dc_yh) // [crispy] 32-bit integer math
                 {
-                    angle = ((an + xtoviewangle[x])^flip)>>ANGLETOSKYSHIFT;
+                    angle = ((an + xtoviewangle[x]) ^ flip) >> ANGLETOSKYSHIFT;
                     dc_x = x;
                     dc_source = R_GetColumn(texture, angle);
 
