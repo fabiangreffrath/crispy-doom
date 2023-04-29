@@ -2435,7 +2435,12 @@ static void WriteFileInfo(const char *name, size_t size, MEMFILE *stream)
 
     if (name)
     {
-        strncpy(fileinfo.name, name, 8);
+        size_t len = strnlen(name, 8);
+        if (len < 8)
+        {
+            len++;
+        }
+        memcpy(fileinfo.name, name, len);
     }
 
     mem_fwrite(&fileinfo, 1, sizeof(fileinfo), stream);
