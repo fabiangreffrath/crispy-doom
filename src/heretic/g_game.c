@@ -2387,7 +2387,6 @@ static size_t WriteCmdLineLump(MEMFILE *stream)
 
     tmp = M_StringJoin("-iwad \"", M_BaseName(filenames[0]), "\"", NULL);
     mem_fputs(tmp, stream);
-    printf("tmp: %s\n", tmp);
     free(tmp);
 
     if (filenames[1])
