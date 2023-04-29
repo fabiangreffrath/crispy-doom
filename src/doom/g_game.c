@@ -3194,6 +3194,8 @@ static size_t WriteCmdLineLump(MEMFILE *stream)
         case exe_final:
             mem_fputs(" -complevel 4", stream);
             break;
+        default:
+            break;
     }
 
     if (M_CheckParm("-solo-net"))
