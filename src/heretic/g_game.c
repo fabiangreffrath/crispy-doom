@@ -1388,6 +1388,7 @@ void G_PlayerFinishLevel(int player)
 {
     player_t *p;
     int i;
+    artitype_t current_artifact; // [crispy]
 
 /*      // BIG HACK
 	inv_ptr = 0;
@@ -1403,9 +1404,23 @@ void G_PlayerFinishLevel(int player)
 
     if (!deathmatch)
     {
+        current_artifact = p->readyArtifact; // [crispy]
+
         for (i = 0; i < 16; i++)
         {
             P_PlayerUseArtifact(p, arti_fly);
+        }
+
+        // [crispy] restore active artifact after removing wings
+        for (i = 0; i < p->inventorySlotNum; i++)
+        {
+            if (p->inventory[i].type == current_artifact)
+            {
+                p->readyArtifact = current_artifact;
+                curpos = inv_ptr = i;
+                curpos = (curpos > 6) ? 6 : curpos;
+                break;
+            }
         }
     }
     memset(p->powers, 0, sizeof(p->powers));
@@ -1834,6 +1849,9 @@ void G_DoLoadGame(void)
     int a, b, c;
     char savestr[SAVESTRINGSIZE];
     char vcheck[VERSIONSIZE], readversion[VERSIONSIZE];
+    const player_t *p; // [crispy]
+
+    p = &players[consoleplayer]; // [crispy]
 
     gameaction = ga_nothing;
 
@@ -1875,6 +1893,17 @@ void G_DoLoadGame(void)
     P_UnArchiveThinkers();
     P_UnArchiveSpecials();
     P_RestoreTargets();
+
+    // [crispy] point to active artifact after load
+    for (i = 0; i < p->inventorySlotNum; i++)
+    {
+        if (p->inventory[i].type == p->readyArtifact)
+        {
+            curpos = inv_ptr = i;
+            curpos = (curpos > 6) ? 6 : curpos;
+            break;
+        }
+    }
 
     if (SV_ReadByte() != SAVE_GAME_TERMINATOR)
     {                           // Missing savegame termination marker
