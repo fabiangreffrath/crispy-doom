@@ -843,7 +843,7 @@ void P_PlayerNextArtifact(player_t * player)
     if (player == &players[consoleplayer])
     {
         inv_ptr--;
-        if (inv_ptr < 6)
+        if (inv_ptr < CURPOS_MAX)
         {
             curpos--;
             if (curpos < 0)
@@ -854,13 +854,13 @@ void P_PlayerNextArtifact(player_t * player)
         if (inv_ptr < 0)
         {
             inv_ptr = player->inventorySlotNum - 1;
-            if (inv_ptr < 6)
+            if (inv_ptr < CURPOS_MAX)
             {
                 curpos = inv_ptr;
             }
             else
             {
-                curpos = 6;
+                curpos = CURPOS_MAX;
             }
         }
         player->readyArtifact = player->inventory[inv_ptr].type;
@@ -889,7 +889,7 @@ void P_PlayerRemoveArtifact(player_t * player, int slot)
         if (player == &players[consoleplayer])
         {                       // Set position markers and get next readyArtifact
             inv_ptr--;
-            if (inv_ptr < 6)
+            if (inv_ptr < CURPOS_MAX)
             {
                 curpos--;
                 if (curpos < 0)
