@@ -907,9 +907,9 @@ static boolean InventoryMoveRight()
     else
     {
         curpos++;
-        if (curpos > 6)
+        if (curpos > CURPOS_MAX)
         {
-            curpos = 6;
+            curpos = CURPOS_MAX;
         }
     }
     return true;
@@ -1310,6 +1310,7 @@ void G_PlayerExitMap(int playerNumber)
     int i;
     player_t *player;
     int flightPower;
+    artitype_t current_artifact; // [crispy]
 
     player = &players[playerNumber];
 
@@ -1340,6 +1341,8 @@ void G_PlayerExitMap(int playerNumber)
             // Strip all keys
             player->keys = 0;
 
+            current_artifact = player->readyArtifact; // [crispy]
+
             // Strip flight artifact
             for (i = 0; i < 25; i++)
             {
@@ -1347,6 +1350,18 @@ void G_PlayerExitMap(int playerNumber)
                 P_PlayerUseArtifact(player, arti_fly);
             }
             player->powers[pw_flight] = 0;
+
+            // [crispy] restore previous active artifact
+            for (i = 0; i < player->inventorySlotNum; i++)
+            {
+                if (player->inventory[i].type == current_artifact)
+                {
+                    player->readyArtifact = current_artifact;
+                    curpos = inv_ptr = i;
+                    curpos = (curpos > CURPOS_MAX) ? CURPOS_MAX : curpos;
+                    break;
+                }
+            }
         }
     }
 
