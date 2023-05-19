@@ -1388,7 +1388,6 @@ void G_PlayerFinishLevel(int player)
 {
     player_t *p;
     int i;
-    artitype_t current_artifact; // [crispy]
 
 /*      // BIG HACK
 	inv_ptr = 0;
@@ -1404,23 +1403,9 @@ void G_PlayerFinishLevel(int player)
 
     if (!deathmatch)
     {
-        current_artifact = p->readyArtifact; // [crispy]
-
         for (i = 0; i < 16; i++)
         {
             P_PlayerUseArtifact(p, arti_fly);
-        }
-
-        // [crispy] restore active artifact after removing wings
-        for (i = 0; i < p->inventorySlotNum; i++)
-        {
-            if (p->inventory[i].type == current_artifact)
-            {
-                p->readyArtifact = current_artifact;
-                curpos = inv_ptr = i;
-                curpos = (curpos > CURPOS_MAX) ? CURPOS_MAX : curpos;
-                break;
-            }
         }
     }
     memset(p->powers, 0, sizeof(p->powers));
