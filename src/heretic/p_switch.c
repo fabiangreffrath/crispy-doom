@@ -91,12 +91,10 @@ switchlist_t alphSwitchList_vanilla[] = {
     {"\0",		"\0",		0}
 };
 
-// [crispy] remove MAXSWITCHES limit
-int *switchlist;
+int switchlist[MAXSWITCHES * 2];
 int numswitches;
-static size_t	maxswitches;
-button_t        *buttonlist; // [crispy] remove MAXBUTTONS limit
-int		maxbuttons; // [crispy] remove MAXBUTTONS limit
+button_t buttonlist[MAXBUTTONS];
+
 /*
 ===============
 =
@@ -144,14 +142,6 @@ void P_InitSwitchList(void)
 	    SHORT(alphSwitchList[i].episode) :
 	    alphSwitchList[i].episode;
 
-	// [crispy] remove MAXSWITCHES limit
-	if (slindex + 1 >= maxswitches)
-	{
-	    size_t newmax = maxswitches ? 2 * maxswitches : MAXSWITCHES;
-	    switchlist = I_Realloc(switchlist, newmax * sizeof(*switchlist));
-	    maxswitches = newmax;
-	}
-
 	// [crispy] ignore switches referencing unknown texture names,
 	// warn if either one is missing, but only add if both are valid
 	if (alphSwitchList_episode <= episode)
@@ -183,10 +173,6 @@ void P_InitSwitchList(void)
     {
         W_ReleaseLumpName("SWITCHES");
     }
-
-    // [crispy] pre-allocate some memory for the buttonlist[] array
-    buttonlist = I_Realloc(NULL, sizeof(*buttonlist) * (maxbuttons = MAXBUTTONS));
-    memset(buttonlist, 0, sizeof(*buttonlist) * maxbuttons);
 }
 
 //==================================================================
