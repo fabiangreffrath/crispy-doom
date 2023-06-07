@@ -144,7 +144,7 @@ void P_InitSwitchList(void)
 	    SHORT(alphSwitchList[i].episode) :
 	    alphSwitchList[i].episode;
 
-	// [crispy] remove MAXSWITCHES limit
+	// [crispy] remove MAXSWITCHES limita
 	if (slindex + 1 >= maxswitches)
 	{
 	    size_t newmax = maxswitches ? 2 * maxswitches : MAXSWITCHES;
