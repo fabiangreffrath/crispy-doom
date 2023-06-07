@@ -159,12 +159,12 @@ void P_SpawnGlowingLight(sector_t * sector);
 
 ===============================================================================
 */
-typedef struct
+typedef PACKED_STRUCT (
 {
     char name1[9];
     char name2[9];
     short episode;
-} switchlist_t;
+}) switchlist_t;
 
 typedef enum
 {
@@ -186,7 +186,8 @@ typedef struct
 #define	MAXBUTTONS	16      // 4 players, 4 buttons each at once, max.
 #define BUTTONTIME	35      // 1 second
 
-extern button_t buttonlist[MAXBUTTONS];
+extern button_t	*buttonlist;
+extern int maxbuttons;
 
 void P_ChangeSwitchTexture(line_t * line, int useAgain);
 void P_InitSwitchList(void);
