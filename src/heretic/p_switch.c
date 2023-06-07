@@ -187,7 +187,6 @@ void P_InitSwitchList(void)
     // [crispy] pre-allocate some memory for the buttonlist[] array
     buttonlist = I_Realloc(NULL, sizeof(*buttonlist) * (maxbuttons = MAXBUTTONS));
     memset(buttonlist, 0, sizeof(*buttonlist) * maxbuttons);
-
 }
 
 //==================================================================
