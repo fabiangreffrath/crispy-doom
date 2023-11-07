@@ -33,7 +33,7 @@
 #include "s_musinfo.h" // [crispy] S_ParseMusInfo()
 #include "i_swap.h" // [crispy] SHORT()
 #include "w_wad.h" // [crispy] W_CacheLumpNum()
-#include "g_game.h" // [crispy] demo_gotonextlvl
+#include "g_game.h" // [crispy] G_DemoGotoNextLevel()
 
 #include "doomstat.h"
 
@@ -891,9 +891,9 @@ void P_SpawnPlayer (mapthing_t* mthing)
     int			i;
 
     // [crispy] stop fast forward after entering new level while demo playback
-    if (demo_gotonextlvl)
+    if (crispy->demogotonextlvl)
     {
-        demo_gotonextlvl = false;
+        crispy->demogotonextlvl = false;
         G_DemoGotoNextLevel(false);
     }
 

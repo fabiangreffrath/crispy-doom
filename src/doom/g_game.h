@@ -60,7 +60,6 @@ boolean G_CheckDemoStatus (void);
 
 // [crispy] fast forward to next level while demo playback
 extern boolean netdemo; 
-extern boolean demo_gotonextlvl;
 void G_DoPlayDemo (void);
 void G_DemoGotoNextLevel (boolean start);
 
