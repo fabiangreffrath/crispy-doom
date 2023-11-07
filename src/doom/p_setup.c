@@ -1168,7 +1168,7 @@ P_SetupLevel
 	crispy->demowarp = 0;
 	nodrawers = false;
 	singletics = false;
-	crispy->demogotoidclev = false; // [crispy] stop fast forward if reached IDCLEVed map
+	crispy->demogotoidclev = false; // [crispy] stop fast forward if reached IDCLEVed level
     }
 
     // [crispy] don't load map's default music if loaded from a savegame with MUSINFO data
