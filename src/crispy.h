@@ -102,6 +102,7 @@ typedef struct
 	boolean singleplayer;
 	boolean stretchsky;
 	boolean demogotonextlvl;
+	boolean demogotoidclev;
 
 	// [crispy] custom difficulty parameters
 	boolean autohealth;
