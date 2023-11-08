@@ -1338,15 +1338,11 @@ ST_Responder (event_t* ev)
       if (demoplayback)
       {
           crispy->demowarp = map;
+          nodrawers = true;
+          singletics = true;
 
-          if (map > gamemap)
+          if (map <= gamemap)
           {
-              nodrawers = true;
-              singletics = true;
-          }
-          else
-          {
-              crispy->demogotoidclev = true;
               G_DoPlayDemo();
           }
 

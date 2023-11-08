@@ -3031,13 +3031,6 @@ void G_DoPlayDemo (void)
         }
     }
 
-    // [crispy] enable fast forward mode until reached IDCLEVed level
-    if (crispy->demogotoidclev)
-    {
-        nodrawers = true;
-        singletics = true;
-    }
-
     skill = *demo_p++; 
     episode = *demo_p++; 
     map = *demo_p++; 
