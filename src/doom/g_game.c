@@ -3378,6 +3378,8 @@ boolean G_CheckDemoStatus (void)
 // [crispy] fast forward to next level while demo playback
 //
 
+boolean demo_gotonextlvl;
+
 void G_DemoGotoNextLevel (boolean start)
 {
     // disable screen rendering while fast forwarding

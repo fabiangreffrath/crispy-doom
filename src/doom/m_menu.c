@@ -2769,7 +2769,7 @@ boolean M_Responder (event_t* ev)
 	    if (demoplayback)
 	    {
 		// [crispy] go to next level
-		crispy->demogotonextlvl = true;
+		demo_gotonextlvl = true;
 		G_DemoGotoNextLevel(true);
 		return true;
 	    }
