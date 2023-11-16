@@ -30,7 +30,7 @@ files only know about ccordinates, not the architecture of the frame buffer.
 
 byte *viewimage;
 int viewwidth, scaledviewwidth, viewheight, viewwindowx, viewwindowy;
-byte *ylookup[MAXHEIGHT];
+pixel_t *ylookup[MAXHEIGHT];
 int columnofs[MAXWIDTH];
 byte translations[3][256];      // color tables for different players
 
@@ -58,7 +58,7 @@ int dccount;                    // just for profiling
 void R_DrawColumn(void)
 {
     int count;
-    byte *dest;
+    pixel_t *dest;
     fixed_t frac, fracstep;
     int heightmask = dc_texheight - 1;
 
@@ -114,7 +114,7 @@ void R_DrawColumn(void)
 void R_DrawColumnLow(void)
 {
     int count;
-    byte *dest;
+    pixel_t *dest;
     fixed_t frac, fracstep;
     int heightmask = dc_texheight - 1; // [crispy]
 
@@ -173,7 +173,7 @@ void R_DrawColumnLow(void)
 void R_DrawTLColumn(void)
 {
     int count;
-    byte *dest;
+    pixel_t *dest;
     fixed_t frac, fracstep;
     int heightmask = dc_texheight - 1; // [crispy]
 
@@ -246,7 +246,7 @@ byte *translationtables;
 void R_DrawTranslatedColumn(void)
 {
     int count;
-    byte *dest;
+    pixel_t *dest;
     fixed_t frac, fracstep;
 
     count = dc_yh - dc_yl;
@@ -275,7 +275,7 @@ void R_DrawTranslatedColumn(void)
 void R_DrawTranslatedTLColumn(void)
 {
     int count;
-    byte *dest;
+    pixel_t *dest;
     fixed_t frac, fracstep;
 
     count = dc_yh - dc_yl;
@@ -360,7 +360,7 @@ int dscount;                    // just for profiling
 void R_DrawSpan(void)
 {
     fixed_t xfrac, yfrac;
-    byte *dest;
+    pixel_t *dest;
     int count, spot;
 
 #ifdef RANGECHECK
@@ -390,7 +390,7 @@ void R_DrawSpan(void)
 void R_DrawSpanLow(void)
 {
     fixed_t xfrac, yfrac;
-    byte *dest;
+    pixel_t *dest;
     int count, spot;
 
 #ifdef RANGECHECK
@@ -458,7 +458,8 @@ boolean BorderNeedRefresh;
 
 void R_DrawViewBorder(void)
 {
-    byte *src, *dest;
+    byte *src;
+    pixel_t *dest;
     int x, y;
 
     if (scaledviewwidth == SCREENWIDTH)
@@ -476,6 +477,7 @@ void R_DrawViewBorder(void)
 
     for (y = 0; y < SCREENHEIGHT - SBARHEIGHT; y++)
     {
+#ifndef CRISPY_TRUECOLOR
         for (x = 0; x < SCREENWIDTH / 64; x++)
         {
             memcpy(dest, src + ((y & 63) << 6), 64);
@@ -486,6 +488,12 @@ void R_DrawViewBorder(void)
             memcpy(dest, src + ((y & 63) << 6), SCREENWIDTH & 63);
             dest += (SCREENWIDTH & 63);
         }
+#else
+        for (x = 0; x < SCREENWIDTH; x++)
+        {
+            *dest++ = colormaps[src[((y & 63) << 6) + (x & 63)]];
+        }
+#endif
     }
     for (x = (viewwindowx >> crispy->hires); x < (viewwindowx + viewwidth) >> crispy->hires; x += 16)
     {
@@ -528,7 +536,8 @@ boolean BorderTopRefresh;
 
 void R_DrawTopBorder(void)
 {
-    byte *src, *dest;
+    byte *src;
+    pixel_t *dest;
     int x, y;
 
     if (scaledviewwidth == SCREENWIDTH)
@@ -546,6 +555,7 @@ void R_DrawTopBorder(void)
 
     for (y = 0; y < (30 << crispy->hires); y++)
     {
+#ifndef CRISPY_TRUECOLOR
         for (x = 0; x < SCREENWIDTH / 64; x++)
         {
             memcpy(dest, src + ((y & 63) << 6), 64);
@@ -556,6 +566,12 @@ void R_DrawTopBorder(void)
             memcpy(dest, src + ((y & 63) << 6), SCREENWIDTH & 63);
             dest += (SCREENWIDTH & 63);
         }
+#else
+        for (x = 0; x < SCREENWIDTH; x++)
+        {
+            *dest++ = colormaps[src[((y & 63) << 6) + (x & 63)]];
+        }
+#endif
     }
     if ((viewwindowy >> crispy->hires) < 25)
     {

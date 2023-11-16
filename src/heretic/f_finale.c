@@ -149,7 +149,8 @@ void F_Ticker(void)
 
 void F_TextWrite(void)
 {
-    byte *src, *dest;
+    byte *src;
+    pixel_t *dest;
     int x, y;
     int count;
     const char *ch;
@@ -164,6 +165,7 @@ void F_TextWrite(void)
     dest = I_VideoBuffer;
     for (y = 0; y < SCREENHEIGHT; y++)
     {
+#ifndef CRISPY_TRUECOLOR
         for (x = 0; x < SCREENWIDTH / 64; x++)
         {
             memcpy(dest, src + ((y & 63) << 6), 64);
@@ -174,6 +176,12 @@ void F_TextWrite(void)
             memcpy(dest, src + ((y & 63) << 6), SCREENWIDTH & 63);
             dest += (SCREENWIDTH & 63);
         }
+#else
+        for (x = 0; x < SCREENWIDTH; x++)
+        {
+            *dest++ = colormaps[src[((y & 63) << 6) + (x & 63)]];
+        }
+#endif
     }
 
 //      V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
@@ -220,7 +228,8 @@ void F_TextWrite(void)
 void F_DrawPatchCol(int x, patch_t * patch, int col)
 {
     column_t *column;
-    byte *source, *dest, *desttop;
+    byte *source;
+    pixel_t *dest, *desttop;
     int count;
 
     column = (column_t *) ((byte *) patch + LONG(patch->columnofs[col]));
@@ -325,8 +334,10 @@ void F_DemonScroll(void)
 void F_DrawUnderwater(void)
 {
     static boolean underwawa = false;
+#ifndef CRISPY_TRUECOLOR
     const char *lumpname;
     byte *palette;
+#endif
 
     // The underwater screen has its own palette, which is rather annoying.
     // The palette doesn't correspond to the normal palette. Because of
@@ -340,10 +351,15 @@ void F_DrawUnderwater(void)
             {
                 underwawa = true;
                 V_DrawFilledBox(0, 0, SCREENWIDTH, SCREENHEIGHT, 0);
+#ifndef CRISPY_TRUECOLOR
                 lumpname = DEH_String("E2PAL");
                 palette = W_CacheLumpName(lumpname, PU_STATIC);
                 I_SetPalette(palette);
                 W_ReleaseLumpName(lumpname);
+#else
+                // [JN] TODO - E2END using different palette
+                I_SetPalette(0);
+#endif
                 V_DrawFullscreenRawOrPatch(W_GetNumForName(DEH_String("E2END")));
             }
             paused = false;
@@ -354,10 +370,15 @@ void F_DrawUnderwater(void)
         case 2:
             if (underwawa)
             {
+#ifndef CRISPY_TRUECOLOR
                 lumpname = DEH_String("PLAYPAL");
                 palette = W_CacheLumpName(lumpname, PU_STATIC);
                 I_SetPalette(palette);
                 W_ReleaseLumpName(lumpname);
+#else
+                // [JN] TODO - E2END using different palette
+                I_SetPalette(0);
+#endif
                 underwawa = false;
             }
             V_DrawFullscreenRawOrPatch(W_GetNumForName(DEH_String("TITLE")));

@@ -48,7 +48,12 @@
 #define	MAXLIGHTZ			128
 #define	LIGHTZSHIFT			20
 #define	NUMCOLORMAPS		32      // number of diminishing
+#ifndef CRISPY_TRUECOLOR
 #define	INVERSECOLORMAP		32
+#else
+#define	INVERSECOLORMAP		8
+#endif
+    
 
 #define LOOKDIRMIN 110 // [crispy] -110, actually
 #define LOOKDIRMAX 90
@@ -190,7 +195,7 @@ typedef struct
 ==============================================================================
 */
 
-typedef byte lighttable_t;      // this could be wider for >8 bit display
+typedef pixel_t lighttable_t;      // this could be wider for >8 bit display
 
 #define	MAXVISPLANES	128
 #define	MAXOPENINGS		MAXWIDTH*64*4
@@ -511,7 +516,7 @@ extern fixed_t dc_texturemid;
 extern int dc_texheight;
 extern byte *dc_source;         // first pixel in a column
 extern const byte *dc_brightmap;  // [crispy] brightmaps
-extern byte *ylookup[MAXHEIGHT];
+extern pixel_t *ylookup[MAXHEIGHT];
 
 void R_DrawColumn(void);
 void R_DrawColumnLow(void);

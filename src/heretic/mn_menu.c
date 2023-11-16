@@ -1792,8 +1792,12 @@ boolean MN_Responder(event_t * event)
                     //set the msg to be cleared
                     players[consoleplayer].message = NULL;
                     paused = false;
+#ifndef CRISPY_TRUECOLOR
                     I_SetPalette(W_CacheLumpName
                                  ("PLAYPAL", PU_CACHE));
+#else
+                    I_SetPalette (0);
+#endif
                     D_StartTitle();     // go to intro/demo mode.
                     break;
 
@@ -2028,7 +2032,17 @@ boolean MN_Responder(event_t * event)
             {
                 usegamma = 0;
             }
+#ifndef CRISPY_TRUECOLOR
             I_SetPalette((byte *) W_CacheLumpName("PLAYPAL", PU_CACHE));
+#else
+            {
+            extern void R_InitColormaps (void);
+            I_SetPalette (0);
+            R_InitColormaps();
+            setsizeneeded = true;
+            //viewactive = false; // [JN] Needed?
+            }
+#endif
             return true;
         }
         // [crispy] those two can be considered as shortcuts for the ENGAGE cheat
@@ -2438,7 +2452,11 @@ void MN_DrawInfo(void)
 {
     lumpindex_t lumpindex; // [crispy]
 
+#ifndef CRISPY_TRUECOLOR
     I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
+#else
+    I_SetPalette (0);
+#endif
 
     // [crispy] Refactor to allow for use of V_DrawFullscreenRawOrPatch
 
@@ -2543,7 +2561,8 @@ static void DrawMouseMenu(void)
 
 static void M_DrawCrispnessBackground(void)
 {
-    byte *src, *dest;
+    byte *src;
+    pixel_t *dest;
     int x, y;
 
     if (gamemode == shareware)
@@ -2558,6 +2577,7 @@ static void M_DrawCrispnessBackground(void)
 
     for (y = 0; y < SCREENHEIGHT; y++)
     {
+#ifndef CRISPY_TRUECOLOR
         for (x = 0; x < SCREENWIDTH / 64; x++)
         {
             memcpy(dest, src + ((y & 63) << 6), 64);
@@ -2568,6 +2588,12 @@ static void M_DrawCrispnessBackground(void)
             memcpy(dest, src + ((y & 63) << 6), SCREENWIDTH & 63);
             dest += (SCREENWIDTH & 63);
         }
+#else
+        for (x = 0; x < SCREENWIDTH; x++)
+        {
+            *dest++ = colormaps[src[(y & 63) * 64 + (x & 63)]];
+        }
+#endif
     }
 
     SB_state = -1;

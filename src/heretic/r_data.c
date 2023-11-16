@@ -519,6 +519,7 @@ void R_InitSpriteLumps(void)
 
 void R_InitColormaps(void)
 {
+#ifndef CRISPY_TRUECOLOR
     int lump, length;
 //
 // load in the light tables
@@ -528,6 +529,75 @@ void R_InitColormaps(void)
     length = W_LumpLength(lump);
     colormaps = Z_Malloc(length, PU_STATIC, 0);
     W_ReadLump(lump, colormaps);
+#else
+	byte *playpal;
+	int c, i, j = 0;
+	byte r, g, b;
+	extern byte **gamma2table;
+
+	// [crispy] intermediate gamma levels
+	if (!gamma2table)
+	{
+		extern void I_SetGammaTable (void);
+		I_SetGammaTable();
+	}
+
+	playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
+
+	if (!colormaps)
+	{
+		colormaps = (lighttable_t*) Z_Malloc((NUMCOLORMAPS + 1) * 256 * sizeof(lighttable_t), PU_STATIC, 0);
+	}
+
+	if (crispy->truecolor)
+	{
+		for (c = 0; c < NUMCOLORMAPS; c++)
+		{
+			const float scale = 1. * c / NUMCOLORMAPS;
+
+			for (i = 0; i < 256; i++)
+			{
+				r = gamma2table[usegamma][playpal[3 * i + 0]] * (1. - scale) + gamma2table[usegamma][0] * scale;
+				g = gamma2table[usegamma][playpal[3 * i + 1]] * (1. - scale) + gamma2table[usegamma][0] * scale;
+				b = gamma2table[usegamma][playpal[3 * i + 2]] * (1. - scale) + gamma2table[usegamma][0] * scale;
+
+				colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
+			}
+		}
+
+		// [crispy] Invulnerability (c == COLORMAPS)
+		// [JN] TODO - inacurate, should be fine-tuned
+		for (i = 0; i < 256; i++)
+		{
+			const byte gold =
+			     (byte) (0.500 * playpal[3 * i + 0] +
+			             0.500 * playpal[3 * i + 1]);
+			r = g = gamma2table[usegamma][gold];
+			// [JN] Decrease green channel intensity
+			g /= 1.500;
+
+			colormaps[j++] = 0xff000000 | (r << 16) | (g << 8);
+		}
+	}
+	else
+	{
+		byte *const colormap = W_CacheLumpName("COLORMAP", PU_STATIC);
+
+		for (c = 0; c <= NUMCOLORMAPS; c++)
+		{
+			for (i = 0; i < 256; i++)
+			{
+				r = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
+				g = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
+				b = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
+
+				colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
+			}
+		}
+
+		W_ReleaseLumpName("COLORMAP");
+	}
+#endif
 
     // [crispy] initialize color translation and color string tables
     {

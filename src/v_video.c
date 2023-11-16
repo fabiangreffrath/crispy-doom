@@ -833,7 +833,11 @@ void V_DrawBox(int x, int y, int w, int h, int c)
 // to the screen)
 //
 
+#ifndef CRISPY_TRUECOLOR
 void V_CopyScaledBuffer(pixel_t *dest, pixel_t *src, size_t size)
+#else
+void V_CopyScaledBuffer(pixel_t *dest, byte *src, size_t size)
+#endif
 {
     int i, j, index;
 
@@ -871,7 +875,11 @@ void V_CopyScaledBuffer(pixel_t *dest, pixel_t *src, size_t size)
         {
             for (j = 0; j <= crispy->hires; j++)
             {
+#ifndef CRISPY_TRUECOLOR
                 *(dest + index - (j * SCREENWIDTH) - i) = *(src + size);
+#else
+                *(dest + index - (j * SCREENWIDTH) - i) = colormaps[src[size]];
+#endif
             }
         }
         if (size % ORIGWIDTH == 0)
@@ -883,7 +891,11 @@ void V_CopyScaledBuffer(pixel_t *dest, pixel_t *src, size_t size)
     }
 }
  
+#ifndef CRISPY_TRUECOLOR
 void V_DrawRawScreen(pixel_t *raw)
+#else
+void V_DrawRawScreen(byte *raw)
+#endif
 {
     V_CopyScaledBuffer(dest_screen, raw, ORIGWIDTH * ORIGHEIGHT);
 }
