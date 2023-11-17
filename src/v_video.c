@@ -924,7 +924,11 @@ void V_DrawFullscreenRawOrPatch(lumpindex_t index)
 
     if (W_LumpLength(index) == ORIGWIDTH * ORIGHEIGHT)
     {
+#ifndef CRISPY_TRUECOLOR
         V_DrawRawScreen((pixel_t*)patch);
+#else
+        V_DrawRawScreen((byte*)patch);
+#endif
     }
     else if ((SHORT(patch->height) == 200) && (SHORT(patch->width) >= 320))
     {
