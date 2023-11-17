@@ -565,20 +565,10 @@ void R_InitColormaps(void)
 				colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 			}
 		}
-
-		// [crispy] Invulnerability (c == COLORMAPS), generated from COLORMAP lump
-		for (i = 0; i < 256; i++)
-		{
-			r = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
-			g = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
-			b = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
-
-			colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
-		}
 	}
 	else
 	{
-		for (c = 0; c <= NUMCOLORMAPS; c++)
+		for (c = 0; c < NUMCOLORMAPS; c++)
 		{
 			for (i = 0; i < 256; i++)
 			{
@@ -589,6 +579,16 @@ void R_InitColormaps(void)
 				colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 			}
 		}
+	}
+
+	// [crispy] Invulnerability (c == COLORMAPS), generated from COLORMAP lump
+	for (i = 0; i < 256; i++)
+	{
+		r = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
+		g = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
+		b = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
+
+		colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 	}
 
 	W_ReleaseLumpName("COLORMAP");
