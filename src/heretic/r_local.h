@@ -48,12 +48,7 @@
 #define	MAXLIGHTZ			128
 #define	LIGHTZSHIFT			20
 #define	NUMCOLORMAPS		32      // number of diminishing
-#ifndef CRISPY_TRUECOLOR
 #define	INVERSECOLORMAP		32
-#else
-#define	INVERSECOLORMAP		8
-#endif
-    
 
 #define LOOKDIRMIN 110 // [crispy] -110, actually
 #define LOOKDIRMAX 90
