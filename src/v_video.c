@@ -193,9 +193,18 @@ static const inline pixel_t drawpatchpx11 (const pixel_t dest, const pixel_t sou
 #else
 {return I_BlendOver(dest, colormaps[dp_translation[source]]);}
 #endif
+// (5) the shadow of the patch
+static const inline pixel_t drawshadow (const pixel_t dest, const pixel_t source)
+#ifndef CRISPY_TRUECOLOR
+{return tinttable[(dest<<8)];}
+#else
+{return I_BlendDark(dest, 0x80);} // [crispy] 128 (50%) of 256 full translucency
+                                  // [JN] TODO - inaccurate, shadow should be less intensive
+#endif
 // [crispy] array of function pointers holding the different rendering functions
 typedef const pixel_t drawpatchpx_t (const pixel_t dest, const pixel_t source);
 static drawpatchpx_t *const drawpatchpx_a[2][2] = {{drawpatchpx11, drawpatchpx10}, {drawpatchpx01, drawpatchpx00}};
+static drawpatchpx_t *const drawshadow_a = drawshadow;
 
 static fixed_t dx, dxi, dy, dyi;
 
@@ -642,6 +651,11 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch)
     pixel_t *desttop2, *dest2;
     int w;
 
+    // [crispy] patch itself: opaque, can be colored
+    drawpatchpx_t *const drawpatchpx = drawpatchpx_a[!dp_translucent][!dp_translation];
+    // [crispy] translucent shadow, no coloring used
+    drawpatchpx_t *const drawpatchpx2 = drawshadow_a;
+
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
     x += WIDESCREENDELTA; // [crispy] horizontal widescreen offset
@@ -675,9 +689,9 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch)
 
             while (count--)
             {
-                *dest2 = tinttable[((*dest2) << 8)];
+                *dest2 = drawpatchpx2(*dest2, source[srccol >> FRACBITS]);
                 dest2 += SCREENWIDTH;
-                *dest = source[srccol >> FRACBITS];
+                *dest = drawpatchpx(*dest, source[srccol >> FRACBITS]);
                 srccol += dyi;
                 dest += SCREENWIDTH;
 
