@@ -531,6 +531,7 @@ void R_InitColormaps(void)
     W_ReadLump(lump, colormaps);
 #else
 	byte *playpal;
+	byte *const colormap = W_CacheLumpName("COLORMAP", PU_STATIC);
 	int c, i, j = 0;
 	byte r, g, b;
 	extern byte **gamma2table;
@@ -565,24 +566,18 @@ void R_InitColormaps(void)
 			}
 		}
 
-		// [crispy] Invulnerability (c == COLORMAPS)
-		// [JN] TODO - inacurate, should be fine-tuned
+		// [crispy] Invulnerability (c == COLORMAPS), generated from COLORMAP lump
 		for (i = 0; i < 256; i++)
 		{
-			const byte gold =
-			     (byte) (0.500 * playpal[3 * i + 0] +
-			             0.500 * playpal[3 * i + 1]);
-			r = g = gamma2table[usegamma][gold];
-			// [JN] Decrease green channel intensity
-			g /= 1.500;
+			r = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
+			g = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
+			b = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
 
-			colormaps[j++] = 0xff000000 | (r << 16) | (g << 8);
+			colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 		}
 	}
 	else
 	{
-		byte *const colormap = W_CacheLumpName("COLORMAP", PU_STATIC);
-
 		for (c = 0; c <= NUMCOLORMAPS; c++)
 		{
 			for (i = 0; i < 256; i++)
@@ -594,9 +589,9 @@ void R_InitColormaps(void)
 				colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 			}
 		}
-
-		W_ReleaseLumpName("COLORMAP");
 	}
+
+	W_ReleaseLumpName("COLORMAP");
 #endif
 
     // [crispy] initialize color translation and color string tables
