@@ -846,11 +846,7 @@ void V_DrawBox(int x, int y, int w, int h, int c)
 // to the screen)
 //
 
-#ifndef CRISPY_TRUECOLOR
-void V_CopyScaledBuffer(pixel_t *dest, pixel_t *src, size_t size)
-#else
 void V_CopyScaledBuffer(pixel_t *dest, byte *src, size_t size)
-#endif
 {
     int i, j, index;
 
@@ -904,11 +900,7 @@ void V_CopyScaledBuffer(pixel_t *dest, byte *src, size_t size)
     }
 }
  
-#ifndef CRISPY_TRUECOLOR
-void V_DrawRawScreen(pixel_t *raw)
-#else
 void V_DrawRawScreen(byte *raw)
-#endif
 {
     V_CopyScaledBuffer(dest_screen, raw, ORIGWIDTH * ORIGHEIGHT);
 }
@@ -924,11 +916,7 @@ void V_DrawFullscreenRawOrPatch(lumpindex_t index)
 
     if (W_LumpLength(index) == ORIGWIDTH * ORIGHEIGHT)
     {
-#ifndef CRISPY_TRUECOLOR
-        V_DrawRawScreen((pixel_t*)patch);
-#else
         V_DrawRawScreen((byte*)patch);
-#endif
     }
     else if ((SHORT(patch->height) == 200) && (SHORT(patch->width) >= 320))
     {
