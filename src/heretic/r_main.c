@@ -879,7 +879,9 @@ void R_SetupFrame(player_t * player)
     if (player->fixedcolormap)
     {
         fixedcolormap = colormaps + player->fixedcolormap
-            * 256;
+            // [crispy] sizeof(lighttable_t) not needed in paletted render
+            // and breaks invulnerability colormap index in true color render
+            * 256 /* * sizeof(lighttable_t)*/;
         walllights = scalelightfixed;
         for (i = 0; i < MAXLIGHTSCALE; i++)
         {
