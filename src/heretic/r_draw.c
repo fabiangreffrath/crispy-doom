@@ -330,7 +330,9 @@ void R_InitTranslationTables(void)
 {
     int i;
 
+#ifndef CRISPY_TRUECOLOR
     V_LoadTintTable();
+#endif
 
     // Allocate translation tables
     translationtables = Z_Malloc(256 * 3, PU_STATIC, 0);
