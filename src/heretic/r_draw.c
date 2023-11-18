@@ -20,6 +20,7 @@
 #include "r_local.h"
 #include "i_video.h"
 #include "v_video.h"
+#include "v_trans.h" // [crispy] blending functions
 
 /*
 
@@ -209,9 +210,14 @@ void R_DrawTLColumn(void)
 
         do
         {
+#ifndef CRISPY_TRUECOLOR
             *dest =
                 tinttable[((*dest) << 8) +
                           dc_colormap[0][dc_source[frac >> FRACBITS]]];
+#else
+            const pixel_t destrgb = dc_colormap[0][dc_source[frac>>FRACBITS]];
+            *dest = blendfunc(*dest, destrgb);
+#endif
             dest += SCREENWIDTH;
             if ((frac += fracstep) >= heightmask)
                 frac -= heightmask;
@@ -221,9 +227,14 @@ void R_DrawTLColumn(void)
     {
         do
         {
+#ifndef CRISPY_TRUECOLOR
             *dest =
                 tinttable[((*dest) << 8) +
                           dc_colormap[0][dc_source[(frac >> FRACBITS) & heightmask]]];
+#else
+            const pixel_t destrgb = dc_colormap[0][dc_source[(frac >> FRACBITS) & heightmask]];
+            *dest = blendfunc(*dest, destrgb);
+#endif
 
             dest += SCREENWIDTH;
             frac += fracstep;
@@ -294,10 +305,15 @@ void R_DrawTranslatedTLColumn(void)
 
     do
     {
+#ifndef CRISPY_TRUECOLOR
         *dest = tinttable[((*dest) << 8)
                           +
                           dc_colormap[0][dc_translation
                                       [dc_source[frac >> FRACBITS]]]];
+#else
+        const pixel_t destrgb = dc_colormap[0][dc_source[frac>>FRACBITS]];
+        *dest = blendfunc(*dest, destrgb);
+#endif
         dest += SCREENWIDTH;
         frac += fracstep;
     }

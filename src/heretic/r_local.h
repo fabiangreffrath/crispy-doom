@@ -249,6 +249,9 @@ typedef struct vissprite_s
     int mobjflags;              // for color translation and shadow draw
     boolean psprite;            // true if psprite
     fixed_t footclip;           // foot clipping
+#ifdef CRISPY_TRUECOLOR
+    const pixel_t (*blendfunc)(const pixel_t fg, const pixel_t bg);
+#endif
 } vissprite_t;
 
 
