@@ -357,8 +357,10 @@ void F_DrawUnderwater(void)
                 I_SetPalette(palette);
                 W_ReleaseLumpName(lumpname);
 #else
-                // [JN] TODO - E2END using different palette
-                I_SetPalette(0);
+                {
+                extern void R_SetUnderwaterPalette(void);
+                R_SetUnderwaterPalette();
+                }
 #endif
                 V_DrawFullscreenRawOrPatch(W_GetNumForName(DEH_String("E2END")));
             }
@@ -376,8 +378,10 @@ void F_DrawUnderwater(void)
                 I_SetPalette(palette);
                 W_ReleaseLumpName(lumpname);
 #else
-                // [JN] TODO - E2END using different palette
-                I_SetPalette(0);
+                {
+                extern void R_InitColormaps(void);
+                R_InitColormaps();
+                }
 #endif
                 underwawa = false;
             }
