@@ -671,7 +671,9 @@ void R_ProjectSprite(mobj_t * thing)
 #ifdef CRISPY_TRUECOLOR
     if (thing->flags & MF_SHADOW)
     {
-        vis->blendfunc = (thing->frame & FF_FULLBRIGHT) ? I_BlendAdd : I_BlendOver;
+        // [crispy] not using additive blending (I_BlendAdd) here 
+        // to preserve look & feel of original Heretic's translucency
+        vis->blendfunc = I_BlendOverTinttab;
     }
 #endif
 }
