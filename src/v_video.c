@@ -199,7 +199,7 @@ static const inline pixel_t drawtinttab0 (const pixel_t dest, const pixel_t sour
 #ifndef CRISPY_TRUECOLOR
 {return tinttable[(dest<<8)+source];}
 #else
-{return I_BlendOver(dest, colormaps[source]);}
+{return I_BlendOverTinttab(dest, colormaps[source]);}
 #endif
 // (2) translucent shadow only
 static const inline pixel_t drawtinttab1 (const pixel_t dest, const pixel_t source)

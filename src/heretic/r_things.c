@@ -478,7 +478,7 @@ void R_DrawVisSprite(vissprite_t * vis, int x1, int x2)
 
     colfunc = basecolfunc;
 #ifdef CRISPY_TRUECOLOR
-    blendfunc = I_BlendOver;
+    blendfunc = I_BlendOverTinttab;
 #endif
 }
 
@@ -828,7 +828,7 @@ void R_DrawPSprite(pspdef_t * psp)
         vis->colormap[0] = vis->colormap[1] = spritelights[MAXLIGHTSCALE - 1];
         vis->mobjflags |= MF_SHADOW;
 #ifdef CRISPY_TRUECOLOR
-        vis->blendfunc = I_BlendOver;
+        vis->blendfunc = I_BlendOverTinttab;
 #endif
     }
     else if (fixedcolormap)
