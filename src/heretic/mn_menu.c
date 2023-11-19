@@ -1796,7 +1796,7 @@ boolean MN_Responder(event_t * event)
                     I_SetPalette(W_CacheLumpName
                                  ("PLAYPAL", PU_CACHE));
 #else
-                    I_SetPalette (0);
+                    I_SetPalette(0);
 #endif
                     D_StartTitle();     // go to intro/demo mode.
                     break;
@@ -2037,10 +2037,10 @@ boolean MN_Responder(event_t * event)
 #else
             {
             extern void R_InitColormaps (void);
-            I_SetPalette (0);
+            I_SetPalette(0);
             R_InitColormaps();
-            setsizeneeded = true;
-            //viewactive = false; // [JN] Needed?
+            BorderNeedRefresh = true;
+            SB_state = -1;
             }
 #endif
             return true;
@@ -2455,7 +2455,7 @@ void MN_DrawInfo(void)
 #ifndef CRISPY_TRUECOLOR
     I_SetPalette(W_CacheLumpName("PLAYPAL", PU_CACHE));
 #else
-    I_SetPalette (0);
+    I_SetPalette(0);
 #endif
 
     // [crispy] Refactor to allow for use of V_DrawFullscreenRawOrPatch
