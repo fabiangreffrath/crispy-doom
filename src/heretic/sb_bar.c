@@ -27,6 +27,9 @@
 #include "s_sound.h"
 #include "v_video.h"
 #include "am_map.h"
+#ifdef CRISPY_TRUECOLOR
+#include "v_trans.h" // [crispy] I_BlendDark()
+#endif
 
 // Types
 
@@ -434,26 +437,33 @@ static void DrSmallNumber(int val, int x, int y)
 
 static void ShadeLine(int x, int y, int height, int shade)
 {
+    pixel_t *dest;
 #ifndef CRISPY_TRUECOLOR
-    byte *dest;
     byte *shades;
+#endif
 
     x <<= crispy->hires;
     y <<= crispy->hires;
     height <<= crispy->hires;
 
+#ifndef CRISPY_TRUECOLOR
     shades = colormaps + 9 * 256 + shade * 2 * 256;
+#else
+    shade = 0xFF - (((9 + shade * 2) << 8) / NUMCOLORMAPS);
+#endif
     dest = I_VideoBuffer + y * SCREENWIDTH + x + (WIDESCREENDELTA << crispy->hires);
     while (height--)
     {
         if (crispy->hires)
+#ifndef CRISPY_TRUECOLOR
             *(dest + 1) = *(shades + *dest);
         *(dest) = *(shades + *dest);
+#else
+            *(dest + 1) = I_BlendDark(*dest, shade);
+        *(dest) = I_BlendDark(*dest, shade);
+#endif
         dest += SCREENWIDTH;
     }
-#else
-    // [JN] TODO - chain shading
-#endif
 }
 
 //---------------------------------------------------------------------------
