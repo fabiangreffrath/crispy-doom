@@ -462,6 +462,10 @@ byte *R_GetColumn(int tex, int col);
 void R_InitData(void);
 void R_PrecacheLevel(void);
 
+extern void R_InitColormaps(void);
+#ifdef CRISPY_TRUECOLOR
+extern void R_SetUnderwaterPalette(void);
+#endif
 
 //
 // R_things.c

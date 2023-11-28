@@ -2035,13 +2035,10 @@ boolean MN_Responder(event_t * event)
 #ifndef CRISPY_TRUECOLOR
             I_SetPalette((byte *) W_CacheLumpName("PLAYPAL", PU_CACHE));
 #else
-            {
-            extern void R_InitColormaps (void);
             I_SetPalette(0);
             R_InitColormaps();
             BorderNeedRefresh = true;
             SB_state = -1;
-            }
 #endif
             return true;
         }
