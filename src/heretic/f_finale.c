@@ -334,10 +334,8 @@ void F_DemonScroll(void)
 void F_DrawUnderwater(void)
 {
     static boolean underwawa = false;
-#ifndef CRISPY_TRUECOLOR
     const char *lumpname;
     byte *palette;
-#endif
 
     // The underwater screen has its own palette, which is rather annoying.
     // The palette doesn't correspond to the normal palette. Because of
@@ -351,14 +349,14 @@ void F_DrawUnderwater(void)
             {
                 underwawa = true;
                 V_DrawFilledBox(0, 0, SCREENWIDTH, SCREENHEIGHT, 0);
-#ifndef CRISPY_TRUECOLOR
                 lumpname = DEH_String("E2PAL");
                 palette = W_CacheLumpName(lumpname, PU_STATIC);
+#ifndef CRISPY_TRUECOLOR
                 I_SetPalette(palette);
-                W_ReleaseLumpName(lumpname);
 #else
-                R_SetUnderwaterPalette();
+                R_SetUnderwaterPalette(palette);
 #endif
+                W_ReleaseLumpName(lumpname);
                 V_DrawFullscreenRawOrPatch(W_GetNumForName(DEH_String("E2END")));
             }
             paused = false;

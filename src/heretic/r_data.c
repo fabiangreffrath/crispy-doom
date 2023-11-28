@@ -618,27 +618,22 @@ void R_InitColormaps(void)
 }
 
 #ifdef CRISPY_TRUECOLOR
-// [crispy] Changes palette to E2PAL. Used exclusively in true color rendering
+// [crispy] Changes palette to given one. Used exclusively in true color rendering
 // for proper drawing of E2END pic in F_DrawUnderwater. Changing palette back to
 // original PLAYPAL for restoring proper colors will be done in R_InitColormaps.
-void R_SetUnderwaterPalette(void)
+void R_SetUnderwaterPalette(byte *palette)
 {
     int i, j = 0;
     byte r, g, b;
-    byte *playpal;
-
-    playpal = W_CacheLumpName("E2PAL", PU_STATIC);
 
     for (i = 0; i < 256; i++)
     {
-        r = gamma2table[usegamma][playpal[3 * i + 0]] + gamma2table[usegamma][0];
-        g = gamma2table[usegamma][playpal[3 * i + 1]] + gamma2table[usegamma][0];
-        b = gamma2table[usegamma][playpal[3 * i + 2]] + gamma2table[usegamma][0];
+        r = gamma2table[usegamma][palette[3 * i + 0]] + gamma2table[usegamma][0];
+        g = gamma2table[usegamma][palette[3 * i + 1]] + gamma2table[usegamma][0];
+        b = gamma2table[usegamma][palette[3 * i + 2]] + gamma2table[usegamma][0];
 
         colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
     }
-
-    W_ReleaseLumpName("E2PAL");
 }
 #endif
 

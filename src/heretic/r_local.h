@@ -464,7 +464,7 @@ void R_PrecacheLevel(void);
 
 extern void R_InitColormaps(void);
 #ifdef CRISPY_TRUECOLOR
-extern void R_SetUnderwaterPalette(void);
+extern void R_SetUnderwaterPalette(byte *palette);
 #endif
 
 //
