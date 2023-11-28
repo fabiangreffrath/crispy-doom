@@ -157,21 +157,17 @@ static char cheat_amap[] = { 'r', 'a', 'v', 'm', 'a', 'p' };
 
 static byte cheatcount = 0;
 
-// [crispy] gradient table for map normal mode
-static pixel_t antialias_normal[NUMALIAS][8] = {
-    {96, 97, 98, 99, 100, 101, 102, 103},
-    {110, 109, 108, 107, 106, 105, 104, 103},
-    {75, 76, 77, 78, 79, 80, 81, 103}
+// [crispy] line colors for map normal mode
+static byte antialias_normal[NUMALIAS] = {
+    96, 110, 75
 };
 
-// [crispy] gradient table for map overlay mode
-static pixel_t antialias_overlay[NUMALIAS][8] = {
-    {100, 99, 98, 97, 96, 95, 95, 95},
-    {110, 109, 108, 105, 102, 99, 97, 95},
-    {75, 74, 73, 72, 71, 70, 69, 95}
+// [crispy] line colors for map overlay mode
+static byte antialias_overlay[NUMALIAS] = {
+    100, 110, 75
 };
 
-static pixel_t (*antialias)[NUMALIAS][8]; // [crispy]
+static byte (*antialias)[NUMALIAS]; // [crispy]
 /*
 static byte *aliasmax[NUMALIAS] = {
 	&antialias[0][7], &antialias[1][7], &antialias[2][7]
@@ -1280,15 +1276,15 @@ void AM_drawFline(fline_t * fl, int color)
     switch (color)
     {
         case WALLCOLORS:
-            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, (*antialias)[0][0],
+            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, (*antialias)[0],
                        8, 3);
             break;
         case FDWALLCOLORS:
-            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, (*antialias)[1][0],
+            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, (*antialias)[1],
                        8, 3);
             break;
         case CDWALLCOLORS:
-            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, (*antialias)[2][0],
+            DrawWuLine(fl->a.x, fl->a.y, fl->b.x, fl->b.y, (*antialias)[2],
                        8, 3);
             break;
         default:
