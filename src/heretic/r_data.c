@@ -516,7 +516,6 @@ void R_InitSpriteLumps(void)
 =
 =================
 */
-extern byte **gamma2table;
 
 void R_InitColormaps(void)
 {
@@ -539,7 +538,6 @@ void R_InitColormaps(void)
 	// [crispy] intermediate gamma levels
 	if (!gamma2table)
 	{
-		extern void I_SetGammaTable (void);
 		I_SetGammaTable();
 	}
 
