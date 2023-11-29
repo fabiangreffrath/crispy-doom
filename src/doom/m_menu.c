@@ -1436,29 +1436,18 @@ static void M_DrawMouse(void)
 #include "m_background.h"
 static void M_DrawCrispnessBackground(void)
 {
-	const byte *src = crispness_background;
+	byte *src = crispness_background;
 	pixel_t *dest;
-	int x, y;
 
 	// [NS] Try to load the background from a lump.
 	int lump = W_CheckNumForName("CRISPYBG");
 	if (lump != -1 && W_LumpLength(lump) >= 64*64)
 	{
-		src = W_CacheLumpNum(lump, PU_STATIC);
+		src = W_CacheLumpNum(lump, PU_CACHE);
 	}
 	dest = I_VideoBuffer;
 
-	for (y = 0; y < SCREENHEIGHT; y++)
-	{
-		for (x = 0; x < SCREENWIDTH; x++)
-		{
-#ifndef CRISPY_TRUECOLOR
-			*dest++ = src[(y & 63) * 64 + (x & 63)];
-#else
-			*dest++ = colormaps[src[(y & 63) * 64 + (x & 63)]];
-#endif
-		}
-	}
+	V_FillFlat(0, SCREENHEIGHT, 0, SCREENWIDTH, src, dest);
 
 	inhelpscreens = true;
 }
