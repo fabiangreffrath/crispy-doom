@@ -1436,7 +1436,7 @@ static void M_DrawMouse(void)
 #include "m_background.h"
 static void M_DrawCrispnessBackground(void)
 {
-	byte *src = crispness_background;
+	const byte *src = crispness_background;
 	pixel_t *dest;
 
 	// [NS] Try to load the background from a lump.
