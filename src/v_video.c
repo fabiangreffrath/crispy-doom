@@ -952,8 +952,8 @@ void V_DrawFullscreenRawOrPatch(lumpindex_t index)
 
 // [crispy] Unified function of flat filling. Used for intermission
 // and finale screens, view border and status bar's wide screen mode.
-void V_FillFlat (int y_start, int y_stop, int x_start, int x_stop,
-                 const byte *src, pixel_t *dest)
+void V_FillFlat(int y_start, int y_stop, int x_start, int x_stop,
+                const byte *src, pixel_t *dest)
 {
     int x, y;
 

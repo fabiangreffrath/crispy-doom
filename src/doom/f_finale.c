@@ -284,7 +284,7 @@ void F_TextWrite (void)
     dest = I_VideoBuffer;
 	
     // [crispy] use unified flat filling function
-    V_FillFlat (0, SCREENHEIGHT, 0, SCREENWIDTH, src, dest);
+    V_FillFlat(0, SCREENHEIGHT, 0, SCREENWIDTH, src, dest);
 
     V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
     

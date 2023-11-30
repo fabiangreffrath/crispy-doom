@@ -416,7 +416,7 @@ void ST_refreshBackground(boolean force)
 		dest = st_backing_screen;
 
 		// [crispy] use unified flat filling function
-		V_FillFlat (SCREENHEIGHT-(ST_HEIGHT<<crispy->hires), SCREENHEIGHT, 0, SCREENWIDTH, src, dest);
+		V_FillFlat(SCREENHEIGHT-(ST_HEIGHT<<crispy->hires), SCREENHEIGHT, 0, SCREENWIDTH, src, dest);
 
 		// [crispy] preserve bezel bottom edge
 		if (scaledviewwidth == SCREENWIDTH)
