@@ -606,7 +606,6 @@ static void RefreshBackground()
 
     if ((SCREENWIDTH >> crispy->hires) != ORIGWIDTH)
     {
-        int x;
         byte *src;
         pixel_t *dest;
         const char *name = (gamemode == shareware) ?
@@ -621,6 +620,7 @@ static void RefreshBackground()
         // [crispy] preserve bezel bottom edge
         if (scaledviewwidth == SCREENWIDTH)
         {
+            int x;
             patch_t *const patch = W_CacheLumpName("bordb", PU_CACHE);
 
             for (x = 0; x < WIDESCREENDELTA; x += 16)

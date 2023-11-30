@@ -1015,7 +1015,6 @@ void ST_drawLine(int x, int y, int len, int color)
 // surround the non-fullscreen game window.
 static void RefreshBackground(void)
 {
-    int x;
     byte *src;
     pixel_t *dest;
 
@@ -1028,6 +1027,7 @@ static void RefreshBackground(void)
     // [crispy] preserve bezel bottom edge
     if (scaledviewwidth == SCREENWIDTH)
     {
+        int x;
         patch_t *const patch = W_CacheLumpName(DEH_String("brdr_b"), PU_CACHE);
 
         for (x = 0; x < WIDESCREENDELTA; x += 8)

@@ -539,7 +539,6 @@ void R_DrawTopBorder(void)
 {
     byte *src;
     pixel_t *dest;
-    int x;
 
     if (scaledviewwidth == SCREENWIDTH)
         return;
@@ -559,6 +558,8 @@ void R_DrawTopBorder(void)
 
     if ((viewwindowy >> crispy->hires) < 25)
     {
+        int x;
+
         for (x = (viewwindowx >> crispy->hires); x < (viewwindowx + viewwidth) >> crispy->hires; x += 16)
         {
             V_DrawPatch(x - WIDESCREENDELTA, (viewwindowy >> crispy->hires) - 4,

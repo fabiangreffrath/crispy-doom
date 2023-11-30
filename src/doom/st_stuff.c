@@ -407,7 +407,6 @@ void ST_refreshBackground(boolean force)
 	// so it appears to the left and right of the status bar in widescreen mode
 	if ((SCREENWIDTH >> crispy->hires) != ST_WIDTH)
 	{
-		int x;
 		byte *src;
 		pixel_t *dest;
 		const char *name = (gamemode == commercial) ? DEH_String("GRNROCK") : DEH_String("FLOOR7_2");
@@ -421,6 +420,7 @@ void ST_refreshBackground(boolean force)
 		// [crispy] preserve bezel bottom edge
 		if (scaledviewwidth == SCREENWIDTH)
 		{
+			int x;
 			patch_t *const patch = W_CacheLumpName(DEH_String("brdr_b"), PU_CACHE);
 
 			for (x = 0; x < WIDESCREENDELTA; x += 8)
