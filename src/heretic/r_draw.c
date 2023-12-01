@@ -183,10 +183,7 @@ void R_DrawTLColumn(void)
     if (!dc_yl)
         dc_yl = 1;
     if (dc_yh == viewheight - 1)
-    {
         dc_yh = viewheight - 2;
-        cutoff = true;
-    }
     */
 
     count = dc_yh - dc_yl;
