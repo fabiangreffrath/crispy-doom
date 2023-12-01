@@ -177,11 +177,15 @@ void R_DrawTLColumn(void)
     pixel_t *dest;
     fixed_t frac, fracstep;
     int heightmask = dc_texheight - 1; // [crispy]
+    boolean cutoff = false; // [crispy]
 
     if (!dc_yl)
         dc_yl = 1;
     if (dc_yh == viewheight - 1)
+    {
         dc_yh = viewheight - 2;
+        cutoff = true;
+    }
 
     count = dc_yh - dc_yl;
     if (count < 0)
@@ -240,6 +244,19 @@ void R_DrawTLColumn(void)
             frac += fracstep;
         }
         while (count--);
+    }
+
+    // [crispy] if the line at the bottom had to be cut off,
+    // draw one extra line using only pixels of that line and the one above
+    if (cutoff)
+    {
+#ifndef CRISPY_TRUECOLOR
+        *dest = tinttable[((*dest) << 8) +
+                          dc_colormap[0][dc_source[(frac >> FRACBITS) - 1 / 2]]];
+#else
+        const pixel_t destrgb = dc_colormap[0][dc_source[(frac >> FRACBITS) - 1 / 2]];
+        *dest = blendfunc(*dest, destrgb);
+#endif
     }
 }
 
