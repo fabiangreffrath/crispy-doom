@@ -826,7 +826,9 @@ void R_DrawPSprite(pspdef_t * psp)
         viewplayer->powers[pw_invisibility] & 8)
     {
         // Invisibility
-        vis->colormap[0] = vis->colormap[1] = spritelights[MAXLIGHTSCALE - 1];
+        // [crispy] allow translucent weapons to be affected by invulnerability colormap
+        vis->colormap[0] = vis->colormap[1] = fixedcolormap ? fixedcolormap :
+                                              spritelights[MAXLIGHTSCALE - 1];
         vis->mobjflags |= MF_SHADOW;
 #ifdef CRISPY_TRUECOLOR
         vis->blendfunc = I_BlendOverTinttab;
