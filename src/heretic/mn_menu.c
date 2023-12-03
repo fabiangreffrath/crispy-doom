@@ -2027,10 +2027,10 @@ boolean MN_Responder(event_t * event)
         }
         else if (key == key_menu_gamma)           // F11 (gamma correction)
         {
-            usegamma++;
-            if (usegamma > 4+13) // [crispy] intermediate gamma levels
+            crispy->gamma++;
+            if (crispy->gamma > 4+13) // [crispy] intermediate gamma levels
             {
-                usegamma = 0;
+                crispy->gamma = 0;
             }
 #ifndef CRISPY_TRUECOLOR
             I_SetPalette((byte *) W_CacheLumpName("PLAYPAL", PU_CACHE));

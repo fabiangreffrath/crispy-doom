@@ -558,9 +558,9 @@ void R_InitColormaps(void)
 
 			for (i = 0; i < 256; i++)
 			{
-				r = gamma2table[usegamma][playpal[3 * i + 0]] * (1. - scale) + gamma2table[usegamma][0] * scale;
-				g = gamma2table[usegamma][playpal[3 * i + 1]] * (1. - scale) + gamma2table[usegamma][0] * scale;
-				b = gamma2table[usegamma][playpal[3 * i + 2]] * (1. - scale) + gamma2table[usegamma][0] * scale;
+				r = gamma2table[crispy->gamma][playpal[3 * i + 0]] * (1. - scale) + gamma2table[crispy->gamma][0] * scale;
+				g = gamma2table[crispy->gamma][playpal[3 * i + 1]] * (1. - scale) + gamma2table[crispy->gamma][0] * scale;
+				b = gamma2table[crispy->gamma][playpal[3 * i + 2]] * (1. - scale) + gamma2table[crispy->gamma][0] * scale;
 
 				colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 			}
@@ -572,9 +572,9 @@ void R_InitColormaps(void)
 		{
 			for (i = 0; i < 256; i++)
 			{
-				r = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
-				g = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
-				b = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
+				r = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
+				g = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
+				b = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
 
 				colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 			}
@@ -584,9 +584,9 @@ void R_InitColormaps(void)
 	// [crispy] Invulnerability (c == COLORMAPS), generated from COLORMAP lump
 	for (i = 0; i < 256; i++)
 	{
-		r = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
-		g = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
-		b = gamma2table[usegamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
+		r = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
+		g = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
+		b = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
 
 		colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 	}
@@ -630,9 +630,9 @@ void R_SetUnderwaterPalette(byte *palette)
 
     for (i = 0; i < 256; i++)
     {
-        r = gamma2table[usegamma][palette[3 * i + 0]] + gamma2table[usegamma][0];
-        g = gamma2table[usegamma][palette[3 * i + 1]] + gamma2table[usegamma][0];
-        b = gamma2table[usegamma][palette[3 * i + 2]] + gamma2table[usegamma][0];
+        r = gamma2table[crispy->gamma][palette[3 * i + 0]] + gamma2table[crispy->gamma][0];
+        g = gamma2table[crispy->gamma][palette[3 * i + 1]] + gamma2table[crispy->gamma][0];
+        b = gamma2table[crispy->gamma][palette[3 * i + 2]] + gamma2table[crispy->gamma][0];
 
         colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
     }

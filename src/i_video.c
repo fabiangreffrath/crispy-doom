@@ -217,7 +217,7 @@ static unsigned int last_resize_time;
 
 // Gamma correction level to use
 
-int usegamma = 10; // [crispy] default to "OFF" for intermediate gamma levels
+int usegamma = 0;
 
 // Joystick/gamepad hysteresis
 unsigned int joywait = 0;
@@ -993,9 +993,9 @@ void I_SetPalette (byte *doompalette)
         // controller only supports 6 bits of accuracy.
 
         // [crispy] intermediate gamma levels
-        palette[i].r = gamma2table[usegamma][*doompalette++] & ~3;
-        palette[i].g = gamma2table[usegamma][*doompalette++] & ~3;
-        palette[i].b = gamma2table[usegamma][*doompalette++] & ~3;
+        palette[i].r = gamma2table[crispy->gamma][*doompalette++] & ~3;
+        palette[i].g = gamma2table[crispy->gamma][*doompalette++] & ~3;
+        palette[i].b = gamma2table[crispy->gamma][*doompalette++] & ~3;
     }
 
     palette_to_set = true;

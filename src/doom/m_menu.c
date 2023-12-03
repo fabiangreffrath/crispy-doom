@@ -2723,10 +2723,10 @@ boolean M_Responder (event_t* ev)
         }
         else if (key == key_menu_gamma)    // gamma toggle
         {
-	    usegamma++;
-	    if (usegamma > 4+13) // [crispy] intermediate gamma levels
-		usegamma = 0;
-	    players[consoleplayer].message = DEH_String(gammamsg[usegamma]);
+	    crispy->gamma++;
+	    if (crispy->gamma > 4+13) // [crispy] intermediate gamma levels
+		crispy->gamma = 0;
+	    players[consoleplayer].message = DEH_String(gammamsg[crispy->gamma]);
 #ifndef CRISPY_TRUECOLOR
             I_SetPalette (W_CacheLumpName (DEH_String("PLAYPAL"),PU_CACHE));
 #else
