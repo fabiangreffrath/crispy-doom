@@ -82,7 +82,7 @@
 #define GAMMALVL070	"Gamma correction level -2.4"
 #define GAMMALVL075	"Gamma correction level -2.0"
 #define GAMMALVL080	"Gamma correction level -1.6"
-#define GAMMALVL085	"Gamma correction level -1.0"
+#define GAMMALVL085	"Gamma correction level -1.2"
 #define GAMMALVL090	"Gamma correction level -0.8"
 #define GAMMALVL05	"Gamma correction level 0.5"
 #define GAMMALVL15	"Gamma correction level 1.5"
