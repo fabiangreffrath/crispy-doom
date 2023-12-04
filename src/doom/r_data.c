@@ -1172,14 +1172,9 @@ void R_InitColormaps (void)
 	byte *playpal;
 	int c, i, j = 0;
 	byte r, g, b;
-	static boolean gamma2table_set = false;
 
 	// [crispy] intermediate gamma levels
-	if (!gamma2table_set)
-	{
-		I_SetGammaTable();
-		gamma2table_set = true;
-	}
+	I_SetGammaTable();
 
 	playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
 
