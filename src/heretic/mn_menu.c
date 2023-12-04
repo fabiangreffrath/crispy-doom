@@ -2062,6 +2062,7 @@ boolean MN_Responder(event_t * event)
             BorderNeedRefresh = true;
             SB_state = -1;
 #endif
+            // [crispy] print gamma correction message
             P_SetMessage(&players[consoleplayer], GammaText[crispy->gamma], false);
             return true;
         }
