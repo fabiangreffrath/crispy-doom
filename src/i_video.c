@@ -986,14 +986,6 @@ void I_SetGammaTable (void)
 void I_SetPalette (byte *doompalette)
 {
     int i;
-    static boolean gamma2table_set = false;
-
-    // [crispy] intermediate gamma levels
-    if (!gamma2table_set)
-    {
-        I_SetGammaTable();
-        gamma2table_set = true;
-    }
 
     for (i=0; i<256; ++i)
     {
@@ -1755,6 +1747,10 @@ void I_InitGraphics(void)
     // (screen will be flipped after we set the palette)
 
     SDL_FillRect(screenbuffer, NULL, 0);
+
+    // [crispy] Initialize and generate gamma-correction levels for palletted render.
+
+    I_SetGammaTable();
 
     // Set the palette
 

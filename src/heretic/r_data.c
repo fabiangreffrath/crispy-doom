@@ -535,9 +535,6 @@ void R_InitColormaps(void)
 	int c, i, j = 0;
 	byte r, g, b;
 
-	// [crispy] intermediate gamma levels
-	I_SetGammaTable();
-
 	playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
 
 	if (!colormaps)
@@ -665,6 +662,10 @@ void R_InitData(void)
     R_InitSpriteLumps();
     IncThermo();
     printf (".");
+#ifdef CRISPY_TRUECOLOR
+    // [crispy] Initialize and generate gamma-correction levels for true color render.
+    I_SetGammaTable();
+#endif
     R_InitColormaps();
 }
 
