@@ -1295,10 +1295,8 @@ void R_InitData (void)
     printf (".");
     R_InitSpriteLumps ();
     printf (".");
-#ifdef CRISPY_TRUECOLOR
-    // [crispy] Initialize and generate gamma-correction levels for true color render.
+    // [crispy] Initialize and generate gamma-correction levels.
     I_SetGammaTable ();
-#endif
     R_InitColormaps ();
 #ifndef CRISPY_TRUECOLOR
     R_InitTranMap(); // [crispy] prints a mark itself

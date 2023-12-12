@@ -662,10 +662,8 @@ void R_InitData(void)
     R_InitSpriteLumps();
     IncThermo();
     printf (".");
-#ifdef CRISPY_TRUECOLOR
-    // [crispy] Initialize and generate gamma-correction levels for true color render.
+    // [crispy] Initialize and generate gamma-correction levels.
     I_SetGammaTable();
-#endif
     R_InitColormaps();
 }
 

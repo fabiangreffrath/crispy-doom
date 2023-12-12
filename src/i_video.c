@@ -1748,10 +1748,6 @@ void I_InitGraphics(void)
 
     SDL_FillRect(screenbuffer, NULL, 0);
 
-    // [crispy] Initialize and generate gamma-correction levels for palletted render.
-
-    I_SetGammaTable();
-
     // Set the palette
 
     doompal = W_CacheLumpName(DEH_String("PLAYPAL"), PU_CACHE);
