@@ -1079,7 +1079,7 @@ void P_UpdateSpecials(void)
         }
     }
     // Handle buttons
-    for (i = 0; i < MAXBUTTONS; i++)
+    for (i = 0; i < maxbuttons; i++)
     {
         if (buttonlist[i].btimer)
         {
@@ -1313,7 +1313,7 @@ void P_SpawnSpecials(void)
         activeceilings[i] = NULL;
     for (i = 0; i < MAXPLATS; i++)
         activeplats[i] = NULL;
-    for (i = 0; i < MAXBUTTONS; i++)
+    for (i = 0; i < maxbuttons; i++)
         memset(&buttonlist[i], 0, sizeof(button_t));
 }
 
