@@ -2068,10 +2068,10 @@ void AM_drawMarks(void)
 	    {
 		AM_rotatePoint(&pt);
 	    }
-	    fx = (flipscreenwidth[CXMTOF(pt.x)] >> crispy->hires) - 1 - WIDESCREENDELTA;
+	    fx = (flipscreenwidth[CXMTOF(pt.x)] >> crispy->hires) - 1;
 	    fy = (CYMTOF(pt.y) >> crispy->hires) - 2;
 	    if (fx >= f_x && fx <= (f_w >> crispy->hires) - w && fy >= f_y && fy <= (f_h >> crispy->hires) - h)
-		V_DrawPatch(fx, fy, marknums[i]);
+		V_DrawPatch(fx - WIDESCREENDELTA, fy, marknums[i]);
 	}
     }
 
