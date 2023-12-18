@@ -40,7 +40,7 @@ R_GetColumnMod
 ( int		tex,
   int		col );
 
-// [FG] wrapping column getter function for non-power-of-two wide sky textures
+// [crispy] wrapping column getter function for non-power-of-two wide sky textures
 byte*
 R_GetColumnMod2
 ( int		tex,
