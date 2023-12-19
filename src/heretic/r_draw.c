@@ -91,7 +91,7 @@ void R_DrawColumn(void)
     do
     {
 	// [crispy] brightmaps
-	const byte source = dc_source[frac>>FRACBITS];
+	const byte source = dc_source[frac >> FRACBITS];
 	*dest = dc_colormap[dc_brightmap[source]][source];
 	dest += SCREENWIDTH;
 	if ((frac += fracstep) >= heightmask)
