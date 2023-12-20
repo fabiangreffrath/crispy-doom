@@ -854,7 +854,8 @@ AM_Responder
 	if (!followplayer && (ev->data2 || ev->data3))
 	{
 		// [crispy] mouse sensitivity for strafe
-		m_paninc2.x = FTOM(ev->data2*(mouseSensitivity_x2+5)/(160 >> crispy->hires));
+		const int flip_x = (ev->data2*(mouseSensitivity_x2+5)/(160 >> crispy->hires));
+		m_paninc2.x = crispy->fliplevels ? -FTOM(flip_x) : FTOM(flip_x);
 		m_paninc2.y = FTOM(ev->data3*(mouseSensitivity_x2+5)/(160 >> crispy->hires));
 		rc = true;
 	}
