@@ -1720,6 +1720,10 @@ static boolean CheckBossEnd(mobjtype_t motype)
             case 5:
                 return (gamemap == 8 && !critical->havesigil);
 
+            // [crispy] no trigger for Sigil II E6
+            case 6:
+                return 0;
+
             default:
                 return gamemap == 8;
 	}

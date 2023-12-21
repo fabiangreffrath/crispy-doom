@@ -76,6 +76,7 @@ static textscreen_t textscreens[] =
     { doom,      3, 8,  "MFLR8_4",   E3TEXT},
     { doom,      4, 8,  "MFLR8_3",   E4TEXT},
     { doom,      5, 8,  "FLOOR7_2",  E5TEXT}, // [crispy] Sigil
+    { doom,      6, 8,  "FLOOR7_2",  E6TEXT}, // [crispy] Sigil II
 
     { doom2,     1, 6,  "SLIME16",   C1TEXT},
     { doom2,     1, 11, "RROCK14",   C2TEXT},
@@ -1012,6 +1013,7 @@ static void F_ArtScreenDrawer(void)
                 break;
             // [crispy] Sigil
             case 5:
+            case 6:
                 lumpname = "SIGILEND";
                 if (W_CheckNumForName(DEH_String(lumpname)) == -1)
                 {
