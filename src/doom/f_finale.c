@@ -1013,11 +1013,23 @@ static void F_ArtScreenDrawer(void)
                 break;
             // [crispy] Sigil
             case 5:
-            case 6:
                 lumpname = "SIGILEND";
                 if (W_CheckNumForName(DEH_String(lumpname)) == -1)
                 {
                     return;
+                }
+                break;
+            // [crispy] Sigil II
+            case 6:
+                lumpname = "SGL2END";
+                if (W_CheckNumForName(DEH_String(lumpname)) == -1)
+                {
+                    lumpname = "SIGILEND";
+
+                    if (W_CheckNumForName(DEH_String(lumpname)) == -1)
+                    {
+                        return;
+                    }
                 }
                 break;
             default:

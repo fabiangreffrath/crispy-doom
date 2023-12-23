@@ -1993,7 +1993,7 @@ void D_DoomMain (void)
 	    gamevariant != freedoom &&
 	    strncasecmp(M_BaseName(iwadfile), "rekkr", 5))
 	{
-		D_LoadSigilWad();
+		D_LoadSigilWads();
 	}
 
 	if (gamemission == doom2)

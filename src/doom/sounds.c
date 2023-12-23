@@ -92,6 +92,7 @@ musicinfo_t S_music[] =
     MUSIC("e6m8"),
     MUSIC("e6m9"),
     MUSIC("sigint"),
+    MUSIC("sg2int"),
     MUSIC("inter"),
     MUSIC("intro"),
     MUSIC("bunny"),

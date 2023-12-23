@@ -114,6 +114,7 @@ typedef struct
 	char *havenerve;
 	char *havemaster;
 	char *havesigil;
+	char *havesigil2;
 
 	const char *sdlversion;
 	const char *platform;

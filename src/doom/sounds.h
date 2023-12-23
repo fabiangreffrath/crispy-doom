@@ -93,6 +93,7 @@ typedef enum
     mus_e6m8,
     mus_e6m9,
     mus_sigint,
+    mus_sg2int,
     mus_inter,
     mus_intro,
     mus_bunny,
