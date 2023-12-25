@@ -2169,12 +2169,13 @@ static int G_ReloadLevel(void)
 
 static int G_GotoNextLevel(void)
 {
-  byte doom_next[5][9] = {
+  byte doom_next[6][9] = {
     {12, 13, 19, 15, 16, 17, 18, 21, 14},
     {22, 23, 24, 25, 29, 27, 28, 31, 26},
     {32, 33, 34, 35, 36, 39, 38, 41, 37},
     {42, 49, 44, 45, 46, 47, 48, 51, 43},
-    {52, 53, 54, 55, 56, 59, 58, 11, 57},
+    {52, 53, 54, 55, 56, 59, 58, 61, 57},
+    {62, 63, 69, 65, 66, 67, 68, 11, 64},
   };
   byte doom2_next[33] = {
      2,  3,  4,  5,  6,  7,  8,  9, 10, 11,
@@ -2217,8 +2218,13 @@ static int G_GotoNextLevel(void)
       if (gamemode == registered)
         doom_next[2][7] = 11;
 
-      if (!crispy->haved1e5)
+      // [crispy] Sigil and Sigil II
+      if (!crispy->haved1e5 && !crispy->haved1e6)
         doom_next[3][7] = 11;
+      else if (!crispy->haved1e5 && crispy->haved1e6)
+        doom_next[3][7] = 61;
+      else if (crispy->haved1e5 && !crispy->haved1e6)
+        doom_next[4][7] = 11;
 
       if (gameversion == exe_chex)
       {
