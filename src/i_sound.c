@@ -419,12 +419,14 @@ void I_SetMusicVolume(int volume)
     {
         music_module->SetMusicVolume(volume);
 
+#ifndef DISABLE_SDL2MIXER
         // [crispy] always broadcast volume changes to SDL. This also covers
         // the musicpack module.
         if (music_module != &music_sdl_module)
         {
             music_sdl_module.SetMusicVolume(volume);
         }
+#endif
     }
 }
 
