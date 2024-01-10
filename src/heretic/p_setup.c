@@ -515,15 +515,20 @@ void P_LoadSideDefs(int lump)
 =================
 */
 
-void P_LoadBlockMap(int lump)
+boolean P_LoadBlockMap(int lump)
 {
     int i, count;
     int lumplen;
     short *wadblockmaplump;
 
-    lumplen = W_LumpLength(lump);
-
-    count = lumplen / 2; // [crispy] remove BLOCKMAP limit
+    // [crispy] (re-)create BLOCKMAP if necessary
+    if (M_CheckParm("-blockmap") ||
+        lump >= numlumps ||
+        (lumplen = W_LumpLength(lump)) < 8 ||
+        (count = lumplen / 2) >= 0x10000)
+    {
+        return false;
+    }
 
     // [crispy] remove BLOCKMAP limit
     wadblockmaplump = Z_Malloc(lumplen, PU_LEVEL, NULL);
@@ -556,6 +561,9 @@ void P_LoadBlockMap(int lump)
     count = sizeof(*blocklinks) * bmapwidth * bmapheight;
     blocklinks = Z_Malloc(count, PU_LEVEL, 0);
     memset(blocklinks, 0, count);
+
+    // [crispy] (re-)create BLOCKMAP if necessary
+    return true;
 }
 
 
@@ -750,6 +758,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     char lumpname[9];
     int lumpnum;
     mobj_t *mobj;
+    boolean crispy_validblockmap;
     mapformat_t crispy_mapformat;
 
     totalkills = totalitems = totalsecret = 0;
@@ -793,12 +802,18 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     maplumpinfo = lumpinfo[lumpnum];
 
 // note: most of this ordering is important     
-    P_LoadBlockMap(lumpnum + ML_BLOCKMAP);
+    crispy_validblockmap = P_LoadBlockMap(lumpnum + ML_BLOCKMAP); // [crispy] (re-)create BLOCKMAP if necessary
     P_LoadVertexes(lumpnum + ML_VERTEXES);
     P_LoadSectors(lumpnum + ML_SECTORS);
     P_LoadSideDefs(lumpnum + ML_SIDEDEFS);
 
     P_LoadLineDefs(lumpnum + ML_LINEDEFS);
+
+    // [crispy] (re-)create BLOCKMAP if necessary
+    if (!crispy_validblockmap)
+    {
+        P_CreateBlockMap();
+    }
 
     if (crispy_mapformat & (MFMT_ZDBSPX | MFMT_ZDBSPZ))
     {
