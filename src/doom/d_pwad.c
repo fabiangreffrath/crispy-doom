@@ -454,17 +454,17 @@ static boolean CheckMasterlevelsLoaded (void)
 	return false;
 }
 
+static const lump_rename_t master_lumps [] = {
+	{"TITLEPIC", "MASTRPIC"},
+	{"INTERPIC", "MASTRINT"},
+};
+
 // [crispy] auto-load the single MASTERLEVELS.WAD if available
 static boolean CheckLoadMasterlevels (void)
 {
 	const char *master_basename;
 	char *autoload_dir;
 	int i, j;
-
-	static const lump_rename_t master_lumps [] = {
-		{"TITLEPIC", "MASTRPIC"},
-		{"INTERPIC", "MASTRINT"},
-	};
 
 	// [crispy] don't load if another PWAD already provides MAP01
 	i = W_CheckNumForName("MAP01");
@@ -630,6 +630,7 @@ static void LoadMasterlevelsWads (void)
 {
 	int i, j;
 	char lumpname[9];
+	char *autoload_dir;
 
 	const char *const sky_lumps[] = {
 		"RSKY1",
@@ -672,6 +673,17 @@ static void LoadMasterlevelsWads (void)
 
 	// [crispy] indicate this is not the single MASTERLEVELS.WAD
 	crispy->havemaster = (char *)-1;
+
+	// [crispy] autoload from MASTERLEVELS.WAD autoload directory
+	if (!M_ParmExists("-noautoload"))
+	{
+		if ((autoload_dir = M_GetAutoloadDir("MASTERLEVELS.WAD", false)))
+		{
+			W_AutoLoadWADsRename(autoload_dir, master_lumps, arrlen(master_lumps));
+			DEH_AutoLoadPatches(autoload_dir);
+			free(autoload_dir);
+		}
+	}
 
 	// [crispy] regenerate the hashtable
 	W_GenerateHashTable();
