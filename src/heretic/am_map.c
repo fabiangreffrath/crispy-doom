@@ -1374,7 +1374,11 @@ void PUTDOT(short xx, short yy, byte * cc, byte * cm)
         oldyy = yy;
         oldyyshifted = yy * f_w;
     }
+#ifndef CRISPY_TRUECOLOR
+    fb[oldyyshifted + xx] = *(cc);
+#else
     fb[oldyyshifted + xx] = colormaps[*(cc)];
+#endif
 //      fb[(yy)*f_w+(xx)]=*(cc);
 }
 
