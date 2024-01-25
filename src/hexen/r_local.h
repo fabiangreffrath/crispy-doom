@@ -293,6 +293,9 @@ typedef struct vissprite_s
     boolean psprite;            // true if psprite
     int class;                  // player class (used in translation)
     fixed_t floorclip;
+#ifdef CRISPY_TRUECOLOR
+    const pixel_t (*blendfunc)(const pixel_t fg, const pixel_t bg);
+#endif
 } vissprite_t;
 
 
