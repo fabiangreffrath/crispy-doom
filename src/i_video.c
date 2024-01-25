@@ -1060,6 +1060,8 @@ void I_SetPalette (int palette)
 	    curpane = grnpane;
 	    pane_alpha = 0xff * 125 / 1000;
 	    break;
+	// [crispy] Hexen TODO - add 14-27 palette indexes and extra panes.
+	// But what about coloring formulas?
 	default:
 	    I_Error("Unknown palette: %d!\n", palette);
 	    break;

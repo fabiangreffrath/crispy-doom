@@ -231,7 +231,7 @@ typedef struct
 ==============================================================================
 */
 
-typedef byte lighttable_t;      // this could be wider for >8 bit display
+typedef pixel_t lighttable_t;      // this could be wider for >8 bit display
 
 #define MAXVISPLANES    160*8
 #define MAXOPENINGS             MAXWIDTH*64*4
@@ -513,6 +513,7 @@ byte *R_GetColumn(int tex, int col);
 void R_InitData(void);
 void R_PrecacheLevel(void);
 
+extern void R_InitColormaps(void);
 
 //
 // R_things.c
@@ -563,7 +564,7 @@ extern int dc_yh;
 extern fixed_t dc_iscale;
 extern fixed_t dc_texturemid;
 extern byte *dc_source;         // first pixel in a column
-extern byte *ylookup[MAXHEIGHT];
+extern pixel_t *ylookup[MAXHEIGHT];
 extern int columnofs[MAXWIDTH];
 extern int dc_texheight; // [crispy]
 extern const byte *dc_brightmap;

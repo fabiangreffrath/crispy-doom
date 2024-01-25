@@ -506,6 +506,9 @@ void V_DrawTLPatch(int x, int y, patch_t * patch)
     byte *source;
     int w;
 
+    // [crispy] translucent patch, no coloring or color-translation are used
+    drawpatchpx_t *const drawpatchpx = drawtinttab_a[dp_translucent];
+
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
     x += WIDESCREENDELTA; // [crispy] horizontal widescreen offset
@@ -537,7 +540,7 @@ void V_DrawTLPatch(int x, int y, patch_t * patch)
 
             while (count--)
             {
-                *dest = tinttable[*dest + ((source[srccol >> FRACBITS]) << 8)];
+                *dest = drawpatchpx(*dest, source[srccol >> FRACBITS]);
                 srccol += dyi;
                 dest += SCREENWIDTH;
             }
