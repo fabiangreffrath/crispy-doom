@@ -801,16 +801,21 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     if (i == W_GetNumForName("COLORMAP"))
     {
         LevelUseFullBright = true;
+#ifdef CRISPY_TRUECOLOR
+        actual_colormap = "COLORMAP";
+#endif
     }
     else
     {                           // Probably fog ... don't use fullbright sprites
         LevelUseFullBright = false;
+#ifdef CRISPY_TRUECOLOR
+        // [cirspy] TODO - do not use hardcoded "FOGMAP" lump name.
+        // Need to get it from MAPINFO's fadetable variable, but it's int type there.
+        actual_colormap = "FOGMAP";
+#endif
     }
 #ifdef CRISPY_TRUECOLOR
-    // [cirspy] TODO - two problems:
-    // 1) Need to re-generate colormaps, otherwise brightest light levels will be screwed up.
-    // 2) Foggy maps, or technically, ANY map with custom colormap MUST use pregenerated colormap lump.
-    R_InitColormaps();
+    R_InitColormaps(actual_colormap, false);
 #endif
 
 // preload graphics

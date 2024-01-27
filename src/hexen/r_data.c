@@ -67,6 +67,7 @@ fixed_t *spriteoffset;
 fixed_t *spritetopoffset;
 
 lighttable_t *colormaps;
+char *actual_colormap;
 
 
 /*
@@ -482,7 +483,7 @@ void R_InitSpriteLumps(void)
 =================
 */
 
-void R_InitColormaps(void)
+void R_InitColormaps(char *current_colormap, boolean init_translations)
 {
 #ifndef CRISPY_TRUECOLOR
     int lump, length;
@@ -496,7 +497,7 @@ void R_InitColormaps(void)
     W_ReadLump(lump, colormaps);
 #else
 	byte *playpal;
-	byte *const colormap = W_CacheLumpName("COLORMAP", PU_STATIC);
+	byte *const colormap = W_CacheLumpName(current_colormap, PU_STATIC);
 	int c, i, j = 0;
 	byte r, g, b;
 
@@ -507,9 +508,9 @@ void R_InitColormaps(void)
 		colormaps = (lighttable_t*) Z_Malloc((NUMCOLORMAPS + 1) * 256 * sizeof(lighttable_t), PU_STATIC, 0);
 	}
 
-	if (crispy->truecolor)
+	if (crispy->truecolor && LevelUseFullBright)
 	{
-		for (c = 0; c < NUMCOLORMAPS-2; c++)
+		for (c = 0; c < NUMCOLORMAPS; c++)
 		{
 			const float scale = 1. * c / NUMCOLORMAPS;
 
@@ -538,10 +539,11 @@ void R_InitColormaps(void)
 		}
 	}
 
-	W_ReleaseLumpName("COLORMAP");
+	W_ReleaseLumpName(current_colormap);
 #endif
 
     // [crispy] initialize color translation and color string tables
+    if (init_translations)
     {
 	byte *playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
 	char c[3];
@@ -584,7 +586,12 @@ void R_InitData(void)
     R_InitSpriteLumps();
     // [crispy] Initialize and generate gamma-correction levels.
     I_SetGammaTable();
-    R_InitColormaps();
+#ifndef CRISPY_TRUECOLOR
+    R_InitColormaps("COLORMAP", true);
+#else
+    actual_colormap = "COLORMAP";
+    R_InitColormaps(actual_colormap, true);
+#endif
 }
 
 //=============================================================================
