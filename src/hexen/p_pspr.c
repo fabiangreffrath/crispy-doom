@@ -1943,8 +1943,7 @@ void A_CHolyAttack(mobj_t *actor, player_t *player, pspdef_t *psp)
         I_SetPalette((byte *) W_CacheLumpNum(W_GetNumForName("playpal"),
                                              PU_CACHE) + STARTHOLYPAL * 768);
 #else
-        // [crispy] TODO - extra panes for Cleric's Wraithverge attack.
-        // Palette indexes: 22, 23, 24
+        I_SetPalette(STARTHOLYPAL);
 #endif
     }
     S_StartSound(player->mo, SFX_CHOLY_FIRE);
@@ -1971,8 +1970,7 @@ void A_CHolyPalette(mobj_t *actor, player_t *player, pspdef_t *psp)
         I_SetPalette((byte *) W_CacheLumpNum(W_GetNumForName("playpal"),
                                              PU_CACHE) + pal * 768);
 #else
-        // [crispy] TODO - extra panes for Cleric's Wraithverge attack.
-        // Palette indexes: 22, 23, 24
+        I_SetPalette(pal);
 #endif
     }
 }

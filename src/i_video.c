@@ -96,6 +96,9 @@ static SDL_Texture *curpane = NULL;
 static SDL_Texture *redpane = NULL;
 static SDL_Texture *yelpane = NULL;
 static SDL_Texture *grnpane = NULL;
+// Hexen exclusive color panes
+static SDL_Texture *bluepane = NULL;
+static SDL_Texture *graypane = NULL;
 static int pane_alpha;
 static unsigned int rmask, gmask, bmask, amask; // [crispy] moved up here
 static const uint8_t blend_alpha = 0xa8;
@@ -1061,7 +1064,27 @@ void I_SetPalette (int palette)
 	    pane_alpha = 0xff * 125 / 1000;
 	    break;
 	// [crispy] Hexen TODO - add 14-27 palette indexes and extra panes.
-	// But what about coloring formulas?
+	// Hexen exclusive color panes and palette indexes
+	case 21:  // STARTICEPAL
+	    curpane = bluepane;
+	    pane_alpha = 0x7e; // 126
+	    break;
+	case 22:  // STARTHOLYPAL
+	    curpane = graypane;
+	    pane_alpha = 0x8c; // 140
+	    break;
+	case 23:
+	    curpane = graypane;
+	    pane_alpha = 0x74; // 116
+	    break;
+	case 24:
+	    curpane = graypane;
+	    pane_alpha = 0x54; // 84
+	    break;
+	case 25:
+	    curpane = graypane;
+	    pane_alpha = 0x34; // 52
+	    break;
 	default:
 	    I_Error("Unknown palette: %d!\n", palette);
 	    break;
@@ -1584,6 +1607,14 @@ static void SetVideoMode(void)
         SDL_FillRect(argbbuffer, NULL, I_MapRGB(0x0, 0xff, 0x0));
         grnpane = SDL_CreateTextureFromSurface(renderer, argbbuffer);
         SDL_SetTextureBlendMode(grnpane, SDL_BLENDMODE_BLEND);
+
+        SDL_FillRect(argbbuffer, NULL, I_MapRGB(0x0, 0x0, 0xef)); // 0, 0, 239
+        bluepane = SDL_CreateTextureFromSurface(renderer, argbbuffer);
+        SDL_SetTextureBlendMode(bluepane, SDL_BLENDMODE_BLEND);
+
+        SDL_FillRect(argbbuffer, NULL, I_MapRGB(0x80, 0x80, 0x80)); // 128, 128, 128
+        graypane = SDL_CreateTextureFromSurface(renderer, argbbuffer);
+        SDL_SetTextureBlendMode(graypane, SDL_BLENDMODE_BLEND);
 #endif
         SDL_FillRect(argbbuffer, NULL, 0);
     }
