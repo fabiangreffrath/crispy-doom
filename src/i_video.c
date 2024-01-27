@@ -99,6 +99,7 @@ static SDL_Texture *grnpane = NULL;
 // Hexen exclusive color panes
 static SDL_Texture *bluepane = NULL;
 static SDL_Texture *graypane = NULL;
+static SDL_Texture *orngpane = NULL;
 static int pane_alpha;
 static unsigned int rmask, gmask, bmask, amask; // [crispy] moved up here
 static const uint8_t blend_alpha = 0xa8;
@@ -1071,19 +1072,27 @@ void I_SetPalette (int palette)
 	    break;
 	case 22:  // STARTHOLYPAL
 	    curpane = graypane;
-	    pane_alpha = 0x8c; // 140
+	    pane_alpha = 0x78; // 120
 	    break;
 	case 23:
 	    curpane = graypane;
-	    pane_alpha = 0x74; // 116
+	    pane_alpha = 0x5c; // 92
 	    break;
 	case 24:
 	    curpane = graypane;
-	    pane_alpha = 0x54; // 84
+	    pane_alpha = 0x2c; // 44
 	    break;
-	case 25:
-	    curpane = graypane;
-	    pane_alpha = 0x34; // 52
+	case 25:  // STARTSCOURGEPAL
+	    curpane = orngpane;
+	    pane_alpha = 0x6c; // 108
+	    break;
+	case 26:
+	    curpane = orngpane;
+	    pane_alpha = 0x50; // 80
+	    break;
+	case 27:
+	    curpane = orngpane;
+	    pane_alpha = 0x38; // 56
 	    break;
 	default:
 	    I_Error("Unknown palette: %d!\n", palette);
@@ -1615,6 +1624,10 @@ static void SetVideoMode(void)
         SDL_FillRect(argbbuffer, NULL, I_MapRGB(0x80, 0x80, 0x80)); // 128, 128, 128
         graypane = SDL_CreateTextureFromSurface(renderer, argbbuffer);
         SDL_SetTextureBlendMode(graypane, SDL_BLENDMODE_BLEND);
+
+        SDL_FillRect(argbbuffer, NULL, I_MapRGB(0x98, 0x70, 0x0)); // 152, 112, 0
+        orngpane = SDL_CreateTextureFromSurface(renderer, argbbuffer);
+        SDL_SetTextureBlendMode(orngpane, SDL_BLENDMODE_BLEND);
 #endif
         SDL_FillRect(argbbuffer, NULL, 0);
     }
