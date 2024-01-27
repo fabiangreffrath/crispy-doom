@@ -1066,63 +1066,61 @@ void I_SetPalette (int palette)
 	    pane_alpha = 0xff * 125 / 1000;
 	    break;
 	// Hexen exclusive color panes and palette indexes
-	// [JN] Hexen TODO - double check with disabled true color variable
-	// to make sure that colors are precise and identical enough to vanilla.
 	case 14:  // STARTPOISONPALS + 1 (13 is shared with other games)
 	    curpane = grnspane;
-	    pane_alpha = 0x2b; // 43
+	    pane_alpha = 0x42; // 66
 	    break;
 	case 15:
 	    curpane = grnspane;
-	    pane_alpha = 0x3c; // 60
+	    pane_alpha = 0x52; // 82
 	    break;
 	case 16:
 	    curpane = grnspane;
-	    pane_alpha = 0x58; // 88
+	    pane_alpha = 0x62; // 98
 	    break;
 	case 17:
 	    curpane = grnspane;
-	    pane_alpha = 0x74; // 116
+	    pane_alpha = 0x72; // 114
 	    break;
 	case 18:
 	    curpane = grnspane;
-	    pane_alpha = 0x91; // 145
+	    pane_alpha = 0x82; // 130
 	    break;
 	case 19:
 	    curpane = grnspane;
-	    pane_alpha = 0xad; // 173
+	    pane_alpha = 0x92; // 146
 	    break;
 	case 20:
 	    curpane = grnspane;
-	    pane_alpha = 0xc9; // 201
+	    pane_alpha = 0xa2; // 162
 	    break;
 	case 21:  // STARTICEPAL
 	    curpane = bluepane;
-	    pane_alpha = 0x7e; // 126
+	    pane_alpha = 0x74; // 116
 	    break;
 	case 22:  // STARTHOLYPAL
 	    curpane = graypane;
-	    pane_alpha = 0x78; // 120
+	    pane_alpha = 0x83; // 131
 	    break;
 	case 23:
 	    curpane = graypane;
-	    pane_alpha = 0x5c; // 92
+	    pane_alpha = 0x6a; // 106
 	    break;
 	case 24:
 	    curpane = graypane;
-	    pane_alpha = 0x2c; // 44
+	    pane_alpha = 0x34; // 52
 	    break;
 	case 25:  // STARTSCOURGEPAL
 	    curpane = orngpane;
-	    pane_alpha = 0x6c; // 108
+	    pane_alpha = 0x7c; // 124
 	    break;
 	case 26:
 	    curpane = orngpane;
-	    pane_alpha = 0x50; // 80
+	    pane_alpha = 0x60; // 96
 	    break;
 	case 27:
 	    curpane = orngpane;
-	    pane_alpha = 0x38; // 56
+	    pane_alpha = 0x48; // 72
 	    break;
 	default:
 	    I_Error("Unknown palette: %d!\n", palette);
@@ -1647,7 +1645,7 @@ static void SetVideoMode(void)
         grnpane = SDL_CreateTextureFromSurface(renderer, argbbuffer);
         SDL_SetTextureBlendMode(grnpane, SDL_BLENDMODE_BLEND);
 
-        SDL_FillRect(argbbuffer, NULL, I_MapRGB(0x35, 0x68, 0x2d)); // 53, 104, 45
+        SDL_FillRect(argbbuffer, NULL, I_MapRGB(0x30, 0x6d, 0x28)); // 48, 109, 40
         grnspane = SDL_CreateTextureFromSurface(renderer, argbbuffer);
         SDL_SetTextureBlendMode(grnspane, SDL_BLENDMODE_BLEND);
 
