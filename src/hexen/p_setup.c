@@ -801,21 +801,16 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     if (i == W_GetNumForName("COLORMAP"))
     {
         LevelUseFullBright = true;
-#ifdef CRISPY_TRUECOLOR
-        actual_colormap = "COLORMAP";
-#endif
     }
     else
     {                           // Probably fog ... don't use fullbright sprites
         LevelUseFullBright = false;
-#ifdef CRISPY_TRUECOLOR
-        // [cirspy] TODO - do not use hardcoded "FOGMAP" lump name.
-        // Need to get it from MAPINFO's fadetable variable, but it's int type there.
-        actual_colormap = "FOGMAP";
-#endif
     }
+
 #ifdef CRISPY_TRUECOLOR
-    R_InitColormaps(actual_colormap, false);
+    // [crispy] If true color is compiled in but disabled as an option,
+    // we still need to re-generate colormaps for proper colormaps[] array colors.
+    R_InitTrueColormaps(LevelUseFullBright ? "COLORMAP" : "FOGMAP");
 #endif
 
 // preload graphics

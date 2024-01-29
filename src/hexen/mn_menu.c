@@ -2192,7 +2192,7 @@ boolean MN_Responder(event_t * event)
             }
             SB_PaletteFlash(true);  // force change
 #ifdef CRISPY_TRUECOLOR
-            R_InitColormaps(actual_colormap, false);
+            R_InitTrueColormaps(LevelUseFullBright ? "COLORMAP" : "FOGMAP");
             BorderNeedRefresh = true;
             SB_state = -1;
 #endif
