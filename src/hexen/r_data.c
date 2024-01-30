@@ -548,6 +548,7 @@ void R_InitTrueColormaps(char *current_colormap)
 		}
 	}
 
+	W_ReleaseLumpName("PLAYPAL");
 	W_ReleaseLumpName(current_colormap);
 }
 #endif
