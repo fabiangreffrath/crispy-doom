@@ -668,11 +668,15 @@ void R_ProjectSprite(mobj_t * thing)
 
     vis->brightmap = R_BrightmapForSprite(thing->state - states);
 #ifdef CRISPY_TRUECOLOR
-    if (thing->flags & (MF_SHADOW | MF_ALTSHADOW))
+    // [crispy] not using additive blending (I_BlendAdd) here for full
+    // bright states to preserve look & feel of original Hexen's translucency
+    if (thing->flags & MF_SHADOW)
     {
-        // [crispy] not using additive blending (I_BlendAdd) here 
-        // to preserve look & feel of original Hexen's translucency
         vis->blendfunc = I_BlendOverTinttab;
+    }
+    if (thing->flags & MF_ALTSHADOW)
+    {
+        vis->blendfunc = I_BlendOverAltTinttab;
     }
 #endif
 }
