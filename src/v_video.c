@@ -193,26 +193,33 @@ static const inline pixel_t drawpatchpx11 (const pixel_t dest, const pixel_t sou
 #else
 {return I_BlendOver(dest, colormaps[dp_translation[source]]);}
 #endif
+
 // [crispy] TINTTAB rendering functions:
-// (1) normal, translucent patch
-static const inline pixel_t drawtinttab0 (const pixel_t dest, const pixel_t source)
-#ifndef CRISPY_TRUECOLOR
-{return tinttable[(dest<<8)+source];}
-#else
-{return I_BlendOverTinttab(dest, colormaps[source]);}
-#endif
-// (2) translucent shadow only
-static const inline pixel_t drawtinttab1 (const pixel_t dest, const pixel_t source)
+// V_DrawShadowedPatch (shadow only)
+static const inline pixel_t drawshadow (const pixel_t dest, const pixel_t source)
 #ifndef CRISPY_TRUECOLOR
 {return tinttable[(dest<<8)];}
 #else
-{return I_BlendDark(dest, 0xB4);}
+{return I_BlendDark(dest, 0xa0);} // 160 (62.75%) of 256 full translucency
 #endif
+// V_DrawTLPatch (translucent patch, no coloring or color-translation are used)
+static const inline pixel_t drawtinttab (const pixel_t dest, const pixel_t source)
+#ifndef CRISPY_TRUECOLOR
+{return tinttable[dest+(source<<8)];}
+#else
+{return I_BlendOverTinttab(dest, colormaps[source]);}
+#endif
+// V_DrawAltTLPatch (translucent patch, no coloring or color-translation are used)
+static const inline pixel_t drawalttinttab (const pixel_t dest, const pixel_t source)
+#ifndef CRISPY_TRUECOLOR
+{return tinttable[(dest<<8)+source];}
+#else
+{return I_BlendOverAltTinttab(dest, colormaps[source]);}
+#endif
+
 // [crispy] array of function pointers holding the different rendering functions
 typedef const pixel_t drawpatchpx_t (const pixel_t dest, const pixel_t source);
 static drawpatchpx_t *const drawpatchpx_a[2][2] = {{drawpatchpx11, drawpatchpx10}, {drawpatchpx01, drawpatchpx00}};
-// [crispy] array of function pointers holding the different TINTTAB rendering functions
-static drawpatchpx_t *const drawtinttab_a[2] = {drawtinttab0, drawtinttab1};
 
 static fixed_t dx, dxi, dy, dyi;
 
@@ -507,7 +514,7 @@ void V_DrawTLPatch(int x, int y, patch_t * patch)
     int w;
 
     // [crispy] translucent patch, no coloring or color-translation are used
-    drawpatchpx_t *const drawpatchpx = drawtinttab_a[dp_translucent];
+    drawpatchpx_t *const drawpatchpx = drawtinttab;
 
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
@@ -618,7 +625,7 @@ void V_DrawAltTLPatch(int x, int y, patch_t * patch)
     int w;
 
     // [crispy] translucent patch, no coloring or color-translation are used
-    drawpatchpx_t *const drawpatchpx = drawtinttab_a[dp_translucent];
+    drawpatchpx_t *const drawpatchpx = drawalttinttab;
 
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
@@ -678,7 +685,7 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch)
     // [crispy] four different rendering functions
     drawpatchpx_t *const drawpatchpx = drawpatchpx_a[!dp_translucent][!dp_translation];
     // [crispy] shadow, no coloring or color-translation are used
-    drawpatchpx_t *const drawpatchpx2 = drawtinttab_a[!dp_translation];
+    drawpatchpx_t *const drawpatchpx2 = drawshadow;
 
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
