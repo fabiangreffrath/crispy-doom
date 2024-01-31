@@ -830,15 +830,24 @@ void R_DrawPSprite(pspdef_t * psp)
             if (viewplayer->mo->flags2 & MF2_DONTDRAW)
             {                   // don't draw the psprite
                 vis->mobjflags |= MF_SHADOW;
+#ifdef CRISPY_TRUECOLOR
+                vis->blendfunc = I_BlendOverTinttab;
+#endif
             }
             else if (viewplayer->mo->flags & MF_SHADOW)
             {
                 vis->mobjflags |= MF_ALTSHADOW;
+#ifdef CRISPY_TRUECOLOR
+                vis->blendfunc = I_BlendOverAltTinttab;
+#endif
             }
         }
         else if (viewplayer->powers[pw_invulnerability] & 8)
         {
             vis->mobjflags |= MF_SHADOW;
+#ifdef CRISPY_TRUECOLOR
+            vis->blendfunc = I_BlendOverTinttab;
+#endif
         }
     }
     else if (fixedcolormap)
