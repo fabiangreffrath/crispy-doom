@@ -67,6 +67,19 @@ fixed_t *spriteoffset;
 fixed_t *spritetopoffset;
 
 lighttable_t *colormaps;
+#ifdef CRISPY_TRUECOLOR
+// [crispy] Vanilla Hexen have a bug with 255 PLAYPAL color index:
+// - it's white (255, 255, 255) in PLAYPAL lump,
+// - it's black (2, 2, 2) in COLORMAP lump.
+// This is leading to mistake in colormaps[] array generation, where
+// white color becomes black in case of true color is compiled in,
+// but disabled in configuration file. To avoid this and preserve
+// some reasonable custom COLORMAP compatibility, we performing check
+// for modified COLORMAP lump and deciding how 255th color will be
+// handled in R_InitTrueColormaps.
+static int original_colormap;
+static boolean broken_wite;
+#endif
 
 
 /*
@@ -502,7 +515,6 @@ void R_InitColormaps(void)
 void R_InitTrueColormaps(char *current_colormap)
 {
 	byte *playpal;
-	byte *const colormap = W_CacheLumpName(current_colormap, PU_STATIC);
 	int c, i, j = 0;
 	byte r, g, b;
 
@@ -535,21 +547,33 @@ void R_InitTrueColormaps(char *current_colormap)
 	}
 	else
 	{
+		byte *const colormap = W_CacheLumpName(current_colormap, PU_STATIC);
+
 		for (c = 0; c < NUMCOLORMAPS; c++)
 		{
 			for (i = 0; i < 256; i++)
 			{
-				r = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
-				g = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
-				b = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
+				if (broken_wite && i == 255)
+				{
+					// [crispy] it's original COLORMAP lump,
+					// replace black 255th color with white
+					r = g = b = colormaps[i];
+				}
+				else
+				{
+					r = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
+					g = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
+					b = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
+				}
 
 				colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 			}
 		}
+
+		W_ReleaseLumpName(current_colormap);
 	}
 
 	W_ReleaseLumpName("PLAYPAL");
-	W_ReleaseLumpName(current_colormap);
 }
 #endif
 
@@ -599,6 +623,11 @@ void R_InitData(void)
 #ifndef CRISPY_TRUECOLOR
     R_InitColormaps();
 #else
+    // [crispy] Check if COLORMAP is unmodified to decide how to
+    // handle colormaps[] array generation in R_InitTrueColormaps.
+    original_colormap = W_CheckNumForName("COLORMAP");
+    broken_wite = W_IsIWADLump(lumpinfo[original_colormap]);
+    // [crispy] Generate initial colormaps[] array from standard COLORMAP.
     R_InitTrueColormaps("COLORMAP");
 #endif
     // [crispy] initialize color translation and color string tables
