@@ -294,6 +294,7 @@ static void InitializeFade(boolean fadeIn)
             PaletteDelta[i] = FixedDiv(Palette[i], -70 * FRACUNIT);
         }
     }
+    I_SetPalette(RealPalette);
 #else
     // [crispy] reset blending tic to initial value
     BlendTic = fadeIn ? 0 : 255;
