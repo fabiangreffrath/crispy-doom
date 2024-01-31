@@ -2057,7 +2057,7 @@ void G_InitNew(skill_t skill, int episode, int map)
     }
 
     // Set up a bunch of globals
-    if (!demoextend)
+    if ((!demoextend) || (!demorecording && !demoplayback))
     {
         // This prevents map-loading from interrupting a demo.
         // demoextend is set back to false only if starting a new game or
