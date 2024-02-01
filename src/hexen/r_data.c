@@ -66,7 +66,7 @@ fixed_t *spritewidth;           // needed for pre rendering
 fixed_t *spriteoffset;
 fixed_t *spritetopoffset;
 
-lighttable_t *colormaps;
+lighttable_t *colormaps, *pal_color;
 #ifdef CRISPY_TRUECOLOR
 // [crispy] Vanilla Hexen have a bug with 255 PLAYPAL color index:
 // - it's white (255, 255, 255) in PLAYPAL lump,
@@ -563,6 +563,21 @@ void R_InitTrueColormaps(char *current_colormap)
 	}
 
 	W_ReleaseLumpName(current_colormap);
+
+	if (!pal_color)
+	{
+		pal_color = (pixel_t*) Z_Malloc(256 * sizeof(pixel_t), PU_STATIC, 0);
+	}
+
+	for (i = 0, j = 0; i < 256; i++)
+	{
+		r = gamma2table[crispy->gamma][playpal[3 * i + 0]];
+		g = gamma2table[crispy->gamma][playpal[3 * i + 1]];
+		b = gamma2table[crispy->gamma][playpal[3 * i + 2]];
+
+		pal_color[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
+	}
+
 	W_ReleaseLumpName("PLAYPAL");
 }
 #endif
