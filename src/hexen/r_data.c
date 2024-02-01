@@ -514,11 +514,11 @@ void R_InitColormaps(void)
 // [crispy] Our own function to generate colormaps for normal and foggy levels.
 void R_InitTrueColormaps(char *current_colormap)
 {
-	byte *playpal;
 	int c, i, j = 0;
 	byte r, g, b;
 
-	playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
+	byte *const playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
+	byte *const colormap = W_CacheLumpName(current_colormap, PU_STATIC);
 
 	if (!colormaps)
 	{
@@ -537,9 +537,11 @@ void R_InitTrueColormaps(char *current_colormap)
 
 			for (i = 0; i < 256; i++)
 			{
-				r = gamma2table[crispy->gamma][playpal[3 * i + 0]] * (1. - scale) + gamma2table[crispy->gamma][fade_color] * scale;
-				g = gamma2table[crispy->gamma][playpal[3 * i + 1]] * (1. - scale) + gamma2table[crispy->gamma][fade_color] * scale;
-				b = gamma2table[crispy->gamma][playpal[3 * i + 2]] * (1. - scale) + gamma2table[crispy->gamma][fade_color] * scale;
+				const byte k = colormap[i];
+
+				r = gamma2table[crispy->gamma][playpal[3 * k + 0]] * (1. - scale) + gamma2table[crispy->gamma][fade_color] * scale;
+				g = gamma2table[crispy->gamma][playpal[3 * k + 1]] * (1. - scale) + gamma2table[crispy->gamma][fade_color] * scale;
+				b = gamma2table[crispy->gamma][playpal[3 * k + 2]] * (1. - scale) + gamma2table[crispy->gamma][fade_color] * scale;
 
 				colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 			}
@@ -547,32 +549,20 @@ void R_InitTrueColormaps(char *current_colormap)
 	}
 	else
 	{
-		byte *const colormap = W_CacheLumpName(current_colormap, PU_STATIC);
-
 		for (c = 0; c < NUMCOLORMAPS; c++)
 		{
 			for (i = 0; i < 256; i++)
 			{
-				if (broken_wite && i == 255)
-				{
-					// [crispy] it's original COLORMAP lump,
-					// replace black 255th color with white
-					r = g = b = colormaps[i];
-				}
-				else
-				{
-					r = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
-					g = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
-					b = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
-				}
+				r = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 0]] & ~3;
+				g = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 1]] & ~3;
+				b = gamma2table[crispy->gamma][playpal[3 * colormap[c * 256 + i] + 2]] & ~3;
 
 				colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 			}
 		}
-
-		W_ReleaseLumpName(current_colormap);
 	}
 
+	W_ReleaseLumpName(current_colormap);
 	W_ReleaseLumpName("PLAYPAL");
 }
 #endif
