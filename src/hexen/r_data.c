@@ -67,19 +67,6 @@ fixed_t *spriteoffset;
 fixed_t *spritetopoffset;
 
 lighttable_t *colormaps, *pal_color;
-#ifdef CRISPY_TRUECOLOR
-// [crispy] Vanilla Hexen have a bug with 255 PLAYPAL color index:
-// - it's white (255, 255, 255) in PLAYPAL lump,
-// - it's black (2, 2, 2) in COLORMAP lump.
-// This is leading to mistake in colormaps[] array generation, where
-// white color becomes black in case of true color is compiled in,
-// but disabled in configuration file. To avoid this and preserve
-// some reasonable custom COLORMAP compatibility, we performing check
-// for modified COLORMAP lump and deciding how 255th color will be
-// handled in R_InitTrueColormaps.
-static int original_colormap;
-static boolean broken_wite;
-#endif
 
 
 /*
@@ -628,10 +615,6 @@ void R_InitData(void)
 #ifndef CRISPY_TRUECOLOR
     R_InitColormaps();
 #else
-    // [crispy] Check if COLORMAP is unmodified to decide how to
-    // handle colormaps[] array generation in R_InitTrueColormaps.
-    original_colormap = W_CheckNumForName("COLORMAP");
-    broken_wite = W_IsIWADLump(lumpinfo[original_colormap]);
     // [crispy] Generate initial colormaps[] array from standard COLORMAP.
     R_InitTrueColormaps("COLORMAP");
 #endif

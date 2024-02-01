@@ -67,8 +67,8 @@ static fixed_t *Palette;
 static fixed_t *PaletteDelta;
 static byte *RealPalette;
 #else
-// [crispy] tics representing opacity value for blending function
-static int BlendTic;
+static int BlendTic; // [crispy] tics representing opacity value for blending function
+#define BLENDSTEP  4 // [crispy] step of increasing/decreasing opacity value
 #endif
 
 // CODE --------------------------------------------------------------------
@@ -164,7 +164,7 @@ void F_Ticker(void)
     // and fade out (from normal-to-black) on 3 stage.
     if (FinaleStage == 0 || FinaleStage == 4)
     {
-        BlendTic += 4;
+        BlendTic += BLENDSTEP;
         if (BlendTic > 255)
         {
             BlendTic = 255;
@@ -172,7 +172,7 @@ void F_Ticker(void)
     }
     if (FinaleStage == 3)
     {
-        BlendTic -= 4;
+        BlendTic -= BLENDSTEP;
         if (BlendTic < 0)
         {
             BlendTic = 0;
