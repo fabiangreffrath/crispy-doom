@@ -674,6 +674,7 @@ void R_ProjectSprite(mobj_t * thing)
     {
         vis->blendfunc = I_BlendOverTinttab;
     }
+    else
     if (thing->flags & MF_ALTSHADOW)
     {
         vis->blendfunc = I_BlendOverAltTinttab;
