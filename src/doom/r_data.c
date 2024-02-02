@@ -1249,9 +1249,11 @@ void R_InitColormaps (void)
 		W_ReleaseLumpName("COLORMAP");
 	}
 #endif
+}
 
-    // [crispy] initialize color translation and color strings tables
-    {
+// [crispy] initialize color translation and color string tables
+static void R_InitHSVColors(void)
+{
 	byte *playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
 	char c[3];
 	int i, j;
@@ -1291,7 +1293,6 @@ void R_InitColormaps (void)
 	{
 	    cr[CR_RED2BLUE] = W_CacheLumpNum(i, PU_STATIC);
 	}
-    }
 }
 
 
@@ -1320,6 +1321,8 @@ void R_InitData (void)
     // [crispy] Initialize and generate gamma-correction levels.
     I_SetGammaTable ();
     R_InitColormaps ();
+    // [crispy] Initialize color translation and color string tables.
+    R_InitHSVColors ();
 #ifndef CRISPY_TRUECOLOR
     R_InitTranMap(); // [crispy] prints a mark itself
 #endif
