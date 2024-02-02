@@ -644,7 +644,7 @@ void R_SetUnderwaterPalette(byte *palette)
         g = gamma2table[crispy->gamma][palette[3 * i + 1]] + gamma2table[crispy->gamma][0];
         b = gamma2table[crispy->gamma][palette[3 * i + 2]] + gamma2table[crispy->gamma][0];
 
-        colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
+        pal_color[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
     }
 }
 #endif
