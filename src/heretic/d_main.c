@@ -1188,6 +1188,13 @@ void D_DoomMain(void)
         }
     }
 
+    // [crispy] load version number from HHEVER lump if it exists.
+    // -hhever parm takes priority, even if it's invalid
+    if (W_CheckNumForName("HHEVER") != -1 && !M_ParmExists("-hhever"))
+    {
+        SetHHEVersionFromLump(W_CheckNumForName("HHEVER"));
+    }
+
     if (W_CheckNumForName("HEHACKED") != -1)
     {
         DEH_LoadLumpByName("HEHACKED", true, true);
