@@ -119,6 +119,7 @@ static void LoadGameSettings(net_gamesettings_t *settings)
     respawnparm = settings->respawn_monsters;
     timelimit = settings->timelimit;
     consoleplayer = settings->consoleplayer;
+    mp_things_spawn_type = settings->mp_things_spawn_type; // [crispy]
 
     if (lowres_turn)
     {
@@ -150,6 +151,7 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     settings->fast_monsters = fastparm;
     settings->respawn_monsters = respawnparm;
     settings->timelimit = timelimit;
+    settings->mp_things_spawn_type = mp_things_spawn_type; // [crispy]
 
     settings->lowres_turn = (M_ParmExists("-record")
                          && !M_ParmExists("-longtics"))
