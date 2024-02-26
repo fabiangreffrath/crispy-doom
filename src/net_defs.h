@@ -169,6 +169,16 @@ typedef enum
     NET_MASTER_PACKET_TYPE_NAT_HOLE_PUNCH_ALL,
 } net_master_packet_type_t;
 
+typedef enum // [crispy]
+{
+    MP_THINGS_SPAWN_ALL,
+    MP_THINGS_SPAWN_ALL_BUT_WEAPONS,
+    MP_THINGS_SPAWN_ONLY_MONSTERS,
+    MP_THINGS_SPAWN_NONE,
+
+    MP_THINGS_SPAWN_TYPES_NUM,
+} net_mp_things_spawn_t;
+
 // Settings specified when the client connects to the server.
 
 typedef struct
@@ -210,6 +220,7 @@ typedef struct
 
     int num_players;
     int consoleplayer;
+    int mp_things_spawn_type; // [crispy]
 
     // Hexen player classes:
 

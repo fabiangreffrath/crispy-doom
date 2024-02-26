@@ -108,6 +108,7 @@ boolean         nomonsters;	// checkparm of -nomonsters
 boolean         respawnparm;	// checkparm of -respawn
 boolean         fastparm;	// checkparm of -fast
 boolean         coop_spawns = false;	// [crispy] checkparm of -coop_spawns
+int             mp_things_spawn_type; // [crispy] checkparm of -mpspawntype
 
 
 
@@ -1577,6 +1578,21 @@ void D_DoomMain (void)
     if (M_CheckParm ("-dm3"))
 	deathmatch = 3;
 
+    //! 
+    // @arg <n>
+    // @category net
+    // [crispy]
+    // Types of multiplayer things to be spawned in a netgame
+    //
+
+    p = M_CheckParmWithArgs("-mpspawntype", 1);
+    mp_things_spawn_type = atoi(myargv[p+1]);
+
+    if (mp_things_spawn_type > MP_THINGS_SPAWN_TYPES_NUM || mp_things_spawn_type < 0)
+    {
+        mp_things_spawn_type = 0;
+    }
+    
     if (devparm)
 	DEH_printf(D_DEVSTR);
     

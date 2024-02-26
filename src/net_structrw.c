@@ -81,6 +81,7 @@ void NET_WriteSettings(net_packet_t *packet, net_gamesettings_t *settings)
     NET_WriteInt8(packet, settings->random);
     NET_WriteInt8(packet, settings->num_players);
     NET_WriteInt8(packet, settings->consoleplayer);
+    NET_WriteInt8(packet, settings->mp_things_spawn_type); // [crispy]
 
     for (i = 0; i < settings->num_players; ++i)
     {
@@ -109,7 +110,8 @@ boolean NET_ReadSettings(net_packet_t *packet, net_gamesettings_t *settings)
            && NET_ReadSInt8(packet, (signed int *) &settings->loadgame)
            && NET_ReadInt8(packet, (unsigned int *) &settings->random)
            && NET_ReadInt8(packet, (unsigned int *) &settings->num_players)
-           && NET_ReadSInt8(packet, (signed int *) &settings->consoleplayer);
+           && NET_ReadSInt8(packet, (signed int *) &settings->consoleplayer)
+           && NET_ReadSInt8(packet, (unsigned int *) &settings->mp_things_spawn_type); // [crispy]
 
     if (!success)
     {

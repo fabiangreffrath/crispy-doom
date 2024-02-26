@@ -41,6 +41,27 @@
 void G_PlayerReborn (int player);
 void P_SpawnMapThing (mapthing_t*	mthing);
 
+// [crispy] mobjtype weapons
+const mobjtype_t mobjtype_weapons[] = {
+    MT_MISC25,
+    MT_CHAINGUN,
+    MT_MISC26,
+    MT_MISC27,
+    MT_MISC28,
+    MT_SHOTGUN,
+    MT_SUPERSHOTGUN,
+};
+
+#define MOBJTYPE_WEAPONS_COUNT (sizeof(mobjtype_weapons) / sizeof(mobjtype_t))
+
+boolean is_weapon(mobjtype_t value) {
+    for (int i = 0; i < MOBJTYPE_WEAPONS_COUNT; ++i) {
+        if (value == mobjtype_weapons[i]) {
+            return true;
+        }
+    }
+    return false;
+}
 
 //
 // P_SetMobjState
@@ -1007,6 +1028,12 @@ void P_SpawnMapThing (mapthing_t* mthing)
     if (!coop_spawns && !netgame && (mthing->options & 16) )
 	return;
 		
+    // [crispy] Don't spawn mp-only things in the netgame
+    if (netgame && (mthing->options & 16) && mp_things_spawn_type == MP_THINGS_SPAWN_NONE)
+    {
+        return;
+    }
+
     if (gameskill == sk_baby)
 	bit = 1;
     else if (gameskill == sk_nightmare)
@@ -1057,6 +1084,20 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	return;
     }
     
+    if (netgame && (mthing->options & 16))
+    {
+        // [crispy] Don't spawn any mp-only things except monsters in the netgame
+        if (mp_things_spawn_type == MP_THINGS_SPAWN_ONLY_MONSTERS && !(i == MT_SKULL || (mobjinfo[i].flags & MF_COUNTKILL)))
+        {
+            return;
+        }
+        // [crispy] Don't spawn mp-only weapons in the netgame
+        if (mp_things_spawn_type == MP_THINGS_SPAWN_ALL_BUT_WEAPONS && is_weapon(i))
+        {
+            return;
+        }
+    }
+
     // spawn it
     x = mthing->x << FRACBITS;
     y = mthing->y << FRACBITS;
