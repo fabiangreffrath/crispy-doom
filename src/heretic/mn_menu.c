@@ -2428,7 +2428,7 @@ boolean MN_Responder(event_t * event)
                     }
                 }
             }
-            for (i = 0; i < CurrentMenu->itemCount; i++)
+            for (i = 0; i <= CurrentItPos; i++)
             {
                 if (CurrentMenu->items[i].text)
                 {
