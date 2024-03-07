@@ -1111,7 +1111,7 @@ void PrintDehackedBanners(void)
     }
 }
 
-static struct 
+static const struct
 {
     const char *description;
     const char *cmdline;
@@ -1141,11 +1141,11 @@ static void InitGameVersion(void)
     int i;
     boolean status;
 
-    //! 
+    //!
     // @arg <version>
     // @category compat
     //
-    // Emulate a specific version of Doom.  Valid values are "1.2", 
+    // Emulate a specific version of Doom.  Valid values are "1.2",
     // "1.666", "1.7", "1.8", "1.9", "ultimate", "final", "final2",
     // "hacx" and "chex".
     //
@@ -1162,8 +1162,8 @@ static void InitGameVersion(void)
                 break;
             }
         }
-        
-        if (gameversions[i].description == NULL) 
+
+        if (gameversions[i].description == NULL)
         {
             printf("Supported game versions:\n");
 
@@ -1172,7 +1172,7 @@ static void InitGameVersion(void)
                 printf("\t%s (%s)\n", gameversions[i].cmdline,
                         gameversions[i].description);
             }
-            
+
             I_Error("Unknown game version '%s'", myargv[p+1]);
         }
     }
@@ -1261,7 +1261,7 @@ static void InitGameVersion(void)
     {
         deathmatch = 1;
     }
-    
+
     // The original exe does not support retail - 4th episode not supported
 
     if (gameversion < exe_ultimate && gamemode == retail)
