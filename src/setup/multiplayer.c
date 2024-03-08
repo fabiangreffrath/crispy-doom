@@ -35,6 +35,8 @@
 
 #include "net_petname.h"
 
+#include "doom/p_mobj.h" // [crispy]
+
 #define MULTI_START_HELP_URL "https://www.chocolate-doom.org/setup-multi-start"
 #define MULTI_JOIN_HELP_URL "https://www.chocolate-doom.org/setup-multi-join"
 #define MULTI_CONFIG_HELP_URL "https://www.chocolate-doom.org/setup-multi-config"
