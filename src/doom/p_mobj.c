@@ -1084,7 +1084,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	return;
     }
     
-    if (netgame && (mthing->options & 16))
+    if (netgame && (mthing->options & 16)) // [crispy]
     {
         // [crispy] Don't spawn any mp-only things except monsters in the netgame
         if (mp_things_spawn_type == MP_THINGS_SPAWN_ONLY_MONSTERS && !(i == MT_SKULL || (mobjinfo[i].flags & MF_COUNTKILL)))

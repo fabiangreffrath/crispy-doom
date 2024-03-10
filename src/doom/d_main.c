@@ -1578,7 +1578,7 @@ void D_DoomMain (void)
     if (M_CheckParm ("-dm3"))
 	deathmatch = 3;
 
-    //! 
+    //!
     // @arg <n>
     // @category net
     // [crispy]

@@ -135,7 +135,7 @@ static int deathmatch = 0;
 static int strife_altdeath = 0;
 static int fast = 0;
 static int respawn = 0;
-static int mp_things_spawn_type = 0;  // [crispy]
+static int mp_things_spawn_type = 0; // [crispy]
 static int udpport = 2342;
 static int timer = 0;
 static int privateserver = 0;
@@ -287,7 +287,7 @@ static void StartGame(int multiplayer)
         }
 
         if (mp_things_spawn_type) // [crispy]
-        {   
+        {
             AddCmdLineParameter(exec, "-mpspawntype %i", mp_things_spawn_type);
         }
     }
@@ -796,7 +796,7 @@ static void StartGameMenu(const char *window_title, int multiplayer)
                                TXT_NewLabel("minutes"),
                                NULL),
                NULL);
-        if (gamemission == doom)  // [crispy] Multiplayer Flags
+        if (gamemission == doom) // [crispy] Multiplayer Flags
         {
             TXT_AddWidgets(window,
                 TXT_NewLabel("Flags"),
