@@ -90,7 +90,7 @@ void NET_WriteSettings(net_packet_t *packet, net_gamesettings_t *settings)
     // [crispy] optional properties
     if (settings->mp_things_spawn_type)
     {
-        NET_WriteInt8(packet, settings->mp_things_spawn_type); // [crispy]
+        NET_WriteInt8(packet, settings->mp_things_spawn_type);
     }
 }
 
