@@ -119,7 +119,6 @@ static void LoadGameSettings(net_gamesettings_t *settings)
     respawnparm = settings->respawn_monsters;
     timelimit = settings->timelimit;
     consoleplayer = settings->consoleplayer;
-    mp_things_spawn_type = settings->mp_things_spawn_type; // [crispy]
 
     if (lowres_turn)
     {
@@ -130,6 +129,12 @@ static void LoadGameSettings(net_gamesettings_t *settings)
     for (i = 0; i < MAXPLAYERS; ++i)
     {
         playeringame[i] = i < settings->num_players;
+    }
+
+    // [crispy] optional properties
+    if (settings->mp_things_spawn_type)
+    {
+        mp_things_spawn_type = settings->mp_things_spawn_type;
     }
 }
 
@@ -151,11 +156,16 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     settings->fast_monsters = fastparm;
     settings->respawn_monsters = respawnparm;
     settings->timelimit = timelimit;
-    settings->mp_things_spawn_type = mp_things_spawn_type; // [crispy]
 
     settings->lowres_turn = (M_ParmExists("-record")
                          && !M_ParmExists("-longtics"))
                           || M_ParmExists("-shorttics");
+
+    // [crispy] optional properties
+    if (settings->mp_things_spawn_type)
+    {
+        settings->mp_things_spawn_type = mp_things_spawn_type;
+    }
 }
 
 static void InitConnectData(net_connect_data_t *connect_data)
