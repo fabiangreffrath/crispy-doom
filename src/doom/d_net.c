@@ -59,6 +59,7 @@ static void PlayerQuitGame(player_t *player)
     players[consoleplayer].message = exitmsg;
     // [crispy] don't interpolate players who left the game
     player->mo->interp = false;
+
     // TODO: check if it is sensible to do this:
 
     if (demorecording) 
@@ -118,7 +119,7 @@ static void LoadDeathmatchGameSettings(int deathmatch_setings)
 //
 // SaveDeathmatchGameSettings
 // [crispy] Saves correct deatmatch setting for a net game
-// from global variables
+//          from global variables
 //
 static void SaveDeathmatchGameSettings(net_gamesettings_t *settings)
 {
@@ -138,7 +139,7 @@ static void LoadGameSettings(net_gamesettings_t *settings)
 {
     unsigned int i;
 
-    LoadDeathmatchGameSettings(settings->deathmatch);
+    LoadDeathmatchGameSettings(settings->deathmatch); // [crispy]
     startepisode = settings->episode;
     startmap = settings->map;
     startskill = settings->skill;
@@ -170,7 +171,7 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     // Fill in game settings structure with appropriate parameters
     // for the new game
 
-    SaveDeathmatchGameSettings(settings);
+    SaveDeathmatchGameSettings(settings); // [crispy]
     settings->episode = startepisode;
     settings->map = startmap;
     settings->skill = startskill;

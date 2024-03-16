@@ -272,7 +272,7 @@ static void StartGame(int multiplayer)
         {
             AddCmdLineParameter(exec, "-dm3");
         }
-        else if (deathmatch == 4) // [cripsy] Coop 2
+        else if (deathmatch == NET_COOP2) // [cripsy] Coop 2
         {
             AddCmdLineParameter(exec, "-coop2");
         }
