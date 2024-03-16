@@ -299,14 +299,4 @@ typedef struct mobj_s
 
 } mobj_t;
 
-typedef enum // [crispy]
-{
-    MP_THINGS_SPAWN_ALL,
-    MP_THINGS_SPAWN_ALL_BUT_WEAPONS,
-    MP_THINGS_SPAWN_ONLY_MONSTERS,
-    MP_THINGS_SPAWN_NONE,
-
-    MP_THINGS_SPAWN_TYPES_NUM,
-} net_mp_things_spawn_t;
-
 #endif

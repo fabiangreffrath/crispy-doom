@@ -48,7 +48,7 @@ extern  boolean	nomonsters;	// checkparm of -nomonsters
 extern  boolean	respawnparm;	// checkparm of -respawn
 extern  boolean	fastparm;	// checkparm of -fast
 extern  boolean	coop_spawns;	// [crispy] checkparm of -coop_spawns
-extern  int     mp_things_spawn_type; // [crispy] checkparm of -mpspawntype
+extern  boolean coop2;      // [crispy] checkparm of -coop2
 
 extern  boolean	devparm;	// DEBUG: launched with -devparm
 
@@ -104,7 +104,7 @@ extern  boolean         respawnmonsters;
 // Netgame? Only true if >1 player.
 extern  boolean	netgame;
 
-// 0=Cooperative; 1=Deathmatch; 2=Altdeath; 3=dm3;
+// 0=Cooperative; 1=Deathmatch; 2=Altdeath; 3=dm3; 4=coop2;
 extern int deathmatch;
 
 // -------------------------

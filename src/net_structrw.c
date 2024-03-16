@@ -87,11 +87,6 @@ void NET_WriteSettings(net_packet_t *packet, net_gamesettings_t *settings)
         NET_WriteInt8(packet, settings->player_classes[i]);
     }
 
-    // [crispy] optional properties
-    if (settings->mp_things_spawn_type)
-    {
-        NET_WriteInt8(packet, settings->mp_things_spawn_type);
-    }
 }
 
 boolean NET_ReadSettings(net_packet_t *packet, net_gamesettings_t *settings)
@@ -130,9 +125,6 @@ boolean NET_ReadSettings(net_packet_t *packet, net_gamesettings_t *settings)
             return false;
         }
     }
-
-    // [crispy] optional properties
-    NET_ReadInt8(packet, (unsigned int *) &settings->mp_things_spawn_type);
 
     return true;
 }

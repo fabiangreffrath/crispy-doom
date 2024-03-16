@@ -57,8 +57,6 @@ static void PlayerQuitGame(player_t *player)
 
     playeringame[player_num] = false;
     players[consoleplayer].message = exitmsg;
-    // [crispy] don't interpolate players who left the game
-    player->mo->interp = false;
 
     // TODO: check if it is sensible to do this:
 
@@ -100,6 +98,37 @@ static loop_interface_t doom_loop_interface = {
     M_Ticker
 };
 
+//
+// LoadDeathmatchGameSettings
+// [crispy] Loads correct deatmatch setting from a net game
+//
+static void LoadDeathmatchGameSettings(int deathmatch_setings)
+{
+    if (deathmatch_setings == NET_COOP2)
+    {
+        coop2 = true;
+        deathmatch = NET_COOPERATIVE;
+        return;
+    }
+
+    deathmatch = deathmatch_setings;
+}
+
+//
+// SaveDeathmatchGameSettings
+// [crispy] Saves correct deatmatch setting for a net game
+// from global variables
+//
+static void SaveDeathmatchGameSettings(net_gamesettings_t *settings)
+{
+    if (coop2)
+    {
+        settings->deathmatch = NET_COOP2;
+        return;
+    }
+
+    settings->deathmatch = deathmatch;
+}
 
 // Load game settings from the specified structure and
 // set global variables.
@@ -108,7 +137,7 @@ static void LoadGameSettings(net_gamesettings_t *settings)
 {
     unsigned int i;
 
-    deathmatch = settings->deathmatch;
+    LoadDeathmatchGameSettings(settings->deathmatch);
     startepisode = settings->episode;
     startmap = settings->map;
     startskill = settings->skill;
@@ -130,12 +159,6 @@ static void LoadGameSettings(net_gamesettings_t *settings)
     {
         playeringame[i] = i < settings->num_players;
     }
-
-    // [crispy] optional properties
-    if (settings->mp_things_spawn_type)
-    {
-        mp_things_spawn_type = settings->mp_things_spawn_type;
-    }
 }
 
 // Save the game settings from global variables to the specified
@@ -146,7 +169,7 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     // Fill in game settings structure with appropriate parameters
     // for the new game
 
-    settings->deathmatch = deathmatch;
+    SaveDeathmatchGameSettings(settings);
     settings->episode = startepisode;
     settings->map = startmap;
     settings->skill = startskill;
@@ -160,12 +183,6 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     settings->lowres_turn = (M_ParmExists("-record")
                          && !M_ParmExists("-longtics"))
                           || M_ParmExists("-shorttics");
-
-    // [crispy] optional properties
-    if (settings->mp_things_spawn_type)
-    {
-        settings->mp_things_spawn_type = mp_things_spawn_type;
-    }
 }
 
 static void InitConnectData(net_connect_data_t *connect_data)

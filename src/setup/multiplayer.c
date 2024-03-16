@@ -35,8 +35,6 @@
 
 #include "net_petname.h"
 
-#include "doom/p_mobj.h" // [crispy] mp_things_spawn_type
-
 #define MULTI_START_HELP_URL "https://www.chocolate-doom.org/setup-multi-start"
 #define MULTI_JOIN_HELP_URL "https://www.chocolate-doom.org/setup-multi-join"
 #define MULTI_CONFIG_HELP_URL "https://www.chocolate-doom.org/setup-multi-config"
@@ -115,7 +113,7 @@ static const char *strife_skills[] =
 
 static const char *character_classes[] = { "Fighter", "Cleric", "Mage" };
 
-static const char *gamemodes[] = { "Co-operative", "Deathmatch", "Deathmatch 2.0", "Deathmatch 3.0" };
+static const char *gamemodes[] = { "Co-operative", "Deathmatch", "Deathmatch 2.0", "Deathmatch 3.0", "Coop 2" };
 
 static const char *strife_gamemodes[] =
 {
@@ -135,7 +133,6 @@ static int deathmatch = 0;
 static int strife_altdeath = 0;
 static int fast = 0;
 static int respawn = 0;
-static int mp_things_spawn_type = 0; // [crispy]
 static int udpport = 2342;
 static int timer = 0;
 static int privateserver = 0;
@@ -275,6 +272,10 @@ static void StartGame(int multiplayer)
         {
             AddCmdLineParameter(exec, "-dm3");
         }
+        else if (deathmatch == 4) // [cripsy] Coop 2
+        {
+            AddCmdLineParameter(exec, "-coop2");
+        }
 
         if (timer > 0)
         {
@@ -284,11 +285,6 @@ static void StartGame(int multiplayer)
         if (privateserver)
         {
             AddCmdLineParameter(exec, "-privateserver");
-        }
-
-        if (mp_things_spawn_type) // [crispy]
-        {
-            AddCmdLineParameter(exec, "-mpspawntype %i", mp_things_spawn_type);
         }
     }
 
@@ -699,7 +695,7 @@ static txt_dropdown_list_t *GameTypeDropdown(void)
     {
         case doom:
         default:
-            return TXT_NewDropdownList(&deathmatch, gamemodes, 4);
+            return TXT_NewDropdownList(&deathmatch, gamemodes, NET_MODES_NUM);
 
         // Heretic and Hexen don't support Deathmatch II:
 
@@ -714,25 +710,6 @@ static txt_dropdown_list_t *GameTypeDropdown(void)
         case strife:
             return TXT_NewDropdownList(&strife_altdeath, strife_gamemodes, 2);
     }
-}
-
-static void MultiplayerFlags(void) // [crispy]
-{
-    txt_window_t *window;
-
-    // Build the window
-    window = TXT_NewWindow("Multiplayer Flags");
-    TXT_SetColumnWidths(window, 40);
-    TXT_SetWindowPosition(window, TXT_HORIZ_CENTER, TXT_VERT_TOP, TXT_SCREEN_W / 2, 3);
-
-    TXT_AddWidgets(window,
-        TXT_NewSeparator("Multiplayer Things Spawn Type"),
-        TXT_NewRadioButton("All", &mp_things_spawn_type, MP_THINGS_SPAWN_ALL),
-        TXT_NewRadioButton("All except weapons", &mp_things_spawn_type, MP_THINGS_SPAWN_ALL_BUT_WEAPONS),
-        TXT_NewRadioButton("Only monsters", &mp_things_spawn_type, MP_THINGS_SPAWN_ONLY_MONSTERS),
-        TXT_NewRadioButton("None", &mp_things_spawn_type, MP_THINGS_SPAWN_NONE),
-        NULL
-    );
 }
 
 // "Start game" menu.  This is used for the start server window
@@ -796,15 +773,6 @@ static void StartGameMenu(const char *window_title, int multiplayer)
                                TXT_NewLabel("minutes"),
                                NULL),
                NULL);
-        if (gamemission == doom) // [crispy] Multiplayer Flags
-        {
-            TXT_AddWidgets(window,
-                TXT_NewLabel("Flags"),
-                TXT_NewButton2("Set",
-                    (TxtWidgetSignalFunc) MultiplayerFlags, NULL),
-                NULL
-            );
-        }
     }
 
     TXT_AddWidgets(window,

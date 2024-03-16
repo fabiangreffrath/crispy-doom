@@ -108,7 +108,7 @@ boolean         nomonsters;	// checkparm of -nomonsters
 boolean         respawnparm;	// checkparm of -respawn
 boolean         fastparm;	// checkparm of -fast
 boolean         coop_spawns = false;	// [crispy] checkparm of -coop_spawns
-int             mp_things_spawn_type; // [crispy] checkparm of -mpspawntype
+boolean         coop2 = false;	// [crispy] checkparm of -coop2
 
 
 
@@ -1581,16 +1581,16 @@ void D_DoomMain (void)
     //!
     // @arg <n>
     // @category net
-    // [crispy]
-    // Types of multiplayer things to be spawned in a netgame
+    //
+    // [crispy] Start a coop game.
+    // Spawn mp monsters. Don't spawn other mp things.
     //
 
-    p = M_CheckParmWithArgs("-mpspawntype", 1);
-    mp_things_spawn_type = atoi(myargv[p+1]);
+    p = M_ParmExists("-coop2");
 
-    if (mp_things_spawn_type > MP_THINGS_SPAWN_TYPES_NUM || mp_things_spawn_type < 0)
+    if (p)
     {
-        mp_things_spawn_type = 0;
+        coop2 = true;
     }
     
     if (devparm)
