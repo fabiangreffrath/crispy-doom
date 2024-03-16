@@ -1006,7 +1006,7 @@ void P_SpawnMapThing (mapthing_t* mthing)
     // check for appropriate skill level
     if (!coop_spawns && !netgame && (mthing->options & 16) )
 	return;
-
+		
     if (gameskill == sk_baby)
 	bit = 1;
     else if (gameskill == sk_nightmare)

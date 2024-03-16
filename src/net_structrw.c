@@ -86,7 +86,6 @@ void NET_WriteSettings(net_packet_t *packet, net_gamesettings_t *settings)
     {
         NET_WriteInt8(packet, settings->player_classes[i]);
     }
-
 }
 
 boolean NET_ReadSettings(net_packet_t *packet, net_gamesettings_t *settings)
