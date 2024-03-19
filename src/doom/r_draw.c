@@ -255,19 +255,21 @@ void R_DrawColumnLow (void)
     // Zero length.
     if (count < 0) 
 	return; 
-				 
+
+  // Blocky mode, need to multiply by 2.
+
+    x = dc_x << 1;
+
 #ifdef RANGECHECK 
-    if ((unsigned)dc_x >= SCREENWIDTH
+    if ((unsigned)x >= SCREENWIDTH
 	|| dc_yl < 0
 	|| dc_yh >= SCREENHEIGHT)
     {
 	
-	I_Error ("R_DrawColumn: %i to %i at %i", dc_yl, dc_yh, dc_x);
+	I_Error ("R_DrawColumn: %i to %i at %i", dc_yl, dc_yh, x);
     }
     //	dccount++; 
 #endif 
-    // Blocky mode, need to multiply by 2.
-    x = dc_x << 1;
     
     dest = ylookup[dc_yl] + columnofs[flipviewwidth[x]];
     dest2 = ylookup[dc_yl] + columnofs[flipviewwidth[x+1]];
@@ -357,7 +359,7 @@ void R_SetFuzzPosDraw (void)
 //
 // Framebuffer postprocessing.
 // Creates a fuzzy image by copying pixels
-//  from adjacent ones to left and right.
+//  from adjacent ones towards top and bottom.
 // Used with an all black colormap, this
 //  could create the SHADOW effect,
 //  i.e. spectres and invisible players.
@@ -402,8 +404,8 @@ void R_DrawFuzzColumn (void)
     do 
     {
 	// Lookup framebuffer, and retrieve
-	//  a pixel that is either one column
-	//  left or right of the current one.
+	//  a pixel that is either one line
+	//  up or down of the current one.
 	// Add index from colormap to index.
 #ifndef CRISPY_TRUECOLOR
 	*dest = colormaps[6*256+dest[SCREENWIDTH*fuzzoffset[fuzzpos]]]; 
@@ -466,7 +468,7 @@ void R_DrawFuzzColumnLow (void)
 	|| dc_yl < 0 || dc_yh >= SCREENHEIGHT)
     {
 	I_Error ("R_DrawFuzzColumn: %i to %i at %i",
-		 dc_yl, dc_yh, dc_x);
+		 dc_yl, dc_yh, x);
     }
 #endif
     
@@ -479,8 +481,8 @@ void R_DrawFuzzColumnLow (void)
     do 
     {
 	// Lookup framebuffer, and retrieve
-	//  a pixel that is either one column
-	//  left or right of the current one.
+	//  a pixel that is either one line
+	//  up or down of the current one.
 	// Add index from colormap to index.
 #ifndef CRISPY_TRUECOLOR
 	*dest = colormaps[6*256+dest[SCREENWIDTH*fuzzoffset[fuzzpos]]];
@@ -564,7 +566,7 @@ void R_DrawTranslatedColumn (void)
 	//  to map certain colorramps to other ones,
 	//  used with PLAY sprites.
 	// Thus the "green" ramp of the player 0 sprite
-	//  is mapped to gray, red, black/indigo. 
+	//  is mapped to brown, red, black/indigo. 
 	// [crispy] brightmaps
 	const byte source = dc_source[frac>>FRACBITS];
 	*dest = dc_colormap[dc_brightmap[source]][dc_translation[source]];
@@ -588,6 +590,7 @@ void R_DrawTranslatedColumnLow (void)
 	return; 
 
     // low detail, need to scale by 2
+
     x = dc_x << 1;
 				 
 #ifdef RANGECHECK 
@@ -616,7 +619,7 @@ void R_DrawTranslatedColumnLow (void)
 	//  to map certain colorramps to other ones,
 	//  used with PLAY sprites.
 	// Thus the "green" ramp of the player 0 sprite
-	//  is mapped to gray, red, black/indigo. 
+	//  is mapped to brown, red, black/indigo. 
 	// [crispy] brightmaps
 	const byte source = dc_source[frac>>FRACBITS];
 	*dest = dc_colormap[dc_brightmap[source]][dc_translation[source]];
@@ -671,7 +674,7 @@ void R_DrawTLColumn (void)
     } while (count--);
 }
 
-// [crispy] draw translucent column, low-resolution version
+// [crispy] draw translucent column, low-detail version
 void R_DrawTLColumnLow (void)
 {
     int			count;
@@ -935,6 +938,12 @@ void R_DrawSpanLow (void)
     int count;
     int spot;
 
+    count = (ds_x2 - ds_x1);
+
+    // Blocky mode, need to multiply by 2.
+    ds_x1 <<= 1;
+    ds_x2 <<= 1;
+
 #ifdef RANGECHECK
     if (ds_x2 < ds_x1
 	|| ds_x1<0
@@ -953,12 +962,6 @@ void R_DrawSpanLow (void)
     step = ((ds_xstep << 10) & 0xffff0000)
          | ((ds_ystep >> 6)  & 0x0000ffff);
 */
-
-    count = (ds_x2 - ds_x1);
-
-    // Blocky mode, need to multiply by 2.
-    ds_x1 <<= 1;
-    ds_x2 <<= 1;
 
 //  dest = ylookup[ds_y] + columnofs[ds_x1];
 
@@ -1019,6 +1022,12 @@ void R_DrawSpanSolidLow (void)
     pixel_t *dest;
     int count;
 
+    count = ds_x2 - ds_x1;
+
+    // Blocky mode, need to multiply by 2.
+    ds_x1 <<= 1;
+    ds_x2 <<= 1;
+
 #ifdef RANGECHECK
     if (ds_x2 < ds_x1
 	|| ds_x1<0
@@ -1029,12 +1038,6 @@ void R_DrawSpanSolidLow (void)
 		 ds_x1,ds_x2,ds_y);
     }
 #endif
-
-    count = ds_x2 - ds_x1;
-
-    // Blocky mode, need to multiply by 2.
-    ds_x1 <<= 1;
-    ds_x2 <<= 1;
 
     do
     {
