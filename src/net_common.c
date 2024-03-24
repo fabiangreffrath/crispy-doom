@@ -439,7 +439,7 @@ boolean NET_ValidGameSettings(GameMode_t mode, GameMission_t mission,
     if (settings->extratics < 0)
         return false;
 
-    if (settings->deathmatch < 0 || settings->deathmatch > NET_MODES_NUM)
+    if (settings->deathmatch < 0 || settings->deathmatch > 4)
         return false;
 
     if (settings->skill < sk_noitems || settings->skill > sk_nightmare)

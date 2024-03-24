@@ -106,10 +106,10 @@ static loop_interface_t doom_loop_interface = {
 //
 static void LoadDeathmatchGameSettings(int deathmatch_setings)
 {
-    if (deathmatch_setings == NET_COOP2)
+    if (deathmatch_setings == 4)
     {
         coop2 = true;
-        deathmatch = NET_COOPERATIVE;
+        deathmatch = 0;
         return;
     }
 
@@ -125,7 +125,7 @@ static void SaveDeathmatchGameSettings(net_gamesettings_t *settings)
 {
     if (coop2)
     {
-        settings->deathmatch = NET_COOP2;
+        settings->deathmatch = 4;
         return;
     }
 

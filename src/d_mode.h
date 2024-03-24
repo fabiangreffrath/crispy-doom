@@ -100,16 +100,6 @@ typedef enum
     sk_nightmare
 } skill_t;
 
-typedef enum // [crispy]
-{
-    NET_COOPERATIVE,
-    NET_DEATHMATCH,
-    NET_ALTDEATH,
-    NET_DM3,
-    NET_COOP2,
-
-    NET_MODES_NUM
-} netgame_modes_t;
 
 boolean D_ValidGameMode(GameMission_t mission, GameMode_t mode);
 boolean D_ValidGameVersion(GameMission_t mission, GameVersion_t version);

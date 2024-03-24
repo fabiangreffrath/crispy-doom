@@ -272,7 +272,7 @@ static void StartGame(int multiplayer)
         {
             AddCmdLineParameter(exec, "-dm3");
         }
-        else if (deathmatch == NET_COOP2) // [cripsy] Coop 2
+        else if (deathmatch == 4) // [cripsy] Coop 2
         {
             AddCmdLineParameter(exec, "-coop2");
         }
@@ -695,7 +695,7 @@ static txt_dropdown_list_t *GameTypeDropdown(void)
     {
         case doom:
         default:
-            return TXT_NewDropdownList(&deathmatch, gamemodes, NET_MODES_NUM);
+            return TXT_NewDropdownList(&deathmatch, gamemodes, 4);
 
         // Heretic and Hexen don't support Deathmatch II:
 
