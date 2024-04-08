@@ -262,7 +262,7 @@ void EV_VerticalDoor(line_t * line, mobj_t * thing)
     if (line->sidenum[side^1] == NO_INDEX)
     {
         // [crispy] do not crash if the wrong side of the door is pushed
-        printf("EV_VerticalDoor: DR special type on 1-sided linedef\n");
+        fprintf(stderr, "EV_VerticalDoor: DR special type on 1-sided linedef\n");
         return;
     }
 
