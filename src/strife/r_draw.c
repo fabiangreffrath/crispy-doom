@@ -465,7 +465,7 @@ void R_DrawTRTLColumn(void)
     // Here we do an additional index re-mapping.
     do 
     {
-        byte src = dc_colormap[dc_translation[dc_source[frac>>FRACBITS&127]]];
+        pixel_t src = dc_colormap[dc_translation[dc_source[frac>>FRACBITS&127]]];
 #ifndef CRISPY_TRUECOLOR
         pixel_t col = xlatab[(*dest << 8) + src];
         *dest = col;
