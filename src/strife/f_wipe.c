@@ -283,14 +283,8 @@ wipe_ScreenWipe
     {
 	go = 1;
         // haleyjd 20110629 [STRIFE]: We *must* use a temp buffer here.
-#ifndef CRISPY_TRUECOLOR
-	wipe_scr = (pixel_t *) Z_Malloc(width*height, PU_STATIC, 0); // DEBUG
+	wipe_scr = (pixel_t *) Z_Malloc(width*height*sizeof(*wipe_scr), PU_STATIC, 0); // DEBUG
 	//wipe_scr = I_VideoBuffer;
-#else
-	// [crispy] In TrueColor render perform everything in common buffer.
-	// Otherwise serious malloc errors will happen.
-	wipe_scr = I_VideoBuffer;
-#endif
 	(*wipes[wipeno*3])(width, height, ticks);
     }
 
@@ -298,10 +292,8 @@ wipe_ScreenWipe
     V_MarkRect(0, 0, width, height);
     rc = (*wipes[wipeno*3+1])(width, height, ticks);
 
-#ifndef CRISPY_TRUECOLOR
     // haleyjd 20110629 [STRIFE]: Copy temp buffer to the real screen.
     V_DrawBlock(x, y, width, height, wipe_scr);
-#endif
 
     // final stuff
     if (rc)
