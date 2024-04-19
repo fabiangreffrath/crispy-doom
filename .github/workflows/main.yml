@@ -119,7 +119,14 @@ jobs:
           ./autogen.sh
 
       - name: Build
-        run: make -j4
+        run: |
+          make distclean
+          ./configure --enable-truecolor
+          make -j4
+          for i in doom heretic hexen strife ; do mv src/crispy-${i}.exe src/crispy-${i}-truecolor.exe ; done
+          make distclean
+          ./configure
+          make -j4
 
       - name: Test
         run: |
