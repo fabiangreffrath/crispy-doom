@@ -552,7 +552,7 @@ void WI_initAnimatedBack(boolean firstcall)
 	// init variables
 	// [crispy] Do not reset animation timers upon switching to "Entering" state
 	// via WI_initShowNextLoc. Fixes notable blinking of Tower of Babel drawing
-	// and animations from being reset.
+	// and the rest of animations from being restarted.
 	if (firstcall)
 	a->ctr = -1;
 
