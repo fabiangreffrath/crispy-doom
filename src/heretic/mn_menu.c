@@ -1936,7 +1936,7 @@ boolean MN_Responder(event_t * event)
                 {
                     key = key_menu_back;
                 }
-                mousewait = I_GetTime() + 15;
+                mousewait = I_GetTime() + 5;
             }
 
             // [crispy] scroll menus with mouse wheel

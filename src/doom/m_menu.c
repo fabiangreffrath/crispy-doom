@@ -2469,13 +2469,13 @@ boolean M_Responder (event_t* ev)
 	    if (ev->data1&1)
 	    {
 		key = key_menu_forward;
-		mousewait = I_GetTime() + 15;
+		mousewait = I_GetTime() + 5;
 	    }
 			
 	    if (ev->data1&2)
 	    {
 		key = key_menu_back;
-		mousewait = I_GetTime() + 15;
+		mousewait = I_GetTime() + 5;
 	    }
 
 	    // [crispy] scroll menus with mouse wheel
