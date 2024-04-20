@@ -2336,7 +2336,8 @@ boolean M_Responder (event_t* ev)
         if (ev->type == ev_mouse && mousewait < I_GetTime())
         {
             // [crispy] Don't control Crispness menu with y-axis mouse movement.
-            if (!inhelpscreens)
+            // "novert" disables up/down cursor movement with the mouse.
+            if (!inhelpscreens && !novert)
                 mousey += ev->data3;
 
             if (mousey < lasty-30)
@@ -2383,6 +2384,19 @@ boolean M_Responder (event_t* ev)
             {
                 key = key_menu_back;
                 mousewait = I_GetTime() + 15;
+            }
+
+            // [crispy] scroll menus with mouse wheel
+            if (mousebprevweapon >= 0 && ev->data1 & (1 << mousebprevweapon))
+            {
+                key = key_menu_down;
+                mousewait = I_GetTime() + 1;
+            }
+            else
+            if (mousebnextweapon >= 0 && ev->data1 & (1 << mousebnextweapon))
+            {
+                key = key_menu_up;
+                mousewait = I_GetTime() + 1;
             }
         }
         else
