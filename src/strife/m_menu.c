@@ -1646,7 +1646,8 @@ void M_ChangeMessages(int choice)
 //
 void M_EndGameResponse(int key)
 {
-    if (key != key_menu_confirm)
+    // [crispy] allow to confirm by pressing Enter key
+    if (key != key_menu_confirm && key != key_menu_forward)
         return;
 
     currentMenu->lastOn = itemOn;
@@ -1747,7 +1748,8 @@ void M_QuitResponse(int key)
 {
     char buffer[20];
 
-    if (key != key_menu_confirm)
+    // [crispy] allow to confirm by pressing Enter key
+    if (key != key_menu_confirm && key != key_menu_forward)
         return;
 
     // [crispy] quit immediately if not showing exit screen
@@ -2539,7 +2541,9 @@ boolean M_Responder (event_t* ev)
         if (messageNeedsInput)
         {
             if (key != ' ' && key != KEY_ESCAPE
-                && key != key_menu_confirm && key != key_menu_abort)
+                && key != key_menu_confirm && key != key_menu_abort
+                // [crispy] allow to confirm end game and quit by pressing Enter key
+                && key != key_menu_forward)
             {
                 return false;
             }

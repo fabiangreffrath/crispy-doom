@@ -1938,7 +1938,9 @@ boolean MN_Responder(event_t * event)
 
     if (askforquit)
     {
-        if (key == key_menu_confirm)
+        if (key == key_menu_confirm
+        // [crispy] allow to confirm quit (1) and end game (2) by pressing Enter key
+        || (key == key_menu_forward && (typeofask == 1 || typeofask == 2)))
         {
             switch (typeofask)
             {
@@ -2178,7 +2180,8 @@ boolean MN_Responder(event_t * event)
         }
         else if (key == key_menu_quit)            // F10 (quit)
         {
-            if (gamestate == GS_LEVEL)
+            // [crispy] allow to invoke quit in any game state
+            // if (gamestate == GS_LEVEL)
             {
                 SCQuitGame(0);
                 S_StartSound(NULL, sfx_chat);
