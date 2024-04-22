@@ -926,7 +926,6 @@ static void DrawSaveLoadBottomLine(const Menu_t *menu)
 #if defined(__GNUC__)
 #  pragma GCC diagnostic pop
 #endif
-        //MN_DrTextACentered(filedate, y + 10, cr[CR_MENU_DARK4]);
         MN_DrTextA(filedate, ORIGWIDTH / 2 - MN_TextAWidth(filedate) / 2, y + 10);
     }
 
