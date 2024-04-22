@@ -853,18 +853,9 @@ void M_DoNameChar(int choice)
 }
 
 // [crispy] print "modified" (or created initially) time of savegame file
-// [JN] TODOs:
-//      - Move both Save and Load menus higher, so file date will be drawn
-//        one line above map name.
-//      - Possibly shift file date slightly right? So it will be centered
-//        by file slots, not by the center of the screen.
 static void M_DrawSaveLoadBottomLine(void)
 {
-    const int y = 161;
-
-    // [crispy] force status bar refresh
-    // [JN] TODO: probably not needed, we not drawing anything on status bar buffer.
-    inhelpscreens = true;
+    const int y = 145;
 
     if (LoadMenu[itemOn].status)
     {
@@ -889,11 +880,12 @@ static void M_DrawSaveLoadBottomLine(void)
 //
 // M_LoadGame & Cie.
 //
+static int LoadDef_x = 80, LoadDef_y = 54;
 void M_DrawLoad(void)
 {
     int             i;
 
-    V_DrawPatchDirect(72, 28, 
+    V_DrawPatchDirect(LoadDef_x, LoadDef_y, 
                       W_CacheLumpName(DEH_String("M_LOADG"), PU_CACHE));
 
     for (i = 0;i < load_end; i++)
@@ -972,11 +964,12 @@ void M_LoadGame (int choice)
 //
 //  M_SaveGame & Cie.
 //
+static int SaveDef_x = 80, SaveDef_y = 54;
 void M_DrawSave(void)
 {
     int             i;
 
-    V_DrawPatchDirect(72, 28, W_CacheLumpName(DEH_String("M_SAVEG"), PU_CACHE));
+    V_DrawPatchDirect(SaveDef_x, SaveDef_y, W_CacheLumpName(DEH_String("M_SAVEG"), PU_CACHE));
     for (i = 0;i < load_end; i++)
     {
         M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
@@ -3188,6 +3181,35 @@ void M_Init (void)
     // [STRIFE]: Initialize savegame paths and clear temporary directory
     G_WriteSaveName(5, "ME");
     ClearTmp();
+
+    // [crispy] rearrange Load Game and Save Game menus
+    {
+        const patch_t *patchl, *patchs, *patchm;
+        short captionheight, vstep;
+
+        patchl = W_CacheLumpName(DEH_String("M_LOADG"), PU_CACHE);
+        patchs = W_CacheLumpName(DEH_String("M_SAVEG"), PU_CACHE);
+        patchm = W_CacheLumpName(DEH_String("M_LSLEFT"), PU_CACHE);
+
+        LoadDef_x = (ORIGWIDTH - SHORT(patchl->width)) / 2 + SHORT(patchl->leftoffset);
+        SaveDef_x = (ORIGWIDTH - SHORT(patchs->width)) / 2 + SHORT(patchs->leftoffset);
+        LoadDef.x = SaveDef.x = (ORIGWIDTH - 24 * 8) / 2 + SHORT(patchm->leftoffset);
+
+        captionheight = MAX(SHORT(patchl->height), SHORT(patchs->height));
+
+        vstep = ORIGHEIGHT - 32; // [crispy] ST_HEIGHT
+        vstep -= captionheight;
+        vstep -= (load_end - 1) * LINEHEIGHT + SHORT(patchm->height);
+        vstep /= 3;
+
+        if (vstep > 0)
+        {
+            LoadDef_y = vstep + captionheight - SHORT(patchl->height) + SHORT(patchl->topoffset);
+            SaveDef_y = vstep + captionheight - SHORT(patchs->height) + SHORT(patchs->topoffset);
+            LoadDef.y = SaveDef.y = vstep + captionheight + vstep + SHORT(patchm->topoffset) - 19; // [crispy] moved up, so savegame date/time may appear above status bar
+            MouseDef.y = LoadDef.y;
+        }
+    }
 
     // Here we could catch other version dependencies,
     //  like HELP1/2, and four episodes.
