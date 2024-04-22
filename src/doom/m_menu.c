@@ -852,7 +852,7 @@ void M_ReadSaveStrings(void)
 }
 
 // [FG] support up to 8 pages of savegames
-void M_DrawSaveLoadBottomLine(void)
+static void M_DrawSaveLoadBottomLine(void)
 {
   char pagestr[16];
   const int y = 152;
