@@ -20,6 +20,7 @@
 
 #include <stdlib.h>
 #include <ctype.h>
+#include <time.h> // [crispy] strftime, localtime
 
 
 #include "doomdef.h"
@@ -851,6 +852,40 @@ void M_DoNameChar(int choice)
     M_ClearMenus(0);
 }
 
+// [crispy] print "modified" (or created initially) time of savegame file
+// [JN] TODOs:
+//      - Move both Save and Load menus higher, so file date will be drawn
+//        one line above map name.
+//      - Possibly shift file date slightly right? So it will be centered
+//        by file slots, not by the center of the screen.
+static void M_DrawSaveLoadBottomLine(void)
+{
+    const int y = 161;
+
+    // [crispy] force status bar refresh
+    // [JN] TODO: probably not needed, we not drawing anything on status bar buffer.
+    inhelpscreens = true;
+
+    if (LoadMenu[itemOn].status)
+    {
+        struct stat st;
+        char filedate[32];
+
+        stat(P_SaveGameFile(itemOn), &st);
+
+// [FG] suppress the most useless compiler warning ever
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-y2k"
+#endif
+        strftime(filedate, sizeof(filedate), "%x %X", localtime(&st.st_mtime));
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+        M_WriteText(ORIGWIDTH/2-M_StringWidth(filedate)/2, y, filedate);
+    }
+}
+
 //
 // M_LoadGame & Cie.
 //
@@ -866,6 +901,8 @@ void M_DrawLoad(void)
         M_DrawSaveLoadBorder(LoadDef.x,LoadDef.y+LINEHEIGHT*i);
         M_WriteText(LoadDef.x,LoadDef.y+LINEHEIGHT*i,savegamestrings[i]);
     }
+
+    M_DrawSaveLoadBottomLine();
 }
 
 
@@ -951,6 +988,8 @@ void M_DrawSave(void)
         i = M_StringWidth(savegamestrings[quickSaveSlot]);
         M_WriteText(LoadDef.x + i,LoadDef.y+LINEHEIGHT*quickSaveSlot,"_");
     }
+
+    M_DrawSaveLoadBottomLine();
 }
 
 //
