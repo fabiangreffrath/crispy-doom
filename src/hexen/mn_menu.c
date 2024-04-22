@@ -18,6 +18,7 @@
 // HEADER FILES ------------------------------------------------------------
 
 #include <ctype.h>
+#include <time.h> // [crispy] strftime, localtime
 #include "h2def.h"
 #include "doomkeys.h"
 #include "i_input.h"
@@ -263,7 +264,7 @@ static MenuItem_t LoadItems[] = {
 };
 
 static Menu_t LoadMenu = {
-    70, 27,
+    70, 27-9, // [crispy] moved up, so two lines of save pages and file date will fit
     DrawLoadMenu,
     SAVES_PER_PAGE, LoadItems,
     0,
@@ -280,7 +281,7 @@ static MenuItem_t SaveItems[] = {
 };
 
 static Menu_t SaveMenu = {
-    70, 27,
+    70, 27-9, // [crispy] moved up, so two lines of save pages and file date will fit
     DrawSaveMenu,
     SAVES_PER_PAGE, SaveItems,
     0,
@@ -907,6 +908,28 @@ static void DrawSaveLoadBottomLine(const Menu_t *menu)
     M_snprintf(pagestr, sizeof(pagestr), "PAGE %d/%d", savepage + 1, SAVEPAGE_MAX + 1);
     MN_DrTextA(pagestr, ORIGWIDTH / 2 - MN_TextAWidth(pagestr) / 2, y);
 
+    // [crispy] print "modified" (or created initially) time of savegame file
+    if (SlotStatus[CurrentItPos] && !FileMenuKeySteal)
+    {
+        struct stat st;
+        char filedate[32];
+        char filename[100];
+
+        M_snprintf(filename, sizeof(filename), "%shex%d.hxs", SavePath, CurrentItPos + (savepage * 10));
+        stat(filename, &st);
+// [FG] suppress the most useless compiler warning ever
+#if defined(__GNUC__)
+#  pragma GCC diagnostic push
+#  pragma GCC diagnostic ignored "-Wformat-y2k"
+#endif
+        strftime(filedate, sizeof(filedate), "%x %X", localtime(&st.st_mtime));
+#if defined(__GNUC__)
+#  pragma GCC diagnostic pop
+#endif
+        //MN_DrTextACentered(filedate, y + 10, cr[CR_MENU_DARK4]);
+        MN_DrTextA(filedate, ORIGWIDTH / 2 - MN_TextAWidth(filedate) / 2, y + 10);
+    }
+
     dp_translation = NULL;
 }
 
@@ -918,12 +941,13 @@ static void DrawSaveLoadBottomLine(const Menu_t *menu)
 
 static void DrawLoadMenu(void)
 {
-    MN_DrTextB("LOAD GAME", 160 - MN_TextBWidth("LOAD GAME") / 2, 7);
     if (!slottextloaded)
     {
         MN_LoadSlotText();
     }
     DrawFileSlots(&LoadMenu);
+    // [crispy] moved here, draw title on top of file slots
+    MN_DrTextB("LOAD GAME", 160 - MN_TextBWidth("LOAD GAME") / 2, 1);
     DrawSaveLoadBottomLine(&LoadMenu);
 }
 
@@ -935,12 +959,13 @@ static void DrawLoadMenu(void)
 
 static void DrawSaveMenu(void)
 {
-    MN_DrTextB("SAVE GAME", 160 - MN_TextBWidth("SAVE GAME") / 2, 7);
     if (!slottextloaded)
     {
         MN_LoadSlotText();
     }
     DrawFileSlots(&SaveMenu);
+    // [crispy] moved here, draw title on top of file slots
+    MN_DrTextB("SAVE GAME", 160 - MN_TextBWidth("SAVE GAME") / 2, 1);
     DrawSaveLoadBottomLine(&SaveMenu);
 }
 
