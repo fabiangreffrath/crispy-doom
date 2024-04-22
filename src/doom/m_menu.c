@@ -857,9 +857,6 @@ static void M_DrawSaveLoadBottomLine(void)
   char pagestr[16];
   const int y = 152;
 
-  // [crispy] force status bar refresh
-  inhelpscreens = true;
-
   dp_translation = cr[CR_GOLD];
 
   if (savepage > 0)
