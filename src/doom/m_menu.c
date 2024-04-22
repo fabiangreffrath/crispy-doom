@@ -855,6 +855,7 @@ void M_ReadSaveStrings(void)
 void M_DrawSaveLoadBottomLine(void)
 {
   char pagestr[16];
+  const int y = 152;
 
   // [crispy] force status bar refresh
   inhelpscreens = true;
@@ -862,12 +863,12 @@ void M_DrawSaveLoadBottomLine(void)
   dp_translation = cr[CR_GOLD];
 
   if (savepage > 0)
-    M_WriteText(LoadDef.x, 152, "< PGUP");
+    M_WriteText(LoadDef.x, y, "< PGUP");
   if (savepage < savepage_max)
-    M_WriteText(LoadDef.x+(SAVESTRINGSIZE-6)*8, 152, "PGDN >");
+    M_WriteText(LoadDef.x+(SAVESTRINGSIZE-6)*8, y, "PGDN >");
 
   M_snprintf(pagestr, sizeof(pagestr), "page %d/%d", savepage + 1, savepage_max + 1);
-  M_WriteText(ORIGWIDTH/2-M_StringWidth(pagestr)/2, 152, pagestr);
+  M_WriteText(ORIGWIDTH/2-M_StringWidth(pagestr)/2, y, pagestr);
 
   // [crispy] print "modified" (or created initially) time of savegame file
   if (LoadMenu[itemOn].status)
@@ -886,7 +887,7 @@ void M_DrawSaveLoadBottomLine(void)
 #if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
-    M_WriteText(ORIGWIDTH/2-M_StringWidth(filedate)/2, 160, filedate);
+    M_WriteText(ORIGWIDTH/2-M_StringWidth(filedate)/2, y + 8, filedate);
   }
 
   dp_translation = NULL;
