@@ -627,7 +627,7 @@ void MN_DrTextA(const char *text, int x, int y)
 
     while ((c = *text++) != 0)
     {
-        if (c < 33)
+        if (c < 33 || c > 91) // [crispy] fail-safe: draw patches above FONTA59 as spaces
         {
             x += 5;
         }
@@ -657,7 +657,7 @@ int MN_TextAWidth(const char *text)
     width = 0;
     while ((c = *text++) != 0)
     {
-        if (c < 33)
+        if (c < 33 || c > 91) // [crispy] fail-safe: consider patches above FONTA59 as spaces
         {
             width += 5;
         }
@@ -685,7 +685,7 @@ void MN_DrTextB(const char *text, int x, int y)
 
     while ((c = *text++) != 0)
     {
-        if (c < 33)
+        if (c < 33 || c > 90) // [crispy] fail-safe: draw patches above FONTB58 as spaces
         {
             x += 8;
         }
@@ -715,7 +715,7 @@ int MN_TextBWidth(const char *text)
     width = 0;
     while ((c = *text++) != 0)
     {
-        if (c < 33)
+        if (c < 33 || c > 90) // [crispy] fail-safe: consider patches above FONTB58 as spaces
         {
             width += 5;
         }
