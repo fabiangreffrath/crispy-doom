@@ -619,16 +619,16 @@ enum {
 
 static const char MN_CheckValidChar (char ascii_index, int have_cursor)
 {
-    if ((ascii_index >= 91 + have_cursor && ascii_index <= 96) || ascii_index >= 123)
+    if ((ascii_index >= '[' + have_cursor && ascii_index <= '`') || ascii_index >= '{')
     {
         // Replace "\]^_`" and "{|}~" with spaces,
-        // allow [ (91, cursor) only in small fonts.
-        return 32;
+        // allow "[" (cursor symbol) only in small fonts.
+        return ' ';
     }
-    else if (ascii_index >= 97 && ascii_index <= 122)
+    else if (ascii_index >= 'a' && ascii_index <= 'z')
     {
         // Force lowercase "a...z" characters to uppercase "A...Z".
-        return ascii_index -= 32;
+        return ascii_index + 'A' - 'a';
     }
     else
     {
