@@ -224,7 +224,7 @@ static Menu_t MainMenu = {
 };
 
 static MenuItem_t EpisodeItems[] = {
-    {ITT_EFUNC, "a small [\\]^_`{|}~ text z" /*"CITY OF THE DAMNED"*/, SCEpisode, 1, MENU_NONE},
+    {ITT_EFUNC, "CITY OF THE DAMNED", SCEpisode, 1, MENU_NONE},
     {ITT_EFUNC, "HELL'S MAW", SCEpisode, 2, MENU_NONE},
     {ITT_EFUNC, "THE DOME OF D'SPARIL", SCEpisode, 3, MENU_NONE},
     {ITT_EFUNC, "THE OSSUARY", SCEpisode, 4, MENU_NONE},
@@ -612,14 +612,16 @@ static void InitFonts(void)
     FontBBaseLump = W_GetNumForName(DEH_String("FONTB_S")) + 1;
 }
 
-// [crispy] Check if printable character is existing in FONTA/FONTB sets.
+// [crispy] Check if printable character is existing in FONTA/FONTB sets
+// and do a replacement or case correction if needed.
+
 enum {
     big_font, small_font
-} fonttype_t;
+} fontsize_t;
 
 static const char MN_CheckValidChar (char ascii_index, int have_cursor)
 {
-    if ((ascii_index >= '[' + have_cursor && ascii_index <= '`') || ascii_index >= '{')
+    if ((ascii_index > 'Z' + have_cursor && ascii_index < 'a') || ascii_index > 'z')
     {
         // Replace "\]^_`" and "{|}~" with spaces,
         // allow "[" (cursor symbol) only in small fonts.

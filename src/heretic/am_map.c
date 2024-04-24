@@ -36,7 +36,7 @@ vertex_t KeyPoints[NUM_KEY_TYPES];
 
 const char *LevelNames[] = {
     // EPISODE 1 - THE CITY OF THE DAMNED
-    "e1m1:  a small [\\]^_`{|}~ text z" /*"E1M1:  THE DOCKS"*/,
+    "E1M1:  THE DOCKS",
     "E1M2:  THE DUNGEONS",
     "E1M3:  THE GATEHOUSE",
     "E1M4:  THE GUARD TOWER",
