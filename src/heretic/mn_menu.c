@@ -655,7 +655,7 @@ void MN_DrTextA(const char *text, int x, int y)
     while ((c = *text++) != 0)
     {
         c = MN_CheckValidChar(c, small_font); // [crispy] check for valid characters
-        
+
         if (c < 33)
         {
             x += 5;
