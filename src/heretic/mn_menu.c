@@ -224,7 +224,7 @@ static Menu_t MainMenu = {
 };
 
 static MenuItem_t EpisodeItems[] = {
-    {ITT_EFUNC, "CITY OF THE DAMNED", SCEpisode, 1, MENU_NONE},
+    {ITT_EFUNC, "a small [\\]^_`{|}~ text z" /*"CITY OF THE DAMNED"*/, SCEpisode, 1, MENU_NONE},
     {ITT_EFUNC, "HELL'S MAW", SCEpisode, 2, MENU_NONE},
     {ITT_EFUNC, "THE DOME OF D'SPARIL", SCEpisode, 3, MENU_NONE},
     {ITT_EFUNC, "THE OSSUARY", SCEpisode, 4, MENU_NONE},
@@ -612,6 +612,31 @@ static void InitFonts(void)
     FontBBaseLump = W_GetNumForName(DEH_String("FONTB_S")) + 1;
 }
 
+// [crispy] Check if printable character is existing in FONTA/FONTB sets.
+enum {
+    big_font, small_font
+} fonttype_t;
+
+static const char MN_CheckValidChar (char ascii_index, int have_cursor)
+{
+    if ((ascii_index >= 91 + have_cursor && ascii_index <= 96) || ascii_index >= 123)
+    {
+        // Replace "\]^_`" and "{|}~" with spaces,
+        // allow [ (91, cursor) only in small fonts.
+        return 32;
+    }
+    else if (ascii_index >= 97 && ascii_index <= 122)
+    {
+        // Force lowercase "a...z" characters to uppercase "A...Z".
+        return ascii_index -= 32;
+    }
+    else
+    {
+        // Valid char, do not modify it's ASCII index.
+        return ascii_index;
+    }
+}
+
 //---------------------------------------------------------------------------
 //
 // PROC MN_DrTextA
@@ -627,7 +652,9 @@ void MN_DrTextA(const char *text, int x, int y)
 
     while ((c = *text++) != 0)
     {
-        if (c < 33 || c > 91) // [crispy] fail-safe: draw patches above FONTA59 as spaces
+        c = MN_CheckValidChar(c, small_font); // [crispy] check for valid characters
+        
+        if (c < 33)
         {
             x += 5;
         }
@@ -657,7 +684,9 @@ int MN_TextAWidth(const char *text)
     width = 0;
     while ((c = *text++) != 0)
     {
-        if (c < 33 || c > 91) // [crispy] fail-safe: consider patches above FONTA59 as spaces
+        c = MN_CheckValidChar(c, small_font); // [crispy] check for valid characters
+
+        if (c < 33)
         {
             width += 5;
         }
@@ -685,7 +714,9 @@ void MN_DrTextB(const char *text, int x, int y)
 
     while ((c = *text++) != 0)
     {
-        if (c < 33 || c > 90) // [crispy] fail-safe: draw patches above FONTB58 as spaces
+        c = MN_CheckValidChar(c, big_font); // [crispy] check for valid characters
+
+        if (c < 33)
         {
             x += 8;
         }
@@ -715,7 +746,9 @@ int MN_TextBWidth(const char *text)
     width = 0;
     while ((c = *text++) != 0)
     {
-        if (c < 33 || c > 90) // [crispy] fail-safe: consider patches above FONTB58 as spaces
+        c = MN_CheckValidChar(c, big_font); // [crispy] check for valid characters
+
+        if (c < 33)
         {
             width += 5;
         }
