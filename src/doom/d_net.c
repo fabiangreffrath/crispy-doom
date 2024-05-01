@@ -100,6 +100,37 @@ static loop_interface_t doom_loop_interface = {
     M_Ticker
 };
 
+//
+// LoadDeathmatchGameSettings
+// [crispy] Loads correct deatmatch setting from a net game
+//
+static void LoadDeathmatchGameSettings(int deathmatch_setings)
+{
+    if (deathmatch_setings == 4)
+    {
+        coop2 = true;
+        deathmatch = 0;
+        return;
+    }
+
+    deathmatch = deathmatch_setings;
+}
+
+//
+// SaveDeathmatchGameSettings
+// [crispy] Saves correct deatmatch setting for a net game
+//          from global variables
+//
+static void SaveDeathmatchGameSettings(net_gamesettings_t *settings)
+{
+    if (coop2)
+    {
+        settings->deathmatch = 4;
+        return;
+    }
+
+    settings->deathmatch = deathmatch;
+}
 
 // Load game settings from the specified structure and
 // set global variables.
@@ -108,7 +139,7 @@ static void LoadGameSettings(net_gamesettings_t *settings)
 {
     unsigned int i;
 
-    deathmatch = settings->deathmatch;
+    LoadDeathmatchGameSettings(settings->deathmatch); // [crispy]
     startepisode = settings->episode;
     startmap = settings->map;
     startskill = settings->skill;
@@ -140,7 +171,7 @@ static void SaveGameSettings(net_gamesettings_t *settings)
     // Fill in game settings structure with appropriate parameters
     // for the new game
 
-    settings->deathmatch = deathmatch;
+    SaveDeathmatchGameSettings(settings); // [crispy]
     settings->episode = startepisode;
     settings->map = startmap;
     settings->skill = startskill;
