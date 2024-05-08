@@ -2306,10 +2306,12 @@ boolean M_Responder (event_t* ev)
     int             key;
     int             i;
     static  int     mousewait = 0;
+    /*
     static  int     mousey = 0;
     static  int     lasty = 0;
     static  int     mousex = 0;
     static  int     lastx = 0;
+    */
     boolean mousextobutton = false;
     int dir;
 
@@ -2446,8 +2448,10 @@ boolean M_Responder (event_t* ev)
     }
     else
     {
-	if (ev->type == ev_mouse && mousewait < I_GetTime() && menuactive)
+	if (ev->type == ev_mouse && mousewait < I_GetTime() && menuactive
+	&& !ev->data2 && !ev->data3) // [crispy] do not consider movement as pressing
 	{
+	    /*
 	    // [crispy] novert disables controlling the menus with the mouse
 	    if (!novert)
 	    {
@@ -2481,6 +2485,7 @@ boolean M_Responder (event_t* ev)
 		mousex = lastx += 30;
 		mousextobutton = true;
 	    }
+	    */
 		
 	    if (ev->data1&1)
 	    {
