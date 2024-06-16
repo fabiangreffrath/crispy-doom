@@ -75,9 +75,16 @@ wipe_initColorXForm
   int	ticks )
 {
     memcpy(wipe_scr, wipe_scr_start, width*height*sizeof(*wipe_scr));
-    // [crispy] arm fail-safe crossfade counter with
-    // 13 screen transitions, "zero" count won't be used.
-    fade_counter = 14;
+    // [crispy] arm fail-safe crossfade counter with...
+#ifndef CRISPY_TRUECOLOR
+    // 13 screen transitions in paletted render,
+    // to make duration identical to Vanilla Strife.
+    fade_counter = 13;
+#else
+    // 32 screen screen transitions in TrueColor render,
+    // to make blending effect smooth enough.
+    fade_counter = 32;
+#endif
     return 0;
 }
 
@@ -88,6 +95,15 @@ wipe_initColorXForm
 // * Rogue modified the unused ColorXForm wipe in-place in order to implement 
 //   their distinctive crossfade wipe.
 //
+#ifdef CRISPY_TRUECOLOR
+static const uint8_t alpha_table[] = {
+      0,   8,  16,  24,  32,  40,  48,  56,
+     64,  72,  80,  88,  96, 104, 112, 120,
+    128, 136, 144, 152, 160, 168, 176, 184,
+    192, 200, 208, 216, 224, 232, 240, 248,
+};
+#endif
+
 int
 wipe_doColorXForm
 ( int	width,
@@ -101,7 +117,13 @@ wipe_doColorXForm
     boolean changed = false;
 
     // [crispy] reduce fail-safe crossfade counter tics
-    fade_counter--;
+    if (--fade_counter > 0)
+    {
+#ifdef CRISPY_TRUECOLOR
+    // [crispy] keep solid background to prevent blending
+    // with empty space and make blending duration long enough
+    V_DrawBlock(0, 0, SCREENWIDTH, SCREENHEIGHT, wipe_scr_start);
+#endif
 
     for(i = pix; i > 0; i--)
     {
@@ -111,13 +133,12 @@ wipe_doColorXForm
 #ifndef CRISPY_TRUECOLOR
             *cur_screen = xlatab[(*cur_screen << 8) + *end_screen];
 #else
-            // [crispy] perform crossfading effect with 13 given opacity steps, multipled by 19:
-            // 247, 228, 209, 190, 171, 152, 133, 114, 95, 76, 57, 38, 19
-            *cur_screen = I_BlendOver(*end_screen, *cur_screen, fade_counter * 19);
+            *cur_screen = I_BlendOver(*end_screen, *cur_screen, alpha_table[fade_counter]);
 #endif
         }
         ++cur_screen;
         ++end_screen;
+    }
     }
 
     return !changed;
@@ -282,9 +303,14 @@ wipe_ScreenWipe
     if (!go)
     {
 	go = 1;
+#ifndef CRISPY_TRUECOLOR
         // haleyjd 20110629 [STRIFE]: We *must* use a temp buffer here.
 	wipe_scr = (pixel_t *) Z_Malloc(width*height*sizeof(*wipe_scr), PU_STATIC, 0); // DEBUG
 	//wipe_scr = I_VideoBuffer;
+#else
+        // [crispy] perform TrueColor blending in real screen.
+	wipe_scr = I_VideoBuffer;
+#endif
 	(*wipes[wipeno*3])(width, height, ticks);
     }
 

@@ -414,7 +414,11 @@ void D_Display (void)
             nowtime = I_GetTime ();
             tics = nowtime - wipestart;
             I_Sleep(1);
+#ifndef CRISPY_TRUECOLOR
         } while (tics < 3); // haleyjd 08/23/2010: [STRIFE] Changed from == 0 to < 3
+#else
+        } while (tics <= 0); // [crispy] run tics faster in TrueColor for smoother effect
+#endif
 
         // haleyjd 08/26/10: [STRIFE] Changed to use ColorXForm wipe.
         wipestart = nowtime;
