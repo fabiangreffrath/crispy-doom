@@ -151,6 +151,13 @@ wipe_exitColorXForm
   int	height,
   int	ticks )
 {
+    // [crispy] fix memory leak - crossfade calls wipe_exitColorXForm instead of
+    // wipe_exitMelt, so we need to do a memory cleanup in this function
+    Z_Free(wipe_scr_start);
+    Z_Free(wipe_scr_end);
+#ifndef CRISPY_TRUECOLOR
+    Z_Free(wipe_scr);
+#endif
     return 0;
 }
 
