@@ -1579,12 +1579,7 @@ static void SetVideoMode(void)
     // time this also defines the aspect ratio that is preserved while scaling
     // and stretching the texture into the window.
 
-    if (aspect_ratio_correct || integer_scaling)
-    {
-        SDL_RenderSetLogicalSize(renderer,
-                                 SCREENWIDTH,
-                                 actualheight);
-    }
+    SDL_RenderSetLogicalSize(renderer, SCREENWIDTH, actualheight);
 
     // Force integer scales for resolution-independent rendering.
 
