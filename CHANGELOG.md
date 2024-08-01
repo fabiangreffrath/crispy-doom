@@ -11,6 +11,7 @@
 * Apply brightmaps to translucent and translated columns (@JNechaevsky).
 * Fix bug where non-midi music would play at max volume (@mikeday0).
 * Make max volume `libsamplerate` output the default (@mikeday0).
+* Fix memory leak on light tables recalculation (@JNechaevsky).
 
 
 **Crispy Doom**
@@ -41,6 +42,9 @@
   when PLAYPAL and COLORMAP lumps have different color indexes.
 * Small optimizations on toggling gamma-correction levels in True color mode
   (@JNechaevsky).
+* Fix blinking of drawing Tower of Babel on intermission screen (@JNechaevsky).
+* Show date and time of savegame in Save/Load menu (@fabiangreffrath and @JNechaevsky).
+* Suppress pause when a new game is started (@fabiangreffrath).
 
 **Crispy Heretic**
 * Add support for MBF sky transfers (@SilverMiner).
@@ -66,6 +70,9 @@
 * Add support for demo fast-forward (@kitchen-ace).
 * Fix medusa effect (@mikeday0).
 * Improve brightmap for serpent torch (@kitchen-ace).
+* Allow multiple jumps over menu items with same first letters (@JNechaevsky).
+* Show date and time of savegame in Save/Load menu (@fabiangreffrath and @JNechaevsky).
+* Suppress pause when a new game is started (@fabiangreffrath).
 
 **Crispy Hexen**
 * Fix animation glitches seen on swiping weapons when Weapon Attack Alignment is
@@ -80,9 +87,17 @@
 * Fix medusa effect (@mikeday0).
 * Fix wall rendering visual glitch due to overflow (@JNechaevsky).
 * Fix teleportation visual glitches when running uncapped (@JNechaevsky).
+* Improve line drawing in automap overlay mode (@JNechaevsky).
+* Apply brightmaps to Twined Torch, Skull with Flame and Brazier (@JNechaevsky).
+* Interpolated sky scrolling in uncapped frame rate (@JNechaevsky).
+* Allow multiple jumps over menu items with same first letters (@JNechaevsky).
+* Show date and time of savegame in Save/Load menu (@fabiangreffrath and @JNechaevsky).
 
 **Crispy Strife**
 * Add flipped weapon sprites (@ceski-1).
 * Misc Sound Fixes: Restore assault rifle PC speaker sound (@ceski-1).
 * Fix automap marks disappearing near left side of screen (@JNechaevsky).
+* Add support for True color rendering as compile-time option (@fabiangreffrath
+  and @JNechaevsky).
+* Show date and time of savegame in Save/Load menu (@fabiangreffrath and @JNechaevsky).
 
