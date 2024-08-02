@@ -1,10 +1,10 @@
 **General Fixes and Improvements**
 * Don't apply framecap when using `-timedemo` (@JNechaevsky).
 * Make demo footer compatible with PrBoom+/DSDA-Doom demo autoplay (@rfomin).
-* Fix visual distortion when drawing planes (@JNechaevsky).
+* Fix visual distortion of drawing planes near the screen edges in wide screen modes (@rfomin and @JNechaevsky).
 * Support savegame loading for PWADs with spaces in their name.
 * Only update sounds once per gametic (@rfomin).
-* Improve green color translation (@JNechaevsky).
+* Improve green color translation (@fabiangreffrath and @JNechaevsky).
 * Always draw borders of fullscreen patches using black found in PLAYPAL.
 * Add support for negative gamma levels (@JNechaevsky).
 * Apply palette changes every gametic, not every frame (@JNechaevsky).
@@ -54,7 +54,7 @@
 * Add support for SWITCHES lump (@SilverMiner).
 * Add support for True color rendering as compile-time option (@fabiangreffrath
   and @JNechaevsky).
-* Minor visual player sprite fixes (@JNechaevsky).
+* Minor improvements to player weapon drawing functions (@JNechaevsky).
 * Add support for `-coop_spawns` parameter (@JNechaevsky).
 * Fix scrolling floor textures bleeding through static floor textures
   (@JNechaevsky).
