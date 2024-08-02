@@ -12,7 +12,8 @@
 * Fix bug where non-midi music would play at max volume (@mikeday0).
 * Make max volume `libsamplerate` output the default (@mikeday0).
 * Fix memory leak on light tables recalculation (@JNechaevsky).
-
+* Introduce fast mouse polling. Reduces input lag when running uncapped
+  (@mikeday0).
 
 **Crispy Doom**
 * Improve display of secret sector coloring in automap when custom PLAYPALs are
