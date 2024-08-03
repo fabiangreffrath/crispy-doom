@@ -54,7 +54,8 @@
 * Add support for SWITCHES lump (@SilverMiner).
 * Add support for True color rendering as compile-time option (@fabiangreffrath
   and @JNechaevsky).
-* Minor improvements to player weapon drawing functions (@JNechaevsky).
+* Fix missing one pixel line at top and bottom of screen in transparent
+  drawing functions (@JNechaevsky).
 * Add support for `-coop_spawns` parameter (@JNechaevsky).
 * Fix scrolling floor textures bleeding through static floor textures
   (@JNechaevsky).
@@ -93,6 +94,8 @@
 * Interpolated sky scrolling in uncapped frame rate (@JNechaevsky).
 * Allow multiple jumps over menu items with same first letters (@JNechaevsky).
 * Show date and time of savegame in Save/Load menu (@fabiangreffrath and @JNechaevsky).
+* Fix missing one pixel line at top and bottom of screen in transparent
+  drawing functions (@JNechaevsky).
 
 **Crispy Strife**
 * Add flipped weapon sprites (@ceski-1).
