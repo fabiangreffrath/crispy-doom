@@ -3,6 +3,7 @@
 * Make demo footer compatible with PrBoom+/DSDA-Doom demo autoplay (@rfomin).
 * Fix visual distortion of drawing planes near the screen edges in wide screen modes (@rfomin and @JNechaevsky).
 * Support savegame loading for PWADs with spaces in their name.
+* Aspect ratio now matches screen by default (@SoDOOManiac).
 * Only update sounds once per gametic (@rfomin).
 * Improve green color translation (@fabiangreffrath and @JNechaevsky).
 * Always draw borders of fullscreen patches using black found in PLAYPAL.
@@ -41,6 +42,7 @@
 * "Widescreen Aspect Ratio" -> "Aspect Ratio" in Crispness menu (@SoDOOManiac).
 * Improved True color code for better compatibility of drawing graphical patches
   when PLAYPAL and COLORMAP lumps have different color indexes.
+* Resolution-tuned weapon sprite "1 pixel too high" fix for compatibility with bit-shifting hires forks (@SoDOOManiac).
 * Small optimizations on toggling gamma-correction levels in True color mode
   (@JNechaevsky).
 * Fix blinking of drawing Tower of Babel on intermission screen (@JNechaevsky).
