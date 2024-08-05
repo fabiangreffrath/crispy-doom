@@ -1,3 +1,5 @@
+*This is a major release based on the fresh Chocolate Doom 3.1.0 code base. Its main new feature is the addition of True color rendering support as a compile-time option for all four games!*
+
 **General Fixes and Improvements**
 * Don't apply framecap when using `-timedemo` (@JNechaevsky).
 * Make demo footer compatible with PrBoom+/DSDA-Doom demo autoplay (@rfomin).
