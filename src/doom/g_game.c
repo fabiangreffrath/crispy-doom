@@ -700,7 +700,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
             kbdlookctrl += ticdup;
         }
         else
-        if (joystick_look_sensitivity && joylook)
+        if (joystick_look_sensitivity)
         {
             if (joylook < 0)
             {
