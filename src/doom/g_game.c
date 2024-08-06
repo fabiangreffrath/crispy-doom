@@ -692,27 +692,27 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
             kbdlookctrl += ticdup;
         }
         else
-        if (use_analog && joylook)
+        if (joylook && joystick_look_sensitivity)
         {
-            joylook = joylook * joystick_look_sensitivity / 10;
-            joylook = BETWEEN(-FRACUNIT, FRACUNIT, joylook);
-            look = -FixedMul(2, joylook);
-            kbdlookctrl += ticdup;
-        }
-        else
-        if (joystick_look_sensitivity)
-        {
-            if (joylook < 0)
+            if (use_analog)
             {
-                look = lspeed;
-                kbdlookctrl += ticdup;
+                joylook = joylook * joystick_look_sensitivity / 10;
+                joylook = BETWEEN(-FRACUNIT, FRACUNIT, joylook);
+                look = -FixedMul(2, joylook);
             }
+            else
+            {
+                if (joylook < 0)
+                {
+                    look = lspeed;
+                }
 
-            if (joylook > 0)
-            {
-                look = -lspeed;
-                kbdlookctrl += ticdup;
+                if (joylook > 0)
+                {
+                    look = -lspeed;
+                }
             }
+            kbdlookctrl += ticdup;
         }
         else
         // [crispy] keyboard lookspring
