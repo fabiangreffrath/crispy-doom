@@ -17,6 +17,7 @@
 * Fix memory leak on light tables recalculation (@JNechaevsky).
 * Introduce fast mouse polling. Reduces input lag when running uncapped
   (@mikeday0).
+* Analog gamepad controls are enabled by default. (@mikeday0)
 
 **Crispy Doom**
 * Improve display of secret sector coloring in automap when custom PLAYPALs are
