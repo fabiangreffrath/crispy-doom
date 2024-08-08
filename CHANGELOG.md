@@ -51,6 +51,7 @@
 * Fix blinking of drawing Tower of Babel on intermission screen (@JNechaevsky).
 * Show date and time of savegame in Save/Load menu (@fabiangreffrath and @JNechaevsky).
 * Suppress pause when a new game is started (@fabiangreffrath).
+* Fix sector's sound origin for large levels (@kitchen-ace and @rfomin).
 
 **Crispy Heretic**
 * Add support for MBF sky transfers (@SilverMiner).
