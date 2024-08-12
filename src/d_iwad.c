@@ -204,7 +204,7 @@ static registry_value_t root_path_keys[] =
         "PATH",
     },
 
-    // DOOM Unity port (not Chocolate Doom compatible)
+    // [crispy] DOOM Unity port (not Chocolate Doom compatible)
 
     {
         HKEY_LOCAL_MACHINE,
@@ -212,7 +212,7 @@ static registry_value_t root_path_keys[] =
         "PATH"
     },
 
-    // DOOM II Unity port (not Chocolate Doom compatible)
+    // [crispy] DOOM II Unity port (not Chocolate Doom compatible)
 
     {
         HKEY_LOCAL_MACHINE,
@@ -220,7 +220,7 @@ static registry_value_t root_path_keys[] =
         "PATH"
     },
 
-    // DOOM + DOOM II (not Chocolate Doom compatible)
+    // [crispy] DOOM + DOOM II (not Chocolate Doom compatible)
 
     {
         HKEY_LOCAL_MACHINE,
