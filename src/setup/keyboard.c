@@ -35,8 +35,8 @@ static int always_run = 0;
 // Keys within these groups cannot have the same value.
 
 static int *controls[] = { &key_left, &key_right, &key_up, &key_down,
-                           &key_alt_up, &key_alt_down,
-                           &key_reverse, &key_toggleautorun, &key_togglenovert, &key_togglemlook,
+                           &key_alt_up, &key_alt_down, &key_reverse, 
+                           &key_toggleautorun, &key_togglenovert, &key_togglemlook,
                            &key_strafeleft, &key_straferight, &key_fire,
                            &key_alt_strafeleft, &key_alt_straferight,
                            &key_use, &key_strafe, &key_speed, &key_jump,
