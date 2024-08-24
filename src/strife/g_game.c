@@ -594,6 +594,21 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
         gamekeydown[key_togglenovert] = false;
     }
 
+    // [crispy] Toggle mouselook
+    if (gamekeydown[key_togglemlook])
+    {
+        crispy->mouselook = !crispy->mouselook;
+        cmd->buttons2 |= BT2_CENTERVIEW;
+
+        M_snprintf(playermessage, sizeof(playermessage),
+		"Mouselook %s",
+		crispy->mouselook ? "ON" : "OFF");
+        player->message = playermessage;
+        S_StartSound(NULL, sfx_swtchn);
+
+        gamekeydown[key_togglemlook] = false;
+    }
+
     // let movement keys cancel each other out
     if (strafe) 
     { 

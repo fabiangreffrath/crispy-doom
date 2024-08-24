@@ -2272,6 +2272,13 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_KEY(key_togglenovert),
 
     //!
+    // @game doom heretic hexen strife
+    // Toggle mouselook.
+    //
+
+    CONFIG_VARIABLE_KEY(key_togglemlook),
+
+    //!
     // @game doom
     // Invert vertical mouse movement.
     //
@@ -3377,4 +3384,3 @@ char *M_GetAutoloadDir(const char *iwadname, boolean makedir)
 
     return result;
 }
-

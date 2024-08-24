@@ -38,7 +38,8 @@ extern int key_demospeed;  // [crispy]
 extern int key_jump;
 extern int key_toggleautorun;
 extern int key_togglenovert;
- 
+extern int key_togglemlook;
+
 extern int key_flyup;
 extern int key_flydown;
 extern int key_flycenter;
@@ -213,4 +214,3 @@ void M_BindChatControls(unsigned int num_players);
 void M_ApplyPlatformDefaults(void);
 
 #endif /* #ifndef __M_CONTROLS_H__ */
-

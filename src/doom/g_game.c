@@ -550,6 +550,22 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
         gamekeydown[key_togglenovert] = false;
     }
 
+    // [crispy] Toggle mouselook
+    if (gamekeydown[key_togglemlook])
+    {
+        crispy->mouselook = !crispy->mouselook;
+        look = TOCENTER;
+
+        M_snprintf(playermessage, sizeof(playermessage),
+            "mouselook %s%s",
+            crstr[CR_GREEN],
+            crispy->mouselook ? "ON" : "OFF");
+        player->message = playermessage;
+        S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
+
+        gamekeydown[key_togglemlook] = false;
+    }
+
     // [crispy] extra high precision IDMYPOS variant, updates for 10 seconds
     if (player->powers[pw_mapcoords])
     {

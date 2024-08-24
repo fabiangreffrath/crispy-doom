@@ -45,6 +45,7 @@ int key_speed = KEY_RSHIFT;
 int key_demospeed = KEYP_PLUS; // [crispy]
 int key_toggleautorun = KEY_CAPSLOCK; // [crispy]
 int key_togglenovert = 0; // [crispy]
+int key_togglemlook = 0; // [crispy]
 
 // 
 // Heretic keyboard controls
@@ -307,6 +308,7 @@ void M_BindBaseControls(void)
     M_BindIntVariable("key_reverse",        &key_reverse); // [crispy]
     M_BindIntVariable("key_toggleautorun",  &key_toggleautorun); // [crispy]
     M_BindIntVariable("key_togglenovert",   &key_togglenovert); // [crispy]
+    M_BindIntVariable("key_togglemlook",    &key_togglemlook); // [crispy]
 }
 
 void M_BindHereticControls(void)
@@ -507,4 +509,3 @@ void M_ApplyPlatformDefaults(void)
 {
     // no-op. Add your platform-specific patches here.
 }
-
