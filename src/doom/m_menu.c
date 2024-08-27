@@ -873,7 +873,7 @@ static void M_DrawSaveLoadBottomLine(void)
     struct stat st;
     char filedate[32];
 
-    if (M_stat(P_SaveGameFile(itemOn), &st) != -1)
+    if (M_stat(P_SaveGameFile(itemOn), &st) == 0)
     {
 // [FG] suppress the most useless compiler warning ever
 #if defined(__GNUC__)
