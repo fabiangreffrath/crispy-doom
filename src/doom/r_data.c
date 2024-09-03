@@ -1196,6 +1196,21 @@ void R_InitColormaps (void)
 	byte *const playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
 	byte *const colormap = W_CacheLumpName("COLORMAP", PU_STATIC);
 
+	// [crispy] Smoother diminished lighting.
+	// Compiled in but not enabled TrueColor mode
+	// can't use more than original 32 colormaps.
+	if (crispy->truecolor && crispy->smoothlight)
+	{
+		NUMCOLORMAPS = 256;
+	}
+	else
+	{
+		NUMCOLORMAPS = 32;
+	}
+	// [crispy] Regardless of the number of color maps,
+	// invulnerability is always the last one.
+	INVERSECOLORMAP = NUMCOLORMAPS;
+
 	if (!colormaps)
 	{
 		colormaps = (lighttable_t*) Z_Malloc((NUMCOLORMAPS + 1) * 256 * sizeof(lighttable_t), PU_STATIC, 0);

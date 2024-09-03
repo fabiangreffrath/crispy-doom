@@ -80,7 +80,13 @@ extern lighttable_t*	fixedcolormap;
 
 // Number of diminishing brightness levels.
 // There a 0-31, i.e. 32 LUT in the COLORMAP lump.
+#ifndef CRISPY_TRUECOLOR
 #define NUMCOLORMAPS		32
+#else
+// [crispy] parameterized for smooth diminishing lighting
+extern int NUMCOLORMAPS;
+extern int INVERSECOLORMAP;
+#endif
 
 // Blocky/low detail mode.
 //B remove this?
@@ -200,6 +206,7 @@ void R_Init (void);
 // Called by M_Responder.
 void R_SetViewSize (int blocks, int detail);
 
+void R_InitColormaps(void);
 void R_ExecuteSetViewSize(void);
 
 

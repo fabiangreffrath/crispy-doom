@@ -25,6 +25,7 @@
 #include "s_sound.h"
 #include "r_defs.h" // [crispy] laserpatch
 #include "r_sky.h" // [crispy] R_InitSkyMap()
+#include "z_zone.h" // [crispy] Z_Free()
 
 #include "m_crispy.h"
 
@@ -516,6 +517,17 @@ static void M_CrispyToggleSmoothLightingHook (void)
 {
     crispy->smoothlight = !crispy->smoothlight;
 
+#ifdef CRISPY_TRUECOLOR
+    // [crispy] zero out colormaps[] array so it can be
+    // reallocated and recalculated in R_InitColormaps()
+    if (colormaps != NULL)
+    {
+        Z_Free(colormaps);
+        colormaps = NULL;
+    }
+    // [crispy] re-calculate light tables and amount of colormaps
+    R_InitColormaps();
+#endif
     // [crispy] re-calculate the zlight[][] array
     R_InitLightTables();
     // [crispy] re-calculate the scalelight[][] array
