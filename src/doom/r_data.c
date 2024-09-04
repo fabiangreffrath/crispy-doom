@@ -1196,7 +1196,7 @@ void R_InitColormaps (void)
 	byte *const playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
 	byte *const colormap = W_CacheLumpName("COLORMAP", PU_STATIC);
 
-	// [crispy] Smoother diminished lighting.
+	// [crispy] Smoother diminishing lighting.
 	// Compiled in but not enabled TrueColor mode
 	// can't use more than original 32 colormaps.
 	if (crispy->truecolor && crispy->smoothlight)
@@ -1212,7 +1212,7 @@ void R_InitColormaps (void)
 	INVERSECOLORMAP = NUMCOLORMAPS;
 
 	// [crispy] zero out colormaps[] array so it can be
-	// reallocated and recalculated with different amount of colormaps
+	// reallocated and recalculated with various amount of colormaps
 	if (colormaps != NULL)
 	{
 		Z_Free(colormaps);

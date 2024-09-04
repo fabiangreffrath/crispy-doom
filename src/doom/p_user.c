@@ -35,7 +35,7 @@
 
 // Index of the special effects (INVUL inverse) map.
 // [crispy] moved to r_main.h for smooth diminishing lighting parameterization
-//#define INVERSECOLORMAP		NUMCOLORMAPS
+// #define INVERSECOLORMAP		NUMCOLORMAPS
 
 
 //
