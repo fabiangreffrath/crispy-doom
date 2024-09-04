@@ -80,13 +80,11 @@ extern lighttable_t*	fixedcolormap;
 
 // Number of diminishing brightness levels.
 // There a 0-31, i.e. 32 LUT in the COLORMAP lump.
-#ifndef CRISPY_TRUECOLOR
-#define NUMCOLORMAPS		32
-#else
 // [crispy] parameterized for smooth diminishing lighting
 extern int NUMCOLORMAPS;
-extern int INVERSECOLORMAP;
-#endif
+// [crispy] index of the special effects (INVUL inverse) map,
+// parameterized for smooth diminishing lighting
+#define INVERSECOLORMAP		NUMCOLORMAPS
 
 // Blocky/low detail mode.
 //B remove this?

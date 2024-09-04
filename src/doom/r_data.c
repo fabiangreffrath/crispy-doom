@@ -1207,9 +1207,17 @@ void R_InitColormaps (void)
 	{
 		NUMCOLORMAPS = 32;
 	}
-	// [crispy] Regardless of the number of color maps,
+	// [crispy] Regardless of the number of colormaps,
 	// invulnerability is always the last one.
 	INVERSECOLORMAP = NUMCOLORMAPS;
+
+	// [crispy] zero out colormaps[] array so it can be
+	// reallocated and recalculated with different amount of colormaps
+	if (colormaps != NULL)
+	{
+		Z_Free(colormaps);
+		colormaps = NULL;
+	}
 
 	if (!colormaps)
 	{

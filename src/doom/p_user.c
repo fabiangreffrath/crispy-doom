@@ -34,12 +34,8 @@
 
 
 // Index of the special effects (INVUL inverse) map.
-#ifndef CRISPY_TRUECOLOR
-#define INVERSECOLORMAP		32
-#else
-// [crispy] parameterized for smooth diminishing lighting
-int INVERSECOLORMAP;
-#endif
+// [crispy] moved to r_main.h for smooth diminishing lighting parameterization
+//#define INVERSECOLORMAP		NUMCOLORMAPS
 
 
 //
