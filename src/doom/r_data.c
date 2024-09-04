@@ -1207,9 +1207,6 @@ void R_InitColormaps (void)
 	{
 		NUMCOLORMAPS = 32;
 	}
-	// [crispy] Regardless of the number of colormaps,
-	// invulnerability is always the last one.
-	INVERSECOLORMAP = NUMCOLORMAPS;
 
 	// [crispy] zero out colormaps[] array so it can be
 	// reallocated and recalculated with various amount of colormaps
