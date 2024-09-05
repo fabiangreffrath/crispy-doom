@@ -704,27 +704,27 @@ void R_InitLightTables (void)
     if (crispy->truecolor)
     {
 	    // [crispy] if in TrueColor mode, use smoothest diminished lighting
-	    NUMCOLORMAPS =     32 *  8;
-	    LIGHTLEVELS =      16 * 16;
+	    NUMCOLORMAPS =     32 << 3;
+	    LIGHTLEVELS =      16 << 4;
 	    LIGHTSEGSHIFT =     4 -  4;
-	    LIGHTBRIGHT =       1 * 16;
-	    MAXLIGHTSCALE =    48 *  8;
+	    LIGHTBRIGHT =       1 << 4;
+	    MAXLIGHTSCALE =    48 << 3;
 	    LIGHTSCALESHIFT =  12 -  3;
-	    MAXLIGHTZ =       128 *  8;
+	    MAXLIGHTZ =       128 << 3;
 	    LIGHTZSHIFT =      20 -  3;
     }
     else
 #endif
     {
 	    // [crispy] else, use paletted approach
-	    NUMCOLORMAPS =     32 * 1;
-	    LIGHTLEVELS =      16 * 2;
-	    LIGHTSEGSHIFT =     4 - 1;
-	    LIGHTBRIGHT =       1 * 2;
-	    MAXLIGHTSCALE =    48 * 1;
-	    LIGHTSCALESHIFT =  12 - 0;
-	    MAXLIGHTZ =       128 * 8;
-	    LIGHTZSHIFT =      20 - 3;
+	    NUMCOLORMAPS =     32 << 0;
+	    LIGHTLEVELS =      16 << 1;
+	    LIGHTSEGSHIFT =     4 -  1;
+	    LIGHTBRIGHT =       1 << 1;
+	    MAXLIGHTSCALE =    48 << 0;
+	    LIGHTSCALESHIFT =  12 -  0;
+	    MAXLIGHTZ =       128 << 3;
+	    LIGHTZSHIFT =      20 -  3;
     }
     }
     else
