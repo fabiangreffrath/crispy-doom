@@ -710,8 +710,8 @@ void R_InitLightTables (void)
 	    LIGHTBRIGHT =       1 << 4;
 	    MAXLIGHTSCALE =    48 << 3;
 	    LIGHTSCALESHIFT =  12 -  3;
-	    MAXLIGHTZ =       128 << 3;
-	    LIGHTZSHIFT =      20 -  3;
+	    MAXLIGHTZ =       128 << 6;
+	    LIGHTZSHIFT =      20 -  6;
     }
     else
 #endif
