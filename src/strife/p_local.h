@@ -89,7 +89,9 @@ void P_DropWeapon (player_t* player);
 #define MLOOKUNIT               8
 
 // haleyjd 09/15/10: externalized
-#define INVERSECOLORMAP         32
+// [crispy] index of the special Sigil weapon effect colormap,
+// parameterized for smooth diminishing lighting
+#define INVERSECOLORMAP         NUMCOLORMAPS
 
 void    P_PlayerThink (player_t* player);
 // haleyjd 08/30/10: [STRIFE] Needed externally

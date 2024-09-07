@@ -110,6 +110,7 @@ lighttable_t***		zlight = NULL;
 int			extralight;			
 
 // [crispy] parameterized for smooth diminishing lighting
+int NUMCOLORMAPS;
 int LIGHTLEVELS;
 int LIGHTSEGSHIFT;
 int LIGHTBRIGHT;
@@ -718,13 +719,32 @@ void R_InitLightTables (void)
     // [crispy] smooth diminishing lighting
     if (crispy->smoothlight)
     {
-        LIGHTLEVELS = 32;
-        LIGHTSEGSHIFT = 3;
-        LIGHTBRIGHT = 2;
-        MAXLIGHTSCALE = 48;
-        LIGHTSCALESHIFT = 12;
-        MAXLIGHTZ = 1024;
-        LIGHTZSHIFT = 17;
+#ifdef CRISPY_TRUECOLOR
+    if (crispy->truecolor)
+    {
+	    // [crispy] if in TrueColor mode, use smoothest diminished lighting
+	    NUMCOLORMAPS =     32 << 3;
+	    LIGHTLEVELS =      16 << 4;
+	    LIGHTSEGSHIFT =     4 -  4;
+	    LIGHTBRIGHT =       1 << 4;
+	    MAXLIGHTSCALE =    48 << 3;
+	    LIGHTSCALESHIFT =  12 -  3;
+	    MAXLIGHTZ =       128 << 6;
+	    LIGHTZSHIFT =      20 -  6;
+    }
+    else
+#endif
+    {
+	    // [crispy] else, use paletted approach
+	    NUMCOLORMAPS =     32 << 0;
+	    LIGHTLEVELS =      16 << 1;
+	    LIGHTSEGSHIFT =     4 -  1;
+	    LIGHTBRIGHT =       1 << 1;
+	    MAXLIGHTSCALE =    48 << 0;
+	    LIGHTSCALESHIFT =  12 -  0;
+	    MAXLIGHTZ =       128 << 3;
+	    LIGHTZSHIFT =      20 -  3;
+    }
     }
     else
     {
