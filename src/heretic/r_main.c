@@ -77,6 +77,7 @@ int MAXLIGHTSCALE;
 int LIGHTSCALESHIFT;
 int MAXLIGHTZ;
 int LIGHTZSHIFT;
+int TORCHGLOWSHIFT;
 
 void (*colfunc) (void);
 void (*basecolfunc) (void);
@@ -601,6 +602,7 @@ void R_InitLightTables(void)
             LIGHTSCALESHIFT =  12 -  3;
             MAXLIGHTZ =       128 << 6;
             LIGHTZSHIFT =      20 -  6;
+            TORCHGLOWSHIFT =    1 << 3;
         }
         else
 #endif
@@ -614,6 +616,7 @@ void R_InitLightTables(void)
             LIGHTSCALESHIFT =  12 -  0;
             MAXLIGHTZ =       128 << 3;
             LIGHTZSHIFT =      20 -  3;
+            TORCHGLOWSHIFT =    1 << 0;
         }
     }
     else
@@ -626,6 +629,7 @@ void R_InitLightTables(void)
         LIGHTSCALESHIFT =  12;
         MAXLIGHTZ =       128;
         LIGHTZSHIFT =      20;
+        TORCHGLOWSHIFT =    1;
     }
 
     scalelight = malloc(LIGHTLEVELS * sizeof(*scalelight));

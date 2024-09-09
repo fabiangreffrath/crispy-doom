@@ -792,7 +792,7 @@ void P_PlayerThink(player_t * player)
         {
             if (newtorch)
             {
-                if (player->fixedcolormap + newtorchdelta > 7 * LIGHTBRIGHT // [crispy] smooth diminishing lighting
+                if (player->fixedcolormap + newtorchdelta > 7 * TORCHGLOWSHIFT // [crispy] smooth diminishing lighting
                     || player->fixedcolormap + newtorchdelta < 1
                     || newtorch == player->fixedcolormap)
                 {
@@ -805,9 +805,9 @@ void P_PlayerThink(player_t * player)
             }
             else
             {
-                newtorch = (M_Random() & 7) + 1;
+                newtorch = ((M_Random() & 7) + 1) * TORCHGLOWSHIFT; // [crispy] smooth diminishing lighting
                 newtorchdelta = (newtorch == player->fixedcolormap) ?
-                    0 : ((newtorch > player->fixedcolormap) ? LIGHTBRIGHT : -LIGHTBRIGHT); // [crispy] smooth diminishing lighting
+                    0 : ((newtorch > player->fixedcolormap) ? TORCHGLOWSHIFT : -TORCHGLOWSHIFT); // [crispy] smooth diminishing lighting
             }
         }
     }

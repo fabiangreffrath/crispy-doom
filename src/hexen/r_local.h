@@ -46,6 +46,7 @@ extern int MAXLIGHTSCALE;
 extern int LIGHTSCALESHIFT;
 extern int MAXLIGHTZ;
 extern int LIGHTZSHIFT;
+extern int TORCHGLOWSHIFT;
 // [crispy] parameterized for smooth diminishing lighting
 extern int NUMCOLORMAPS;      // number of diminishing
 // [crispy] index of the invulnerability special effect,
