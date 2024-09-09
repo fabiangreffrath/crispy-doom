@@ -716,18 +716,7 @@ void R_InitColormaps (void)
 		NUMCOLORMAPS = 32;
 	}
 
-	// [crispy] zero out colormaps[] array so it can be
-	// reallocated and recalculated with various amount of colormaps
-	if (colormaps != NULL)
-	{
-		Z_Free(colormaps);
-		colormaps = NULL;
-	}
-
-	if (!colormaps)
-	{
-		colormaps = (lighttable_t*) Z_Malloc((NUMCOLORMAPS + 1) * 256 * sizeof(lighttable_t), PU_STATIC, 0);
-	}
+	colormaps = I_Realloc(colormaps, (NUMCOLORMAPS + 1) * 256 * sizeof(lighttable_t));
 
 	if (crispy->truecolor)
 	{
