@@ -715,11 +715,6 @@ void R_InitColormaps(void)
 	byte *const playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
 	byte *const colormap = W_CacheLumpName("COLORMAP", PU_STATIC);
 
-	// [crispy] Since we are generating invulnerability colormap from COLORMAP
-	// lump for accurate emulation, we need to point to the 32nd colormap
-	// regardless of the number of colormaps available (NUMCOLORMAPS).
-	const int invul_index = 32;
-
 	// [crispy] Smoother diminishing lighting.
 	// Compiled in but not enabled TrueColor mode
 	// can't use more than original 32 colormaps.
@@ -770,9 +765,9 @@ void R_InitColormaps(void)
 	// [crispy] Invulnerability (c == COLORMAPS), generated from COLORMAP lump
 	for (i = 0; i < 256; i++)
 	{
-		r = gamma2table[crispy->gamma][playpal[3 * colormap[invul_index * 256 + i] + 0]] & ~3;
-		g = gamma2table[crispy->gamma][playpal[3 * colormap[invul_index * 256 + i] + 1]] & ~3;
-		b = gamma2table[crispy->gamma][playpal[3 * colormap[invul_index * 256 + i] + 2]] & ~3;
+		r = gamma2table[crispy->gamma][playpal[3 * colormap[INVERSECOLORMAP * 256 + i] + 0]] & ~3;
+		g = gamma2table[crispy->gamma][playpal[3 * colormap[INVERSECOLORMAP * 256 + i] + 1]] & ~3;
+		b = gamma2table[crispy->gamma][playpal[3 * colormap[INVERSECOLORMAP * 256 + i] + 2]] & ~3;
 
 		colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;
 	}
