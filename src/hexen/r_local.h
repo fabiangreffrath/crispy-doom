@@ -49,9 +49,7 @@ extern int LIGHTZSHIFT;
 extern int TORCHGLOWSHIFT;
 // [crispy] parameterized for smooth diminishing lighting
 extern int NUMCOLORMAPS;      // number of diminishing
-// [crispy] index of the invulnerability special effect,
-// parameterized for smooth diminishing lighting
-#define INVERSECOLORMAP         NUMCOLORMAPS
+#define INVERSECOLORMAP         32
 
 #define LOOKDIRMIN 110 // [crispy] -110, actually
 #define LOOKDIRMAX 90

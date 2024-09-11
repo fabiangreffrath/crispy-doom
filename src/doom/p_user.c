@@ -33,6 +33,8 @@
 #include "s_sound.h" // [NS] Jump sound etc.
 
 
+// Index of the special effects (INVUL inverse) map.
+#define INVERSECOLORMAP		32
 
 
 //

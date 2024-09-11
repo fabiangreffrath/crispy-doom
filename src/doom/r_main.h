@@ -82,9 +82,6 @@ extern lighttable_t*	fixedcolormap;
 // There a 0-31, i.e. 32 LUT in the COLORMAP lump.
 // [crispy] parameterized for smooth diminishing lighting
 extern int NUMCOLORMAPS;
-// [crispy] index of the special effects (INVUL inverse) map,
-// parameterized for smooth diminishing lighting
-#define INVERSECOLORMAP		NUMCOLORMAPS
 
 // Blocky/low detail mode.
 //B remove this?

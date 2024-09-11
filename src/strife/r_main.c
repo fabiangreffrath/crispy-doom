@@ -1114,7 +1114,7 @@ void R_SetupFrame (player_t* player)
 	    colormaps
 	    // [crispy] sizeof(lighttable_t) not needed in paletted render
 	    // and breaks Sigil weapon effects in true color render
-	    + player->fixedcolormap*256/**sizeof(lighttable_t)*/;
+	    + player->fixedcolormap*(NUMCOLORMAPS / 32)*256/**sizeof(lighttable_t)*/;  // [crispy] smooth diminishing lighting
 	
 	walllights = scalelightfixed;
 
