@@ -697,6 +697,7 @@ void R_InitColormaps (void)
     // Load in the light tables, 256 byte align tables.
     lump = W_GetNumForName(DEH_String("COLORMAP"));
     colormaps = W_CacheLumpNum(lump, PU_STATIC);
+    NUMCOLORMAPS = 32; // [crispy] smooth diminishing lighting
 #else
 	int c, i, j = 0;
 	byte r, g, b;
@@ -704,7 +705,7 @@ void R_InitColormaps (void)
 	byte *const playpal = W_CacheLumpName("PLAYPAL", PU_STATIC);
 	byte *const colormap = W_CacheLumpName("COLORMAP", PU_STATIC);
 
-	// [crispy] Smoother diminishing lighting.
+	// [crispy] Smoothest diminishing lighting.
 	// Compiled in but not enabled TrueColor mode
 	// can't use more than original 32 colormaps.
 	if (crispy->truecolor && crispy->smoothlight)

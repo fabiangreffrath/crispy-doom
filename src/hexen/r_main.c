@@ -75,7 +75,6 @@ int MAXLIGHTSCALE;
 int LIGHTSCALESHIFT;
 int MAXLIGHTZ;
 int LIGHTZSHIFT;
-int TORCHGLOWSHIFT;
 
 void (*colfunc) (void);
 void (*basecolfunc) (void);
@@ -597,7 +596,6 @@ void R_InitLightTables(void)
         if (crispy->truecolor)
         {
             // [crispy] if in TrueColor mode, use smoothest diminished lighting
-            NUMCOLORMAPS =     32 << 3;
             LIGHTLEVELS =      16 << 4;
             LIGHTSEGSHIFT =     4 -  4;
             LIGHTBRIGHT =       1 << 4;
@@ -605,13 +603,11 @@ void R_InitLightTables(void)
             LIGHTSCALESHIFT =  12 -  3;
             MAXLIGHTZ =       128 << 6;
             LIGHTZSHIFT =      20 -  6;
-            TORCHGLOWSHIFT =    1 << 3;
         }
         else
 #endif
         {
             // [crispy] else, use paletted approach
-            NUMCOLORMAPS =     32 << 0;
             LIGHTLEVELS =      16 << 1;
             LIGHTSEGSHIFT =     4 -  1;
             LIGHTBRIGHT =       1 << 1;
@@ -619,12 +615,10 @@ void R_InitLightTables(void)
             LIGHTSCALESHIFT =  12 -  0;
             MAXLIGHTZ =       128 << 3;
             LIGHTZSHIFT =      20 -  3;
-            TORCHGLOWSHIFT =    1 << 0;
         }
     }
     else
     {
-        NUMCOLORMAPS =     32;
         LIGHTLEVELS =      16;
         LIGHTSEGSHIFT =     4;
         LIGHTBRIGHT =       1;
@@ -632,7 +626,6 @@ void R_InitLightTables(void)
         LIGHTSCALESHIFT =  12;
         MAXLIGHTZ =       128;
         LIGHTZSHIFT =      20;
-        TORCHGLOWSHIFT =    1;
     }
 
     scalelight = malloc(LIGHTLEVELS * sizeof(*scalelight));

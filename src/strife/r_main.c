@@ -723,7 +723,6 @@ void R_InitLightTables (void)
     if (crispy->truecolor)
     {
 	    // [crispy] if in TrueColor mode, use smoothest diminished lighting
-	    NUMCOLORMAPS =     32 << 3;
 	    LIGHTLEVELS =      16 << 4;
 	    LIGHTSEGSHIFT =     4 -  4;
 	    LIGHTBRIGHT =       1 << 4;
@@ -736,7 +735,6 @@ void R_InitLightTables (void)
 #endif
     {
 	    // [crispy] else, use paletted approach
-	    NUMCOLORMAPS =     32 << 0;
 	    LIGHTLEVELS =      16 << 1;
 	    LIGHTSEGSHIFT =     4 -  1;
 	    LIGHTBRIGHT =       1 << 1;
