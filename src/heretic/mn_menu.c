@@ -1595,7 +1595,6 @@ static void ChangeSettingEnum(int *setting, int option, int num_values)
 static void CrispyTrueColorHook(void)
 {
     crispy->truecolor = !crispy->truecolor;
-    I_SetPalette(0);
     // [crispy] re-calculate amount of colormaps and light tables
     R_InitColormaps();
     // [crispy] re-calculate the zlight[][] array
@@ -1604,8 +1603,6 @@ static void CrispyTrueColorHook(void)
     R_ExecuteSetViewSize();
     // [crispy] re-calculate fake contrast
     P_SegLengths(true);
-    // [crispy] refresh the status bar
-    SB_state = -1;
 }
 
 static boolean CrispyTrueColor(int option)

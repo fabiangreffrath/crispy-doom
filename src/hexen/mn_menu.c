@@ -1629,15 +1629,12 @@ static void ChangeSettingEnum(int *setting, int option, int num_values)
 static void CrispyTrueColorHook(void)
 {
     crispy->truecolor = !crispy->truecolor;
-    I_SetPalette(0);
     // [crispy] re-calculate amount of colormaps and light tables
     R_InitTrueColormaps(LevelUseFullBright ? "COLORMAP" : "FOGMAP");
     // [crispy] re-calculate the zlight[][] array
     R_InitLightTables();
     // [crispy] re-calculate the scalelight[][] array
     R_ExecuteSetViewSize();
-    // [crispy] refresh the status bar
-    SB_state = -1;
 }
 
 static void CrispyTrueColor(int option)

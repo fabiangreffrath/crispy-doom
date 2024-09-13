@@ -578,7 +578,6 @@ static void M_CrispyToggleTrueColorHook (void)
 {
     crispy->truecolor = !crispy->truecolor;
 
-    I_SetPalette (0); // [JN] TODO - Could be externalized st_palette?
     // [crispy] re-calculate amount of colormaps and light tables
     R_InitColormaps();
     // [crispy] re-calculate the zlight[][] array
@@ -587,8 +586,6 @@ static void M_CrispyToggleTrueColorHook (void)
     R_ExecuteSetViewSize();
     // [crispy] re-calculate fake contrast
     P_SegLengths(true);
-    // [crispy] re-draw bezel
-    R_FillBackScreen();
 }
 
 void M_CrispyToggleTrueColor(int choice)
