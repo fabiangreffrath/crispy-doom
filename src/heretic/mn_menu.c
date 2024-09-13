@@ -45,6 +45,7 @@
 #define LEFT_DIR 0
 #define RIGHT_DIR 1
 #define ENTER_NUMBER 2 // [crispy] numeric entry
+#define ITEM_HEIGHT_SML 10 // [crispy] smaller vertical spacing for small font
 #define ITEM_HEIGHT 20
 #define SELECTOR_XOFFSET (-28)
 #define SELECTOR_YOFFSET (-1)
@@ -882,7 +883,7 @@ void MN_Drawer(void)
             if (CurrentMenu->drawFunc == DrawCrispness)
             {
             // [JN] Crispness menu: use 10px vertical spacing for small font
-            y += ITEM_HEIGHT/2;
+            y += ITEM_HEIGHT_SML;
             }
             else
             {
@@ -894,7 +895,7 @@ void MN_Drawer(void)
         {
         // [JN] Crispness menu: use small blue gem instead of big red arrow.
         // Blinks a bit faster and shifted right, closer to the text.
-        y = CurrentMenu->y + (CurrentItPos * (ITEM_HEIGHT/2)) + SELECTOR_YOFFSET;
+        y = CurrentMenu->y + (CurrentItPos * (ITEM_HEIGHT_SML)) + SELECTOR_YOFFSET;
         selName = DEH_String(MenuTime & 8 ? "INVGEMR1" : "INVGEMR2");
         V_DrawPatch(x + (SELECTOR_XOFFSET/2), y,
                     W_CacheLumpName(selName, PU_CACHE));
@@ -3014,7 +3015,7 @@ static void DrawCrispnessNumericItem(int item, int x, int y, const char *zero,
 
 static void DrawCrispness1(void)
 {
-    int y_shift = 0;
+    int line_shift = 0;
 
     DrawCrispnessHeader("CRISPNESS 1/2");
 
@@ -3023,42 +3024,42 @@ static void DrawCrispness1(void)
 #ifdef CRISPY_TRUECOLOR
     // TrueColor rendering
     DrawCrispnessItem(crispy->truecolor, 217, 35);
-    y_shift += 10;
+    line_shift += ITEM_HEIGHT_SML;
 #endif
 
     // Hires rendering
-    DrawCrispnessItem(crispy->hires, 254, 35 + y_shift);
+    DrawCrispnessItem(crispy->hires, 254, 35 + line_shift);
 
     // Widescreen
-    DrawCrispnessMultiItem(crispy->widescreen, 164, 45 + y_shift, multiitem_widescreen, false);
+    DrawCrispnessMultiItem(crispy->widescreen, 164, 45 + line_shift, multiitem_widescreen, false);
 
     // Smooth pixel scaling
-    DrawCrispnessItem(crispy->smoothscaling, 216, 55 + y_shift);
+    DrawCrispnessItem(crispy->smoothscaling, 216, 55 + line_shift);
 
     // Uncapped framerate
-    DrawCrispnessItem(crispy->uncapped, 217, 65 + y_shift);
+    DrawCrispnessItem(crispy->uncapped, 217, 65 + line_shift);
 
     // Framerate limit
-    DrawCrispnessNumericItem(crispy->fpslimit, 181, 75 + y_shift, "NONE", !crispy->uncapped, "35");
+    DrawCrispnessNumericItem(crispy->fpslimit, 181, 75 + line_shift, "NONE", !crispy->uncapped, "35");
 
     // Vsync
-    DrawCrispnessItem(crispy->vsync, 167, 85 + y_shift);
+    DrawCrispnessItem(crispy->vsync, 167, 85 + line_shift);
 
-    DrawCrispnessSubheader("VISUAL", 95 + y_shift);
+    DrawCrispnessSubheader("VISUAL", 95 + line_shift);
 
     // Brightmaps
-    DrawCrispnessMultiItem(crispy->brightmaps, 213, 105 + y_shift, multiitem_brightmaps, false);
+    DrawCrispnessMultiItem(crispy->brightmaps, 213, 105 + line_shift, multiitem_brightmaps, false);
 
     // Smooth Diminishing Lighting
-    DrawCrispnessItem(crispy->smoothlight, 257, 115 + y_shift);
+    DrawCrispnessItem(crispy->smoothlight, 257, 115 + line_shift);
 
-    DrawCrispnessSubheader("AUDIBLE", 125 + y_shift);
+    DrawCrispnessSubheader("AUDIBLE", 125 + line_shift);
 
     // Mono SFX
-    DrawCrispnessItem(crispy->soundmono, 137, 135 + y_shift);
+    DrawCrispnessItem(crispy->soundmono, 137, 135 + line_shift);
 
     // Sound Channels
-    DrawCrispnessMultiItem(snd_Channels >> 4, 181, 145 + y_shift, multiitem_sndchannels, false);
+    DrawCrispnessMultiItem(snd_Channels >> 4, 181, 145 + line_shift, multiitem_sndchannels, false);
 }
 
 static void DrawCrispness2(void)
