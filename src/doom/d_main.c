@@ -1751,11 +1751,12 @@ void D_DoomMain (void)
     //!
     // @category game
     //
-    // Automatic pistol start when advancing from one level to the next. At the
-    // beginning of each level, the player's health is reset to 100, their
-    // armor to 0 and their inventory is reduced to the following: pistol,
-    // fists and 50 bullets. This option is not allowed when recording a demo,
-    // playing back a demo or when starting a network game.
+    // Automatic pistol start when advancing from one level to the next.
+    // At the beginning of each level, the player's health is reset to
+    // 100, their armor to 0 and their inventory is reduced to the
+    // following: pistol, fists and 50 bullets.  This option is not
+    // allowed when recording a demo, playing back a demo or when
+    // starting a network game.
     //
 
     crispy->pistolstart = M_ParmExists("-pistolstart");
@@ -1763,8 +1764,9 @@ void D_DoomMain (void)
     //!
     // @category game
     //
-    // Double ammo pickup rate. This option is not allowed when recording a
-    // demo, playing back a demo or when starting a network game.
+    // Double ammo pickup rate.  This option is not allowed when
+    // recording a demo, playing back a demo or when starting a network
+    // game.
     //
 
     crispy->moreammo = M_ParmExists("-doubleammo");
