@@ -132,6 +132,7 @@ static void SV_WriteByte(byte val);
 static void SV_WriteWord(unsigned short val);
 static void SV_WriteLong(unsigned int val);
 static void SV_WritePtr(void *ptr);
+static void ClearSaveSlot(int slot); // [crispy]
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -2028,7 +2029,7 @@ void SV_SaveGame(int slot, const char *description)
     SV_SaveMap(true);           // true = save player info
 
     // Clear all save files at destination slot
-    SV_ClearSaveSlot(slot);
+    ClearSaveSlot(slot);
 
     // Copy base slot to destination slot
     CopySaveSlot(BASE_SLOT, slot);
@@ -3279,16 +3280,11 @@ static void AssertSegment(gameArchiveSegment_t segType)
 //
 //==========================================================================
 
-void SV_ClearSaveSlot(int slot)
+// [crispy] Add wrapper to handle multiple save pages
+static void ClearSaveSlot(int slot)
 {
     int i;
     char fileName[100];
-
-    // [crispy] get expanded save slot number
-    if (slot != BASE_SLOT && slot != REBORN_SLOT)
-    {
-        slot += savepage * 10;
-    }
 
     for (i = 0; i < MAX_MAPS; i++)
     {
@@ -3298,6 +3294,16 @@ void SV_ClearSaveSlot(int slot)
     }
     M_snprintf(fileName, sizeof(fileName), "%shex%d.hxs", SavePath, slot);
     M_remove(fileName);
+}
+
+void SV_ClearSaveSlot(int slot)
+{
+    if (slot != BASE_SLOT && slot != REBORN_SLOT)
+    {
+        slot += savepage * 10;
+    }
+
+    ClearSaveSlot(slot);
 }
 
 //==========================================================================
