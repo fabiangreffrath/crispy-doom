@@ -1697,7 +1697,7 @@ void D_DoomMain (void)
     // @category obscure
     // @vanilla
     //
-    // Set Rogue playtesting mode (godmode, noclip toggled by backspace)
+    // Set Rogue playtesting mode (godmode, noclip toggled by backspace).
     //
 
     workparm = M_CheckParm ("-work");
@@ -2113,7 +2113,7 @@ void D_DoomMain (void)
     // // @arg <n>
     // // @vanilla
     // //
-    // // Start playing on episode n (1-4)
+    // // Start playing on episode n (1-4).
     // //
 
     // p = M_CheckParmWithArgs("-episode", 1);
