@@ -132,7 +132,6 @@ static void SV_WriteByte(byte val);
 static void SV_WriteWord(unsigned short val);
 static void SV_WriteLong(unsigned int val);
 static void SV_WritePtr(void *ptr);
-static void ClearSaveSlot(int slot); // [crispy]
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -143,8 +142,6 @@ static void ClearSaveSlot(int slot); // [crispy]
 char *SavePath = DEFAULT_SAVEPATH;
 
 int vanilla_savegame_limit = 1;
-
-int savepage; // [crispy] support 8 pages of savegames
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
@@ -1981,12 +1978,6 @@ void SV_SaveGame(int slot, const char *description)
     char versionText[HXS_VERSION_TEXT_LENGTH];
     unsigned int i;
 
-    // [crispy] get expanded save slot number
-    if (slot != BASE_SLOT && slot != REBORN_SLOT)
-    {
-        slot += savepage * 10;
-    }
-
     // Open the output file
     M_snprintf(fileName, sizeof(fileName), "%shex%d.hxs", SavePath, BASE_SLOT);
     SV_OpenWrite(fileName);
@@ -2029,7 +2020,7 @@ void SV_SaveGame(int slot, const char *description)
     SV_SaveMap(true);           // true = save player info
 
     // Clear all save files at destination slot
-    ClearSaveSlot(slot);
+    SV_ClearSaveSlot(slot);
 
     // Copy base slot to destination slot
     CopySaveSlot(BASE_SLOT, slot);
@@ -2092,12 +2083,6 @@ void SV_LoadGame(int slot)
     player_t *p; // [crispy]
 
     p = &players[consoleplayer]; // [crispy]
-
-    // [crispy] get expanded save slot number
-    if (slot != BASE_SLOT && slot != REBORN_SLOT)
-    {
-        slot += savepage * 10;
-    }
 
     // Copy all needed save files to the base slot
     if (slot != BASE_SLOT)
@@ -3280,8 +3265,7 @@ static void AssertSegment(gameArchiveSegment_t segType)
 //
 //==========================================================================
 
-// [crispy] Add wrapper to handle multiple save pages
-static void ClearSaveSlot(int slot)
+void SV_ClearSaveSlot(int slot)
 {
     int i;
     char fileName[100];
@@ -3294,16 +3278,6 @@ static void ClearSaveSlot(int slot)
     }
     M_snprintf(fileName, sizeof(fileName), "%shex%d.hxs", SavePath, slot);
     M_remove(fileName);
-}
-
-void SV_ClearSaveSlot(int slot)
-{
-    if (slot != BASE_SLOT && slot != REBORN_SLOT)
-    {
-        slot += savepage * 10;
-    }
-
-    ClearSaveSlot(slot);
 }
 
 //==========================================================================
