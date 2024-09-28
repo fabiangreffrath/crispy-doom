@@ -573,6 +573,29 @@ void M_CrispyToggleTranslucency(int choice)
     ChangeSettingEnum(&crispy->translucency, choice, NUM_TRANSLUCENCY);
 }
 
+#ifdef CRISPY_TRUECOLOR
+static void M_CrispyToggleTrueColorHook (void)
+{
+    crispy->truecolor = !crispy->truecolor;
+
+    // [crispy] re-calculate amount of colormaps and light tables
+    R_InitColormaps();
+    // [crispy] re-calculate the zlight[][] array
+    R_InitLightTables();
+    // [crispy] re-calculate the scalelight[][] array
+    R_ExecuteSetViewSize();
+    // [crispy] re-calculate fake contrast
+    P_SegLengths(true);
+}
+
+void M_CrispyToggleTrueColor(int choice)
+{
+    choice = 0;
+
+    crispy->post_rendering_hook = M_CrispyToggleTrueColorHook;
+}
+#endif
+
 void M_CrispyToggleUncapped(int choice)
 {
     choice = 0;

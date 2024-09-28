@@ -462,13 +462,15 @@ static menu_t  MouseDef =
 enum
 {
     crispness_sep_rendering,
+#ifdef CRISPY_TRUECOLOR
+    crispness_truecolor,
+#endif
     crispness_hires,
     crispness_widescreen,
     crispness_uncapped,
     crispness_fpslimit,
     crispness_vsync,
     crispness_smoothscaling,
-    crispness_sep_rendering_,
 
     crispness_sep_visual,
     crispness_coloredhud,
@@ -487,13 +489,15 @@ enum
 static menuitem_t Crispness1Menu[]=
 {
     {-1,"",0,'\0'},
+#ifdef CRISPY_TRUECOLOR
+    {3,"",	M_CrispyToggleTrueColor,'t'},
+#endif
     {3,"",	M_CrispyToggleHires,'h'},
     {3,"",	M_CrispyToggleWidescreen,'w'},
     {3,"",	M_CrispyToggleUncapped,'u'},
     {4,"",	M_CrispyToggleFpsLimit,'f'},
     {3,"",	M_CrispyToggleVsync,'v'},
     {3,"",	M_CrispyToggleSmoothScaling,'s'},
-    {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {3,"",	M_CrispyToggleColoredhud,'c'},
     {3,"",	M_CrispyToggleTranslucency,'e'},
@@ -523,7 +527,6 @@ enum
     crispness_soundfix,
     crispness_sndchannels,
     crispness_soundmono,
-    crispness_sep_audible_,
 
     crispness_sep_navigational,
     crispness_extautomap,
@@ -547,7 +550,6 @@ static menuitem_t Crispness2Menu[]=
     {3,"",	M_CrispyToggleSoundfixes,'m'},
     {3,"",	M_CrispyToggleSndChannels,'s'},
     {3,"",	M_CrispyToggleSoundMono,'m'},
-    {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {3,"",	M_CrispyToggleExtAutomap,'e'},
     {3,"",	M_CrispyToggleSmoothMap,'m'},
@@ -581,7 +583,6 @@ enum
     crispness_pitch,
     crispness_neghealth,
     crispness_defaultskill,
-    crispness_sep_tactical_,
 
     crispness_sep_crosshair,
     crispness_crosshair,
@@ -605,7 +606,6 @@ static menuitem_t Crispness3Menu[]=
     {3,"",	M_CrispyTogglePitch,'w'},
     {3,"",	M_CrispyToggleNeghealth,'n'},
     {3,"",	M_CrispyToggleDefaultSkill,'d'},
-    {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {3,"",	M_CrispyToggleCrosshair,'d'},
     {3,"",	M_CrispyToggleCrosshairtype,'c'},
@@ -632,7 +632,6 @@ enum
     crispness_freeaim,
     crispness_jumping,
     crispness_overunder,
-    crispness_sep_physical_,
 
     crispness_sep_demos,
     crispness_demotimer,
@@ -653,7 +652,6 @@ static menuitem_t Crispness4Menu[]=
     {3,"",	M_CrispyToggleFreeaim,'v'},
     {3,"",	M_CrispyToggleJumping,'a'},
     {3,"",	M_CrispyToggleOverunder,'w'},
-    {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {3,"",	M_CrispyToggleDemoTimer,'v'},
     {3,"",	M_CrispyToggleDemoTimerDir,'a'},
@@ -1564,6 +1562,9 @@ static void M_DrawCrispness1(void)
     M_DrawCrispnessHeader("Crispness 1/4");
 
     M_DrawCrispnessSeparator(crispness_sep_rendering, "Rendering");
+#ifdef CRISPY_TRUECOLOR
+    M_DrawCrispnessItem(crispness_truecolor, "TrueColor Rendering", crispy->truecolor, true);
+#endif
     M_DrawCrispnessItem(crispness_hires, "High Resolution Rendering", crispy->hires, true);
     M_DrawCrispnessMultiItem(crispness_widescreen, "Aspect Ratio", multiitem_widescreen, crispy->widescreen, aspect_ratio_correct == 1);
     M_DrawCrispnessItem(crispness_uncapped, "Uncapped Framerate", crispy->uncapped, true);
