@@ -1056,7 +1056,7 @@ void DrawFullScreenStuff(void)
     int x;
     int temp;
 
-    //[noseey] add Ammo, Jewels, Armor to fullscreen stuff
+    //[crispy] add Ammo, Jewels, Armor to fullscreen stuff
     //TODO Do not always render, only if update needed
     temp = CPlayer->mo->health;
     if (temp > 0)
