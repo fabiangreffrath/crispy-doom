@@ -1051,20 +1051,48 @@ void DrawInventoryBar(void)
 
 void DrawFullScreenStuff(void)
 {
-    const char *patch;
+	const char *patch;
     int i;
     int x;
     int temp;
 
-    UpdateState |= I_FULLSCRN;
-    if (CPlayer->mo->health > 0)
+
+
+    //[noseey] add Ammo, Jewels, Armor to fullscreen stuff
+    //TODO Do not always render, only if update needed
+    temp = CPlayer->mo->health;
+    if (temp > 0)
     {
-        DrBNumber(CPlayer->mo->health, 5, 180);
+        DrINumber(temp, 5 - WIDESCREENDELTA, 185);
     }
     else
     {
-        DrBNumber(0, 5, 180);
+        DrINumber(0, 5 - WIDESCREENDELTA, 185);
     }
+    // Ammo
+    temp = CPlayer->ammo[wpnlev1info[CPlayer->readyweapon].ammo];
+	if (temp && CPlayer->readyweapon > 0 && CPlayer->readyweapon < 7)
+	{
+        V_DrawPatch(50 - WIDESCREENDELTA, 183,
+                    W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
+                                    PU_CACHE));
+		DrINumber(temp, 72 - WIDESCREENDELTA, 185);
+	}
+    // Keys
+	if (CPlayer->keys[key_yellow])
+	{
+		V_DrawPatch(180 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
+	}
+	if (CPlayer->keys[key_green])
+	{
+		V_DrawPatch(192 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
+	}
+	if (CPlayer->keys[key_blue])
+	{
+		V_DrawPatch(204 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
+	}
+    // Armor
+	DrINumber(CPlayer->armorpoints, 240 + WIDESCREENDELTA, 185);
     if (deathmatch)
     {
         temp = 0;
@@ -1075,16 +1103,16 @@ void DrawFullScreenStuff(void)
                 temp += CPlayer->frags[i];
             }
         }
-        DrINumber(temp, 45, 185);
+        DrINumber(temp, 45 - WIDESCREENDELTA, 185);
     }
     if (!inventory)
     {
         if (CPlayer->readyArtifact > 0)
         {
             patch = DEH_String(patcharti[CPlayer->readyArtifact]);
-            V_DrawAltTLPatch(286, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
-            V_DrawPatch(286, 170, W_CacheLumpName(patch, PU_CACHE));
-            DrSmallNumber(CPlayer->inventory[inv_ptr].count, 307, 192);
+            V_DrawAltTLPatch(286 + WIDESCREENDELTA, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+            V_DrawPatch(286 + WIDESCREENDELTA, 170, W_CacheLumpName(patch, PU_CACHE));
+            DrSmallNumber(CPlayer->inventory[inv_ptr].count, 307 + WIDESCREENDELTA, 192);
         }
     }
     else
@@ -1116,6 +1144,7 @@ void DrawFullScreenStuff(void)
                         PatchINVRTGEM1 : PatchINVRTGEM2);
         }
     }
+    UpdateState |= I_FULLSCRN;
 }
 
 //--------------------------------------------------------------------------
