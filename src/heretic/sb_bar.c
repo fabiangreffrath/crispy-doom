@@ -1056,93 +1056,160 @@ void DrawFullScreenStuff(void)
     int x;
     int temp;
 
-    //[crispy] add Ammo, Jewels, Armor to fullscreen stuff
-    //TODO Do not always render, only if update needed
-    temp = CPlayer->mo->health;
-    if (temp > 0)
-    {
-        DrINumber(temp, 5 - WIDESCREENDELTA, 185);
-    }
-    else
-    {
-        DrINumber(0, 5 - WIDESCREENDELTA, 185);
-    }
-    // Ammo
-    temp = CPlayer->ammo[wpnlev1info[CPlayer->readyweapon].ammo];
-	if (temp && CPlayer->readyweapon > 0 && CPlayer->readyweapon < 7)
-	{
-        V_DrawPatch(50 - WIDESCREENDELTA, 183,
-                    W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
-                                    PU_CACHE));
-		DrINumber(temp, 72 - WIDESCREENDELTA, 185);
-	}
-    // Keys
-	if (CPlayer->keys[key_yellow])
-	{
-		V_DrawPatch(193 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
-	}
-	if (CPlayer->keys[key_green])
-	{
-		V_DrawPatch(205 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
-	}
-	if (CPlayer->keys[key_blue])
-	{
-		V_DrawPatch(217 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
-	}
-    // Armor
-	DrINumber(CPlayer->armorpoints, 250 + WIDESCREENDELTA, 185);
-    if (deathmatch)
-    {
-        temp = 0;
-        for (i = 0; i < MAXPLAYERS; i++)
-        {
-            if (playeringame[i])
-            {
-                temp += CPlayer->frags[i];
-            }
-        }
-        DrINumber(temp, 45 - WIDESCREENDELTA, 185);
-    }
-    if (!inventory)
-    {
-        if (CPlayer->readyArtifact > 0)
-        {
-            patch = DEH_String(patcharti[CPlayer->readyArtifact]);
-            V_DrawAltTLPatch(286 + WIDESCREENDELTA, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
-            V_DrawPatch(286 + WIDESCREENDELTA, 170, W_CacheLumpName(patch, PU_CACHE));
-            DrSmallNumber(CPlayer->inventory[inv_ptr].count, 307 + WIDESCREENDELTA, 192);
-        }
-    }
-    else
-    {
-        x = inv_ptr - curpos;
-        for (i = 0; i < 7; i++)
-        {
-            V_DrawAltTLPatch(50 + i * 31, 168,
-                          W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
-            if (CPlayer->inventorySlotNum > x + i
-                && CPlayer->inventory[x + i].type != arti_none)
-            {
-                patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
-                V_DrawPatch(50 + i * 31, 168,
-                            W_CacheLumpName(patch, PU_CACHE));
-                DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
-                              190);
-            }
-        }
-        V_DrawPatch(50 + curpos * 31, 197, PatchSELECTBOX);
-        if (x != 0)
-        {
-            V_DrawPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
-                        PatchINVLFGEM2);
-        }
-        if (CPlayer->inventorySlotNum - x > 7)
-        {
-            V_DrawPatch(269, 167, !(leveltime & 4) ?
-                        PatchINVRTGEM1 : PatchINVRTGEM2);
-        }
-    }
     UpdateState |= I_FULLSCRN;
+
+	if (screenblocks == 12)
+    {
+        // [crispy] Crispy Hud
+        // TODO Do not always render, only if update needed
+        temp = CPlayer->mo->health;
+        if (temp > 0)
+        {
+            DrINumber(temp, 3 - WIDESCREENDELTA, 185);
+        }
+        else
+        {
+            DrINumber(0, 3 - WIDESCREENDELTA, 185);
+        }
+        // Ammo
+        temp = CPlayer->ammo[wpnlev1info[CPlayer->readyweapon].ammo];
+    	if (temp && CPlayer->readyweapon > 0 && CPlayer->readyweapon < 7)
+    	{
+            V_DrawPatch(50 - WIDESCREENDELTA, 183,
+                        W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
+                                        PU_CACHE));
+    		DrINumber(temp, 72 - WIDESCREENDELTA, 185);
+    	}
+        // Keys
+    	if (CPlayer->keys[key_yellow])
+    	{
+    		V_DrawPatch(193 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
+    	}
+    	if (CPlayer->keys[key_green])
+    	{
+    		V_DrawPatch(205 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
+    	}
+    	if (CPlayer->keys[key_blue])
+    	{
+    		V_DrawPatch(217 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
+    	}
+        // Armor
+    	DrINumber(CPlayer->armorpoints, 250 + WIDESCREENDELTA, 185);
+        if (deathmatch)
+        {
+            temp = 0;
+            for (i = 0; i < MAXPLAYERS; i++)
+            {
+                if (playeringame[i])
+                {
+                    temp += CPlayer->frags[i];
+                }
+            }
+            DrINumber(temp, 45 - WIDESCREENDELTA, 185);
+        }
+        if (!inventory)
+        {
+            if (CPlayer->readyArtifact > 0)
+            {
+                patch = DEH_String(patcharti[CPlayer->readyArtifact]);
+                V_DrawAltTLPatch(286 + WIDESCREENDELTA, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+                V_DrawPatch(286 + WIDESCREENDELTA, 170, W_CacheLumpName(patch, PU_CACHE));
+                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 300 + WIDESCREENDELTA, 192);
+            }
+        }
+        else
+        {
+            x = inv_ptr - curpos;
+            for (i = 0; i < 7; i++)
+            {
+                V_DrawAltTLPatch(50 + i * 31, 168,
+                              W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+                if (CPlayer->inventorySlotNum > x + i
+                    && CPlayer->inventory[x + i].type != arti_none)
+                {
+                    patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
+                    V_DrawPatch(50 + i * 31, 168,
+                                W_CacheLumpName(patch, PU_CACHE));
+                    DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
+                                  190);
+                }
+            }
+            V_DrawPatch(50 + curpos * 31, 197, PatchSELECTBOX);
+            if (x != 0)
+            {
+                V_DrawPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
+                            PatchINVLFGEM2);
+            }
+            if (CPlayer->inventorySlotNum - x > 7)
+            {
+                V_DrawPatch(269, 167, !(leveltime & 4) ?
+                            PatchINVRTGEM1 : PatchINVRTGEM2);
+            }
+        }
+    }
+    else
+    {
+    	// [crispy] Regular Fullscreen Hud
+        if (CPlayer->mo->health > 0)
+        {
+            DrBNumber(CPlayer->mo->health, 5, 180);
+        }
+        else
+        {
+            DrBNumber(0, 5, 180);
+        }
+        if (deathmatch)
+        {
+            temp = 0;
+            for (i = 0; i < MAXPLAYERS; i++)
+            {
+                if (playeringame[i])
+                {
+                    temp += CPlayer->frags[i];
+                }
+            }
+            DrINumber(temp, 45, 185);
+        }
+        if (!inventory)
+        {
+            if (CPlayer->readyArtifact > 0)
+            {
+                patch = DEH_String(patcharti[CPlayer->readyArtifact]);
+                V_DrawAltTLPatch(286, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+                V_DrawPatch(286, 170, W_CacheLumpName(patch, PU_CACHE));
+                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 307, 192);
+            }
+        }
+        else
+        {
+            x = inv_ptr - curpos;
+            for (i = 0; i < 7; i++)
+            {
+                V_DrawAltTLPatch(50 + i * 31, 168,
+                              W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+                if (CPlayer->inventorySlotNum > x + i
+                    && CPlayer->inventory[x + i].type != arti_none)
+                {
+                    patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
+                    V_DrawPatch(50 + i * 31, 168,
+                                W_CacheLumpName(patch, PU_CACHE));
+                    DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
+                                  190);
+                }
+            }
+            V_DrawPatch(50 + curpos * 31, 197, PatchSELECTBOX);
+            if (x != 0)
+            {
+                V_DrawPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
+                            PatchINVLFGEM2);
+            }
+            if (CPlayer->inventorySlotNum - x > 7)
+            {
+                V_DrawPatch(269, 167, !(leveltime & 4) ?
+                            PatchINVRTGEM1 : PatchINVRTGEM2);
+            }
+        }
+    }
 }
 
 //--------------------------------------------------------------------------
