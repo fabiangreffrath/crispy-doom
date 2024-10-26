@@ -1056,8 +1056,6 @@ void DrawFullScreenStuff(void)
     int x;
     int temp;
 
-
-
     //[noseey] add Ammo, Jewels, Armor to fullscreen stuff
     //TODO Do not always render, only if update needed
     temp = CPlayer->mo->health;
@@ -1081,18 +1079,18 @@ void DrawFullScreenStuff(void)
     // Keys
 	if (CPlayer->keys[key_yellow])
 	{
-		V_DrawPatch(180 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
+		V_DrawPatch(193 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
 	}
 	if (CPlayer->keys[key_green])
 	{
-		V_DrawPatch(192 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
+		V_DrawPatch(205 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
 	}
 	if (CPlayer->keys[key_blue])
 	{
-		V_DrawPatch(204 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
+		V_DrawPatch(217 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
 	}
     // Armor
-	DrINumber(CPlayer->armorpoints, 240 + WIDESCREENDELTA, 185);
+	DrINumber(CPlayer->armorpoints, 250 + WIDESCREENDELTA, 185);
     if (deathmatch)
     {
         temp = 0;
