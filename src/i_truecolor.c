@@ -37,6 +37,70 @@ typedef union
     };
 } tcpixel_t;
 
+// [JN] LUTs to store precomputed values for all possible 512 color combinations
+static uint32_t blendAddLUT[512][512];      // Additive blending
+static uint32_t blendOverLUT[512][512];     // Overlay blending
+static uint32_t blendOverAltLUT[512][512];  // Overlay "alt" blending
+
+// [JN] Different blending alpha values for different games
+#define OVERLAY_ALPHA_TRANMAP     168  // Doom: TRANMAP, 66% opacity
+#define OVERLAY_ALPHA_TINTTAB     96   // Raven: TINTTAB, 38% opacity
+#define OVERLAY_ALPHA_ALTTINTTAB  142  // Raven: TINTTAB "Alt", 56% opacity
+#define OVERLAY_ALPHA_XLATAB      192  // Strife: XLATAB, 75% opacity
+#define OVERLAY_ALPHA_ALTXLATAB   64   // Strife: XLATAB "Alt", 25% opacity
+
+
+// [JN] Initialize blending maps for tablified additive and overlay translucency.
+// TODO: Heretic, Hexen and Strife support, will need "Alt" blendOverLUT, and
+// will NOT need blendAddLUT at all.
+void R_InitBlendMaps (void)
+{
+    tcpixel_t bg, fg;
+    tcpixel_t retAdd, retOver;
+    uint8_t overlay_alpha;
+
+    // Shortcut: these variables are always same in tablified approach
+    retAdd.a = 0xFFU;
+    retOver.a = 0xFFU;
+
+    // TODO: so here we can define different alpha value for different games
+    overlay_alpha = OVERLAY_ALPHA_TRANMAP;
+
+    for (int bg_index = 0; bg_index < 512; ++bg_index)
+    {
+        for (int fg_index = 0; fg_index < 512; ++fg_index)
+        {
+            // Convert LUT indices back to RGB values with reduced bit depth
+            bg.r = (bg_index >> 6) << 5;
+            bg.g = ((bg_index >> 3) & 0x07) << 5;
+            bg.b = (bg_index & 0x07) << 5;
+
+            fg.r = (fg_index >> 6) << 5;
+            fg.g = ((fg_index >> 3) & 0x07) << 5;
+            fg.b = (fg_index & 0x07) << 5;
+
+            // Additive blending calculation
+            retAdd.r = MIN(bg.r + fg.r, 0xFFU);
+            retAdd.g = MIN(bg.g + fg.g, 0xFFU);
+            retAdd.b = MIN(bg.b + fg.b, 0xFFU);
+            blendAddLUT[bg_index][fg_index] = retAdd.i;
+
+            // Overlay blending calculation
+            retOver.r = (overlay_alpha * fg.r + (0xFFU - overlay_alpha) * bg.r) >> 8;
+            retOver.g = (overlay_alpha * fg.g + (0xFFU - overlay_alpha) * bg.g) >> 8;
+            retOver.b = (overlay_alpha * fg.b + (0xFFU - overlay_alpha) * bg.b) >> 8;
+            blendOverLUT[bg_index][fg_index] = retOver.i;
+            blendOverAltLUT[bg_index][fg_index] = retAdd.i;
+        }
+    }
+}
+
+// [JN] Helper function to convert a pixel color to a LUT index
+static inline uint16_t PixelToLUTIndex (const tcpixel_t color)
+{
+    return ((color.r & 0xE0) << 1) | ((color.g & 0xE0) >> 2) | (color.b >> 5);
+}
+
 const uint32_t I_BlendAdd (const uint32_t bg_i, const uint32_t fg_i)
 {
     tcpixel_t bg, fg, ret;
@@ -50,6 +114,20 @@ const uint32_t I_BlendAdd (const uint32_t bg_i, const uint32_t fg_i)
     ret.b = MIN(bg.b + fg.b, 0xFFU);
 
     return ret.i;
+}
+
+const uint32_t I_BlendAddLow (const uint32_t bg_i, const uint32_t fg_i)
+{
+    tcpixel_t bg, fg;
+    uint16_t bg_index, fg_index;
+
+    bg.i = bg_i;
+    fg.i = fg_i;
+
+    bg_index = PixelToLUTIndex(bg);
+    fg_index = PixelToLUTIndex(fg);
+
+    return blendAddLUT[bg_index][fg_index];
 }
 
 const uint32_t I_BlendDark (const uint32_t bg_i, const int d)
@@ -79,6 +157,20 @@ const uint32_t I_BlendOver (const uint32_t bg_i, const uint32_t fg_i, const int 
     ret.b = (amount * fg.b + (0XFFU - amount) * bg.b) >> 8;
 
     return ret.i;
+}
+
+const uint32_t I_BlendOverLow (const uint32_t bg_i, const uint32_t fg_i, const int amount)
+{
+    tcpixel_t bg, fg;
+    uint16_t bg_index, fg_index;
+
+    bg.i = bg_i;
+    fg.i = fg_i;
+
+    bg_index = PixelToLUTIndex(bg);
+    fg_index = PixelToLUTIndex(fg);
+
+    return blendOverLUT[bg_index][fg_index];
 }
 
 // [crispy] TRANMAP blending emulation, used for Doom

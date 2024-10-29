@@ -1350,6 +1350,10 @@ void R_InitData (void)
     R_InitHSVColors ();
 #ifndef CRISPY_TRUECOLOR
     R_InitTranMap(); // [crispy] prints a mark itself
+#else
+    // [crispy] Initialize blending maps for tablified additive and
+    // overlay translucency, used by TrueColor renderer.
+    R_InitBlendMaps();
 #endif
 }
 
