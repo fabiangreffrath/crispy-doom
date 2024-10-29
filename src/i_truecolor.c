@@ -42,6 +42,10 @@ static uint32_t blendAddLUT[512][512];      // Additive blending
 static uint32_t blendOverLUT[512][512];     // Overlay blending
 static uint32_t blendOverAltLUT[512][512];  // Overlay "alt" blending
 
+const uint32_t (*I_BlendAddFunc) (const uint32_t bg_i, const uint32_t fg_i);
+const uint32_t (*I_BlendOverFunc) (const uint32_t bg_i, const uint32_t fg_i, const int amount);
+//const uint32_t (*I_BlendOverAltFunc) (const uint32_t bg_i, const uint32_t fg_i);
+
 // [JN] Different blending alpha values for different games
 #define OVERLAY_ALPHA_TRANMAP     168  // Doom: TRANMAP, 66% opacity
 #define OVERLAY_ALPHA_TINTTAB     96   // Raven: TINTTAB, 38% opacity
@@ -176,7 +180,7 @@ const uint32_t I_BlendOverLow (const uint32_t bg_i, const uint32_t fg_i, const i
 // [crispy] TRANMAP blending emulation, used for Doom
 const uint32_t I_BlendOverTranmap (const uint32_t bg, const uint32_t fg)
 {
-    return I_BlendOver(bg, fg, 0xA8); // 168 (66% opacity)
+    return I_BlendOverFunc(bg, fg, 0xA8); // 168 (66% opacity)
 }
 
 // [crispy] TINTTAB blending emulation, used for Heretic and Hexen
@@ -201,6 +205,23 @@ const uint32_t I_BlendOverXlatab (const uint32_t bg, const uint32_t fg)
 const uint32_t I_BlendOverAltXlatab (const uint32_t bg, const uint32_t fg)
 {
     return I_BlendOver(bg, fg, 0x40); // 64 (25% opacity)
+}
+
+// [JN] Set pointers to blending functions.
+void R_InitBlendQuality (void)
+{
+    if (crispy->blendquality)
+    {
+        I_BlendAddFunc = I_BlendAdd;
+        I_BlendOverFunc = I_BlendOver;
+        // I_BlendOverAltFunc = I_BlendOverAlt;
+    }
+    else
+    {
+        I_BlendAddFunc = I_BlendAddLow;
+        I_BlendOverFunc = I_BlendOverLow;
+        // I_BlendOverAltFunc = I_BlendOverAltLow;
+    }
 }
 
 #endif

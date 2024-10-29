@@ -81,6 +81,7 @@ typedef struct
 	int translucency;
 #ifdef CRISPY_TRUECOLOR
 	int truecolor;
+    int blendquality;
 #endif
 	int uncapped;
 	int vsync;

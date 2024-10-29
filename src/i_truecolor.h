@@ -29,6 +29,9 @@
 extern const uint32_t (*blendfunc) (const uint32_t fg, const uint32_t bg);
 
 extern void R_InitBlendMaps (void);
+extern void R_InitBlendQuality (void);
+extern const uint32_t (*I_BlendAddFunc) (const uint32_t bg_i, const uint32_t fg_i);
+extern const uint32_t (*I_BlendOverFunc) (const uint32_t bg_i, const uint32_t fg_i, const int amount);
 
 const uint32_t I_BlendAdd (const uint32_t bg_i, const uint32_t fg_i);
 const uint32_t I_BlendDark (const uint32_t bg_i, const int d);
