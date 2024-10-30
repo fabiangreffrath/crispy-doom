@@ -65,20 +65,26 @@ void R_InitBlendMaps (GameMission_t mission)
     switch (mission)
     {
         default: // Doom and derivatives
+        {
             overlay_alpha = OVERLAY_ALPHA_TRANMAP;
             overlay_alt_alpha = 0; // "alt" blending is not used
-        break;
+            break;
+        }
 
         case heretic:
         case hexen:
+        {
             overlay_alpha = OVERLAY_ALPHA_TINTTAB;
             overlay_alt_alpha = OVERLAY_ALPHA_TINTTABALT;
-        break;
+            break;
+        }
 
         case strife:
+        {
             overlay_alpha = OVERLAY_ALPHA_XLATAB;
             overlay_alt_alpha = OVERLAY_ALPHA_XLATABALT;
-        break;
+            break;
+        }
     }
 
     // Shortcut: these variables are always same in tablified approach
