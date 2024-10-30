@@ -47,11 +47,11 @@ const uint32_t (*I_BlendOverFunc) (const uint32_t bg_i, const uint32_t fg_i, con
 //const uint32_t (*I_BlendOverAltFunc) (const uint32_t bg_i, const uint32_t fg_i);
 
 // [JN] Different blending alpha values for different games
-#define OVERLAY_ALPHA_TRANMAP     168  // Doom: TRANMAP, 66% opacity
-#define OVERLAY_ALPHA_TINTTAB     96   // Raven: TINTTAB, 38% opacity
-#define OVERLAY_ALPHA_ALTTINTTAB  142  // Raven: TINTTAB "Alt", 56% opacity
-#define OVERLAY_ALPHA_XLATAB      192  // Strife: XLATAB, 75% opacity
-#define OVERLAY_ALPHA_ALTXLATAB   64   // Strife: XLATAB "Alt", 25% opacity
+#define OVERLAY_ALPHA_TRANMAP     0xA8  // Doom: TRANMAP, 168 (66% opacity)
+#define OVERLAY_ALPHA_TINTTAB     0x60  // Raven: TINTTAB, 96 (38% opacity)
+#define OVERLAY_ALPHA_TINTTABALT  0x8E  // Raven: TINTTAB, 142 (56% opacity, "Alt")
+#define OVERLAY_ALPHA_XLATAB      0xC0  // Strife: XLATAB, 192 (75% opacity)
+#define OVERLAY_ALPHA_XLATABALT   0x40  // Strife: XLATAB, 64 (25% opacity, "Alt")
 
 
 // [JN] Initialize blending maps for tablified additive and overlay translucency.
@@ -180,31 +180,31 @@ const uint32_t I_BlendOverLow (const uint32_t bg_i, const uint32_t fg_i, const i
 // [crispy] TRANMAP blending emulation, used for Doom
 const uint32_t I_BlendOverTranmap (const uint32_t bg, const uint32_t fg)
 {
-    return I_BlendOverFunc(bg, fg, 0xA8); // 168 (66% opacity)
+    return I_BlendOverFunc(bg, fg, OVERLAY_ALPHA_TRANMAP);
 }
 
 // [crispy] TINTTAB blending emulation, used for Heretic and Hexen
 const uint32_t I_BlendOverTinttab (const uint32_t bg, const uint32_t fg)
 {
-    return I_BlendOver(bg, fg, 0x60); // 96 (38% opacity)
+    return I_BlendOver(bg, fg, OVERLAY_ALPHA_TINTTAB);
 }
 
 // [crispy] More opaque ("Alt") TINTTAB blending emulation, used for Hexen's MF_ALTSHADOW drawing
 const uint32_t I_BlendOverAltTinttab (const uint32_t bg, const uint32_t fg)
 {
-    return I_BlendOver(bg, fg, 0x8E); // 142 (56% opacity)
+    return I_BlendOver(bg, fg, OVERLAY_ALPHA_TINTTABALT);
 }
 
 // [crispy] More opaque XLATAB blending emulation, used for Strife
 const uint32_t I_BlendOverXlatab (const uint32_t bg, const uint32_t fg)
 {
-    return I_BlendOver(bg, fg, 0xC0); // 192 (75% opacity)
+    return I_BlendOver(bg, fg, OVERLAY_ALPHA_XLATAB);
 }
 
 // [crispy] Less opaque ("Alt") XLATAB blending emulation, used for Strife
 const uint32_t I_BlendOverAltXlatab (const uint32_t bg, const uint32_t fg)
 {
-    return I_BlendOver(bg, fg, 0x40); // 64 (25% opacity)
+    return I_BlendOver(bg, fg, OVERLAY_ALPHA_XLATABALT);
 }
 
 // [JN] Set pointers to blending functions.
