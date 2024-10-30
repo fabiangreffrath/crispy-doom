@@ -1353,7 +1353,7 @@ void R_InitData (void)
 #else
     // [crispy] Initialize blending maps for tablified additive and
     // overlay translucency, used by TrueColor renderer.
-    R_InitBlendMaps();
+    R_InitBlendMaps(doom);
     // [crispy] Set pointers to blending functions.
     R_InitBlendQuality();
 #endif

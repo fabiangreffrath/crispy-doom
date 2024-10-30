@@ -25,10 +25,11 @@
 #ifdef CRISPY_TRUECOLOR
 
 #include <stdint.h>
+#include "d_mode.h" // GameMission_t
 
 extern const uint32_t (*blendfunc) (const uint32_t fg, const uint32_t bg);
 
-extern void R_InitBlendMaps (void);
+extern void R_InitBlendMaps (GameMission_t mission);
 extern void R_InitBlendQuality (void);
 extern const uint32_t (*I_BlendAddFunc) (const uint32_t bg_i, const uint32_t fg_i);
 extern const uint32_t (*I_BlendOverFunc) (const uint32_t bg_i, const uint32_t fg_i, const int amount);
