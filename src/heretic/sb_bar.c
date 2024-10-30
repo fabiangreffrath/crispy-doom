@@ -1065,36 +1065,36 @@ void DrawFullScreenStuff(void)
         temp = CPlayer->mo->health;
         if (temp > 0)
         {
-            DrINumber(temp, 3 - WIDESCREENDELTA, 185);
+            DrINumber(temp, 5 - WIDESCREENDELTA, 170);
         }
         else
         {
-            DrINumber(0, 3 - WIDESCREENDELTA, 185);
+            DrINumber(0, 5 - WIDESCREENDELTA, 170);
         }
         // Ammo
         temp = CPlayer->ammo[wpnlev1info[CPlayer->readyweapon].ammo];
     	if (temp && CPlayer->readyweapon > 0 && CPlayer->readyweapon < 7)
     	{
-            V_DrawPatch(50 - WIDESCREENDELTA, 183,
-                        W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
+            V_DrawPatch(55 - WIDESCREENDELTA, 172,
+                        W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]), //delta to Number is 2
                                         PU_CACHE));
-    		DrINumber(temp, 72 - WIDESCREENDELTA, 185);
+    		DrINumber(temp, 53 - WIDESCREENDELTA, 162); //delta to Health is 48
     	}
         // Keys
     	if (CPlayer->keys[key_yellow])
     	{
-    		V_DrawPatch(193 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
+    		V_DrawPatch(272 + WIDESCREENDELTA, 164, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
     	}
     	if (CPlayer->keys[key_green])
     	{
-    		V_DrawPatch(205 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
+    		V_DrawPatch(272 + WIDESCREENDELTA, 172, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
     	}
     	if (CPlayer->keys[key_blue])
     	{
-    		V_DrawPatch(217 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
+    		V_DrawPatch(272 + WIDESCREENDELTA, 180, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
     	}
         // Armor
-    	DrINumber(CPlayer->armorpoints, 250 + WIDESCREENDELTA, 185);
+    	DrINumber(CPlayer->armorpoints, 286 + WIDESCREENDELTA, 170);
         if (deathmatch)
         {
             temp = 0;
@@ -1112,9 +1112,9 @@ void DrawFullScreenStuff(void)
             if (CPlayer->readyArtifact > 0)
             {
                 patch = DEH_String(patcharti[CPlayer->readyArtifact]);
-                V_DrawAltTLPatch(286 + WIDESCREENDELTA, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
-                V_DrawPatch(286 + WIDESCREENDELTA, 170, W_CacheLumpName(patch, PU_CACHE));
-                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 300 + WIDESCREENDELTA, 192);
+                //V_DrawAltTLPatch(286 + WIDESCREENDELTA, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+                V_DrawPatch(240 + WIDESCREENDELTA, 160, W_CacheLumpName(patch, PU_CACHE)); //delta to Armor is 46
+                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 262 + WIDESCREENDELTA, 182); //delta to Patch is 22
             }
         }
         else
