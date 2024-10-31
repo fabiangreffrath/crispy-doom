@@ -120,7 +120,7 @@ void R_InitBlendMaps (GameMission_t mission)
             retOver.r = (overlay_alt_alpha * fg.r + (0xFFU - overlay_alt_alpha) * bg.r) >> 8;
             retOver.g = (overlay_alt_alpha * fg.g + (0xFFU - overlay_alt_alpha) * bg.g) >> 8;
             retOver.b = (overlay_alt_alpha * fg.b + (0xFFU - overlay_alt_alpha) * bg.b) >> 8;
-            blendOverAltLUT[bg_index][fg_index] = retAdd.i;
+            blendOverAltLUT[bg_index][fg_index] = retOver.i;
         }
     }
 }
