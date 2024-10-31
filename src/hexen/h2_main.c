@@ -211,7 +211,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_soundmono",       &crispy->soundmono);
 #ifdef CRISPY_TRUECOLOR
     M_BindIntVariable("crispy_truecolor",       &crispy->truecolor);
-    M_BindIntVariable("crispy_blendquality",    &crispy->blendquality);
+    M_BindIntVariable("crispy_truecolorblend",  &crispy->truecolorblend);
 #endif
     M_BindIntVariable("crispy_smoothlight",     &crispy->smoothlight);
     M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);

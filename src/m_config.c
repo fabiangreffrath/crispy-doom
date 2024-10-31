@@ -2608,12 +2608,12 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(crispy_truecolor),
 
     //!
-    // @game doom
+    // @game doom heretic hexen strife
     //
-    // Quality of translucency blending.
+    // Quality of translucency in true-color rendering.
     //
 
-    CONFIG_VARIABLE_INT(crispy_blendquality),
+    CONFIG_VARIABLE_INT(crispy_truecolorblend),
 #endif
 
     //!

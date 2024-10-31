@@ -250,7 +250,7 @@ const uint32_t I_BlendOverAltXlatab (const uint32_t bg, const uint32_t fg)
 // [JN] Set pointers to blending functions.
 void R_InitBlendQuality (void)
 {
-    if (crispy->blendquality)
+    if (crispy->truecolorblend)
     {
         I_BlendAddFunc = I_BlendAdd;
         I_BlendOverFunc = I_BlendOver;
