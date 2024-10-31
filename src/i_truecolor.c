@@ -37,10 +37,9 @@ typedef union
     };
 } tcpixel_t;
 
-// [JN] LUTs to store precomputed values for all possible 512 color combinations
-static uint32_t blendAddLUT[512][512];      // Additive blending
-static uint32_t blendOverLUT[512][512];     // Overlay blending
-static uint32_t blendOverAltLUT[512][512];  // Overlay "alt" blending
+// [JN] LUTs to store precomputed values for all possible 512x512 color combinations
+static uint32_t blendOverLUT[512][512];  // Overlay blending
+static uint32_t blendAltLUT[512][512];   // Additive blending (Doom), Overlay "alt" blending
 
 const uint32_t (*I_BlendAddFunc) (const uint32_t bg_i, const uint32_t fg_i);
 const uint32_t (*I_BlendOverFunc) (const uint32_t bg_i, const uint32_t fg_i, const int amount);
@@ -104,23 +103,28 @@ void R_InitBlendMaps (GameMission_t mission)
             fg.g = ((fg_index >> 3) & 0x07) << 5;
             fg.b = (fg_index & 0x07) << 5;
 
-            // Additive blending calculation
-            retAdd.r = MIN(bg.r + fg.r, 0xFFU);
-            retAdd.g = MIN(bg.g + fg.g, 0xFFU);
-            retAdd.b = MIN(bg.b + fg.b, 0xFFU);
-            blendAddLUT[bg_index][fg_index] = retAdd.i;
-
             // Overlay blending calculation
             retOver.r = (overlay_alpha * fg.r + (0xFFU - overlay_alpha) * bg.r) >> 8;
             retOver.g = (overlay_alpha * fg.g + (0xFFU - overlay_alpha) * bg.g) >> 8;
             retOver.b = (overlay_alpha * fg.b + (0xFFU - overlay_alpha) * bg.b) >> 8;
             blendOverLUT[bg_index][fg_index] = retOver.i;
 
-            // Overlay "alt" blending calculation
-            retOver.r = (overlay_alt_alpha * fg.r + (0xFFU - overlay_alt_alpha) * bg.r) >> 8;
-            retOver.g = (overlay_alt_alpha * fg.g + (0xFFU - overlay_alt_alpha) * bg.g) >> 8;
-            retOver.b = (overlay_alt_alpha * fg.b + (0xFFU - overlay_alt_alpha) * bg.b) >> 8;
-            blendOverAltLUT[bg_index][fg_index] = retOver.i;
+            if (overlay_alt_alpha == 0)
+            {
+                // Additive blending calculation
+                retAdd.r = MIN(bg.r + fg.r, 0xFFU);
+                retAdd.g = MIN(bg.g + fg.g, 0xFFU);
+                retAdd.b = MIN(bg.b + fg.b, 0xFFU);
+                blendAltLUT[bg_index][fg_index] = retAdd.i;
+            }
+            else
+            {
+                // Overlay "alt" blending calculation
+                retOver.r = (overlay_alt_alpha * fg.r + (0xFFU - overlay_alt_alpha) * bg.r) >> 8;
+                retOver.g = (overlay_alt_alpha * fg.g + (0xFFU - overlay_alt_alpha) * bg.g) >> 8;
+                retOver.b = (overlay_alt_alpha * fg.b + (0xFFU - overlay_alt_alpha) * bg.b) >> 8;
+                blendAltLUT[bg_index][fg_index] = retOver.i;
+            }
         }
     }
 }
@@ -157,7 +161,7 @@ const uint32_t I_BlendAddLow (const uint32_t bg_i, const uint32_t fg_i)
     bg_index = PixelToLUTIndex(bg);
     fg_index = PixelToLUTIndex(fg);
 
-    return blendAddLUT[bg_index][fg_index];
+    return blendAltLUT[bg_index][fg_index];
 }
 
 const uint32_t I_BlendDark (const uint32_t bg_i, const int d)
@@ -214,7 +218,7 @@ const uint32_t I_BlendOverAltLow (const uint32_t bg_i, const uint32_t fg_i, cons
     bg_index = PixelToLUTIndex(bg);
     fg_index = PixelToLUTIndex(fg);
 
-    return blendOverAltLUT[bg_index][fg_index];
+    return blendAltLUT[bg_index][fg_index];
 }
 
 // [crispy] TRANMAP blending emulation, used for Doom
