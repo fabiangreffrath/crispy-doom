@@ -37,7 +37,7 @@ typedef union
     };
 } tcpixel_t;
 
-// [JN] LUTs to store precomputed values for all possible 512x512 color combinations
+// [crispy] LUTs to store precomputed values for all possible 512x512 color combinations
 static uint32_t blendOverLUT[512][512];  // Overlay blending
 static uint32_t blendAltLUT[512][512];   // Additive blending (Doom), Overlay "alt" blending
 
@@ -45,7 +45,7 @@ const uint32_t (*I_BlendAddFunc) (const uint32_t bg_i, const uint32_t fg_i);
 const uint32_t (*I_BlendOverFunc) (const uint32_t bg_i, const uint32_t fg_i, const int amount);
 const uint32_t (*I_BlendOverAltFunc) (const uint32_t bg_i, const uint32_t fg_i, const int amount);
 
-// [JN] Different blending alpha values for different games
+// [crispy] Different blending alpha values for different games
 #define OVERLAY_ALPHA_TRANMAP     0xA8  // Doom: TRANMAP, 168 (66% opacity)
 #define OVERLAY_ALPHA_TINTTAB     0x60  // Raven: TINTTAB, 96 (38% opacity)
 #define OVERLAY_ALPHA_TINTTABALT  0x8E  // Raven: TINTTAB, 142 (56% opacity, "Alt")
@@ -53,7 +53,7 @@ const uint32_t (*I_BlendOverAltFunc) (const uint32_t bg_i, const uint32_t fg_i, 
 #define OVERLAY_ALPHA_XLATABALT   0x40  // Strife: XLATAB, 64 (25% opacity, "Alt")
 
 
-// [JN] Initialize blending maps for tablified additive and overlay translucency
+// [crispy] Initialize blending maps for tablified additive and overlay translucency
 void R_InitBlendMaps (GameMission_t mission)
 {
     tcpixel_t bg, fg;
@@ -66,7 +66,7 @@ void R_InitBlendMaps (GameMission_t mission)
         default: // Doom and derivatives
         {
             overlay_alpha = OVERLAY_ALPHA_TRANMAP;
-            overlay_alt_alpha = 0; // "alt" blending is not used
+            overlay_alt_alpha = 0; // use additive blending instead of "alt"
             break;
         }
 
@@ -129,7 +129,7 @@ void R_InitBlendMaps (GameMission_t mission)
     }
 }
 
-// [JN] Helper function to convert a pixel color to a LUT index
+// [crispy] Helper function to convert a pixel color to a LUT index
 static inline uint16_t PixelToLUTIndex (const tcpixel_t color)
 {
     return ((color.r & 0xE0) << 1) | ((color.g & 0xE0) >> 2) | (color.b >> 5);
@@ -251,20 +251,20 @@ const uint32_t I_BlendOverAltXlatab (const uint32_t bg, const uint32_t fg)
     return I_BlendOverAltFunc(bg, fg, OVERLAY_ALPHA_XLATABALT);
 }
 
-// [JN] Set pointers to blending functions.
+// [crispy] Set pointers to blending functions
 void R_InitBlendQuality (void)
 {
     if (crispy->truecolorblend)
     {
         I_BlendAddFunc = I_BlendAdd;
         I_BlendOverFunc = I_BlendOver;
-        I_BlendOverAltFunc = I_BlendOver;
+        I_BlendOverAltFunc = I_BlendOver; // Calculate dynamically with given alpha value
     }
     else
     {
         I_BlendAddFunc = I_BlendAddLow;
         I_BlendOverFunc = I_BlendOverLow;
-        I_BlendOverAltFunc = I_BlendOverAltLow;
+        I_BlendOverAltFunc = I_BlendOverAltLow; // Use precomputed LUT
     }
 }
 
