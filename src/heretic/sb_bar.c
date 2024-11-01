@@ -1083,15 +1083,15 @@ void DrawFullScreenStuff(void)
         // Keys
     	if (CPlayer->keys[key_yellow])
     	{
-    		V_DrawPatch(272 + WIDESCREENDELTA, 164, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
+    		V_DrawPatch(214 + WIDESCREENDELTA, 164, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE)); //delta to Icon is 26
     	}
     	if (CPlayer->keys[key_green])
     	{
-    		V_DrawPatch(272 + WIDESCREENDELTA, 172, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
+    		V_DrawPatch(214 + WIDESCREENDELTA, 172, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
     	}
     	if (CPlayer->keys[key_blue])
     	{
-    		V_DrawPatch(272 + WIDESCREENDELTA, 180, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
+    		V_DrawPatch(214 + WIDESCREENDELTA, 180, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
     	}
         // Armor
     	DrINumber(CPlayer->armorpoints, 286 + WIDESCREENDELTA, 170);
@@ -1107,6 +1107,36 @@ void DrawFullScreenStuff(void)
             }
             DrINumber(temp, 45 - WIDESCREENDELTA, 185);
         }
+
+
+//        // Ready artifact
+//        if (ArtifactFlash)
+//        {
+//            V_DrawPatch(180, 161, PatchBLACKSQ);
+//
+//            temp = W_GetNumForName(DEH_String("useartia")) + ArtifactFlash - 1;
+//
+//            V_DrawPatch(182, 161, W_CacheLumpNum(temp, PU_CACHE));
+//            ArtifactFlash--;
+//            //oldarti = -1;           // so that the correct artifact fills in after the flash
+//            //UpdateState |= I_STATBAR;
+//        }
+//        else if (oldarti != CPlayer->readyArtifact
+//                 || oldartiCount != CPlayer->inventory[inv_ptr].count)
+//        {
+//            V_DrawPatch(180, 161, PatchBLACKSQ);
+//            if (CPlayer->readyArtifact > 0)
+//            {
+//                V_DrawPatch(179, 160,
+//                            W_CacheLumpName(DEH_String(patcharti[CPlayer->readyArtifact]),
+//                                            PU_CACHE));
+//                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 201, 182);
+//            }
+//            //oldarti = CPlayer->readyArtifact;
+//            //oldartiCount = CPlayer->inventory[inv_ptr].count;
+//            //UpdateState |= I_STATBAR;
+//        }
+
         if (!inventory)
         {
             if (CPlayer->readyArtifact > 0)
