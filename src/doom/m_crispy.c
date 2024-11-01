@@ -155,6 +155,12 @@ multiitem_t multiitem_sndchannels[4] =
     {32, "32"},
 };
 
+multiitem_t multiitem_truecolorblend[NUM_TRUECOLORBLEND] =
+{
+    {TRUECOLORBLEND_OFF, "speed"},
+    {TRUECOLORBLEND_ON, "quality"},
+};
+
 multiitem_t multiitem_widgets[NUM_WIDGETS] =
 {
     {WIDGETS_OFF, "never"},
@@ -572,6 +578,17 @@ void M_CrispyToggleTranslucency(int choice)
 {
     ChangeSettingEnum(&crispy->translucency, choice, NUM_TRANSLUCENCY);
 }
+
+#ifdef CRISPY_TRUECOLOR
+void M_CrispyToggleTrueColorBlend(int choice)
+{
+    choice = 0;
+    crispy->truecolorblend = !crispy->truecolorblend;
+
+    // [crispy] re-set pointers to blending functions
+    R_InitBlendQuality();
+}
+#endif
 
 void M_CrispyToggleUncapped(int choice)
 {
