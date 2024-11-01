@@ -874,6 +874,13 @@ void R_InitData(void)
     R_InitColormaps();
     // [crispy] Initialize color translation and color string tables.
     R_InitHSVColors();
+#ifdef CRISPY_TRUECOLOR
+    // [crispy] Initialize blending maps for tablified 
+    // overlay translucency (normal and "alt"), used by TrueColor renderer.
+    R_InitBlendMaps(heretic);
+    // [crispy] Set pointers to blending functions.
+    R_InitBlendQuality();
+#endif
 }
 
 
