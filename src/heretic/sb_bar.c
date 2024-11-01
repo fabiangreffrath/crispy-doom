@@ -1108,38 +1108,77 @@ void DrawFullScreenStuff(void)
             DrINumber(temp, 45 - WIDESCREENDELTA, 185);
         }
 
-
-//        // Ready artifact
-//        if (ArtifactFlash)
+//        if (!inventory)
 //        {
-//            V_DrawPatch(180, 161, PatchBLACKSQ);
-//
-//            temp = W_GetNumForName(DEH_String("useartia")) + ArtifactFlash - 1;
-//
-//            V_DrawPatch(182, 161, W_CacheLumpNum(temp, PU_CACHE));
-//            ArtifactFlash--;
-//            //oldarti = -1;           // so that the correct artifact fills in after the flash
-//            //UpdateState |= I_STATBAR;
-//        }
-//        else if (oldarti != CPlayer->readyArtifact
-//                 || oldartiCount != CPlayer->inventory[inv_ptr].count)
-//        {
-//            V_DrawPatch(180, 161, PatchBLACKSQ);
-//            if (CPlayer->readyArtifact > 0)
+//            // Ready artifact
+//            if (ArtifactFlash)
 //            {
-//                V_DrawPatch(179, 160,
-//                            W_CacheLumpName(DEH_String(patcharti[CPlayer->readyArtifact]),
-//                                            PU_CACHE));
-//                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 201, 182);
+//                V_DrawPatch(180, 161, PatchBLACKSQ);
+//
+//                temp = W_GetNumForName(DEH_String("useartia")) + ArtifactFlash - 1;
+//
+//                V_DrawPatch(255, 161, W_CacheLumpNum(temp, PU_CACHE));
+//                ArtifactFlash--;
+//                //oldarti = -1;           // so that the correct artifact fills in after the flash
+//                //UpdateState |= I_STATBAR;
 //            }
-//            //oldarti = CPlayer->readyArtifact;
-//            //oldartiCount = CPlayer->inventory[inv_ptr].count;
+//            else if (oldarti != CPlayer->readyArtifact
+//                     || oldartiCount != CPlayer->inventory[inv_ptr].count)
+//            {
+//                V_DrawPatch(180, 161, PatchBLACKSQ);
+//                if (CPlayer->readyArtifact > 0)
+//                {
+//                    V_DrawPatch(240 + WIDESCREENDELTA, 160,
+//                                W_CacheLumpName(DEH_String(patcharti[CPlayer->readyArtifact]),
+//                                                PU_CACHE));
+//                    DrSmallNumber(CPlayer->inventory[inv_ptr].count, 262 + WIDESCREENDELTA, 182); //delta to Patch is 22
+//                }
+//                //oldarti = CPlayer->readyArtifact;
+//                //oldartiCount = CPlayer->inventory[inv_ptr].count;
+//                //UpdateState |= I_STATBAR;
+//            }
+//        }
+//        else
+//        {
+//            x = inv_ptr - curpos;
 //            //UpdateState |= I_STATBAR;
+//            V_DrawPatch(34, 160, PatchINVBAR);
+//            for (i = 0; i < 7; i++)
+//            {
+//                //V_DrawPatch(50+i*31, 160, W_CacheLumpName("ARTIBOX", PU_CACHE));
+//                if (CPlayer->inventorySlotNum > x + i
+//                    && CPlayer->inventory[x + i].type != arti_none)
+//                {
+//                    patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
+//
+//                    V_DrawPatch(50 + i * 31, 160, W_CacheLumpName(patch, PU_CACHE));
+//                    DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31, 182);
+//                }
+//            }
+//            V_DrawPatch(50 + curpos * 31, 189, PatchSELECTBOX);
+//            if (x != 0)
+//            {
+//                V_DrawPatch(38, 159, !(leveltime & 4) ? PatchINVLFGEM1 :
+//                            PatchINVLFGEM2);
+//            }
+//            if (CPlayer->inventorySlotNum - x > 7)
+//            {
+//                V_DrawPatch(269, 159, !(leveltime & 4) ?
+//                            PatchINVRTGEM1 : PatchINVRTGEM2);
+//            }
 //        }
 
         if (!inventory)
         {
-            if (CPlayer->readyArtifact > 0)
+			if (ArtifactFlash)
+			{
+				temp = W_GetNumForName(DEH_String("useartia")) + ArtifactFlash - 1;
+				V_DrawPatch(243 + WIDESCREENDELTA, 161, W_CacheLumpNum(temp, PU_CACHE));
+				ArtifactFlash--;
+				//oldarti = -1;           // so that the correct artifact fills in after the flash
+				//UpdateState |= I_STATBAR;
+			}
+			else if (CPlayer->readyArtifact > 0)
             {
                 patch = DEH_String(patcharti[CPlayer->readyArtifact]);
                 //V_DrawAltTLPatch(286 + WIDESCREENDELTA, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
@@ -1152,27 +1191,27 @@ void DrawFullScreenStuff(void)
             x = inv_ptr - curpos;
             for (i = 0; i < 7; i++)
             {
-                V_DrawAltTLPatch(50 + i * 31, 168,
+                V_DrawAltTLPatch(50 + i * 31, 160,
                               W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
                 if (CPlayer->inventorySlotNum > x + i
                     && CPlayer->inventory[x + i].type != arti_none)
                 {
                     patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
-                    V_DrawPatch(50 + i * 31, 168,
+                    V_DrawPatch(50 + i * 31, 160,
                                 W_CacheLumpName(patch, PU_CACHE));
                     DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
-                                  190);
+                                  182);
                 }
             }
-            V_DrawPatch(50 + curpos * 31, 197, PatchSELECTBOX);
+            V_DrawPatch(50 + curpos * 31, 189, PatchSELECTBOX);
             if (x != 0)
             {
-                V_DrawPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
+                V_DrawPatch(38, 159, !(leveltime & 4) ? PatchINVLFGEM1 :
                             PatchINVLFGEM2);
             }
             if (CPlayer->inventorySlotNum - x > 7)
             {
-                V_DrawPatch(269, 167, !(leveltime & 4) ?
+                V_DrawPatch(269, 159, !(leveltime & 4) ?
                             PatchINVRTGEM1 : PatchINVRTGEM2);
             }
         }
