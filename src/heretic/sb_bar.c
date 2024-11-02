@@ -1105,7 +1105,7 @@ void DrawFullScreenStuff(void)
                     temp += CPlayer->frags[i];
                 }
             }
-            DrINumber(temp, 45 - WIDESCREENDELTA, 185);
+            DrINumber(temp, 5 - WIDESCREENDELTA, 155);
         }
         if (!inventory)
         {
