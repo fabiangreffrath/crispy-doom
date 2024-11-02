@@ -1065,36 +1065,36 @@ void DrawFullScreenStuff(void)
         temp = CPlayer->mo->health;
         if (temp > 0)
         {
-            DrINumber(temp, 5 - WIDESCREENDELTA, 170);
+            DrINumber(temp, 5 - WIDESCREENDELTA, 180);
         }
         else
         {
-            DrINumber(0, 5 - WIDESCREENDELTA, 170);
+            DrINumber(0, 5 - WIDESCREENDELTA, 180);
         }
         // Ammo
         temp = CPlayer->ammo[wpnlev1info[CPlayer->readyweapon].ammo];
     	if (temp && CPlayer->readyweapon > 0 && CPlayer->readyweapon < 7)
     	{
-            V_DrawPatch(55 - WIDESCREENDELTA, 172,
+            V_DrawPatch(55 - WIDESCREENDELTA, 182,
                         W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
                                         PU_CACHE));
-    		DrINumber(temp, 53 - WIDESCREENDELTA, 162);
+    		DrINumber(temp, 53 - WIDESCREENDELTA, 172);
     	}
         // Keys
     	if (CPlayer->keys[key_yellow])
     	{
-    		V_DrawPatch(214 + WIDESCREENDELTA, 164, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
+    		V_DrawPatch(214 + WIDESCREENDELTA, 174, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
     	}
     	if (CPlayer->keys[key_green])
     	{
-    		V_DrawPatch(214 + WIDESCREENDELTA, 172, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
+    		V_DrawPatch(214 + WIDESCREENDELTA, 182, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
     	}
     	if (CPlayer->keys[key_blue])
     	{
-    		V_DrawPatch(214 + WIDESCREENDELTA, 180, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
+    		V_DrawPatch(214 + WIDESCREENDELTA, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
     	}
         // Armor
-    	DrINumber(CPlayer->armorpoints, 286 + WIDESCREENDELTA, 170);
+    	DrINumber(CPlayer->armorpoints, 286 + WIDESCREENDELTA, 180);
         if (deathmatch)
         {
             temp = 0;
@@ -1105,21 +1105,21 @@ void DrawFullScreenStuff(void)
                     temp += CPlayer->frags[i];
                 }
             }
-            DrINumber(temp, 5 - WIDESCREENDELTA, 155);
+            DrINumber(temp, 5 - WIDESCREENDELTA, 165);
         }
         if (!inventory)
         {
 			if (ArtifactFlash)
 			{
 				temp = W_GetNumForName(DEH_String("useartia")) + ArtifactFlash - 1;
-				V_DrawPatch(243 + WIDESCREENDELTA, 161, W_CacheLumpNum(temp, PU_CACHE));
+				V_DrawPatch(243 + WIDESCREENDELTA, 171, W_CacheLumpNum(temp, PU_CACHE));
 				ArtifactFlash--;
 			}
 			else if (CPlayer->readyArtifact > 0)
             {
                 patch = DEH_String(patcharti[CPlayer->readyArtifact]);
-                V_DrawPatch(240 + WIDESCREENDELTA, 160, W_CacheLumpName(patch, PU_CACHE));
-                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 262 + WIDESCREENDELTA, 182);
+                V_DrawPatch(240 + WIDESCREENDELTA, 170, W_CacheLumpName(patch, PU_CACHE));
+                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 262 + WIDESCREENDELTA, 192);
             }
         }
         else
@@ -1127,28 +1127,28 @@ void DrawFullScreenStuff(void)
             x = inv_ptr - curpos;
             for (i = 0; i < 7; i++)
             {
-                V_DrawPatch(50 + i * 31, 160,
+                V_DrawPatch(50 + i * 31, 170,
                               W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
 
                 if (CPlayer->inventorySlotNum > x + i
                     && CPlayer->inventory[x + i].type != arti_none)
                 {
                     patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
-                    V_DrawPatch(50 + i * 31, 160,
+                    V_DrawPatch(50 + i * 31, 170,
                                 W_CacheLumpName(patch, PU_CACHE));
                     DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
-                                  182);
+                                  192);
                 }
             }
-            V_DrawPatch(50 + curpos * 31, 189, PatchSELECTBOX);
+            V_DrawPatch(50 + curpos * 31, 199, PatchSELECTBOX);
             if (x != 0)
             {
-                V_DrawPatch(38, 159, !(leveltime & 4) ? PatchINVLFGEM1 :
+                V_DrawPatch(38, 169, !(leveltime & 4) ? PatchINVLFGEM1 :
                             PatchINVLFGEM2);
             }
             if (CPlayer->inventorySlotNum - x > 7)
             {
-                V_DrawPatch(269, 159, !(leveltime & 4) ?
+                V_DrawPatch(269, 169, !(leveltime & 4) ?
                             PatchINVRTGEM1 : PatchINVRTGEM2);
             }
         }
