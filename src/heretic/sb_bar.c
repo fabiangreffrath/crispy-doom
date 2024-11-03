@@ -1051,14 +1051,76 @@ void DrawInventoryBar(void)
 
 void DrawFullScreenStuff(void)
 {
-	const char *patch;
+    const char *patch;
     int i;
     int x;
     int temp;
 
     UpdateState |= I_FULLSCRN;
 
-	if (screenblocks == 12)
+	if (screenblocks <= 11)
+    {
+        if (CPlayer->mo->health > 0)
+        {
+            DrBNumber(CPlayer->mo->health, 5, 180);
+        }
+        else
+        {
+            DrBNumber(0, 5, 180);
+        }
+        if (deathmatch)
+        {
+            temp = 0;
+            for (i = 0; i < MAXPLAYERS; i++)
+            {
+                if (playeringame[i])
+                {
+                    temp += CPlayer->frags[i];
+                }
+            }
+            DrINumber(temp, 45, 185);
+        }
+        if (!inventory)
+        {
+            if (CPlayer->readyArtifact > 0)
+            {
+                patch = DEH_String(patcharti[CPlayer->readyArtifact]);
+                V_DrawAltTLPatch(286, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+                V_DrawPatch(286, 170, W_CacheLumpName(patch, PU_CACHE));
+                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 307, 192);
+            }
+        }
+        else
+        {
+            x = inv_ptr - curpos;
+            for (i = 0; i < 7; i++)
+            {
+                V_DrawAltTLPatch(50 + i * 31, 168,
+                              W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+                if (CPlayer->inventorySlotNum > x + i
+                    && CPlayer->inventory[x + i].type != arti_none)
+                {
+                    patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
+                    V_DrawPatch(50 + i * 31, 168,
+                                W_CacheLumpName(patch, PU_CACHE));
+                    DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
+                                  190);
+                }
+            }
+            V_DrawPatch(50 + curpos * 31, 197, PatchSELECTBOX);
+            if (x != 0)
+            {
+                V_DrawPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
+                            PatchINVLFGEM2);
+            }
+            if (CPlayer->inventorySlotNum - x > 7)
+            {
+                V_DrawPatch(269, 167, !(leveltime & 4) ?
+                            PatchINVRTGEM1 : PatchINVRTGEM2);
+            }
+        }
+    }
+    else if(screenblocks == 12)
     {
         // [crispy] Crispy Hud
         // TODO Do not always render, only if update needed
@@ -1149,69 +1211,6 @@ void DrawFullScreenStuff(void)
             if (CPlayer->inventorySlotNum - x > 7)
             {
                 V_DrawPatch(269, 169, !(leveltime & 4) ?
-                            PatchINVRTGEM1 : PatchINVRTGEM2);
-            }
-        }
-    }
-    else
-    {
-    	// [crispy] Vanilla Fullscreen Hud
-        if (CPlayer->mo->health > 0)
-        {
-            DrBNumber(CPlayer->mo->health, 5, 180);
-        }
-        else
-        {
-            DrBNumber(0, 5, 180);
-        }
-        if (deathmatch)
-        {
-            temp = 0;
-            for (i = 0; i < MAXPLAYERS; i++)
-            {
-                if (playeringame[i])
-                {
-                    temp += CPlayer->frags[i];
-                }
-            }
-            DrINumber(temp, 45, 185);
-        }
-        if (!inventory)
-        {
-            if (CPlayer->readyArtifact > 0)
-            {
-                patch = DEH_String(patcharti[CPlayer->readyArtifact]);
-                V_DrawAltTLPatch(286, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
-                V_DrawPatch(286, 170, W_CacheLumpName(patch, PU_CACHE));
-                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 307, 192);
-            }
-        }
-        else
-        {
-            x = inv_ptr - curpos;
-            for (i = 0; i < 7; i++)
-            {
-                V_DrawAltTLPatch(50 + i * 31, 168,
-                              W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
-                if (CPlayer->inventorySlotNum > x + i
-                    && CPlayer->inventory[x + i].type != arti_none)
-                {
-                    patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
-                    V_DrawPatch(50 + i * 31, 168,
-                                W_CacheLumpName(patch, PU_CACHE));
-                    DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
-                                  190);
-                }
-            }
-            V_DrawPatch(50 + curpos * 31, 197, PatchSELECTBOX);
-            if (x != 0)
-            {
-                V_DrawPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
-                            PatchINVLFGEM2);
-            }
-            if (CPlayer->inventorySlotNum - x > 7)
-            {
-                V_DrawPatch(269, 167, !(leveltime & 4) ?
                             PatchINVRTGEM1 : PatchINVRTGEM2);
             }
         }
