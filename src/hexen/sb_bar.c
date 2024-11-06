@@ -1496,11 +1496,11 @@ void DrawFullScreenStuff(void)
         temp = CPlayer->mo->health;
         if (temp >= 25)
         {
-            DrINumber(temp, 40, 176);
+            DrINumber(temp, 5 - WIDESCREENDELTA, 176);
         }
         else
         {
-            DrRedINumber(temp, 40, 176);
+            DrRedINumber(temp, 5 - WIDESCREENDELTA, 176);
         }
 
         // Frags
@@ -1514,186 +1514,185 @@ void DrawFullScreenStuff(void)
                     temp += CPlayer->frags[i];
                 }
             }
-            DrINumber(temp, 40, 165);
+            DrINumber(temp, 5 - WIDESCREENDELTA, 165);
         }
 
-         // Mana
-         temp = CPlayer->mana[0];
-         DrSmallNumber(temp, 79, 181); // x Delta to Health is 39
-         manaVialPatch1 = (patch_t *) 1; // force a vial update
-         if (temp == 0)
-         {                       // Draw Dim Mana icon
-             manaPatch1 = PatchMANADIM1;
-         }
-         else if (oldmana1 == 0)
-         {
-             manaPatch1 = PatchMANABRIGHT1;
-         }
-         temp = CPlayer->mana[1];
-         DrSmallNumber(temp, 111, 181); // x Delta to Mana 0 is 32
-         manaVialPatch1 = (patch_t *) 1; // force a vial update
-         if (temp == 0)
-         {                       // Draw Dim Mana icon
-             manaPatch2 = PatchMANADIM2;
-         }
-         else if (oldmana2 == 0)
-         {
-             manaPatch2 = PatchMANABRIGHT2;
-         }
-         // Update mana graphics based upon mana count/weapon type
-         if (CPlayer->readyweapon == WP_FIRST)
-         {
-             manaPatch1 = PatchMANADIM1;
-             manaPatch2 = PatchMANADIM2;
-             manaVialPatch1 = PatchMANAVIALDIM1;
-             manaVialPatch2 = PatchMANAVIALDIM2;
-         }
-         else if (CPlayer->readyweapon == WP_SECOND)
-         {
-             if (!manaPatch1)
-             {
-                 manaPatch1 = PatchMANABRIGHT1;
-             }
-             manaVialPatch1 = PatchMANAVIAL1;
-             manaPatch2 = PatchMANADIM2;
-             manaVialPatch2 = PatchMANAVIALDIM2;
-         }
-         else if (CPlayer->readyweapon == WP_THIRD)
-         {
-             manaPatch1 = PatchMANADIM1;
-             manaVialPatch1 = PatchMANAVIALDIM1;
-             if (!manaPatch2)
-             {
-                 manaPatch2 = PatchMANABRIGHT2;
-             }
-             manaVialPatch2 = PatchMANAVIAL2;
-         }
-         else
-         {
-             manaVialPatch1 = PatchMANAVIAL1;
-             manaVialPatch2 = PatchMANAVIAL2;
-             if (!manaPatch1)
-             {
-                 manaPatch1 = PatchMANABRIGHT1;
-             }
-             if (!manaPatch2)
-             {
-                 manaPatch2 = PatchMANABRIGHT2;
-             }
-         }
-         V_DrawPatch(77, 164, manaPatch1); // x Delta to Health is 37
-         V_DrawPatch(110, 164, manaPatch2); // x Delta to Mana Patch 1 is 33
-         V_DrawPatch(94, 164, manaVialPatch1); // x Delta to Mana Patch 1 is 17
-         for (i = 165; i < 187 - (22 * CPlayer->mana[0]) / MAX_MANA; i++)
-         {
-          for (j = 0; j <= crispy->hires; j++)
-           for (k = 0; k <= crispy->hires; k++)
-           {
-             I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
-                           + ((95 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
-             I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
-                           + ((96 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
-             I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
-                           + ((97 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
-           }
-         }
-         V_DrawPatch(102, 164, manaVialPatch2); // x Delta to Mana Vial 1 is 8
-         for (i = 165; i < 187 - (22 * CPlayer->mana[1]) / MAX_MANA; i++)
-         {
-          for (j = 0; j <= crispy->hires; j++)
-           for (k = 0; k <= crispy->hires; k++)
-           {
-             I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
-                           + ((103 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
-             I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
-                           + ((104 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
-             I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
-                           + ((105 + WIDESCREENDELTA) << crispy->hires) + k] = 0;
-           }
-         }
-         // Armor
-         temp = AutoArmorSave[CPlayer->class]
-             + CPlayer->armorpoints[ARMOR_ARMOR] +
-             CPlayer->armorpoints[ARMOR_SHIELD] +
-             CPlayer->armorpoints[ARMOR_HELMET] +
-             CPlayer->armorpoints[ARMOR_AMULET];
-             oldarmor = temp;
-         DrINumber(FixedDiv(temp, 5 * FRACUNIT) >> FRACBITS, 250, 176);
-         UpdateState |= I_STATBAR;
-         // Weapon Pieces
-         if (CPlayer->pieces == 7)
-         {
-             V_DrawPatch(190, 162, PatchWEAPONFULL); // x Delta to Armor is 60
-         }
-         else
-         {
-             V_DrawPatch(190, 162, PatchWEAPONSLOT);
-             if (CPlayer->pieces & WPIECE1)
-             {
-                 V_DrawPatch(PieceX[PlayerClass[consoleplayer]][0], 162, PatchPIECE1); // use same offset as for x in WeaponFull
-             }
-             if (CPlayer->pieces & WPIECE2)
-             {
-                 V_DrawPatch(PieceX[PlayerClass[consoleplayer]][1], 162, PatchPIECE2);
-             }
-             if (CPlayer->pieces & WPIECE3)
-             {
-                 V_DrawPatch(PieceX[PlayerClass[consoleplayer]][2], 162, PatchPIECE3);
-             }
-         }
-         // Items, Itemflash and Selection Bar
-         if (!inventory)
-         {
-             if (ArtifactFlash)
-             {
-                 V_DrawPatch(148, 164, W_CacheLumpNum(W_GetNumForName("useartia") // x Delta to Item is +5
-                                                      + ArtifactFlash - 1, PU_CACHE));
-                 ArtifactFlash--;
-             }
-             else if (CPlayer->readyArtifact > 0)
-             {
-                 V_DrawPatch(143, 163,
-                             W_CacheLumpName(patcharti[CPlayer->readyArtifact], // x Delta to Weapon Patch is 47
-                                             PU_CACHE));
-                 if (CPlayer->inventory[inv_ptr].count > 1)
-                 {
-                     DrSmallNumber(CPlayer->inventory[inv_ptr].count, 162, 184); // x Delta to Item is +19
-                 }
-             }
-         }
-         else
-         {
-             x = inv_ptr - curpos;
-             for (i = 0; i < 7; i++)
-             {
-                 V_DrawPatch(50 + i * 31, 162, W_CacheLumpName("ARTIBOX",
-                                                                 PU_CACHE));
-                 if (CPlayer->inventorySlotNum > x + i
-                     && CPlayer->inventory[x + i].type != arti_none)
-                 {
-                     V_DrawPatch(49 + i * 31, 161,
-                                 W_CacheLumpName(patcharti
-                                                 [CPlayer->inventory[x + i].type],
-                                                 PU_CACHE));
-                     if (CPlayer->inventory[x + i].count > 1)
-                     {
-                         DrSmallNumber(CPlayer->inventory[x + i].count,
-                                       66 + i * 31, 182);
-                     }
-                 }
-             }
-             V_DrawPatch(50 + curpos * 31, 161, PatchSELECTBOX);
-             if (x != 0)
-             {
-                 V_DrawPatch(40, 161, !(leveltime & 4) ? PatchINVLFGEM1 :
-                             PatchINVLFGEM2);
-             }
-             if (CPlayer->inventorySlotNum - x > 7)
-             {
-                 V_DrawPatch(268, 161, !(leveltime & 4) ?
-                             PatchINVRTGEM1 : PatchINVRTGEM2);
-             }
-         }
+        // Mana
+        temp = CPlayer->mana[0];
+        DrSmallNumber(temp, 44 - WIDESCREENDELTA, 181); // x Delta to Health is 39
+        manaVialPatch1 = (patch_t *) 1; // force a vial update
+        if (temp == 0)
+        {                       // Draw Dim Mana icon
+            manaPatch1 = PatchMANADIM1;
+        }
+        else if (oldmana1 == 0)
+        {
+            manaPatch1 = PatchMANABRIGHT1;
+        }
+        temp = CPlayer->mana[1];
+        DrSmallNumber(temp, 76 - WIDESCREENDELTA, 181); // x Delta to Mana 0 is 32
+        manaVialPatch1 = (patch_t *) 1; // force a vial update
+        if (temp == 0)
+        {                       // Draw Dim Mana icon
+            manaPatch2 = PatchMANADIM2;
+        }
+        else if (oldmana2 == 0)
+        {
+            manaPatch2 = PatchMANABRIGHT2;
+        }
+        // Update mana graphics based upon mana count/weapon type
+        if (CPlayer->readyweapon == WP_FIRST)
+        {
+            manaPatch1 = PatchMANADIM1;
+            manaPatch2 = PatchMANADIM2;
+            manaVialPatch1 = PatchMANAVIALDIM1;
+            manaVialPatch2 = PatchMANAVIALDIM2;
+        }
+        else if (CPlayer->readyweapon == WP_SECOND)
+        {
+            if (!manaPatch1)
+            {
+                manaPatch1 = PatchMANABRIGHT1;
+            }
+            manaVialPatch1 = PatchMANAVIAL1;
+            manaPatch2 = PatchMANADIM2;
+            manaVialPatch2 = PatchMANAVIALDIM2;
+        }
+        else if (CPlayer->readyweapon == WP_THIRD)
+        {
+            manaPatch1 = PatchMANADIM1;
+            manaVialPatch1 = PatchMANAVIALDIM1;
+            if (!manaPatch2)
+            {
+                manaPatch2 = PatchMANABRIGHT2;
+            }
+            manaVialPatch2 = PatchMANAVIAL2;
+        }
+        else
+        {
+            manaVialPatch1 = PatchMANAVIAL1;
+            manaVialPatch2 = PatchMANAVIAL2;
+            if (!manaPatch1)
+            {
+                manaPatch1 = PatchMANABRIGHT1;
+            }
+            if (!manaPatch2)
+            {
+                manaPatch2 = PatchMANABRIGHT2;
+            }
+        }
+        V_DrawPatch(42 - WIDESCREENDELTA, 164, manaPatch1); // x Delta to Health is 37
+        V_DrawPatch(75 - WIDESCREENDELTA, 164, manaPatch2); // x Delta to Mana Patch 1 is 33
+        V_DrawPatch(59 - WIDESCREENDELTA, 164, manaVialPatch1); // x Delta to Mana Patch 1 is 17
+        for (i = 165; i < 187 - (22 * CPlayer->mana[0]) / MAX_MANA; i++)
+        {
+         for (j = 0; j <= crispy->hires; j++)
+          for (k = 0; k <= crispy->hires; k++)
+          {
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((60) << crispy->hires) + k] = 0;
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((61) << crispy->hires) + k] = 0;
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((62) << crispy->hires) + k] = 0;
+          }
+        }
+        V_DrawPatch(67 - WIDESCREENDELTA, 164, manaVialPatch2); // x Delta to Mana Vial 1 is 8
+        for (i = 165; i < 187 - (22 * CPlayer->mana[1]) / MAX_MANA; i++)
+        {
+         for (j = 0; j <= crispy->hires; j++)
+          for (k = 0; k <= crispy->hires; k++)
+          {
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((68) << crispy->hires) + k] = 0;
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((69) << crispy->hires) + k] = 0;
+            I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
+                          + ((70) << crispy->hires) + k] = 0;
+          }
+        }
+        // Armor
+        temp = AutoArmorSave[CPlayer->class]
+            + CPlayer->armorpoints[ARMOR_ARMOR] +
+            CPlayer->armorpoints[ARMOR_SHIELD] +
+            CPlayer->armorpoints[ARMOR_HELMET] +
+            CPlayer->armorpoints[ARMOR_AMULET];
+            oldarmor = temp;
+        DrINumber(FixedDiv(temp, 5 * FRACUNIT) >> FRACBITS, 288 + WIDESCREENDELTA, 176);
+        // Weapon Pieces
+        if (CPlayer->pieces == 7)
+        {
+            V_DrawPatch(228 + WIDESCREENDELTA, 162, PatchWEAPONFULL); // x Delta to Armor is 60
+        }
+        else
+        {
+            V_DrawPatch(228 + WIDESCREENDELTA, 162, PatchWEAPONSLOT);
+            if (CPlayer->pieces & WPIECE1)
+            {
+                V_DrawPatch(PieceX[PlayerClass[consoleplayer]][0] + 38 + WIDESCREENDELTA, 162, PatchPIECE1); // use same offset as for x in WeaponFull
+            }
+            if (CPlayer->pieces & WPIECE2)
+            {
+                V_DrawPatch(PieceX[PlayerClass[consoleplayer]][1] + 38 + WIDESCREENDELTA, 162, PatchPIECE2);
+            }
+            if (CPlayer->pieces & WPIECE3)
+            {
+                V_DrawPatch(PieceX[PlayerClass[consoleplayer]][2] + 38 + WIDESCREENDELTA, 162, PatchPIECE3);
+            }
+        }
+        // Items, Itemflash and Selection Bar
+        if (!inventory)
+        {
+            if (ArtifactFlash)
+            {
+                V_DrawPatch(186 + WIDESCREENDELTA, 164, W_CacheLumpNum(W_GetNumForName("useartia") // x Delta to Item is +5
+                                                     + ArtifactFlash - 1, PU_CACHE));
+                ArtifactFlash--;
+            }
+            else if (CPlayer->readyArtifact > 0)
+            {
+                V_DrawPatch(181 + WIDESCREENDELTA, 163,
+                            W_CacheLumpName(patcharti[CPlayer->readyArtifact], // x Delta to Weapon Patch is 47
+                                            PU_CACHE));
+                if (CPlayer->inventory[inv_ptr].count > 1)
+                {
+                    DrSmallNumber(CPlayer->inventory[inv_ptr].count, 200 + WIDESCREENDELTA, 184); // x Delta to Item is +19
+                }
+            }
+        }
+        else
+        {
+            x = inv_ptr - curpos;
+            for (i = 0; i < 7; i++)
+            {
+                V_DrawPatch(50 + i * 31, 162, W_CacheLumpName("ARTIBOX",
+                                                                PU_CACHE));
+                if (CPlayer->inventorySlotNum > x + i
+                    && CPlayer->inventory[x + i].type != arti_none)
+                {
+                    V_DrawPatch(49 + i * 31, 161,
+                                W_CacheLumpName(patcharti
+                                                [CPlayer->inventory[x + i].type],
+                                                PU_CACHE));
+                    if (CPlayer->inventory[x + i].count > 1)
+                    {
+                        DrSmallNumber(CPlayer->inventory[x + i].count,
+                                      66 + i * 31, 182);
+                    }
+                }
+            }
+            V_DrawPatch(50 + curpos * 31, 161, PatchSELECTBOX);
+            if (x != 0)
+            {
+                V_DrawPatch(40, 161, !(leveltime & 4) ? PatchINVLFGEM1 :
+                            PatchINVLFGEM2);
+            }
+            if (CPlayer->inventorySlotNum - x > 7)
+            {
+                V_DrawPatch(268, 161, !(leveltime & 4) ?
+                            PatchINVRTGEM1 : PatchINVRTGEM2);
+            }
+        }
         return;
     }
     if (CPlayer->mo->health > 0)
