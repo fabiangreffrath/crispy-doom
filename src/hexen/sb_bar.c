@@ -1484,6 +1484,8 @@ void DrawFullScreenStuff(void)
     if(screenblocks == 12)
     {
         int j, k;
+        int xPosGem1;
+        int xPosManaPatch2;
         patch_t *manaPatch1, *manaPatch2;
         patch_t *manaVialPatch1, *manaVialPatch2;
 
@@ -1491,6 +1493,8 @@ void DrawFullScreenStuff(void)
         manaPatch2 = NULL;
         manaVialPatch1 = NULL;
         manaVialPatch2 = NULL;
+        xPosGem1 = 40;
+        xPosManaPatch2 = 75 - WIDESCREENDELTA;
 
         // Health
         temp = CPlayer->mo->health;
@@ -1510,6 +1514,19 @@ void DrawFullScreenStuff(void)
             CPlayer->armorpoints[ARMOR_AMULET];
             oldarmor = temp;
         DrINumber(FixedDiv(temp, 5 * FRACUNIT) >> FRACBITS, 288 + WIDESCREENDELTA, 182);
+        // Frags
+        if (deathmatch)
+        {
+            temp = 0;
+            for (i = 0; i < maxplayers; i++)
+            {
+                if (playeringame[i])
+                {
+                    temp += CPlayer->frags[i];
+                }
+            }
+            DrINumber(temp, 5 - WIDESCREENDELTA, 165);
+        }
         // Items, Itemflash and Selection Bar
         if (!inventory)
         {
@@ -1554,7 +1571,7 @@ void DrawFullScreenStuff(void)
             V_DrawPatch(50 + curpos * 31, 167, PatchSELECTBOX);
             if (x != 0)
             {
-                V_DrawPatch(40, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
+                V_DrawPatch(xPosGem1, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
                             PatchINVLFGEM2);
             }
             if (CPlayer->inventorySlotNum - x > 7)
@@ -1562,20 +1579,11 @@ void DrawFullScreenStuff(void)
                 V_DrawPatch(268, 167, !(leveltime & 4) ?
                             PatchINVRTGEM1 : PatchINVRTGEM2);
             }
-            return; // Stop drawing further widgets
-        }
-        // Frags
-        if (deathmatch)
-        {
-            temp = 0;
-            for (i = 0; i < maxplayers; i++)
+            // Check for Intersect
+            if (xPosManaPatch2 + 15 >= xPosGem1)
             {
-                if (playeringame[i])
-                {
-                    temp += CPlayer->frags[i];
-                }
+                return; // Stop drawing further widgets
             }
-            DrINumber(temp, 5 - WIDESCREENDELTA, 165);
         }
         // Mana
         temp = CPlayer->mana[0];
@@ -1642,7 +1650,7 @@ void DrawFullScreenStuff(void)
             }
         }
         V_DrawPatch(42 - WIDESCREENDELTA, 170, manaPatch1);
-        V_DrawPatch(75 - WIDESCREENDELTA, 170, manaPatch2);
+        V_DrawPatch(xPosManaPatch2, 170, manaPatch2);
         V_DrawPatch(59 - WIDESCREENDELTA, 170, manaVialPatch1);
         for (i = 171; i < 193 - (22 * CPlayer->mana[0]) / MAX_MANA; i++)
         {
