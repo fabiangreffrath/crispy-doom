@@ -1502,7 +1502,68 @@ void DrawFullScreenStuff(void)
         {
             DrRedINumber(temp, 5 - WIDESCREENDELTA, 182);
         }
-
+        // Armor
+        temp = AutoArmorSave[CPlayer->class]
+            + CPlayer->armorpoints[ARMOR_ARMOR] +
+            CPlayer->armorpoints[ARMOR_SHIELD] +
+            CPlayer->armorpoints[ARMOR_HELMET] +
+            CPlayer->armorpoints[ARMOR_AMULET];
+            oldarmor = temp;
+        DrINumber(FixedDiv(temp, 5 * FRACUNIT) >> FRACBITS, 288 + WIDESCREENDELTA, 182);
+        // Items, Itemflash and Selection Bar
+        if (!inventory)
+        {
+            if (ArtifactFlash)
+            {
+                V_DrawPatch(113 - WIDESCREENDELTA, 170, W_CacheLumpNum(W_GetNumForName("useartia")
+                                                     + ArtifactFlash - 1, PU_CACHE));
+                ArtifactFlash--;
+            }
+            else if (CPlayer->readyArtifact > 0)
+            {
+                V_DrawPatch(108 - WIDESCREENDELTA, 169,
+                            W_CacheLumpName(patcharti[CPlayer->readyArtifact],
+                                            PU_CACHE));
+                if (CPlayer->inventory[inv_ptr].count > 1)
+                {
+                    DrSmallNumber(CPlayer->inventory[inv_ptr].count, 127 - WIDESCREENDELTA, 190);
+                }
+            }
+        }
+        else
+        {
+            x = inv_ptr - curpos;
+            for (i = 0; i < 7; i++)
+            {
+                V_DrawPatch(50 + i * 31, 168, W_CacheLumpName("ARTIBOX",
+                                                                PU_CACHE));
+                if (CPlayer->inventorySlotNum > x + i
+                    && CPlayer->inventory[x + i].type != arti_none)
+                {
+                    V_DrawPatch(49 + i * 31, 167,
+                                W_CacheLumpName(patcharti
+                                                [CPlayer->inventory[x + i].type],
+                                                PU_CACHE));
+                    if (CPlayer->inventory[x + i].count > 1)
+                    {
+                        DrSmallNumber(CPlayer->inventory[x + i].count,
+                                      66 + i * 31, 188);
+                    }
+                }
+            }
+            V_DrawPatch(50 + curpos * 31, 167, PatchSELECTBOX);
+            if (x != 0)
+            {
+                V_DrawPatch(40, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
+                            PatchINVLFGEM2);
+            }
+            if (CPlayer->inventorySlotNum - x > 7)
+            {
+                V_DrawPatch(268, 167, !(leveltime & 4) ?
+                            PatchINVRTGEM1 : PatchINVRTGEM2);
+            }
+            return; // Stop drawing further widgets
+        }
         // Frags
         if (deathmatch)
         {
@@ -1516,7 +1577,6 @@ void DrawFullScreenStuff(void)
             }
             DrINumber(temp, 5 - WIDESCREENDELTA, 165);
         }
-
         // Mana
         temp = CPlayer->mana[0];
         DrSmallNumber(temp, 44 - WIDESCREENDELTA, 187);
@@ -1611,14 +1671,6 @@ void DrawFullScreenStuff(void)
                           + (70 << crispy->hires) + k] = 0;
           }
         }
-        // Armor
-        temp = AutoArmorSave[CPlayer->class]
-            + CPlayer->armorpoints[ARMOR_ARMOR] +
-            CPlayer->armorpoints[ARMOR_SHIELD] +
-            CPlayer->armorpoints[ARMOR_HELMET] +
-            CPlayer->armorpoints[ARMOR_AMULET];
-            oldarmor = temp;
-        DrINumber(FixedDiv(temp, 5 * FRACUNIT) >> FRACBITS, 288 + WIDESCREENDELTA, 182);
         // Weapon Pieces
         if (CPlayer->pieces == 7)
         {
@@ -1638,59 +1690,6 @@ void DrawFullScreenStuff(void)
             if (CPlayer->pieces & WPIECE3)
             {
                 V_DrawPatch(PieceX[PlayerClass[consoleplayer]][2] + 38 + WIDESCREENDELTA, 168, PatchPIECE3);
-            }
-        }
-        // Items, Itemflash and Selection Bar
-        if (!inventory)
-        {
-            if (ArtifactFlash)
-            {
-                V_DrawPatch(113 - WIDESCREENDELTA, 170, W_CacheLumpNum(W_GetNumForName("useartia")
-                                                     + ArtifactFlash - 1, PU_CACHE));
-                ArtifactFlash--;
-            }
-            else if (CPlayer->readyArtifact > 0)
-            {
-                V_DrawPatch(108 - WIDESCREENDELTA, 169,
-                            W_CacheLumpName(patcharti[CPlayer->readyArtifact],
-                                            PU_CACHE));
-                if (CPlayer->inventory[inv_ptr].count > 1)
-                {
-                    DrSmallNumber(CPlayer->inventory[inv_ptr].count, 127 - WIDESCREENDELTA, 190);
-                }
-            }
-        }
-        else
-        {
-            x = inv_ptr - curpos;
-            for (i = 0; i < 7; i++)
-            {
-                V_DrawPatch(50 + i * 31, 168, W_CacheLumpName("ARTIBOX",
-                                                                PU_CACHE));
-                if (CPlayer->inventorySlotNum > x + i
-                    && CPlayer->inventory[x + i].type != arti_none)
-                {
-                    V_DrawPatch(49 + i * 31, 167,
-                                W_CacheLumpName(patcharti
-                                                [CPlayer->inventory[x + i].type],
-                                                PU_CACHE));
-                    if (CPlayer->inventory[x + i].count > 1)
-                    {
-                        DrSmallNumber(CPlayer->inventory[x + i].count,
-                                      66 + i * 31, 188);
-                    }
-                }
-            }
-            V_DrawPatch(50 + curpos * 31, 167, PatchSELECTBOX);
-            if (x != 0)
-            {
-                V_DrawPatch(40, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
-                            PatchINVLFGEM2);
-            }
-            if (CPlayer->inventorySlotNum - x > 7)
-            {
-                V_DrawPatch(268, 167, !(leveltime & 4) ?
-                            PatchINVRTGEM1 : PatchINVRTGEM2);
             }
         }
         return;
