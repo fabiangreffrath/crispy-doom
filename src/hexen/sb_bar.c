@@ -1557,14 +1557,14 @@ void DrawFullScreenStuff(void)
                 if (CPlayer->inventorySlotNum > x + i
                     && CPlayer->inventory[x + i].type != arti_none)
                 {
-                    V_DrawPatch(49 + i * 31, 167,
+                    V_DrawPatch(48 + i * 31, 167,
                                 W_CacheLumpName(patcharti
                                                 [CPlayer->inventory[x + i].type],
                                                 PU_CACHE));
                     if (CPlayer->inventory[x + i].count > 1)
                     {
                         DrSmallNumber(CPlayer->inventory[x + i].count,
-                                      66 + i * 31, 188);
+                                      66 + i * 31, 189);
                     }
                 }
             }
