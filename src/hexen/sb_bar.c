@@ -1568,7 +1568,7 @@ void DrawFullScreenStuff(void)
                     }
                 }
             }
-            V_DrawPatch(50 + curpos * 31, 167, PatchSELECTBOX);
+            V_DrawPatch(48 + curpos * 31, 167, PatchSELECTBOX);
             if (x != 0)
             {
                 V_DrawPatch(xPosGem1, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
