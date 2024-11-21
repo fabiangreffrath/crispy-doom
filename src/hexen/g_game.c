@@ -299,6 +299,7 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
 
     static unsigned int mbmlookctrl = 0; // [crispy]
     static unsigned int kbdlookctrl = 0; // [crispy]
+    static boolean keyrevstate = false; // [crispy]
 
     // haleyjd: removed externdriver crap
 
@@ -364,9 +365,15 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
     // [crispy] add quick 180° reverse
     if (gamekeydown[key_reverse] || mousebuttons[mousebreverse])
     {
-        angle += ANG180 >> FRACBITS;
-        gamekeydown[key_reverse] = false;
-        mousebuttons[mousebreverse] = false;
+        if(!keyrevstate)
+        {
+            angle += ANG180 >> FRACBITS;
+            keyrevstate = true;
+        }
+    }
+    else
+    {
+        keyrevstate = false;
     }
 
     // [crispy] toggle "always run"
