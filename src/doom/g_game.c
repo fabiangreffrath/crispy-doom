@@ -445,7 +445,6 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     int		look;
     player_t *const player = &players[consoleplayer];
     static char playermessage[48];
-    static boolean keyrevstate = false; // [crispy]
 
     // [crispy] For fast polling.
     G_PrepTiccmd();
@@ -507,15 +506,9 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     // [crispy] add quick 180° reverse
     if (gamekeydown[key_reverse] || mousebuttons[mousebreverse])
     {
-        if(!keyrevstate)
-        {
-            angle += ANG180 >> FRACBITS;
-            keyrevstate = true;
-        }
-    }
-    else
-    {
-        keyrevstate = false;
+        angle += ANG180 >> FRACBITS;
+        gamekeydown[key_reverse] = false;
+        mousebuttons[mousebreverse] = false;
     }
 
     // [crispy] toggle "always run"
