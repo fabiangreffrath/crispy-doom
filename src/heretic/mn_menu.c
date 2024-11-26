@@ -131,6 +131,9 @@ static boolean CrispyHires(int option);
 static boolean CrispyToggleWidescreen(int option);
 static boolean CrispySmoothing(int option);
 static boolean CrispyBrightmaps(int option);
+#ifdef CRISPY_TRUECOLOR
+static boolean CrispyToggleTrueColorBlend(int option);
+#endif
 static boolean CrispySmoothLighting(int option);
 static boolean CrispySoundMono(int option);
 static boolean CrispySndChannels(int option);
@@ -361,6 +364,12 @@ static int crispnessmenupage;
 
 #define NUM_CRISPNESS_MENUS 2
 
+#ifndef CRISPY_TRUECOLOR
+#define NUMCRISPNESS1ITEMS 14
+#else
+#define NUMCRISPNESS1ITEMS 15
+#endif
+
 static MenuItem_t Crispness1Items[] = {
     {ITT_LRFUNC2, "HIGH RESOLUTION RENDERING:", CrispyHires, 0, MENU_NONE},
     {ITT_LRFUNC2, "ASPECT RATIO:", CrispyToggleWidescreen, 0, MENU_NONE},
@@ -369,10 +378,11 @@ static MenuItem_t Crispness1Items[] = {
     {ITT_NUMFUNC, "FRAMERATE LIMIT:", CrispyFpsLimit, 0, MENU_NONE},
     {ITT_LRFUNC2, "ENABLE VSYNC:", CrispyVsync, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_LRFUNC2, "APPLY BRIGHTMAPS TO:", CrispyBrightmaps, 0, MENU_NONE},
+#ifdef CRISPY_TRUECOLOR
+    {ITT_LRFUNC2,"TRANSLUCENCY MODE:", CrispyToggleTrueColorBlend, 0, MENU_NONE},
+#endif
     {ITT_LRFUNC2, "SMOOTH DIMINISHING LIGHTING:", CrispySmoothLighting, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_LRFUNC2, "MONO SFX:", CrispySoundMono, 0, MENU_NONE},
     {ITT_LRFUNC2, "SOUND CHANNELS:", CrispySndChannels, 0, MENU_NONE},
@@ -383,7 +393,7 @@ static MenuItem_t Crispness1Items[] = {
 static Menu_t Crispness1Menu = {
     68, 35,
     DrawCrispness,
-    16, Crispness1Items,
+    NUMCRISPNESS1ITEMS, Crispness1Items,
     0,
     MENU_OPTIONS
 };
@@ -393,7 +403,6 @@ static MenuItem_t Crispness2Items[] = {
     {ITT_LRFUNC2, "SHOW LEVEL TIME:", CrispyLevelTime, 0, MENU_NONE},
     {ITT_LRFUNC2, "SHOW PLAYER COORDS:", CrispyPlayerCoords, 0, MENU_NONE},
     {ITT_LRFUNC2, "REPORT REVEALED SECRETS:", CrispySecretMessage, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_LRFUNC2, "FREELOOK MODE:", CrispyFreelook, 0, MENU_NONE},
     {ITT_LRFUNC2, "PERMANENT MOUSELOOK:", CrispyMouselook, 0, MENU_NONE},
@@ -407,7 +416,7 @@ static MenuItem_t Crispness2Items[] = {
 static Menu_t Crispness2Menu = {
     68, 35,
     DrawCrispness,
-    13, Crispness2Items,
+    12, Crispness2Items,
     0,
     MENU_OPTIONS
 };
@@ -443,6 +452,14 @@ static const multiitem_t multiitem_centerweapon[NUM_CENTERWEAPON] =
     {CENTERWEAPON_CENTER, "CENTERED"},
     {CENTERWEAPON_BOB, "BOBBING"},
 };
+
+#ifdef CRISPY_TRUECOLOR
+static const multiitem_t multiitem_truecolorblend[NUM_TRUECOLORBLEND] =
+{
+    {TRUECOLORBLEND_OFF, "SPEED"},
+    {TRUECOLORBLEND_ON, "QUALITY"},
+};
+#endif
 
 static const multiitem_t multiitem_widescreen[NUM_RATIOS] =
 {
@@ -1707,6 +1724,17 @@ static boolean CrispyBrightmaps(int option)
     ChangeSettingEnum(&crispy->brightmaps, option, NUM_BRIGHTMAPS);
     return true;
 }
+
+#ifdef CRISPY_TRUECOLOR
+static boolean CrispyToggleTrueColorBlend(int option)
+{
+    crispy->truecolorblend = !crispy->truecolorblend;
+
+    // [crispy] re-set pointers to blending functions
+    R_InitBlendQuality();
+    return true;
+}
+#endif
 
 static void CrispySmoothLightingHook (void)
 {
@@ -2980,6 +3008,8 @@ static void DrawCrispnessNumericItem(int item, int x, int y, const char *zero,
 
 static void DrawCrispness1(void)
 {
+    int y_shift = 0;
+
     DrawCrispnessHeader("CRISPNESS 1/2");
 
     DrawCrispnessSubheader("RENDERING", 25);
@@ -3002,21 +3032,27 @@ static void DrawCrispness1(void)
     // Vsync
     DrawCrispnessItem(crispy->vsync, 167, 85);
 
-    DrawCrispnessSubheader("VISUAL", 105);
+    DrawCrispnessSubheader("VISUAL", 95);
 
     // Brightmaps
-    DrawCrispnessMultiItem(crispy->brightmaps, 213, 115, multiitem_brightmaps, false);
+    DrawCrispnessMultiItem(crispy->brightmaps, 213, 105, multiitem_brightmaps, false);
+
+#ifdef CRISPY_TRUECOLOR
+    y_shift += 10;
+    // Translucency mode
+    DrawCrispnessMultiItem(crispy->truecolorblend, 205, 115, multiitem_truecolorblend, false);
+#endif
 
     // Smooth Diminishing Lighting
-    DrawCrispnessItem(crispy->smoothlight, 257, 125);
+    DrawCrispnessItem(crispy->smoothlight, 257, 115 + y_shift);
 
-    DrawCrispnessSubheader("AUDIBLE", 145);
+    DrawCrispnessSubheader("AUDIBLE", 125 + y_shift);
 
     // Mono SFX
-    DrawCrispnessItem(crispy->soundmono, 137, 155);
+    DrawCrispnessItem(crispy->soundmono, 137, 135 + y_shift);
 
     // Sound Channels
-    DrawCrispnessMultiItem(snd_Channels >> 4, 181, 165, multiitem_sndchannels, false);
+    DrawCrispnessMultiItem(snd_Channels >> 4, 181, 145 + y_shift, multiitem_sndchannels, false);
 }
 
 static void DrawCrispness2(void)
@@ -3036,21 +3072,21 @@ static void DrawCrispness2(void)
     // Show secret message
     DrawCrispnessMultiItem(crispy->secretmessage, 250, 65, multiitem_secretmessage, false);
 
-    DrawCrispnessSubheader("TACTICAL", 85);
+    DrawCrispnessSubheader("TACTICAL", 75);
 
     // Freelook
-    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 95, multiitem_freelook_hh, false);
+    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 85, multiitem_freelook_hh, false);
 
     // Mouselook
-    DrawCrispnessItem(crispy->mouselook, 220, 105);
+    DrawCrispnessItem(crispy->mouselook, 220, 95);
 
     // Bobfactor
-    DrawCrispnessMultiItem(crispy->bobfactor, 265, 115, multiitem_bobfactor, false);
+    DrawCrispnessMultiItem(crispy->bobfactor, 265, 105, multiitem_bobfactor, false);
 
     // Weapon attack alignment
-    DrawCrispnessMultiItem(crispy->centerweapon, 245, 125, multiitem_centerweapon,
+    DrawCrispnessMultiItem(crispy->centerweapon, 245, 115, multiitem_centerweapon,
             crispy->bobfactor == BOBFACTOR_OFF);
 
     // Default difficulty
-    DrawCrispnessMultiItem(crispy->defaultskill, 200, 135, multiitem_difficulties, false);
+    DrawCrispnessMultiItem(crispy->defaultskill, 200, 125, multiitem_difficulties, false);
 }

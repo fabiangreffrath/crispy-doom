@@ -817,7 +817,7 @@ void R_ProjectSprite (mobj_t* thing)
     // [crispy] translucent sprites
     if (thing->flags & MF_TRANSLUCENT)
     {
-	vis->blendfunc = (thing->frame & FF_FULLBRIGHT) ? I_BlendAdd : I_BlendOverTranmap;
+	vis->blendfunc = (thing->frame & FF_FULLBRIGHT) ? I_BlendAddFunc : I_BlendOverTranmap;
     }
 #endif
 }
