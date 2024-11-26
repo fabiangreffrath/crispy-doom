@@ -430,13 +430,15 @@ static menu_t MouseDef =
 enum
 {
     crispness_sep_rendering,
+#ifdef CRISPY_TRUECOLOR
+    crispness_truecolor,
+#endif
     crispness_hires,
     crispness_widescreen,
     crispness_smoothscaling,
     crispness_uncapped,
     crispness_fpslimit,
     crispness_vsync,
-    crispness_sep_rendering_,
 
     crispness_sep_visual,
     crispness_smoothlight,
@@ -450,13 +452,15 @@ enum
 static menuitem_t Crispness1Menu[] =
 {
     {-1, "", 0, '\0'},
+#ifdef CRISPY_TRUECOLOR
+    {2, "", M_CrispyToggleTrueColor, 't'},
+#endif
     {2, "", M_CrispyToggleHires, 'h'},
     {2, "", M_CrispyToggleWidescreen, 'w'},
     {2, "", M_CrispyToggleSmoothScaling, 's'},
     {2, "", M_CrispyToggleUncapped, 'u'},
     {3, "", M_CrispyToggleFpsLimit, 'f'},
     {2, "", M_CrispyToggleVsync, 'v'},
-    {-1, "", 0, '\0'},
     {-1, "", 0, '\0'},
     {2, "", M_CrispyToggleSmoothLighting, 's'},
     {-1, "", 0, '\0'},
@@ -481,7 +485,6 @@ enum
     crispness_soundfix,
     crispness_sndchannels,
     crispness_soundmono,
-    crispness_sep_audible_,
 
     crispness_sep_navigational,
     crispness_smoothmap,
@@ -501,7 +504,6 @@ static menuitem_t Crispness2Menu[] =
     {2, "", M_CrispyToggleSoundfixes, 'm'},
     {2, "", M_CrispyToggleSndChannels, 's'},
     {2, "", M_CrispyToggleSoundMono, 'm'},
-    {-1, "", 0, '\0'},
     {-1, "", 0, '\0'},
     {2, "", M_CrispyToggleSmoothMap, 'm'},
     {2, "", M_CrispyToggleLeveltime, 'l'},
@@ -530,7 +532,6 @@ enum
     crispness_bobfactor,
     crispness_centerweapon,
     crispness_defaultskill,
-    crispness_sep_tactical_,
 
     crispness_sep_crosshair,
     crispness_crosshair,
@@ -551,7 +552,6 @@ static menuitem_t Crispness3Menu[] =
     {2, "", M_CrispyToggleBobfactor, 'p'},
     {2, "", M_CrispyToggleCenterweapon, 'c'},
     {2, "", M_CrispyToggleDefaultSkill, 'd'},
-    {-1, "", 0, '\0'},
     {-1, "", 0, '\0'},
     {2, "", M_CrispyToggleCrosshair, 'd'},
     {2, "", M_CrispyToggleCrosshairHealth, 'c'},
@@ -1510,6 +1510,9 @@ static void M_DrawCrispness1(void)
     M_DrawCrispnessHeader("Crispness 1/3");
 
     M_DrawCrispnessSeparator(crispness_sep_rendering, "Rendering");
+#ifdef CRISPY_TRUECOLOR
+    M_DrawCrispnessItem(crispness_truecolor, "TrueColor Rendering", crispy->truecolor, true);
+#endif
     M_DrawCrispnessItem(crispness_hires, "High Resolution Rendering", crispy->hires, true);
     M_DrawCrispnessMultiItem(crispness_widescreen, "Aspect Ratio", multiitem_widescreen, crispy->widescreen, aspect_ratio_correct == 1);
     M_DrawCrispnessItem(crispness_smoothscaling, "Smooth Pixel Scaling", crispy->smoothscaling, !force_software_renderer);

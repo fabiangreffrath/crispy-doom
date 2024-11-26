@@ -84,6 +84,7 @@ extern void M_CrispyToggleSoundfixes(int choice);
 extern void M_CrispyToggleSoundMono(int choice);
 extern void M_CrispyToggleStatsFormat(int choice);
 extern void M_CrispyToggleTranslucency(int choice);
+extern void M_CrispyToggleTrueColor(int choice);
 extern void M_CrispyToggleUncapped(int choice);
 extern void M_CrispyToggleVsync(int choice);
 extern void M_CrispyToggleWidescreen(int choice);

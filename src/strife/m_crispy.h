@@ -53,6 +53,7 @@ void M_CrispyToggleSmoothScaling(int choice);
 void M_CrispyToggleSndChannels(int choice);
 void M_CrispyToggleSoundfixes(int choice);
 void M_CrispyToggleSoundMono(int choice);
+void M_CrispyToggleTrueColor(int choice);
 void M_CrispyToggleUncapped(int choice);
 void M_CrispyToggleVsync(int choice);
 void M_CrispyToggleWidescreen(int choice);
