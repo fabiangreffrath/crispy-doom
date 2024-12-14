@@ -282,7 +282,7 @@ void P_LoadSectors(int lump)
         ss->ceilingpic = R_FlatNumForName(ms->ceilingpic);
         ss->lightlevel = SHORT(ms->lightlevel);
         // [crispy] A11Y light level used for rendering
-	    ss->rlightlevel = ss->lightlevel;
+        ss->rlightlevel = ss->lightlevel;
         ss->special = SHORT(ms->special);
         ss->tag = SHORT(ms->tag);
         ss->thinglist = NULL;
