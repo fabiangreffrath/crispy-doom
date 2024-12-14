@@ -205,7 +205,7 @@ void EV_TurnTagLightsOff(line_t * line)
             }
             sector->lightlevel = min;
             // [crispy] A11Y
-	        sector->rlightlevel = sector->lightlevel;
+            sector->rlightlevel = sector->lightlevel;
         }
 }
 
@@ -245,7 +245,7 @@ void EV_LightTurnOn(line_t * line, int bright)
             }
             sector->lightlevel = bright;
             // [crispy] A11Y
-	        sector->rlightlevel = sector->lightlevel;
+            sector->rlightlevel = sector->lightlevel;
         }
 }
 
