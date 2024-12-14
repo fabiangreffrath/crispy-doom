@@ -469,7 +469,7 @@ void R_Subsector(int num)
                                  frontsector->floorpic == skyflatnum &&
                                  frontsector->sky & PL_SKYFLAT ? frontsector->sky :
                                  frontsector->floorpic,
-                                 frontsector->lightlevel,
+                                 frontsector->rlightlevel, // [crispy] A11Y
                                  frontsector->special);
     else
         floorplane = NULL;
@@ -480,7 +480,8 @@ void R_Subsector(int num)
                                    frontsector->ceilingpic == skyflatnum &&
                                    frontsector->sky & PL_SKYFLAT ? frontsector->sky :
                                    frontsector->ceilingpic,
-                                   frontsector->lightlevel, 0);
+                                   frontsector->rlightlevel, // [crispy] A11Y
+                                   0);
     else
         ceilingplane = NULL;
 

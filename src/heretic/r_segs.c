@@ -187,7 +187,8 @@ void R_RenderMaskedSegRange(drawseg_t * ds, int x1, int x2)
     backsector = curline->backsector;
     texnum = texturetranslation[curline->sidedef->midtexture];
 
-    lightnum = (frontsector->lightlevel >> LIGHTSEGSHIFT) + (extralight * LIGHTBRIGHT); // [crispy] smooth diminishing lighting
+    lightnum = (frontsector->rlightlevel >> LIGHTSEGSHIFT) + (extralight * LIGHTBRIGHT); // [crispy] smooth diminishing lighting, A11Y
+
     // [crispy] smoother fake contrast
     lightnum += curline->fakecontrast;
 /*
@@ -748,7 +749,8 @@ void R_StoreWallRange(int start, int stop)
         if (!fixedcolormap)
         {
             lightnum =
-                (frontsector->lightlevel >> LIGHTSEGSHIFT) + (extralight * LIGHTBRIGHT); // [crispy] smooth diminishing lighting
+                (frontsector->rlightlevel >> LIGHTSEGSHIFT) + (extralight * LIGHTBRIGHT); // [crispy] smooth diminishing lighting, A11Y
+
             // [crispy] smoother fake contrast
             lightnum += curline->fakecontrast;
             /*
