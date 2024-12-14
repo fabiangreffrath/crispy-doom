@@ -1616,6 +1616,7 @@ void P_ArchiveWorld(void)
         SV_WriteWord(sec->floorpic);
         SV_WriteWord(sec->ceilingpic);
         SV_WriteWord(sec->lightlevel);
+        SV_WriteWord(sec->rlightlevel); // [crispy] A11Y
         SV_WriteWord(sec->special);     // needed?
         SV_WriteWord(sec->tag); // needed?
     }
@@ -1667,7 +1668,7 @@ void P_UnArchiveWorld(void)
         sec->floorpic = SV_ReadWord();
         sec->ceilingpic = SV_ReadWord();
         sec->lightlevel = SV_ReadWord();
-        sec->rlightlevel = sec->lightlevel; // [crispy] A11Y
+        sec->rlightlevel = SV_ReadWord(); // [crispy] A11Y
         sec->special = SV_ReadWord();  // needed?
         sec->tag = SV_ReadWord();      // needed?
         sec->specialdata = 0;
