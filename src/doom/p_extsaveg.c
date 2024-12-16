@@ -236,10 +236,11 @@ static void P_ReadOldSpecial (const char *key)
 	}
 }
 
-// sector->rlightlevel
+// sector->rlightlevel - no longer required
 
 static void P_WriteRLightlevel (const char *key)
 {
+/* 	
 	int i;
 	sector_t *sector;
 
@@ -253,11 +254,13 @@ static void P_WriteRLightlevel (const char *key)
 			           (int)sector->rlightlevel);
 			fputs(line, save_stream);
 		}
-	}
+	} 
+*/
 }
 
 static void P_ReadRLightlevel (const char *key)
 {
+/* 	
 	int sector, rlightlevel;
 
 	if (sscanf(line, "%s %d %d\n",
@@ -267,7 +270,8 @@ static void P_ReadRLightlevel (const char *key)
 	    !strncmp(string, key, MAX_STRING_LEN))
 	{
 		sectors[sector].rlightlevel = (short)rlightlevel;
-	}
+	} 
+*/
 }
 
 // buttonlist[]
