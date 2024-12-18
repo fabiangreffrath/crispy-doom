@@ -432,7 +432,17 @@ void R_DrawVisSprite(vissprite_t * vis, int x1, int x2)
         dc_translation = translationtables - 256 +
             ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT - 8));
     }
-
+    // [crispy] translucent sprites
+    else if (crispy->translucency && vis->mobjflags & MF_TRANSLUCENT)
+    {
+	if (!(vis->mobjflags & (MF_NOGRAVITY | MF_COUNTITEM)) ||
+	    (vis->mobjflags & MF_NOGRAVITY && crispy->translucency & TRANSLUCENCY_MISSILE) ||
+	    (vis->mobjflags & MF_COUNTITEM && crispy->translucency & TRANSLUCENCY_ITEM))
+	{
+	    colfunc = tlcolfunc;
+	}
+    }
+    
     dc_iscale = abs(vis->xiscale) >> detailshift;
     dc_texturemid = vis->texturemid;
     frac = vis->startfrac;
