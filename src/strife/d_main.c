@@ -550,6 +550,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_soundmono",       &crispy->soundmono);
 #ifdef CRISPY_TRUECOLOR
     M_BindIntVariable("crispy_truecolor",       &crispy->truecolor);
+    M_BindIntVariable("crispy_truecolorblend",  &crispy->truecolorblend);
 #endif
     M_BindIntVariable("crispy_uncapped",        &crispy->uncapped);
     M_BindIntVariable("crispy_vsync",           &crispy->vsync);

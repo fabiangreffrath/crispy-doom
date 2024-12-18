@@ -31,6 +31,7 @@ static crispy_t crispy_s = {
 #ifdef CRISPY_TRUECOLOR
 	.smoothlight = 1,
 	.truecolor = 1,
+	.truecolorblend = 1,
 #endif
 	.vsync = 1,
 	.widescreen = 1, // match screen by default

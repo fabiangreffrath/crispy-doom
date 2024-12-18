@@ -468,17 +468,19 @@ enum
     crispness_fpslimit,
     crispness_vsync,
     crispness_smoothscaling,
-    crispness_sep_rendering_,
 
     crispness_sep_visual,
     crispness_coloredhud,
     crispness_translucency,
+#ifdef CRISPY_TRUECOLOR
+    crispness_truecolorblend,
+#endif
     crispness_smoothlight,
     crispness_brightmaps,
     crispness_coloredblood,
     crispness_flipcorpses,
-    crispness_sep_visual_,
 
+    crispness1_sep_empty,
     crispness1_next,
     crispness1_prev,
     crispness1_end
@@ -494,9 +496,11 @@ static menuitem_t Crispness1Menu[]=
     {3,"",	M_CrispyToggleVsync,'v'},
     {3,"",	M_CrispyToggleSmoothScaling,'s'},
     {-1,"",0,'\0'},
-    {-1,"",0,'\0'},
     {3,"",	M_CrispyToggleColoredhud,'c'},
     {3,"",	M_CrispyToggleTranslucency,'e'},
+#ifdef CRISPY_TRUECOLOR
+    {3,"",	M_CrispyToggleTrueColorBlend,'t'},
+#endif
     {3,"",	M_CrispyToggleSmoothLighting,'s'},
     {3,"",	M_CrispyToggleBrightmaps,'b'},
     {3,"",	M_CrispyToggleColoredblood,'c'},
@@ -523,7 +527,6 @@ enum
     crispness_soundfix,
     crispness_sndchannels,
     crispness_soundmono,
-    crispness_sep_audible_,
 
     crispness_sep_navigational,
     crispness_extautomap,
@@ -533,8 +536,8 @@ enum
     crispness_leveltime,
     crispness_playercoords,
     crispness_secretmessage,
-    crispness_sep_navigational_,
-
+    
+    crispness2_sep_empty,
     crispness2_next,
     crispness2_prev,
     crispness2_end
@@ -547,7 +550,6 @@ static menuitem_t Crispness2Menu[]=
     {3,"",	M_CrispyToggleSoundfixes,'m'},
     {3,"",	M_CrispyToggleSndChannels,'s'},
     {3,"",	M_CrispyToggleSoundMono,'m'},
-    {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {3,"",	M_CrispyToggleExtAutomap,'e'},
     {3,"",	M_CrispyToggleSmoothMap,'m'},
@@ -581,15 +583,14 @@ enum
     crispness_pitch,
     crispness_neghealth,
     crispness_defaultskill,
-    crispness_sep_tactical_,
 
     crispness_sep_crosshair,
     crispness_crosshair,
     crispness_crosshairtype,
     crispness_crosshairhealth,
     crispness_crosshairtarget,
-    crispness_sep_crosshair_,
 
+    crispness3_sep_empty,
     crispness3_next,
     crispness3_prev,
     crispness3_end
@@ -605,7 +606,6 @@ static menuitem_t Crispness3Menu[]=
     {3,"",	M_CrispyTogglePitch,'w'},
     {3,"",	M_CrispyToggleNeghealth,'n'},
     {3,"",	M_CrispyToggleDefaultSkill,'d'},
-    {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {3,"",	M_CrispyToggleCrosshair,'d'},
     {3,"",	M_CrispyToggleCrosshairtype,'c'},
@@ -632,15 +632,14 @@ enum
     crispness_freeaim,
     crispness_jumping,
     crispness_overunder,
-    crispness_sep_physical_,
 
     crispness_sep_demos,
     crispness_demotimer,
     crispness_demotimerdir,
     crispness_demobar,
     crispness_demousetimer,
-    crispness_sep_demos_,
 
+    crispness4_sep_empty,
     crispness4_next,
     crispness4_prev,
     crispness4_end
@@ -653,7 +652,6 @@ static menuitem_t Crispness4Menu[]=
     {3,"",	M_CrispyToggleFreeaim,'v'},
     {3,"",	M_CrispyToggleJumping,'a'},
     {3,"",	M_CrispyToggleOverunder,'w'},
-    {-1,"",0,'\0'},
     {-1,"",0,'\0'},
     {3,"",	M_CrispyToggleDemoTimer,'v'},
     {3,"",	M_CrispyToggleDemoTimerDir,'a'},
@@ -1574,6 +1572,9 @@ static void M_DrawCrispness1(void)
     M_DrawCrispnessSeparator(crispness_sep_visual, "Visual");
     M_DrawCrispnessMultiItem(crispness_coloredhud, "Colorize HUD Elements", multiitem_coloredhud, crispy->coloredhud, true);
     M_DrawCrispnessMultiItem(crispness_translucency, "Enable Translucency", multiitem_translucency, crispy->translucency, true);
+#ifdef CRISPY_TRUECOLOR
+    M_DrawCrispnessMultiItem(crispness_truecolorblend, "Translucency mode", multiitem_truecolorblend, crispy->truecolorblend, true);
+#endif
     M_DrawCrispnessItem(crispness_smoothlight, "Smooth Diminishing Lighting", crispy->smoothlight, true);
     M_DrawCrispnessMultiItem(crispness_brightmaps, "Apply Brightmaps to", multiitem_brightmaps, crispy->brightmaps, true);
     M_DrawCrispnessMultiItem(crispness_coloredblood, "Colored Blood", multiitem_coloredblood, crispy->coloredblood, gameversion != exe_chex);

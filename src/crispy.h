@@ -81,6 +81,7 @@ typedef struct
 	int translucency;
 #ifdef CRISPY_TRUECOLOR
 	int truecolor;
+	int truecolorblend;
 #endif
 	int uncapped;
 	int vsync;
@@ -241,6 +242,13 @@ enum
     SECRETMESSAGE_ON,
     SECRETMESSAGE_COUNT,
     NUM_SECRETMESSAGE
+};
+
+enum
+{
+    TRUECOLORBLEND_OFF,
+    TRUECOLORBLEND_ON,
+    NUM_TRUECOLORBLEND
 };
 
 enum
