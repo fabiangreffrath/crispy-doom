@@ -32,7 +32,7 @@
 #include "s_sound.h"
 #include "s_musinfo.h"
 #include "z_zone.h"
-#include "a11y.h""
+#include "a11y.h"
 
 #define MAX_LINE_LEN 260
 #define MAX_STRING_LEN 80
