@@ -857,6 +857,15 @@ void R_DrawPSprite(pspdef_t * psp)
     }
     vis->brightmap = R_BrightmapForState(psp->state - states);
 
+    // [crispy] translucent gun flash sprites
+    if (vis->psprite && 
+        (psp->state->sprite == SPR_BLSR && psp->state->frame == 3) ||
+        (psp->state->sprite == SPR_GWND && psp->state->frame == 2))
+    {
+        vis->mobjflags |= MF_TRANSLUCENT;
+        vis->texturemid += 0x80000;
+    }
+
     // [crispy] interpolate weapon bobbing
     if (crispy->uncapped)
     {
@@ -907,6 +916,7 @@ void R_DrawPlayerSprites(void)
 {
     int i, lightnum;
     pspdef_t *psp;
+    static pspdef_t psptmp;
 
 //
 // get light level
@@ -930,9 +940,23 @@ void R_DrawPlayerSprites(void)
 // add all active psprites
 //
     for (i = 0, psp = viewplayer->psprites; i < NUMPSPRITES; i++, psp++)
+    {
         if (psp->state)
-            R_DrawPSprite(psp);
-
+        {
+            // [crispy] translucent gun flash sprites
+            if (psp->state->sprite == SPR_GWND && psp->state->frame == 2)
+            {
+                psp->state->frame = 0;                
+                R_DrawPSprite(psp); 
+                psp->state->frame = 2;
+                R_DrawPSprite(psp); 
+            } 
+            else
+            {
+                R_DrawPSprite(psp); 
+            }
+        }      
+    }
 }
 
 
