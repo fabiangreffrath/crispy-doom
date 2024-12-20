@@ -1758,7 +1758,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF,   // flags
+     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_TRANSLUCENT,   // flags
      MF2_NOTELEPORT | MF2_LOGRAV | MF2_CANNOTPUSH       // flags2
      },
 
@@ -1812,7 +1812,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF,   // flags
+     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_TRANSLUCENT,   // flags
      MF2_NOTELEPORT | MF2_LOGRAV | MF2_CANNOTPUSH       // flags2
      },
 
@@ -1893,7 +1893,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW,  // flags
+     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_SHADOW | MF_TRANSLUCENT,  // flags
      0                          // flags2
      },
 
@@ -2649,7 +2649,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_NOSECTOR,        // flags
+     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_NOSECTOR | MF_TRANSLUCENT,        // flags
      0                          // flags2
      },
 
@@ -2676,7 +2676,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_NOSECTOR,        // flags
+     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_NOSECTOR | MF_TRANSLUCENT,        // flags
      0                          // flags2
      },
 
@@ -2703,7 +2703,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE, // flags
+     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE | MF_TRANSLUCENT, // flags
      0                          // flags2
      },
 
@@ -2730,7 +2730,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE, // flags
+     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_MISSILE | MF_TRANSLUCENT, // flags
      0                          // flags2
      },
 
@@ -2757,7 +2757,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_NOGRAVITY,      // flags
+     MF_NOBLOCKMAP | MF_NOGRAVITY | MF_TRANSLUCENT,      // flags
      0                          // flags2
      },
 
@@ -3625,7 +3625,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY,    // flags
+     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_NOGRAVITY | MF_TRANSLUCENT,    // flags
      MF2_NOTELEPORT     // flags2
      },
 
@@ -4003,7 +4003,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF,   // flags
+     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_TRANSLUCENT,   // flags
      MF2_NOTELEPORT | MF2_LOGRAV | MF2_CANNOTPUSH | MF2_WINDTHRUST      // flags2
      },
 
@@ -5245,7 +5245,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_SPECIAL,                // flags
+     MF_SPECIAL | MF_TRANSLUCENT,                // flags
      0                          // flags2
      },
 
