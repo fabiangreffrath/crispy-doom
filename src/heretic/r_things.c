@@ -859,8 +859,9 @@ void R_DrawPSprite(pspdef_t * psp)
 
     // [crispy] translucent "gun" flash sprites
     if (vis->psprite && 
-        (psp->state->sprite == SPR_BLSR && psp->state->frame != 0) ||
-        (psp->state->sprite == SPR_GWND && psp->state->frame != 0))
+        (psp->state->sprite == SPR_BLSR && psp->state->frame == 3) ||
+        (psp->state->sprite == SPR_GWND && psp->state->frame != 0) ||
+        (psp->state->sprite == SPR_HROD && psp->state->frame != 0))
     {
         vis->mobjflags |= MF_TRANSLUCENT;
     }
@@ -941,39 +942,65 @@ void R_DrawPlayerSprites(void)
     {
         if (psp->state)
         {
+            tmpframe = psp->state->frame;   
             // [crispy] overdraw translucent "gun" flash sprites
             switch (psp->state->sprite)
             {
                 case SPR_GWND:
-                    if (psp->state->frame == 1)
+                    if (psp->state->frame == 1 && crispy->translucency)
                     {
-                        tmpframe = psp->state->frame;     
-                        psp->state->frame = 0;    
+                        psp->state->frame = 0;   
                         R_DrawPSprite(psp); 
-                        psp->state->frame = tmpframe;
                     }
-                    else if (psp->state->frame == 2)
+                    else if (psp->state->frame == 2 && crispy->translucency)
                     {
-                        tmpframe = psp->state->frame;     
-                        psp->state->frame = 0;
+                        psp->state->frame = 0;   
                         psp->sy2 += 0x80000;        
                         R_DrawPSprite(psp); 
-                        psp->state->frame = tmpframe;
                         psp->sy2 -= 0x80000;    
                     }
-                    else if (psp->state->frame == 3)
+                    else if (psp->state->frame == 3 && crispy->translucency)
                     {
-                        tmpframe = psp->state->frame;     
-                        psp->state->frame = 0;
+                        psp->state->frame = 0;   
                         psp->sy2 += 0x40000;        
                         R_DrawPSprite(psp); 
-                        psp->state->frame = tmpframe;
+                        psp->sy2 -= 0x40000;   
+                    }
+                    break;
+                case SPR_BLSR:
+                    if (psp->state->frame == 3 && crispy->translucency)
+                    {
+                        psp->state->frame = 0;   
+                        psp->sy2 += 0x40000;  
+                        R_DrawPSprite(psp); 
+                        psp->sy2 -= 0x40000;   
+                    }
+                    break;
+                case SPR_HROD:
+                    if (psp->state->frame == 1 && crispy->translucency)
+                    {
+                        psp->state->frame = 0;   
+                        psp->sy2 += 0x60000;  
+                        R_DrawPSprite(psp); 
+                        psp->sy2 -= 0x60000;   
+                    }
+                    else if (psp->state->frame > 1 && psp->state->frame < 6 && crispy->translucency)
+                    {
+                        psp->state->frame = 0;    
+                        R_DrawPSprite(psp); 
+                    }
+                    else if (psp->state->frame == 6 && crispy->translucency)
+                    {
+                        psp->state->frame = 0;   
+                        psp->sy2 += 0x40000;  
+                        R_DrawPSprite(psp); 
                         psp->sy2 -= 0x40000;   
                     }
                     break;
                 default:
                     break;
             }
+            psp->state->frame = tmpframe;  
             R_DrawPSprite(psp); 
         }      
     }
