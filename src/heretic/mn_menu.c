@@ -378,12 +378,13 @@ static MenuItem_t Crispness1Items[] = {
     {ITT_LRFUNC2, "ENABLE TRANSLUCENCY:", CrispyTranslucency, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EFUNC, "NEXT PAGE", CrispyNextPage, 0, MENU_NONE},
+    {ITT_EFUNC, "LAST PAGE", CrispyPrevPage, 0, MENU_NONE},
 };
 
 static Menu_t Crispness1Menu = {
     68, 35,
     DrawCrispness,
-    13, Crispness1Items,
+    14, Crispness1Items,
     0,
     MENU_OPTIONS
 };
@@ -398,6 +399,9 @@ static MenuItem_t Crispness2Items[] = {
     {ITT_LRFUNC2, "SHOW PLAYER COORDS:", CrispyPlayerCoords, 0, MENU_NONE},
     {ITT_LRFUNC2, "REPORT REVEALED SECRETS:", CrispySecretMessage, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EFUNC, "NEXT PAGE", CrispyNextPage, 0, MENU_NONE},
     {ITT_EFUNC, "PREV PAGE", CrispyPrevPage, 0, MENU_NONE},
 };
@@ -405,7 +409,7 @@ static MenuItem_t Crispness2Items[] = {
 static Menu_t Crispness2Menu = {
     68, 35,
     DrawCrispness,
-    11, Crispness2Items,
+    14, Crispness2Items,
     0,
     MENU_OPTIONS
 };
@@ -417,13 +421,20 @@ static MenuItem_t Crispness3Items[] = {
     {ITT_LRFUNC2, "WEAPON ATTACK ALIGNMENT:", CrispyCenterWeapon, 0, MENU_NONE},
     {ITT_LRFUNC2, "DEFAULT DIFFICULTY:", CrispyDefaultskill, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EFUNC, "FIRST PAGE", CrispyNextPage, 0, MENU_NONE},
     {ITT_EFUNC, "PREV PAGE", CrispyPrevPage, 0, MENU_NONE},
 };
 
 static Menu_t Crispness3Menu = {
     68, 35,
     DrawCrispness,
-    7, Crispness3Items,
+    14, Crispness3Items,
     0,
     MENU_OPTIONS
 };
@@ -503,10 +514,10 @@ static const multiitem_t multiitem_difficulties[NUM_SKILLS] =
 
 multiitem_t multiitem_translucency[NUM_TRANSLUCENCY] =
 {
-    {TRANSLUCENCY_OFF, "off"},
-    {TRANSLUCENCY_MISSILE, "projectiles"},
-    {TRANSLUCENCY_ITEM, "vanilla Weapon Flash"},
-    {TRANSLUCENCY_BOTH, "both"},
+    {TRANSLUCENCY_OFF, "OFF"},
+    {TRANSLUCENCY_MISSILE, "PROJECTILES"},
+    {TRANSLUCENCY_ITEM, "VANILLA WEAPON FLASH"},
+    {TRANSLUCENCY_BOTH, "BOTH"},
 };
 
 static const multiitem_t multiitem_sndchannels[3] =
