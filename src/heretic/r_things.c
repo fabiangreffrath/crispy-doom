@@ -435,9 +435,8 @@ void R_DrawVisSprite(vissprite_t * vis, int x1, int x2)
     // [crispy] translucent sprites
     else if (crispy->translucency && vis->mobjflags & MF_TRANSLUCENT)
     {
-	// if (!(vis->mobjflags & (MF_NOGRAVITY | MF_COUNTITEM)) ||
-	//     (vis->mobjflags & MF_NOGRAVITY && crispy->translucency & TRANSLUCENCY_MISSILE) ||
-	//     (vis->mobjflags & MF_COUNTITEM && crispy->translucency & TRANSLUCENCY_ITEM))
+	if ((vis->mobjflags & (MF_NOGRAVITY | MF_MISCMISSLE) && crispy->translucency & TRANSLUCENCY_MISSILE) ||
+        (vis->psprite && crispy->translucency & TRANSLUCENCY_ITEM))
 	    colfunc = tlcolfunc;
     }
     
@@ -857,13 +856,11 @@ void R_DrawPSprite(pspdef_t * psp)
     }
     vis->brightmap = R_BrightmapForState(psp->state - states);
 
-    // [crispy] translucent "gun" flash sprites
-    if (vis->psprite && 
-        (psp->state->sprite == SPR_BLSR && psp->state->frame != 0) ||
-        (psp->state->sprite == SPR_GWND && psp->state->frame != 0) ||
-        (psp->state->sprite == SPR_HROD && psp->state->frame != 0) ||
-        (psp->state->sprite == SPR_GAUN && psp->state->frame > 10) ||
-        (psp->state->sprite == SPR_PHNX && psp->state->frame != 0))
+    // [crispy] translucent weapon flash sprites
+    if ((psp->state->frame > 10 && psp->state->sprite == SPR_GAUN) ||
+        (psp->state->frame != 0 && 
+        (psp->state->sprite == SPR_GWND || psp->state->sprite == SPR_BLSR ||
+         psp->state->sprite == SPR_HROD || psp->state->sprite == SPR_PHNX)))
     {
         vis->mobjflags |= MF_TRANSLUCENT;
     }
@@ -917,7 +914,7 @@ void R_DrawPSprite(pspdef_t * psp)
 void R_DrawPlayerSprites(void)
 {
     int i, lightnum;
-    int tmpframe, tmpoffset; // [crispy] temps for drawing translucent psrites
+    int tmpframe, offset, drawbase; // [crispy] temps for drawing translucent psrites
     pspdef_t *psp;
 
 //
@@ -945,80 +942,93 @@ void R_DrawPlayerSprites(void)
     {
         if (psp->state)
         {
-            if (crispy->translucency)
+            if (crispy->translucency & TRANSLUCENCY_ITEM)
             {
-                tmpframe = psp->state->frame;
                 // [crispy] Draw base frame 
                 switch (psp->state->sprite)
                 {          
                     case SPR_GWND:
                         if (psp->state->frame == 1)
                         {
-                            tmpoffset = spriteoffsets[SPR_GWND_F1].offset;
+                            offset = spriteoffsets[SPR_GWND_F1].offset;
+                            drawbase = 1;
                         }
                         else if (psp->state->frame == 2)
                         {
-                            tmpoffset = spriteoffsets[SPR_GWND_F2].offset;
+                            offset = spriteoffsets[SPR_GWND_F2].offset;
+                            drawbase = 1;
                         }
                         else if (psp->state->frame == 3)
                         {
-                            tmpoffset = spriteoffsets[SPR_GWND_F3].offset;
+                            offset = spriteoffsets[SPR_GWND_F3].offset;
+                            drawbase = 1;
                         }
-                        psp->state->frame = 0;
                         break;
                     case SPR_BLSR:
                         if (psp->state->frame == 1)
                         {
-                            tmpoffset = spriteoffsets[SPR_BLSR_F1].offset;
+                            offset = spriteoffsets[SPR_BLSR_F1].offset;
+                            drawbase = 1;
                         }
                         else if (psp->state->frame == 2)
                         {
-                            tmpoffset = spriteoffsets[SPR_BLSR_F2].offset;
+                            offset = spriteoffsets[SPR_BLSR_F2].offset;
+                            drawbase = 1;
                         }
                         else if (psp->state->frame == 3)
                         {
-                            tmpoffset = spriteoffsets[SPR_BLSR_F3].offset;
+                            offset = spriteoffsets[SPR_BLSR_F3].offset;
+                            drawbase = 1;
                         }
-                        psp->state->frame = 0;
                         break;
                     case SPR_HROD:
                         if (psp->state->frame == 1)
                         {
-                            tmpoffset = spriteoffsets[SPR_HROD_F1].offset;
+                            offset = spriteoffsets[SPR_HROD_F1].offset;
+                            drawbase = 1;
                         }
                         else if (psp->state->frame > 1 && psp->state->frame < 6)
                         {
-                            tmpoffset = spriteoffsets[SPR_HROD_F2_5].offset;
+                            offset = spriteoffsets[SPR_HROD_F2_5].offset;
+                            drawbase = 1;
                         }
                         else if (psp->state->frame == 6)
                         {
-                            tmpoffset = spriteoffsets[SPR_HROD_F6].offset;
+                            offset = spriteoffsets[SPR_HROD_F6].offset;
+                            drawbase = 1;
                         }
-                        psp->state->frame = 0;
                         break;
                     case SPR_PHNX:
                         if (psp->state->frame == 1)
                         {
-                            tmpoffset = spriteoffsets[SPR_PHNX_F1].offset;
+                            offset = spriteoffsets[SPR_PHNX_F1].offset;
+                            drawbase = 1;
                         }
                         else if (psp->state->frame == 2 || psp->state->frame > 3)
                         {
-                            tmpoffset = spriteoffsets[SPR_PHNX_F2].offset;
+                            offset = spriteoffsets[SPR_PHNX_F2].offset;
+                            drawbase = 1;
                         }
                         else if (psp->state->frame == 3)
                         {
-                            tmpoffset = spriteoffsets[SPR_PHNX_F3].offset;
+                            offset = spriteoffsets[SPR_PHNX_F3].offset;
+                            drawbase = 1;
                         }
-                        psp->state->frame = 0;
                         break;
                     default:
-                            tmpoffset = 0x0;
+                        offset = 0x0;
+                        drawbase = 0;
                         break;
                 }
-                psp->sy2 += tmpoffset;
-                R_DrawPSprite(psp);
-                psp->sy2 -= tmpoffset;
-                psp->state->frame = tmpframe;
+                if (drawbase)
+                {
+                    tmpframe = psp->state->frame;
+                    psp->state->frame = 0;
+                    psp->sy2 += offset;
+                    R_DrawPSprite(psp);
+                    psp->sy2 -= offset;
+                    psp->state->frame = tmpframe;
+                }
             }
             R_DrawPSprite(psp);
         }      

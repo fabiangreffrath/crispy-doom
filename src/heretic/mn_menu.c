@@ -505,7 +505,7 @@ multiitem_t multiitem_translucency[NUM_TRANSLUCENCY] =
 {
     {TRANSLUCENCY_OFF, "off"},
     {TRANSLUCENCY_MISSILE, "projectiles"},
-    {TRANSLUCENCY_ITEM, "items"},
+    {TRANSLUCENCY_ITEM, "vanilla Weapon Flash"},
     {TRANSLUCENCY_BOTH, "both"},
 };
 

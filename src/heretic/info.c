@@ -3189,7 +3189,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      6,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_TRANSLUCENT,   // flags
+     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_MISCMISSLE | MF_TRANSLUCENT,   // flags
      MF2_LOGRAV | MF2_FLOORBOUNCE | MF2_THRUGHOST | MF2_NOTELEPORT      // flags2
      },
 
@@ -3216,7 +3216,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      4,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_TRANSLUCENT,   // flags
+     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_MISCMISSLE | MF_TRANSLUCENT,   // flags
      MF2_LOGRAV | MF2_FLOORBOUNCE | MF2_THRUGHOST | MF2_NOTELEPORT      // flags2
      },
 
@@ -3243,7 +3243,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      18,                        // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_TRANSLUCENT,   // flags
+     MF_NOBLOCKMAP | MF_MISSILE | MF_DROPOFF | MF_MISCMISSLE | MF_TRANSLUCENT,   // flags
      MF2_LOGRAV | MF2_FLOORBOUNCE | MF2_THRUGHOST | MF2_TELESTOMP       // flags2
      },
 
@@ -3814,7 +3814,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_NOBLOCKMAP | MF_TRANSLUCENT,             // flags - NOGRACITY MIGHT NEED TO BE ADDED - IMPACT?
+     MF_NOBLOCKMAP | MF_MISCMISSLE | MF_TRANSLUCENT,   // flags 
      MF2_LOGRAV                 // flags2
      },
 
