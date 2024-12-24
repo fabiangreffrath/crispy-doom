@@ -975,6 +975,11 @@ void P_KillMobj(mobj_t * source, mobj_t * target)
             return;
         }
     }
+
+    // [crispy] Exploding Goo-Pods are translucent
+    if (target->type == MT_POD)
+        target->flags |= MF_MISCMISSILE | MF_TRANSLUCENT;
+
     if (target->health < -(target->info->spawnhealth >> 1)
         && target->info->xdeathstate)
     {                           // Extreme death
