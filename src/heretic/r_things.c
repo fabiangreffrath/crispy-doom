@@ -940,7 +940,8 @@ void R_DrawPlayerSprites(void)
         if (psp->state)
         {
             // [crispy] Draw offset base frame and translucent current frame
-            if (crispy->translucency & TRANSLUCENCY_ITEM)
+            if (crispy->translucency & TRANSLUCENCY_ITEM &&
+                    !(viewplayer->powers[pw_invisibility] > 4*32 || viewplayer->powers[pw_invisibility] & 8))
             {
                 translucent = 1;
                 tmpframe = psp->state->frame;
