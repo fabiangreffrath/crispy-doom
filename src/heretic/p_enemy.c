@@ -626,7 +626,7 @@ void A_Look(mobj_t *actor, player_t *player, pspdef_t *psp)
         else
             goto seeyou;
     }
-    
+    // [crispy] Undo Mummyleader translucency
     if (actor->type == MT_MUMMYLEADER)
     {
         actor->flags &= ~MF_TRANSLUCENT;
@@ -705,7 +705,7 @@ void A_Chase(mobj_t *actor, player_t *player, pspdef_t *psp)
             actor->tics = 3;
         }
     }
-
+    // [crispy] Undo Mummyleader translucency
     if (actor->type == MT_MUMMYLEADER)
     {
         actor->flags &= ~MF_TRANSLUCENT;
@@ -831,6 +831,7 @@ void A_FaceTarget(mobj_t *actor, player_t *player, pspdef_t *psp)
     {                           // Target is a ghost
         actor->angle += P_SubRandom() << 21;
     }
+    // [crispy] Charging-up Mummyleaders are translucent in that state (blinking)
     if (actor->type == MT_MUMMYLEADER)
     {
         actor->flags |= MF_TRANSLUCENT;

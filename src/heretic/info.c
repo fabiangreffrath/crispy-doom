@@ -5245,7 +5245,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      sfx_None,                  // activesound
-     MF_SPECIAL | MF_TRANSLUCENT,                // flags
+     MF_SPECIAL,                // flags
      0                          // flags2
      },
 

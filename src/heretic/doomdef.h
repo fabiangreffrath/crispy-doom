@@ -255,7 +255,7 @@ typedef struct
 #define	MF_TRANSLATION	0xc000000 // if 0x4 0x8 or 0xc, use a translation
 #define	MF_TRANSSHIFT	26      // table for player colormaps
 #define MF_TRANSLUCENT  0x80000000 // [crispy] translucent sprite
-#define MF_MISCMISSILE   0x40000000 // [crispy] missiles that aren't missiles
+#define MF_MISCMISSILE  0x40000000 // [crispy] missiles that aren't missiles
 
 // --- mobj.flags2 ---
 

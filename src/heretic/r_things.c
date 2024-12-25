@@ -739,7 +739,7 @@ int PSpriteSY[NUMWEAPONS] = {
 
 boolean pspr_interp = true; // [crispy]
 
-void R_DrawPSprite(pspdef_t * psp, int psyoffset, int translucent) // [crispy] y-offset and translucency for weapon fire translucency
+void R_DrawPSprite(pspdef_t * psp, int psyoffset, int translucent) // [crispy] y-offset and translucency for weapon flash translucency
 {
     fixed_t tx;
     int x1, x2;
@@ -939,12 +939,12 @@ void R_DrawPlayerSprites(void)
     {
         if (psp->state)
         {
+            // [crispy] Draw offset base frame and translucent current frame
             if (crispy->translucency & TRANSLUCENCY_ITEM)
             {
                 translucent = 1;
                 tmpframe = psp->state->frame;
 
-                // [crispy] Draw offset base frame and translucent current frame
                 switch (psp->state->sprite)
                 {      
                     case SPR_GAUN:
