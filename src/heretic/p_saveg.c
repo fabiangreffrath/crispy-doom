@@ -24,7 +24,6 @@
 #include "m_misc.h"
 #include "p_local.h"
 #include "v_video.h"
-#include "a11y.h"
 
 static FILE *SaveGameFP;
 
@@ -1419,9 +1418,6 @@ static void saveg_read_lightflash_t(lightflash_t *str)
 
     // int mintime;
     str->mintime = SV_ReadLong();
-
-    if (!a11y_sector_lighting)
-        str->sector->rlightlevel = str->maxlight;
 }
 
 static void saveg_write_lightflash_t(lightflash_t *str)
@@ -1478,9 +1474,6 @@ static void saveg_read_strobe_t(strobe_t *str)
 
     // int brighttime;
     str->brighttime = SV_ReadLong();
-
-    if (!a11y_sector_lighting)
-        str->sector->rlightlevel = str->maxlight;
 }
 
 static void saveg_write_strobe_t(strobe_t *str)
@@ -1531,9 +1524,6 @@ static void saveg_read_glow_t(glow_t *str)
 
     // int direction;
     str->direction = SV_ReadLong();
-
-    if (!a11y_sector_lighting)
-        str->sector->rlightlevel = str->maxlight;
 }
 
 static void saveg_write_glow_t(glow_t *str)
