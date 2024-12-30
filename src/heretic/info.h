@@ -1382,32 +1382,6 @@ typedef struct
 extern state_t states[NUMSTATES];
 extern const char *sprnames[];
 
-// [crispy] Y-Offsets for various sprite frames used for weapon fire translucency
-typedef enum
-{
-    SPR_GWND_F1,
-    SPR_GWND_F2,
-    SPR_GWND_F3,
-    SPR_BLSR_F1,
-    SPR_BLSR_F2,
-    SPR_BLSR_F3,
-    SPR_HROD_F1,
-    SPR_HROD_F2_5,
-    SPR_HROD_F6,
-    SPR_PHNX_F1,
-    SPR_PHNX_F2,
-    SPR_PHNX_F3, 
-    NUMSOFFSETS
-} spriteoffsetenum_t;
-
-typedef struct
-{
-    spriteoffsetenum_t sprite;
-    int offset;
-} spriteoffset_t;
-
-extern spriteoffset_t spriteoffsets[NUMSOFFSETS];
-
 typedef enum
 {
     MT_MISC0,

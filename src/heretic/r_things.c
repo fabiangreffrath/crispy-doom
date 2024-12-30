@@ -33,6 +33,29 @@ typedef struct
     int bottomclip;
 } maskdraw_t;
 
+typedef enum
+{
+    SPR_GWND_F1,
+    SPR_GWND_F2,
+    SPR_GWND_F3,
+    SPR_BLSR_F1,
+    SPR_BLSR_F2,
+    SPR_BLSR_F3,
+    SPR_HROD_F1,
+    SPR_HROD_F2_5,
+    SPR_HROD_F6,
+    SPR_PHNX_F1,
+    SPR_PHNX_F2,
+    SPR_PHNX_F3, 
+    NUMSOFFSETS
+} spriteoffsetenum_t;
+
+typedef struct
+{
+    spriteoffsetenum_t sprite;
+    int offset;
+} spriteoffset_t;
+
 /*
 
 Sprite rotation 0 is facing the viewer, rotation 1 is one angle turn CLOCKWISE around the axis.
@@ -67,6 +90,21 @@ int maxframe;
 const char *spritename;
 
 
+// [crispy] Y-Offsets for various sprite frames used for weapon fire translucency
+spriteoffset_t spriteoffsets[NUMSOFFSETS] = {
+    {SPR_GWND_F1, 0x0},
+    {SPR_GWND_F2, 0x80000},
+    {SPR_GWND_F3, 0x40000},
+    {SPR_BLSR_F1, 0x0},
+    {SPR_BLSR_F2, 0x10000},
+    {SPR_BLSR_F3, 0x40000},
+    {SPR_HROD_F1, 0x60000},
+    {SPR_HROD_F2_5, 0x0},
+    {SPR_HROD_F6, 0x40000},
+    {SPR_PHNX_F1, 0x0},
+    {SPR_PHNX_F2, 0xC0000},
+    {SPR_PHNX_F3, 0x60000}
+};
 
 /*
 =================
