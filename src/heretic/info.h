@@ -1382,6 +1382,8 @@ typedef struct
 extern state_t states[NUMSTATES];
 extern const char *sprnames[];
 
+
+
 typedef enum
 {
     MT_MISC0,
