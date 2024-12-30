@@ -947,11 +947,7 @@ void R_DrawPlayerSprites(void)
                 tmpframe = psp->state->frame;
 
                 switch (psp->state->sprite)
-                {      
-                    case SPR_GAUN:
-                        if (tmpframe <= 10)
-                            translucent = 0;
-                        break;    
+                {         
                     case SPR_GWND:
                         if (tmpframe == 1)
                             offset = spriteoffsets[SPR_GWND_F1].offset;
