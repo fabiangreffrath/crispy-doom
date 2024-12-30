@@ -1285,7 +1285,7 @@ static void saveg_read_lightflash_t(lightflash_t *str)
     // int mintime;
     str->mintime = saveg_read32();
 
-    if (!a11y_sector_lighting)
+    if (!a11y_sector_lighting && str->sector->rlightlevel < str->maxlight)
         str->sector->rlightlevel = str->maxlight;
 }
 
@@ -1343,7 +1343,7 @@ static void saveg_read_strobe_t(strobe_t *str)
     // int brighttime;
     str->brighttime = saveg_read32();
 
-    if (!a11y_sector_lighting)
+    if (!a11y_sector_lighting && str->sector->rlightlevel < str->maxlight)
         str->sector->rlightlevel = str->maxlight;
 }
 
@@ -1395,7 +1395,7 @@ static void saveg_read_glow_t(glow_t *str)
     // int direction;
     str->direction = saveg_read32();
 
-    if (!a11y_sector_lighting)
+    if (!a11y_sector_lighting && str->sector->rlightlevel < str->maxlight)
         str->sector->rlightlevel = str->maxlight;
 }
 

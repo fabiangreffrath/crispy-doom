@@ -165,7 +165,7 @@ static void P_ReadFireFlicker (const char *key)
 
 		flick->thinker.function.acp1 = (actionf_p1)T_FireFlicker;
 
-		if (!a11y_sector_lighting)
+		if (!a11y_sector_lighting && flick->sector->rlightlevel < flick->maxlight)
 			flick->sector->rlightlevel = flick->maxlight;
 
 		P_AddThinker(&flick->thinker);
