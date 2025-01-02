@@ -92,18 +92,18 @@ const char *spritename;
 
 // [crispy] Y-Offsets for various sprite frames used for weapon fire translucency
 spriteoffset_t spriteoffsets[NUMSOFFSETS] = {
-    {SPR_GWND_F1, 0x0},
-    {SPR_GWND_F2, 0x80000},
-    {SPR_GWND_F3, 0x40000},
-    {SPR_BLSR_F1, 0x0},
-    {SPR_BLSR_F2, 0x10000},
-    {SPR_BLSR_F3, 0x40000},
-    {SPR_HROD_F1, 0x60000},
-    {SPR_HROD_F2_5, 0x0},
-    {SPR_HROD_F6, 0x40000},
-    {SPR_PHNX_F1, 0x0},
-    {SPR_PHNX_F2, 0xC0000},
-    {SPR_PHNX_F3, 0x60000}
+    {SPR_GWND_F1, 0 * FRACUNIT},
+    {SPR_GWND_F2, 8 * FRACUNIT},
+    {SPR_GWND_F3, 4 * FRACUNIT},
+    {SPR_BLSR_F1, 0 * FRACUNIT},
+    {SPR_BLSR_F2, 1 * FRACUNIT},
+    {SPR_BLSR_F3, 4 * FRACUNIT},
+    {SPR_HROD_F1, 5 * FRACUNIT},
+    {SPR_HROD_F2_5, 0 * FRACUNIT},
+    {SPR_HROD_F6, 4 * FRACUNIT},
+    {SPR_PHNX_F1, 0 * FRACUNIT},
+    {SPR_PHNX_F2, 12 * FRACUNIT},
+    {SPR_PHNX_F3, 6 * FRACUNIT}
 };
 
 /*
