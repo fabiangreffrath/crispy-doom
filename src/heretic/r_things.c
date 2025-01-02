@@ -473,9 +473,9 @@ void R_DrawVisSprite(vissprite_t * vis, int x1, int x2)
     // [crispy] translucent sprites
     else if (crispy->translucency && vis->mobjflags & MF_TRANSLUCENT)
     {
-	if ((vis->mobjflags & (MF_NOGRAVITY | MF_MISCMISSILE | MF_MISSILE) && crispy->translucency & TRANSLUCENCY_MISSILE) ||
-        (vis->psprite && crispy->translucency & TRANSLUCENCY_ITEM))
-	    colfunc = tlcolfunc;
+    	if ((crispy->translucency & TRANSLUCENCY_MISSILE) ||
+            (vis->psprite && crispy->translucency & TRANSLUCENCY_ITEM))
+	        colfunc = tlcolfunc;
     }
     
     dc_iscale = abs(vis->xiscale) >> detailshift;
