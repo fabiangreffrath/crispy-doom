@@ -1775,9 +1775,8 @@ void G_DoReborn(int playernum)
     boolean foundSpot;
     int bestWeapon;
 
-    // Don't quit demo unless no demoextend or played demo from reel
-    if ((!demoextend || (demoplayback && !timingdemo && !singledemo)) 
-                     && G_CheckDemoStatus())
+    // quit demo unless -demoextend
+    if (!demoextend && G_CheckDemoStatus())
     {
         return;
     }
