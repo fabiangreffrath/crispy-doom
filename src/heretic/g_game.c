@@ -1850,9 +1850,8 @@ void G_DoReborn(int playernum)
 {
     int i;
 
-    // Don't quit demo unless no demoextend or played demo from reel
-    if ((!demoextend || (demoplayback && !timingdemo && !singledemo)) 
-                     && G_CheckDemoStatus())
+    // quit demo unless -demoextend
+    if (!demoextend && G_CheckDemoStatus())
         return;
     if (!netgame)
         gameaction = ga_loadlevel;      // reload the level from scratch
