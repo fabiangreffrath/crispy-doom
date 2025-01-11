@@ -22,6 +22,7 @@
 #include "r_local.h"
 #include "tables.h"
 #include "v_video.h" // [crispy] V_DrawFilledBox for HOM detector
+#include "a11y.h" // [crispy] A11Y
 
 int viewangleoffset;
 
@@ -967,6 +968,10 @@ void R_SetupFrame(player_t * player)
     }
 
     extralight = player->extralight;
+
+    // [crispy] A11Y
+    extralight += a11y_extra_lighting;
+
     // [crispy] apply new yslope[] whenever "lookdir", "detailshift" or
     // "screenblocks" change
     tempCentery = viewheight / 2 + (pitch * (1 << crispy->hires)) *

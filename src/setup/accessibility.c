@@ -63,7 +63,7 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
 
     TXT_SetTableColumns(window, 2);
 
-    if (gamemission == doom)
+    if (gamemission == doom || gamemission == heretic)
     {
         TXT_AddWidgets(window,
                     TXT_NewLabel("Extra Lighting"),
