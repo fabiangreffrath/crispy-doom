@@ -967,8 +967,13 @@ void R_SetupFrame(player_t * player)
         viewy += player->chickenPeck * finesine[tableAngle];
     }
 
+    // [crispy] A11Y
+    if (a11y_weapon_flash)
+    {
     extralight = player->extralight;
-
+    }
+    else
+        extralight = 0;
     // [crispy] A11Y
     extralight += a11y_extra_lighting;
 
