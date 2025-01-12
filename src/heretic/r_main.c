@@ -914,6 +914,7 @@ void R_SetupFrame(player_t * player)
     int tableAngle;
     int tempCentery;
     int pitch; // [crispy]
+    int tmpColormap; // [crispy]
 
     //drawbsp = 1;
     viewplayer = player;
@@ -992,7 +993,14 @@ void R_SetupFrame(player_t * player)
     sscount = 0;
     if (player->fixedcolormap)
     {
-        fixedcolormap = colormaps + player->fixedcolormap
+        tmpColormap = player->fixedcolormap;
+        if ((!a11y_invul_colormap && player->powers[pw_invulnerability]) ||
+            (!a11y_weapon_flash && player->powers[pw_infrared]))
+        {
+            tmpColormap = 1; // [crispy] A11Y 
+        }
+
+        fixedcolormap = colormaps + tmpColormap
             * (NUMCOLORMAPS / 32) // [crispy] smooth diminishing lighting
             * 256 /* * sizeof(lighttable_t)*/;
         walllights = scalelightfixed;
