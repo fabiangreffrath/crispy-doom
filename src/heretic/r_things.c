@@ -40,7 +40,9 @@ typedef enum
     SPR_GWND_F3,
     SPR_BLSR_F1,
     SPR_BLSR_F2,
+    SPR_BLSR_F2_scale,
     SPR_BLSR_F3,
+    SPR_BLSR_F3_scale,
     SPR_HROD_F1,
     SPR_HROD_F2_5,
     SPR_HROD_F6,
@@ -97,7 +99,9 @@ spriteoffset_t spriteoffsets[NUMSOFFSETS] = {
     {SPR_GWND_F3, 4 * FRACUNIT},
     {SPR_BLSR_F1, 0 * FRACUNIT},
     {SPR_BLSR_F2, 1 * FRACUNIT},
+    {SPR_BLSR_F2_scale, 4 * FRACUNIT},
     {SPR_BLSR_F3, 4 * FRACUNIT},
+    {SPR_BLSR_F3_scale, 4 * FRACUNIT},
     {SPR_HROD_F1, 5 * FRACUNIT},
     {SPR_HROD_F2_5, 0 * FRACUNIT},
     {SPR_HROD_F6, 4 * FRACUNIT},
@@ -796,7 +800,7 @@ int PSpriteSY[NUMWEAPONS] = {
 
 boolean pspr_interp = true; // [crispy]
 
-void R_DrawPSprite(pspdef_t * psp, int psyoffset, int translucent) // [crispy] y-offset and translucency for weapon flash translucency
+void R_DrawPSprite(pspdef_t * psp, int psyoffset, int psscale, int translucent) // [crispy] y-offset and translucency for weapon flash translucency
 {
     fixed_t tx;
     int x1, x2;
@@ -968,7 +972,7 @@ void R_DrawPSprite(pspdef_t * psp, int psyoffset, int translucent) // [crispy] y
 void R_DrawPlayerSprites(void)
 {
     int i, lightnum;
-    int tmpframe, offset, translucent = 0; // [crispy] temps for drawing translucent psrites
+    int tmpframe, offset, scale = 0, translucent = 0; // [crispy] temps for drawing translucent psrites
     pspdef_t *psp;
 
 //
@@ -1022,10 +1026,16 @@ void R_DrawPlayerSprites(void)
                             offset = spriteoffsets[SPR_BLSR_F1].offset;
                         else 
                         if (tmpframe == 2)
+                        {
                             offset = spriteoffsets[SPR_BLSR_F2].offset;
+                            scale = spriteoffsets[SPR_BLSR_F2_scale].offset;
+                        }
                         else 
                         if (tmpframe == 3)
+                        {
                             offset = spriteoffsets[SPR_BLSR_F3].offset;
+                            scale = spriteoffsets[SPR_BLSR_F3_scale].offset;
+                        }
                         else
                             translucent = 0;
                         break;
@@ -1056,16 +1066,17 @@ void R_DrawPlayerSprites(void)
                     default:
                         offset = 0x0;
                         translucent = 0;
+                        scale = 0;
                         break;
                 }
                 if (translucent && psp->state->sprite != SPR_GAUN)
                 {
                     psp->state->frame = 0; // draw base frame
-                    R_DrawPSprite(psp, offset, 0);
+                    R_DrawPSprite(psp, offset, scale, 0);
                     psp->state->frame = tmpframe; // restore frame
                 }
             }
-            R_DrawPSprite(psp, 0x0, translucent);
+            R_DrawPSprite(psp, 0x0, 0x0, translucent);
         }      
     }
 }
