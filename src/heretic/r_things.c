@@ -733,7 +733,7 @@ void R_ProjectSprite(mobj_t * thing)
 void R_AddSprites(sector_t * sec)
 {
     mobj_t *thing;
-    int lightnum;
+    int lightnum, translucent = 0;
 
     if (sec->validcount == validcount)
         return;                 // already added
@@ -751,7 +751,26 @@ void R_AddSprites(sector_t * sec)
 
 
     for (thing = sec->thinglist; thing; thing = thing->snext)
+    {
+        // [crispy] Draw offset base frame and translucent current frame for Mummy-Leader Attack Sprites
+        if (crispy->translucency & TRANSLUCENCY_MISSILE)
+        {
+            if (thing->info->doomednum == 45 && thing->state->sprite == SPR_MUMM && thing->frame == 32792)
+            {
+                thing->frame = 23;
+                R_ProjectSprite(thing);
+                thing->frame = 32792;
+                translucent = 1;
+                thing->flags |= MF_TRANSLUCENT;
+            }
+        }
         R_ProjectSprite(thing);
+        if (translucent)
+        {
+            thing->flags &= ~MF_TRANSLUCENT;
+            translucent = 0;
+        }
+    }
 }
 
 
