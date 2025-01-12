@@ -49,14 +49,14 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
                                       &a11y_weapon_flash),
                       TXT_NewCheckBox("Weapon Flash Sprite",
                                       &a11y_weapon_pspr),
+                      TXT_NewCheckBox("Palette Changes",
+                                      &a11y_palette_changes),
                       NULL);
     }
 
     if (gamemission == doom)
     {
         TXT_AddWidgets(window,
-                      TXT_NewCheckBox("Palette Changes",
-                                      &a11y_palette_changes),
                       TXT_NewCheckBox("Invulnerability Colormap",
                                       &a11y_invul_colormap),
                       NULL);
