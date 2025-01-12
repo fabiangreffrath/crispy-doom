@@ -23,6 +23,7 @@
 #include "r_bmaps.h"
 #include "r_local.h"
 #include "v_trans.h" // [crispy] blending functions
+#include "a11y.h" // [crispy] A11Y
 
 typedef struct
 {
@@ -978,8 +979,9 @@ void R_DrawPlayerSprites(void)
         if (psp->state)
         {
             // [crispy] Draw offset base frame and translucent current frame
-            if (crispy->translucency & TRANSLUCENCY_ITEM &&
-                    !(viewplayer->powers[pw_invisibility] > 4*32 || viewplayer->powers[pw_invisibility] & 8))
+            if (!a11y_weapon_pspr ||
+                    (crispy->translucency & TRANSLUCENCY_ITEM &&
+                    !(viewplayer->powers[pw_invisibility] > 4*32 || viewplayer->powers[pw_invisibility] & 8)))
             {
                 translucent = 1;
                 tmpframe = psp->state->frame;
@@ -1046,6 +1048,8 @@ void R_DrawPlayerSprites(void)
                     psp->state->frame = tmpframe; // restore frame
                 }
             }
+            if (!a11y_weapon_pspr && translucent)
+                continue; // [crispy] A11Y don't draw weapon attack frame
             R_DrawPSprite(psp, 0x0, translucent);
         }      
     }
