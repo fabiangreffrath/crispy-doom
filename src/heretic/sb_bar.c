@@ -820,7 +820,7 @@ void SB_PaletteFlash(void)
     // [crispy] A11Y
     if (!a11y_palette_changes)
     {
-	    palette = 0;
+        palette = 0;
     }
     else if (CPlayer->damagecount)
     {

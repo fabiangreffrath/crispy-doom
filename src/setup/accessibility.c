@@ -52,8 +52,7 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
                       TXT_NewCheckBox("Palette Changes",
                                       &a11y_palette_changes),
                       TXT_NewCheckBox("Invulnerability Colormap",
-                                      &a11y_invul_colormap),
-                                      
+                                      &a11y_invul_colormap),                                      
                       NULL);
     }
 
@@ -62,9 +61,9 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
     if (gamemission == doom || gamemission == heretic)
     {
         TXT_AddWidgets(window,
-                    TXT_NewLabel("Extra Lighting"),
-                    TXT_NewSpinControl(&a11y_extra_lighting, 0, 8),
-                    NULL);
+                      TXT_NewLabel("Extra Lighting"),
+                      TXT_NewSpinControl(&a11y_extra_lighting, 0, 8),
+                      NULL);
     }
 
 }
