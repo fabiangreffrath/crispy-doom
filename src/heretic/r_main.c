@@ -995,7 +995,7 @@ void R_SetupFrame(player_t * player)
     {
         tmpColormap = player->fixedcolormap;
         if ((!a11y_invul_colormap && player->powers[pw_invulnerability]) ||
-            (!a11y_weapon_flash && player->powers[pw_infrared]))
+            (!a11y_weapon_flash && player->powers[pw_infrared] && !player->powers[pw_invulnerability]))
         {
             tmpColormap = 1; // [crispy] A11Y 
         }
