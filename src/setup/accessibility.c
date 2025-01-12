@@ -52,7 +52,7 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
                       TXT_NewCheckBox("Palette Changes",
                                       &a11y_palette_changes),
                       TXT_NewCheckBox("Invulnerability Colormap",
-                                      &a11y_invul_colormap),                                      
+                                      &a11y_invul_colormap),
                       NULL);
     }
 
