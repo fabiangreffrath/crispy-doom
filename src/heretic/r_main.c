@@ -914,7 +914,7 @@ void R_SetupFrame(player_t * player)
     int tableAngle;
     int tempCentery;
     int pitch; // [crispy]
-    int tmpColormap; // [crispy]
+    int tmpColormap; // [crispy] to overwrite colormap
 
     //drawbsp = 1;
     viewplayer = player;
@@ -994,10 +994,11 @@ void R_SetupFrame(player_t * player)
     if (player->fixedcolormap)
     {
         tmpColormap = player->fixedcolormap;
+        // [crispy] A11Y - overwrite to disable invul-colormap or torch flickering
         if ((!a11y_invul_colormap && player->powers[pw_invulnerability]) ||
             (!a11y_weapon_flash && player->powers[pw_infrared] && !player->powers[pw_invulnerability]))
         {
-            tmpColormap = 1; // [crispy] A11Y 
+            tmpColormap = 1; // [crispy] A11Y - static infrared map
         }
 
         fixedcolormap = colormaps + tmpColormap
