@@ -1061,30 +1061,41 @@ void DrawFullScreenStuff(void)
     int i;
     int x;
     int temp;
+    int sboffset; // [crispy] to apply WIDESCREENDELTA
 
     UpdateState |= I_FULLSCRN;
-    // [crispy] Crispy Hud
+
+    // [crispy] Crispy Huds
     // TODO Do not always render, only if update needed
-    if(screenblocks == 12)
+    if (screenblocks == 12 || screenblocks >= 15)
+    {
+        sboffset = WIDESCREENDELTA;
+    }
+    else
+    {
+        sboffset = 0;
+    }
+
+    if(screenblocks == 13 || screenblocks == 15)
     {
         int xPosGem2;
         int xPosKeys;
 
         xPosGem2 = 270;
-        xPosKeys = 214 + WIDESCREENDELTA;
+        xPosKeys = 214 + sboffset;
 
         // Health
         temp = CPlayer->mo->health;
         if (temp > 0)
         {
-            DrINumber(temp, 5 - WIDESCREENDELTA, 180);
+            DrINumber(temp, 5 - sboffset, 180);
         }
         else
         {
-            DrINumber(0, 5 - WIDESCREENDELTA, 180);
+            DrINumber(0, 5 - sboffset, 180);
         }
         // Armor
-        DrINumber(CPlayer->armorpoints, 286 + WIDESCREENDELTA, 180);
+        DrINumber(CPlayer->armorpoints, 286 + sboffset, 180);
         // Frags
         if (deathmatch)
         {
@@ -1096,7 +1107,7 @@ void DrawFullScreenStuff(void)
                     temp += CPlayer->frags[i];
                 }
             }
-            DrINumber(temp, 5 - WIDESCREENDELTA, 165);
+            DrINumber(temp, 5 - sboffset, 165);
         }
         // Items, Itemflash and Selection Bar
         if (!inventory)
@@ -1104,14 +1115,14 @@ void DrawFullScreenStuff(void)
             if (ArtifactFlash)
             {
                 temp = W_GetNumForName(DEH_String("useartia")) + ArtifactFlash - 1;
-                V_DrawPatch(243 + WIDESCREENDELTA, 171, W_CacheLumpNum(temp, PU_CACHE));
+                V_DrawPatch(243 + sboffset, 171, W_CacheLumpNum(temp, PU_CACHE));
                 ArtifactFlash--;
             }
             else if (CPlayer->readyArtifact > 0)
             {
                 patch = DEH_String(patcharti[CPlayer->readyArtifact]);
-                V_DrawPatch(240 + WIDESCREENDELTA, 170, W_CacheLumpName(patch, PU_CACHE));
-                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 262 + WIDESCREENDELTA, 192);
+                V_DrawPatch(240 + sboffset, 170, W_CacheLumpName(patch, PU_CACHE));
+                DrSmallNumber(CPlayer->inventory[inv_ptr].count, 262 + sboffset, 192);
             }
         }
         else
@@ -1152,10 +1163,10 @@ void DrawFullScreenStuff(void)
         temp = CPlayer->ammo[wpnlev1info[CPlayer->readyweapon].ammo];
         if (temp && CPlayer->readyweapon > 0 && CPlayer->readyweapon < 7)
         {
-            V_DrawPatch(55 - WIDESCREENDELTA, 182,
+            V_DrawPatch(55 - sboffset, 182,
                         W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
                                         PU_CACHE));
-            DrINumber(temp, 53 - WIDESCREENDELTA, 172);
+            DrINumber(temp, 53 - sboffset, 172);
         }
         // Keys
         if (CPlayer->keys[key_yellow])
@@ -1174,11 +1185,11 @@ void DrawFullScreenStuff(void)
     }
     if (CPlayer->mo->health > 0)
     {
-        DrBNumber(CPlayer->mo->health, 5, 180);
+        DrBNumber(CPlayer->mo->health, 5 - sboffset, 180);
     }
     else
     {
-        DrBNumber(0, 5, 180);
+        DrBNumber(0, 5 - sboffset, 180);
     }
     if (deathmatch)
     {
@@ -1190,16 +1201,16 @@ void DrawFullScreenStuff(void)
                 temp += CPlayer->frags[i];
             }
         }
-        DrINumber(temp, 45, 185);
+        DrINumber(temp, 45 - sboffset, 185);
     }
     if (!inventory)
     {
         if (CPlayer->readyArtifact > 0)
         {
             patch = DEH_String(patcharti[CPlayer->readyArtifact]);
-            V_DrawAltTLPatch(286, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
-            V_DrawPatch(286, 170, W_CacheLumpName(patch, PU_CACHE));
-            DrSmallNumber(CPlayer->inventory[inv_ptr].count, 307, 192);
+            V_DrawAltTLPatch(286 + sboffset, 170, W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+            V_DrawPatch(286 + sboffset, 170, W_CacheLumpName(patch, PU_CACHE));
+            DrSmallNumber(CPlayer->inventory[inv_ptr].count, 307 + sboffset, 192);
         }
     }
     else
