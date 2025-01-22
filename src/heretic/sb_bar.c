@@ -800,15 +800,25 @@ void SB_Drawer(void)
             {
                 if (hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    V_DrawPatch(spinfly_x, 17,
-                                W_CacheLumpNum(spinflylump + 15,
-                                                PU_CACHE));
+                    if (screenblocks == 14 || screenblocks == 16)
+                        V_DrawTLPatch(spinfly_x, 17,
+                                    W_CacheLumpNum(spinflylump + 15,
+                                                    PU_CACHE));
+                    else
+                        V_DrawPatch(spinfly_x, 17,
+                                    W_CacheLumpNum(spinflylump + 15,
+                                                    PU_CACHE));                        
                 }
                 else
                 {
-                    V_DrawPatch(spinfly_x, 17,
-                                W_CacheLumpNum(spinflylump + frame,
-                                                PU_CACHE));
+                    if (screenblocks == 14 || screenblocks == 16)
+                        V_DrawTLPatch(spinfly_x, 17,
+                                    W_CacheLumpNum(spinflylump + frame,
+                                                    PU_CACHE));
+                    else
+                        V_DrawPatch(spinfly_x, 17,
+                                    W_CacheLumpNum(spinflylump + frame,
+                                                    PU_CACHE));                    
                     hitCenterFrame = false;
                 }
             }
@@ -816,16 +826,26 @@ void SB_Drawer(void)
             {
                 if (!hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    V_DrawPatch(spinfly_x, 17,
-                                W_CacheLumpNum(spinflylump + frame,
-                                                PU_CACHE));
+                    if (screenblocks == 14 || screenblocks == 16)
+                        V_DrawTLPatch(spinfly_x, 17,
+                                    W_CacheLumpNum(spinflylump + frame,
+                                                    PU_CACHE));
+                    else
+                        V_DrawPatch(spinfly_x, 17,
+                                    W_CacheLumpNum(spinflylump + frame,
+                                                    PU_CACHE));                        
                     hitCenterFrame = false;
                 }
                 else
                 {
-                    V_DrawPatch(spinfly_x, 17,
-                                W_CacheLumpNum(spinflylump + 15,
-                                                PU_CACHE));
+                    if (screenblocks == 14 || screenblocks == 16)
+                        V_DrawTLPatch(spinfly_x, 17,
+                                    W_CacheLumpNum(spinflylump + 15,
+                                                    PU_CACHE));
+                    else
+                        V_DrawPatch(spinfly_x, 17,
+                                    W_CacheLumpNum(spinflylump + 15,
+                                                    PU_CACHE));                    
                     hitCenterFrame = true;
                 }
             }
@@ -851,8 +871,12 @@ void SB_Drawer(void)
             || !(CPlayer->powers[pw_weaponlevel2] & 16))
         {
             frame = (leveltime / 3) & 15;
-            V_DrawPatch(spinbook_x, 17,
-                        W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
+            if (screenblocks == 14 || screenblocks == 16)
+                V_DrawTLPatch(spinbook_x, 17,
+                            W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
+            else
+                V_DrawPatch(spinbook_x, 17,
+                            W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
             BorderTopRefresh = true;
             UpdateState |= I_MESSAGES;
         }
@@ -1132,8 +1156,8 @@ void DrawFullScreenStuff(void)
     int i;
     int x;
     int temp;
-    int xPosGem2; // [crispy] 
-    int xPosKeys; // [crispy]
+    int xPosGem2; // [crispy] used for intersect detection
+    int xPosKeys; // [crispy] used for intersect detection
     int sboffset; // [crispy] to apply WIDESCREENDELTA
 
     UpdateState |= I_FULLSCRN;
