@@ -46,6 +46,7 @@ static void DrawSoundInfo(void);
 static void ShadeLine(int x, int y, int height, int shade);
 static void ShadeChain(void);
 static void DrINumber(signed int val, int x, int y);
+static void DrTLINumber(signed int val, int x, int y);
 static void DrBNumber(signed int val, int x, int y);
 static void DrawCommonBar(void);
 static void DrawMainBar(void);
@@ -369,6 +370,50 @@ static void DrINumber(signed int val, int x, int y)
 
 //---------------------------------------------------------------------------
 //
+// [crispy] PROC DrTLINumber
+//
+// Draws a three digit translucent number.
+//
+//---------------------------------------------------------------------------
+
+static void DrTLINumber(signed int val, int x, int y)
+{
+    patch_t *patch;
+    int oldval;
+
+    oldval = val;
+    if (val < 0)
+    {
+        if (val < -9)
+        {
+            V_DrawTLPatch(x + 1, y + 1, W_CacheLumpName(DEH_String("LAME"), PU_CACHE));
+        }
+        else
+        {
+            val = -val;
+            V_DrawTLPatch(x + 18, y, PatchINumbers[val]);
+            V_DrawTLPatch(x + 9, y, PatchNEGATIVE);
+        }
+        return;
+    }
+    if (val > 99)
+    {
+        patch = PatchINumbers[val / 100];
+        V_DrawTLPatch(x, y, patch);
+    }
+    val = val % 100;
+    if (val > 9 || oldval > 99)
+    {
+        patch = PatchINumbers[val / 10];
+        V_DrawTLPatch(x + 9, y, patch);
+    }
+    val = val % 10;
+    patch = PatchINumbers[val];
+    V_DrawTLPatch(x + 18, y, patch);
+}
+
+//---------------------------------------------------------------------------
+//
 // PROC DrBNumber
 //
 // Draws a three digit number using FontB
@@ -429,6 +474,32 @@ static void DrSmallNumber(int val, int x, int y)
     val = val % 10;
     patch = PatchSmNumbers[val];
     V_DrawPatch(x + 4, y, patch);
+}
+
+//---------------------------------------------------------------------------
+//
+// [crispy] PROC DrTLSmallNumber
+//
+// Draws a small two digit translucent number.
+//
+//---------------------------------------------------------------------------
+
+static void DrTLSmallNumber(int val, int x, int y)
+{
+    patch_t *patch;
+
+    if (val == 1)
+    {
+        return;
+    }
+    if (val > 9)
+    {
+        patch = PatchSmNumbers[val / 10];
+        V_DrawTLPatch(x, y, patch);
+    }
+    val = val % 10;
+    patch = PatchSmNumbers[val];
+    V_DrawTLPatch(x + 4, y, patch);
 }
 
 //---------------------------------------------------------------------------
@@ -1061,6 +1132,8 @@ void DrawFullScreenStuff(void)
     int i;
     int x;
     int temp;
+    int xPosGem2; // [crispy] 
+    int xPosKeys; // [crispy]
     int sboffset; // [crispy] to apply WIDESCREENDELTA
 
     UpdateState |= I_FULLSCRN;
@@ -1076,11 +1149,9 @@ void DrawFullScreenStuff(void)
         sboffset = 0;
     }
 
+    // [crispy] Crispy Hud non-transparent
     if(screenblocks == 13 || screenblocks == 15)
     {
-        int xPosGem2;
-        int xPosKeys;
-
         xPosGem2 = 270;
         xPosKeys = 214 + sboffset;
 
@@ -1180,6 +1251,111 @@ void DrawFullScreenStuff(void)
         if (CPlayer->keys[key_blue])
         {
             V_DrawPatch(xPosKeys, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
+        }
+        return;
+    }
+    // [crispy] Crispy Hud transparent
+    if(screenblocks == 14 || screenblocks == 16)
+    {
+        xPosGem2 = 270;
+        xPosKeys = 214 + sboffset;
+
+        // Health
+        temp = CPlayer->mo->health;
+        if (temp > 0)
+        {
+            DrTLINumber(temp, 5 - sboffset, 180);
+        }
+        else
+        {
+            DrTLINumber(0, 5 - sboffset, 180);
+        }
+        // Armor
+        DrTLINumber(CPlayer->armorpoints, 286 + sboffset, 180);
+        // Frags
+        if (deathmatch)
+        {
+            temp = 0;
+            for (i = 0; i < MAXPLAYERS; i++)
+            {
+                if (playeringame[i])
+                {
+                    temp += CPlayer->frags[i];
+                }
+            }
+            DrTLINumber(temp, 5 - sboffset, 165);
+        }
+        // Items, Itemflash and Selection Bar
+        if (!inventory)
+        {
+            if (ArtifactFlash)
+            {
+                temp = W_GetNumForName(DEH_String("useartia")) + ArtifactFlash - 1;
+                V_DrawTLPatch(243 + sboffset, 171, W_CacheLumpNum(temp, PU_CACHE));
+                ArtifactFlash--;
+            }
+            else if (CPlayer->readyArtifact > 0)
+            {
+                patch = DEH_String(patcharti[CPlayer->readyArtifact]);
+                V_DrawTLPatch(240 + sboffset, 170, W_CacheLumpName(patch, PU_CACHE));
+                DrTLSmallNumber(CPlayer->inventory[inv_ptr].count, 262 + sboffset, 192);
+            }
+        }
+        else
+        {
+            x = inv_ptr - curpos;
+            for (i = 0; i < 7; i++)
+            {
+                V_DrawTLPatch(50 + i * 31, 168,
+                              W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
+                if (CPlayer->inventorySlotNum > x + i
+                    && CPlayer->inventory[x + i].type != arti_none)
+                {
+                    patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
+                    V_DrawTLPatch(50 + i * 31, 168,
+                                W_CacheLumpName(patch, PU_CACHE));
+                    DrTLSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
+                                  190);
+                }
+            }
+            V_DrawTLPatch(50 + curpos * 31, 197, PatchSELECTBOX);
+            if (x != 0)
+            {
+                V_DrawTLPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
+                            PatchINVLFGEM2);
+            }
+            if (CPlayer->inventorySlotNum - x > 7)
+            {
+                V_DrawTLPatch(xPosGem2, 167, !(leveltime & 4) ?
+                            PatchINVRTGEM1 : PatchINVRTGEM2);
+            }
+            // Check for Intersect
+            if (xPosGem2 + 10 >= xPosKeys)
+            {
+                return; // Stop drawing further widgets
+            }
+        }
+        // Ammo
+        temp = CPlayer->ammo[wpnlev1info[CPlayer->readyweapon].ammo];
+        if (temp && CPlayer->readyweapon > 0 && CPlayer->readyweapon < 7)
+        {
+            V_DrawTLPatch(55 - sboffset, 182,
+                        W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
+                                        PU_CACHE));
+            DrTLINumber(temp, 53 - sboffset, 172);
+        }
+        // Keys
+        if (CPlayer->keys[key_yellow])
+        {
+            V_DrawTLPatch(xPosKeys, 174, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
+        }
+        if (CPlayer->keys[key_green])
+        {
+            V_DrawTLPatch(xPosKeys, 182, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
+        }
+        if (CPlayer->keys[key_blue])
+        {
+            V_DrawTLPatch(xPosKeys, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
         }
         return;
     }
