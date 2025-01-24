@@ -894,6 +894,7 @@ boolean MN_Responder(event_t * event);
 void MN_Ticker(void);
 void MN_Drawer(void);
 void MN_DrTextA(const char *text, int x, int y);
+void MN_DrTLTextA(const char *text, int x, int y); // [crispy] for translucent HUD
 int MN_TextAWidth(const char *text);
 void MN_DrTextB(const char *text, int x, int y);
 int MN_TextBWidth(const char *text);

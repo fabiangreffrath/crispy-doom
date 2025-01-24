@@ -37,6 +37,7 @@ extern int SCREENWIDTH;
 extern int SCREENHEIGHT;
 extern int NONWIDEWIDTH; // [crispy] non-widescreen SCREENWIDTH
 extern int WIDESCREENDELTA; // [crispy] horizontal widescreen offset
+extern int TranslucentHUD; // [crispy] displaying translucent HUD elements
 void I_GetScreenDimensions (void); // [crispy] re-calculate WIDESCREENDELTA
 void I_ToggleVsync (void); // [crispy] calls native SDL vsync toggle
 

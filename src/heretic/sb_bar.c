@@ -800,7 +800,7 @@ void SB_Drawer(void)
             {
                 if (hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    if (screenblocks == 14 || screenblocks == 16)
+                    if (TranslucentHUD)
                         V_DrawTLPatch(spinfly_x, 17,
                                     W_CacheLumpNum(spinflylump + 15,
                                                     PU_CACHE));
@@ -811,7 +811,7 @@ void SB_Drawer(void)
                 }
                 else
                 {
-                    if (screenblocks == 14 || screenblocks == 16)
+                    if (TranslucentHUD)
                         V_DrawTLPatch(spinfly_x, 17,
                                     W_CacheLumpNum(spinflylump + frame,
                                                     PU_CACHE));
@@ -826,7 +826,7 @@ void SB_Drawer(void)
             {
                 if (!hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    if (screenblocks == 14 || screenblocks == 16)
+                    if (TranslucentHUD)
                         V_DrawTLPatch(spinfly_x, 17,
                                     W_CacheLumpNum(spinflylump + frame,
                                                     PU_CACHE));
@@ -838,7 +838,7 @@ void SB_Drawer(void)
                 }
                 else
                 {
-                    if (screenblocks == 14 || screenblocks == 16)
+                    if (TranslucentHUD)
                         V_DrawTLPatch(spinfly_x, 17,
                                     W_CacheLumpNum(spinflylump + 15,
                                                     PU_CACHE));
@@ -871,7 +871,7 @@ void SB_Drawer(void)
             || !(CPlayer->powers[pw_weaponlevel2] & 16))
         {
             frame = (leveltime / 3) & 15;
-            if (screenblocks == 14 || screenblocks == 16)
+            if (TranslucentHUD)
                 V_DrawTLPatch(spinbook_x, 17,
                             W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
             else
@@ -1156,14 +1156,13 @@ void DrawFullScreenStuff(void)
     int i;
     int x;
     int temp;
-    int xPosGem2; // [crispy] used for intersect detection
-    int xPosKeys; // [crispy] used for intersect detection
+    int xPosGem2; // [crispy] for intersect detection
+    int xPosKeys; // [crispy] for intersect detection
     int sboffset; // [crispy] to apply WIDESCREENDELTA
 
     UpdateState |= I_FULLSCRN;
 
-    // [crispy] Crispy Huds
-    // TODO Do not always render, only if update needed
+    // [crispy] check for widescreen HUD
     if (screenblocks == 12 || screenblocks >= 15)
     {
         sboffset = WIDESCREENDELTA;
@@ -1171,6 +1170,15 @@ void DrawFullScreenStuff(void)
     else
     {
         sboffset = 0;
+    }
+    // [crispy] check for translucent HUD
+    if (screenblocks == 14 || screenblocks == 16)
+    {
+        TranslucentHUD = 1;
+    }
+    else
+    {
+        TranslucentHUD = 0;
     }
 
     // [crispy] Crispy Hud non-transparent
