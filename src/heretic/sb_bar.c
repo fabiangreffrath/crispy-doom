@@ -1088,7 +1088,7 @@ void DrawFullScreenStuff(void)
     }
 
     // [crispy] Crispy Hud
-    if(screenblocks >= 13)
+    if (screenblocks >= 13)
     {
         xPosGem2 = 270;
         xPosKeys = 214 + sboffset;
