@@ -53,7 +53,6 @@
 int SCREENWIDTH, SCREENHEIGHT, SCREENHEIGHT_4_3;
 int NONWIDEWIDTH; // [crispy] non-widescreen SCREENWIDTH
 int WIDESCREENDELTA; // [crispy] horizontal widescreen offset
-int TranslucentHUD = 0; // [crispy] displaying translucent HUD elements
 
 // These are (1) the window (or the full screen) that our game is rendered to
 // and (2) the renderer that scales the texture (see below) into this window.

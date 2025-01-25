@@ -60,6 +60,7 @@ byte *tinttable = NULL;
 byte *tranmap = NULL;
 byte *dp_translation = NULL;
 boolean dp_translucent = false;
+boolean he_translucent = false; // [crispy] displaying translucent heretic and hexen HUD elements
 #ifdef CRISPY_TRUECOLOR
 extern pixel_t *pal_color;
 #endif

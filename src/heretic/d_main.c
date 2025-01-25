@@ -195,23 +195,14 @@ static void CrispyDrawStats (void)
             || (screenblocks > 10 && crispy->automapstats == WIDGETS_STBAR))
     {
         M_snprintf(str, sizeof(str), "K %d/%d", player->killcount, totalkills);
-        if (TranslucentHUD)
-            MN_DrTLTextA(str, left_widget_x, 1*height);
-        else
-            MN_DrTextA(str, left_widget_x, 1*height);
+        MN_DrTextA(str, left_widget_x, 1*height);
         left_widget_w = MN_TextAWidth(str); // Assume that kills is longest string
 
         M_snprintf(str, sizeof(str), "I %d/%d", player->itemcount, totalitems);
-        if (TranslucentHUD)
-            MN_DrTLTextA(str, left_widget_x, 2*height);
-        else
-            MN_DrTextA(str, left_widget_x, 2*height);
+        MN_DrTextA(str, left_widget_x, 2*height);
 
         M_snprintf(str, sizeof(str), "S %d/%d", player->secretcount, totalsecret);
-        if (TranslucentHUD)
-            MN_DrTLTextA(str, left_widget_x, 3*height);
-        else
-            MN_DrTextA(str, left_widget_x, 3*height);
+        MN_DrTextA(str, left_widget_x, 3*height);
     }
     else if (crispy->automapstats == WIDGETS_STBAR)
     {
@@ -227,10 +218,7 @@ static void CrispyDrawStats (void)
         const int time = leveltime / TICRATE;
 
         M_snprintf(str, sizeof(str), "%02d:%02d", time/60, time%60);
-        if (TranslucentHUD)
-            MN_DrTLTextA(str, left_widget_x, 4*height);
-        else
-            MN_DrTextA(str, left_widget_x, 4*height);
+        MN_DrTextA(str, left_widget_x, 4*height);
     }
 
     if (crispy->playercoords == WIDGETS_ALWAYS || (automapactive && crispy->playercoords == WIDGETS_AUTOMAP))
@@ -238,22 +226,13 @@ static void CrispyDrawStats (void)
         right_widget_w = coord_w;
 
         M_snprintf(str, sizeof(str), "X %-5d", player->mo->x>>FRACBITS);
-        if (TranslucentHUD)
-            MN_DrTLTextA(str, right_widget_x, 1*height);
-        else
-            MN_DrTextA(str, right_widget_x, 1*height);
+        MN_DrTextA(str, right_widget_x, 1*height);
 
         M_snprintf(str, sizeof(str), "Y %-5d", player->mo->y>>FRACBITS);
-        if (TranslucentHUD)
-            MN_DrTLTextA(str, right_widget_x, 2*height);
-        else
-            MN_DrTextA(str, right_widget_x, 2*height);
+        MN_DrTextA(str, right_widget_x, 2*height);
 
         M_snprintf(str, sizeof(str), "A %-5d", player->mo->angle/ANG1);
-        if (TranslucentHUD)
-            MN_DrTLTextA(str, right_widget_x, 3*height);
-        else
-            MN_DrTextA(str, right_widget_x, 3*height);
+        MN_DrTextA(str, right_widget_x, 3*height);
 
         if (player->cheats & CF_SHOWFPS)
         {

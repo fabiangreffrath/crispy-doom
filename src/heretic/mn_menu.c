@@ -705,37 +705,10 @@ void MN_DrTextA(const char *text, int x, int y)
         else
         {
             p = W_CacheLumpNum(FontABaseLump + c - 33, PU_CACHE);
-            V_DrawPatch(x, y, p);
-            x += SHORT(p->width) - 1;
-        }
-    }
-}
-
-//---------------------------------------------------------------------------
-//
-// [crispy] PROC MN_DrTLTextA
-//
-// Draw translucent text using font A.
-//
-//---------------------------------------------------------------------------
-
-void MN_DrTLTextA(const char *text, int x, int y)
-{
-    char c;
-    patch_t *p;
-
-    while ((c = *text++) != 0)
-    {
-        c = MN_CheckValidChar(c, small_font); // [crispy] check for valid characters
-
-        if (c < 33)
-        {
-            x += 5;
-        }
-        else
-        {
-            p = W_CacheLumpNum(FontABaseLump + c - 33, PU_CACHE);
-            V_DrawTLPatch(x, y, p);
+            if (he_translucent)
+                V_DrawTLPatch(x, y, p);
+            else
+                V_DrawPatch(x, y, p);
             x += SHORT(p->width) - 1;
         }
     }
