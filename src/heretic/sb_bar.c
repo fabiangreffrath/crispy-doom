@@ -739,13 +739,13 @@ void SB_Drawer(void)
                 {
                     V_DrawPatch(spinfly_x, 17,
                                 W_CacheLumpNum(spinflylump + 15,
-                                                PU_CACHE));                        
+                                                PU_CACHE));
                 }
                 else
                 {
                     V_DrawPatch(spinfly_x, 17,
                                 W_CacheLumpNum(spinflylump + frame,
-                                                PU_CACHE));                    
+                                                PU_CACHE));
                     hitCenterFrame = false;
                 }
             }
@@ -755,14 +755,14 @@ void SB_Drawer(void)
                 {
                     V_DrawPatch(spinfly_x, 17,
                                 W_CacheLumpNum(spinflylump + frame,
-                                                PU_CACHE));                        
+                                                PU_CACHE));
                     hitCenterFrame = false;
                 }
                 else
                 {
                     V_DrawPatch(spinfly_x, 17,
                                 W_CacheLumpNum(spinflylump + 15,
-                                                PU_CACHE));                    
+                                                PU_CACHE));
                     hitCenterFrame = true;
                 }
             }
@@ -1139,15 +1139,14 @@ void DrawFullScreenStuff(void)
             x = inv_ptr - curpos;
             for (i = 0; i < 7; i++)
             {
-                if (he_translucent)
                 V_DrawPatch(50 + i * 31, 168,
-                            W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));                    
+                              W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
                 if (CPlayer->inventorySlotNum > x + i
                     && CPlayer->inventory[x + i].type != arti_none)
                 {
                     patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
                     V_DrawPatch(50 + i * 31, 168,
-                                W_CacheLumpName(patch, PU_CACHE));                        
+                                W_CacheLumpName(patch, PU_CACHE));
                     DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
                                   190);
                 }
@@ -1156,12 +1155,12 @@ void DrawFullScreenStuff(void)
             if (x != 0)
             {
                 V_DrawPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
-                            PatchINVLFGEM2);                    
+                            PatchINVLFGEM2);
             }
             if (CPlayer->inventorySlotNum - x > 7)
             {
                 V_DrawPatch(xPosGem2, 167, !(leveltime & 4) ?
-                            PatchINVRTGEM1 : PatchINVRTGEM2);                
+                            PatchINVRTGEM1 : PatchINVRTGEM2);
             }
             // Check for Intersect
             if (xPosGem2 + 10 >= xPosKeys)
@@ -1175,7 +1174,7 @@ void DrawFullScreenStuff(void)
         {
             V_DrawPatch(55 - sboffset, 182,
                         W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
-                                        PU_CACHE));            
+                                        PU_CACHE));
             DrINumber(temp, 53 - sboffset, 172);
         }
         // Keys
