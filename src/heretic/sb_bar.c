@@ -46,7 +46,6 @@ static void DrawSoundInfo(void);
 static void ShadeLine(int x, int y, int height, int shade);
 static void ShadeChain(void);
 static void DrINumber(signed int val, int x, int y);
-static void DrTLINumber(signed int val, int x, int y);
 static void DrBNumber(signed int val, int x, int y);
 static void DrawCommonBar(void);
 static void DrawMainBar(void);
@@ -342,94 +341,30 @@ static void DrINumber(signed int val, int x, int y)
     {
         if (val < -9)
         {
-            if (he_translucent)
-                V_DrawTLPatch(x + 1, y + 1, W_CacheLumpName(DEH_String("LAME"), PU_CACHE));
-            else
-                V_DrawPatch(x + 1, y + 1, W_CacheLumpName(DEH_String("LAME"), PU_CACHE));
+            V_DrawPatch(x + 1, y + 1, W_CacheLumpName(DEH_String("LAME"), PU_CACHE));
         }
         else
         {
             val = -val;
-            if (he_translucent)
-            {
-                V_DrawTLPatch(x + 18, y, PatchINumbers[val]);
-                V_DrawTLPatch(x + 9, y, PatchNEGATIVE);
-            }
-            else
-            {
-                V_DrawPatch(x + 18, y, PatchINumbers[val]);
-                V_DrawPatch(x + 9, y, PatchNEGATIVE);
-            }
+            V_DrawPatch(x + 18, y, PatchINumbers[val]);
+            V_DrawPatch(x + 9, y, PatchNEGATIVE);
         }
         return;
     }
     if (val > 99)
     {
         patch = PatchINumbers[val / 100];
-        if (he_translucent)
-            V_DrawTLPatch(x, y, patch);
-        else
-            V_DrawPatch(x, y, patch);
+        V_DrawPatch(x, y, patch);
     }
     val = val % 100;
     if (val > 9 || oldval > 99)
     {
         patch = PatchINumbers[val / 10];
-        if (he_translucent)
-            V_DrawTLPatch(x + 9, y, patch);
-        else
-            V_DrawPatch(x + 9, y, patch);
+        V_DrawPatch(x + 9, y, patch);
     }
     val = val % 10;
     patch = PatchINumbers[val];
-    if (he_translucent)
-        V_DrawTLPatch(x + 18, y, patch);
-    else
-        V_DrawPatch(x + 18, y, patch);
-}
-
-//---------------------------------------------------------------------------
-//
-// [crispy] PROC DrTLINumber
-//
-// Draws a three digit translucent number.
-//
-//---------------------------------------------------------------------------
-
-static void DrTLINumber(signed int val, int x, int y)
-{
-    patch_t *patch;
-    int oldval;
-
-    oldval = val;
-    if (val < 0)
-    {
-        if (val < -9)
-        {
-            V_DrawTLPatch(x + 1, y + 1, W_CacheLumpName(DEH_String("LAME"), PU_CACHE));
-        }
-        else
-        {
-            val = -val;
-            V_DrawTLPatch(x + 18, y, PatchINumbers[val]);
-            V_DrawTLPatch(x + 9, y, PatchNEGATIVE);
-        }
-        return;
-    }
-    if (val > 99)
-    {
-        patch = PatchINumbers[val / 100];
-        V_DrawTLPatch(x, y, patch);
-    }
-    val = val % 100;
-    if (val > 9 || oldval > 99)
-    {
-        patch = PatchINumbers[val / 10];
-        V_DrawTLPatch(x + 9, y, patch);
-    }
-    val = val % 10;
-    patch = PatchINumbers[val];
-    V_DrawTLPatch(x + 18, y, patch);
+    V_DrawPatch(x + 18, y, patch);
 }
 
 //---------------------------------------------------------------------------
@@ -489,43 +424,11 @@ static void DrSmallNumber(int val, int x, int y)
     if (val > 9)
     {
         patch = PatchSmNumbers[val / 10];
-        if (he_translucent)
-            V_DrawTLPatch(x, y, patch);
-        else
-            V_DrawPatch(x, y, patch);
+        V_DrawPatch(x, y, patch);
     }
     val = val % 10;
     patch = PatchSmNumbers[val];
-    if (he_translucent)
-        V_DrawTLPatch(x + 4, y, patch);
-    else
-        V_DrawPatch(x + 4, y, patch);
-}
-
-//---------------------------------------------------------------------------
-//
-// [crispy] PROC DrTLSmallNumber
-//
-// Draws a small two digit translucent number.
-//
-//---------------------------------------------------------------------------
-
-static void DrTLSmallNumber(int val, int x, int y)
-{
-    patch_t *patch;
-
-    if (val == 1)
-    {
-        return;
-    }
-    if (val > 9)
-    {
-        patch = PatchSmNumbers[val / 10];
-        V_DrawTLPatch(x, y, patch);
-    }
-    val = val % 10;
-    patch = PatchSmNumbers[val];
-    V_DrawTLPatch(x + 4, y, patch);
+    V_DrawPatch(x + 4, y, patch);
 }
 
 //---------------------------------------------------------------------------
@@ -813,6 +716,10 @@ void SB_Drawer(void)
         }
     }
 
+    // [crispy] check for translucent HUD
+    if (screenblocks == 14 || screenblocks == 16)
+        he_translucent = true;
+
     // Flight icons
     if (CPlayer->powers[pw_flight])
     {
@@ -830,25 +737,15 @@ void SB_Drawer(void)
             {
                 if (hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    if (he_translucent)
-                        V_DrawTLPatch(spinfly_x, 17,
-                                    W_CacheLumpNum(spinflylump + 15,
-                                                    PU_CACHE));
-                    else
-                        V_DrawPatch(spinfly_x, 17,
-                                    W_CacheLumpNum(spinflylump + 15,
-                                                    PU_CACHE));                        
+                    V_DrawPatch(spinfly_x, 17,
+                                W_CacheLumpNum(spinflylump + 15,
+                                                PU_CACHE));                        
                 }
                 else
                 {
-                    if (he_translucent)
-                        V_DrawTLPatch(spinfly_x, 17,
-                                    W_CacheLumpNum(spinflylump + frame,
-                                                    PU_CACHE));
-                    else
-                        V_DrawPatch(spinfly_x, 17,
-                                    W_CacheLumpNum(spinflylump + frame,
-                                                    PU_CACHE));                    
+                    V_DrawPatch(spinfly_x, 17,
+                                W_CacheLumpNum(spinflylump + frame,
+                                                PU_CACHE));                    
                     hitCenterFrame = false;
                 }
             }
@@ -856,26 +753,16 @@ void SB_Drawer(void)
             {
                 if (!hitCenterFrame && (frame != 15 && frame != 0))
                 {
-                    if (he_translucent)
-                        V_DrawTLPatch(spinfly_x, 17,
-                                    W_CacheLumpNum(spinflylump + frame,
-                                                    PU_CACHE));
-                    else
-                        V_DrawPatch(spinfly_x, 17,
-                                    W_CacheLumpNum(spinflylump + frame,
-                                                    PU_CACHE));                        
+                    V_DrawPatch(spinfly_x, 17,
+                                W_CacheLumpNum(spinflylump + frame,
+                                                PU_CACHE));                        
                     hitCenterFrame = false;
                 }
                 else
                 {
-                    if (he_translucent)
-                        V_DrawTLPatch(spinfly_x, 17,
-                                    W_CacheLumpNum(spinflylump + 15,
-                                                    PU_CACHE));
-                    else
-                        V_DrawPatch(spinfly_x, 17,
-                                    W_CacheLumpNum(spinflylump + 15,
-                                                    PU_CACHE));                    
+                    V_DrawPatch(spinfly_x, 17,
+                                W_CacheLumpNum(spinflylump + 15,
+                                                PU_CACHE));                    
                     hitCenterFrame = true;
                 }
             }
@@ -901,12 +788,8 @@ void SB_Drawer(void)
             || !(CPlayer->powers[pw_weaponlevel2] & 16))
         {
             frame = (leveltime / 3) & 15;
-            if (he_translucent)
-                V_DrawTLPatch(spinbook_x, 17,
-                            W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
-            else
-                V_DrawPatch(spinbook_x, 17,
-                            W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
+            V_DrawPatch(spinbook_x, 17,
+                        W_CacheLumpNum(spinbooklump + frame, PU_CACHE));
             BorderTopRefresh = true;
             UpdateState |= I_MESSAGES;
         }
@@ -916,6 +799,8 @@ void SB_Drawer(void)
             UpdateState |= I_MESSAGES;
         }
     }
+
+    he_translucent = false;
 /*
 		if(CPlayer->powers[pw_weaponlevel2] > BLINKTHRESHOLD
 			|| (CPlayer->powers[pw_weaponlevel2]&8))
@@ -1239,19 +1124,13 @@ void DrawFullScreenStuff(void)
             if (ArtifactFlash)
             {
                 temp = W_GetNumForName(DEH_String("useartia")) + ArtifactFlash - 1;
-                if (he_translucent)
-                    V_DrawTLPatch(243 + sboffset, 171, W_CacheLumpNum(temp, PU_CACHE));
-                else
-                    V_DrawPatch(243 + sboffset, 171, W_CacheLumpNum(temp, PU_CACHE));
+                V_DrawPatch(243 + sboffset, 171, W_CacheLumpNum(temp, PU_CACHE));
                 ArtifactFlash--;
             }
             else if (CPlayer->readyArtifact > 0)
             {
                 patch = DEH_String(patcharti[CPlayer->readyArtifact]);
-                if (he_translucent)
-                    V_DrawTLPatch(240 + sboffset, 170, W_CacheLumpName(patch, PU_CACHE));
-                else
-                    V_DrawPatch(240 + sboffset, 170, W_CacheLumpName(patch, PU_CACHE));
+                V_DrawPatch(240 + sboffset, 170, W_CacheLumpName(patch, PU_CACHE));
                 DrSmallNumber(CPlayer->inventory[inv_ptr].count, 262 + sboffset, 192);
             }
         }
@@ -1261,46 +1140,28 @@ void DrawFullScreenStuff(void)
             for (i = 0; i < 7; i++)
             {
                 if (he_translucent)
-                    V_DrawTLPatch(50 + i * 31, 168,
-                                W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));
-                else
-                    V_DrawPatch(50 + i * 31, 168,
-                                W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));                    
+                V_DrawPatch(50 + i * 31, 168,
+                            W_CacheLumpName(DEH_String("ARTIBOX"), PU_CACHE));                    
                 if (CPlayer->inventorySlotNum > x + i
                     && CPlayer->inventory[x + i].type != arti_none)
                 {
                     patch = DEH_String(patcharti[CPlayer->inventory[x + i].type]);
-                    if (he_translucent)
-                        V_DrawTLPatch(50 + i * 31, 168,
-                                    W_CacheLumpName(patch, PU_CACHE));
-                    else
-                        V_DrawPatch(50 + i * 31, 168,
-                                    W_CacheLumpName(patch, PU_CACHE));                        
+                    V_DrawPatch(50 + i * 31, 168,
+                                W_CacheLumpName(patch, PU_CACHE));                        
                     DrSmallNumber(CPlayer->inventory[x + i].count, 69 + i * 31,
                                   190);
                 }
             }
-            if (he_translucent)
-                V_DrawTLPatch(50 + curpos * 31, 197, PatchSELECTBOX);
-            else
-                V_DrawPatch(50 + curpos * 31, 197, PatchSELECTBOX);
+            V_DrawPatch(50 + curpos * 31, 197, PatchSELECTBOX);
             if (x != 0)
             {
-                if (he_translucent)
-                    V_DrawTLPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
-                                PatchINVLFGEM2);
-                else
-                    V_DrawPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
-                                PatchINVLFGEM2);                    
+                V_DrawPatch(38, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
+                            PatchINVLFGEM2);                    
             }
             if (CPlayer->inventorySlotNum - x > 7)
             {
-                if (he_translucent)
-                    V_DrawTLPatch(xPosGem2, 167, !(leveltime & 4) ?
-                                PatchINVRTGEM1 : PatchINVRTGEM2);
-                else
-                    V_DrawPatch(xPosGem2, 167, !(leveltime & 4) ?
-                                PatchINVRTGEM1 : PatchINVRTGEM2);                
+                V_DrawPatch(xPosGem2, 167, !(leveltime & 4) ?
+                            PatchINVRTGEM1 : PatchINVRTGEM2);                
             }
             // Check for Intersect
             if (xPosGem2 + 10 >= xPosKeys)
@@ -1312,37 +1173,23 @@ void DrawFullScreenStuff(void)
         temp = CPlayer->ammo[wpnlev1info[CPlayer->readyweapon].ammo];
         if (temp && CPlayer->readyweapon > 0 && CPlayer->readyweapon < 7)
         {
-            if (he_translucent)
-                V_DrawTLPatch(55 - sboffset, 182,
-                            W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
-                                            PU_CACHE));
-            else
-                V_DrawPatch(55 - sboffset, 182,
-                            W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
-                                            PU_CACHE));            
+            V_DrawPatch(55 - sboffset, 182,
+                        W_CacheLumpName(DEH_String(ammopic[CPlayer->readyweapon - 1]),
+                                        PU_CACHE));            
             DrINumber(temp, 53 - sboffset, 172);
         }
         // Keys
         if (CPlayer->keys[key_yellow])
         {
-            if (he_translucent)
-                V_DrawTLPatch(xPosKeys, 174, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
-            else
-                V_DrawPatch(xPosKeys, 174, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
+            V_DrawPatch(xPosKeys, 174, W_CacheLumpName(DEH_String("ykeyicon"), PU_CACHE));
         }
         if (CPlayer->keys[key_green])
         {
-            if (he_translucent)
-                V_DrawTLPatch(xPosKeys, 182, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
-            else
-                V_DrawPatch(xPosKeys, 182, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
+            V_DrawPatch(xPosKeys, 182, W_CacheLumpName(DEH_String("gkeyicon"), PU_CACHE));
         }
         if (CPlayer->keys[key_blue])
         {
-            if (he_translucent)
-                V_DrawTLPatch(xPosKeys, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
-            else
-                V_DrawPatch(xPosKeys, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
+            V_DrawPatch(xPosKeys, 190, W_CacheLumpName(DEH_String("bkeyicon"), PU_CACHE));
         }
         return;
     }

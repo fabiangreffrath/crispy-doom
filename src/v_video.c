@@ -241,6 +241,13 @@ void V_DrawPatch(int x, int y, patch_t *patch)
     byte *source;
     int w;
 
+    //  [crispy] translucent HUD for Heretic and Hexen
+    if (he_translucent)
+    {
+        V_DrawTLPatch(x, y, patch); 
+        return;
+    }
+
     // [crispy] four different rendering functions
     drawpatchpx_t *const drawpatchpx = drawpatchpx_a[!dp_translucent][!dp_translation];
 

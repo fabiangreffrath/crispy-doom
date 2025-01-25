@@ -705,10 +705,7 @@ void MN_DrTextA(const char *text, int x, int y)
         else
         {
             p = W_CacheLumpNum(FontABaseLump + c - 33, PU_CACHE);
-            if (he_translucent)
-                V_DrawTLPatch(x, y, p);
-            else
-                V_DrawPatch(x, y, p);
+            V_DrawPatch(x, y, p);
             x += SHORT(p->width) - 1;
         }
     }
