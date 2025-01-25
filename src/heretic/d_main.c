@@ -323,11 +323,18 @@ void D_Display(void)
             V_DrawPatch(160, 70, W_CacheLumpName(DEH_String("PAUSED"), PU_CACHE));
         }
     }
+    
+    // [crispy] check for translucent HUD
+    if (!automapactive && (screenblocks == 14 || screenblocks == 16))
+        he_translucent = true;
+
     // Handle player messages
     DrawMessage();
 
     // [crispy] Handle centered player messages
     DrawCenterMessage();
+
+    he_translucent = false;
 
     // Menu drawing
     MN_Drawer();
