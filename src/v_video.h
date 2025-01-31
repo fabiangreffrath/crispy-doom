@@ -41,7 +41,6 @@ extern int dirtybox[4];
 extern byte *tinttable;
 extern byte *dp_translation;
 extern boolean dp_translucent;
-extern boolean he_translucent; // [crispy] displaying translucent heretic and hexen HUD elements
 
 // haleyjd 08/28/10: implemented for Strife support
 // haleyjd 08/28/10: Patch clipping callback, implemented to support Choco

@@ -190,8 +190,7 @@ static void CrispyDrawStats (void)
     right_widget_x = coord_x + WIDESCREENDELTA;
 
     // [crispy] check for translucent HUD
-    if (!automapactive && (screenblocks == 14 || screenblocks == 16))
-        he_translucent = true;
+    SB_Translucent(TRANSLUCENT_HUD);
 
     if (crispy->automapstats == WIDGETS_ALWAYS
             || (automapactive && (crispy->automapstats == WIDGETS_AUTOMAP
@@ -251,7 +250,7 @@ static void CrispyDrawStats (void)
         M_snprintf(str, sizeof(str), "%d FPS", crispy->fps);
         MN_DrTextA(str, right_widget_x, 1*height);
     }
-    he_translucent = false;
+    SB_Translucent(false);
 }
 
 void D_Display(void)
@@ -325,8 +324,7 @@ void D_Display(void)
     }
     
     // [crispy] check for translucent HUD
-    if (!automapactive && (screenblocks == 14 || screenblocks == 16))
-        he_translucent = true;
+    SB_Translucent(TRANSLUCENT_HUD);
 
     // Handle player messages
     DrawMessage();
@@ -334,7 +332,7 @@ void D_Display(void)
     // [crispy] Handle centered player messages
     DrawCenterMessage();
 
-    he_translucent = false;
+    SB_Translucent(false);
 
     // Menu drawing
     MN_Drawer();

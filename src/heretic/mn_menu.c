@@ -705,7 +705,7 @@ void MN_DrTextA(const char *text, int x, int y)
         else
         {
             p = W_CacheLumpNum(FontABaseLump + c - 33, PU_CACHE);
-            V_DrawPatch(x, y, p);
+            V_DrawSBPatch(x, y, p);
             x += SHORT(p->width) - 1;
         }
     }

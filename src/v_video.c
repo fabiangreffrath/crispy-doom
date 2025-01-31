@@ -60,7 +60,6 @@ byte *tinttable = NULL;
 byte *tranmap = NULL;
 byte *dp_translation = NULL;
 boolean dp_translucent = false;
-boolean he_translucent = false; // [crispy] displaying translucent heretic and hexen HUD elements
 #ifdef CRISPY_TRUECOLOR
 extern pixel_t *pal_color;
 #endif
@@ -240,13 +239,6 @@ void V_DrawPatch(int x, int y, patch_t *patch)
     pixel_t *dest;
     byte *source;
     int w;
-
-    //  [crispy] translucent HUD for Heretic and Hexen
-    if (he_translucent)
-    {
-        V_DrawTLPatch(x, y, patch); 
-        return;
-    }
 
     // [crispy] four different rendering functions
     drawpatchpx_t *const drawpatchpx = drawpatchpx_a[!dp_translucent][!dp_translation];
