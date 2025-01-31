@@ -250,6 +250,7 @@ static void CrispyDrawStats (void)
         M_snprintf(str, sizeof(str), "%d FPS", crispy->fps);
         MN_DrTextA(str, right_widget_x, 1*height);
     }
+    
     SB_Translucent(false);
 }
 
