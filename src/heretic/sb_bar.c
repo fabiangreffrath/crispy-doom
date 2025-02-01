@@ -662,10 +662,7 @@ void SB_Drawer(void)
     CPlayer = &players[consoleplayer];
     if (viewheight == SCREENHEIGHT && (!automapactive || crispy->automapoverlay))
     {
-        // [crispy] check for translucent HUD
-        SB_Translucent(TRANSLUCENT_HUD);
         DrawFullScreenStuff();
-        SB_Translucent(false);
         SB_state = -1;
     }
     else
@@ -723,9 +720,6 @@ void SB_Drawer(void)
             SB_state = 1;
         }
     }
-
-    // [crispy] check for translucent HUD
-    SB_Translucent(TRANSLUCENT_HUD);
 
     // Flight icons
     if (CPlayer->powers[pw_flight])
@@ -806,8 +800,6 @@ void SB_Drawer(void)
             UpdateState |= I_MESSAGES;
         }
     }
-
-    SB_Translucent(false);
 /*
 		if(CPlayer->powers[pw_weaponlevel2] > BLINKTHRESHOLD
 			|| (CPlayer->powers[pw_weaponlevel2]&8))

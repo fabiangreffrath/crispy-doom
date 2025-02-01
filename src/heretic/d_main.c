@@ -189,9 +189,6 @@ static void CrispyDrawStats (void)
     left_widget_x = 0 - WIDESCREENDELTA;
     right_widget_x = coord_x + WIDESCREENDELTA;
 
-    // [crispy] check for translucent HUD
-    SB_Translucent(TRANSLUCENT_HUD);
-
     if (crispy->automapstats == WIDGETS_ALWAYS
             || (automapactive && (crispy->automapstats == WIDGETS_AUTOMAP
                                 || crispy->automapstats == WIDGETS_STBAR))
@@ -250,8 +247,6 @@ static void CrispyDrawStats (void)
         M_snprintf(str, sizeof(str), "%d FPS", crispy->fps);
         MN_DrTextA(str, right_widget_x, 1*height);
     }
-    
-    SB_Translucent(false);
 }
 
 void D_Display(void)
@@ -277,6 +272,8 @@ void D_Display(void)
         case GS_LEVEL:
             if (!gametic)
                 break;
+            // [crispy] check for translucent HUD
+            SB_Translucent(TRANSLUCENT_HUD && (!automapactive || crispy->automapoverlay));
             if (automapactive && !crispy->automapoverlay)
             {
                 // [crispy] update automap while playing
@@ -294,6 +291,7 @@ void D_Display(void)
             UpdateState |= I_FULLVIEW;
             SB_Drawer();
             CrispyDrawStats();
+            SB_Translucent(false);
             break;
         case GS_INTERMISSION:
             IN_Drawer();
@@ -323,9 +321,9 @@ void D_Display(void)
             V_DrawPatch(160, 70, W_CacheLumpName(DEH_String("PAUSED"), PU_CACHE));
         }
     }
-    
+
     // [crispy] check for translucent HUD
-    SB_Translucent(TRANSLUCENT_HUD);
+    SB_Translucent(TRANSLUCENT_HUD && (!automapactive || crispy->automapoverlay));
 
     // Handle player messages
     DrawMessage();
