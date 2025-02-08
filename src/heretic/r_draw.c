@@ -341,7 +341,12 @@ void R_InitTranslationTables(void)
     int i;
 
 #ifndef CRISPY_TRUECOLOR
-    V_LoadTintTable();
+    V_LoadTintTable(); 
+#endif
+
+#ifdef CRISPY_TRUECOLOR
+    trcopacity_normal = 0x8E; // 142 (56% opacity)
+    trcopacity_alt = 0x60; // 96 (38% opacity);
 #endif
 
     // Allocate translation tables

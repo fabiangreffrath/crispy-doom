@@ -26,6 +26,9 @@
 
 #include <stdint.h>
 
+extern int trcopacity_normal;
+extern int trcopacity_alt;
+
 extern const uint32_t (*blendfunc) (const uint32_t fg, const uint32_t bg);
 
 const uint32_t I_BlendAdd (const uint32_t bg_i, const uint32_t fg_i);

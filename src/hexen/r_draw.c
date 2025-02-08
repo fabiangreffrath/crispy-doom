@@ -467,6 +467,11 @@ void R_InitTranslationTables(void)
     V_LoadTintTable();
 #endif
 
+#ifdef CRISPY_TRUECOLOR
+    trcopacity_normal = 0x60; // 96 (38% opacity);
+    trcopacity_alt = 0x8E; // 142 (56% opacity)
+#endif
+
     // Allocate translation tables
     translationtables = Z_Malloc(256 * 3 * (maxplayers - 1), PU_STATIC, 0);
 
