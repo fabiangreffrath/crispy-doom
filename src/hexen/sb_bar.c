@@ -1681,9 +1681,9 @@ void DrawFullScreenStuff(void)
           for (k = 0; k <= crispy->hires; k++)
           {
             I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
-                          + ((60 + (sboffset > 0 ? 0 : WIDESCREENDELTA)) << crispy->hires) + k] = 0;
+                          + ((60 + (sboffset > 0 ? 0 : WIDESCREENDELTA))<< crispy->hires) + k] = 0;
             I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
-                          + ((61 + (sboffset > 0 ? 0 : WIDESCREENDELTA)) << crispy->hires) + k] = 0;
+                          + ((61 + (sboffset > 0 ? 0 : WIDESCREENDELTA))<< crispy->hires) + k] = 0;
             I_VideoBuffer[SCREENWIDTH * ((i << crispy->hires) + j)
                           + ((62 + (sboffset > 0 ? 0 : WIDESCREENDELTA))<< crispy->hires) + k] = 0;
           }
