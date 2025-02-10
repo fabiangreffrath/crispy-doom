@@ -24,9 +24,6 @@
 #include "crispy.h"
 #include "i_truecolor.h"
 
-int trcopacity_normal = 0xA8; // [crispy] default 66% opacity
-int trcopacity_alt = 0xA8; // [crispy] default 66% opacity
-
 const uint32_t (*blendfunc) (const uint32_t fg, const uint32_t bg) = I_BlendOverTranmap;
 
 typedef union
@@ -90,16 +87,16 @@ const uint32_t I_BlendOverTranmap (const uint32_t bg, const uint32_t fg)
     return I_BlendOver(bg, fg, 0xA8); // 168 (66% opacity)
 }
 
-// [crispy] TINTTAB blending emulation
+// [crispy] TINTTAB blending emulation, used for Heretic and Hexen
 const uint32_t I_BlendOverTinttab (const uint32_t bg, const uint32_t fg)
 {
-    return I_BlendOver(bg, fg, trcopacity_normal);
+    return I_BlendOver(bg, fg, 0x60); // 96 (38% opacity)
 }
 
-// [crispy] ("Alt") TINTTAB blending emulation
+// [crispy] More opaque ("Alt") TINTTAB blending emulation, used for Hexen's MF_ALTSHADOW drawing
 const uint32_t I_BlendOverAltTinttab (const uint32_t bg, const uint32_t fg)
 {
-    return I_BlendOver(bg, fg, trcopacity_alt);
+    return I_BlendOver(bg, fg, 0x8E); // 142 (56% opacity)
 }
 
 // [crispy] More opaque XLATAB blending emulation, used for Strife
