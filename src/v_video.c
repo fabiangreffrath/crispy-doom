@@ -62,6 +62,8 @@ byte *dp_translation = NULL;
 boolean dp_translucent = false;
 #ifdef CRISPY_TRUECOLOR
 extern pixel_t *pal_color;
+static const uint32_t (*blendfunc_tinttab) (const uint32_t fg, const uint32_t bg); // [crispy] points to function for heretic/hexen normal blending
+static const uint32_t (*blendfunc_alt_tinttab) (const uint32_t fg, const uint32_t bg); // [crispy] points to function for heretic/hexen alternative blending
 #endif
 
 // villsa [STRIFE] Blending table used for Strife
@@ -207,21 +209,21 @@ static const inline pixel_t drawtinttab (const pixel_t dest, const pixel_t sourc
 #ifndef CRISPY_TRUECOLOR
 {return tinttable[dest+(source<<8)];}
 #else
-{return I_BlendOverTinttab(dest, pal_color[source]);}
+{return blendfunc_tinttab(dest, pal_color[source]);}
 #endif
 // V_DrawTLPatch Translated Option (translucent patch, color-translated)
 static const inline pixel_t drawtrtinttab (const pixel_t dest, const pixel_t source)
 #ifndef CRISPY_TRUECOLOR
 {return tinttable[dest+(dp_translation[source]<<8)];}
 #else
-{return I_BlendOverTinttab(dest, pal_color[dp_translation[source]]);}
+{return blendfunc_tinttab(dest, pal_color[dp_translation[source]]);}
 #endif
 // V_DrawAltTLPatch (translucent patch, no coloring or color-translation are used)
 static const inline pixel_t drawalttinttab (const pixel_t dest, const pixel_t source)
 #ifndef CRISPY_TRUECOLOR
 {return tinttable[(dest<<8)+source];}
 #else
-{return I_BlendOverAltTinttab(dest, pal_color[source]);}
+{return blendfunc_alt_tinttab(dest, pal_color[source]);}
 #endif
 // V_DrawXlaPatch (translucent patch, no coloring or color-translation are used)
 static const inline pixel_t drawxlatab (const pixel_t dest, const pixel_t source)
@@ -754,9 +756,22 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch)
 // Load tint table from TINTTAB lump.
 //
 
-void V_LoadTintTable(void)
+void V_LoadTintTable(GameMission_t mission)
 {
+#ifndef CRISPY_TRUECOLOR
     tinttable = W_CacheLumpName("TINTTAB", PU_STATIC);
+#else
+    if (mission == heretic)
+    {
+        blendfunc_tinttab = I_BlendOverHerTinttab;
+        blendfunc_alt_tinttab = I_BlendOverHerAltTinttab;
+    }
+    else
+    {
+        blendfunc_tinttab = I_BlendOverHexTinttab;
+        blendfunc_alt_tinttab = I_BlendOverHexAltTinttab;
+    }
+#endif
 }
 
 //

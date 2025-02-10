@@ -339,10 +339,9 @@ void R_DrawTranslatedTLColumn(void)
 void R_InitTranslationTables(void)
 {
     int i;
+    GameMission_t mission = heretic;
 
-#ifndef CRISPY_TRUECOLOR
-    V_LoadTintTable();
-#endif
+    V_LoadTintTable(mission);
 
     // Allocate translation tables
     translationtables = Z_Malloc(256 * 3, PU_STATIC, 0);

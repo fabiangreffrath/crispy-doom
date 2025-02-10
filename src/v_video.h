@@ -28,6 +28,7 @@
 #include "v_patch.h"
 
 #include "w_wad.h" // [crispy] for lumpindex_t
+#include "d_mode.h" // [crispy] for heretic/hexen blendfunctions
 
 //
 // VIDEO
@@ -104,7 +105,7 @@ void V_ScreenShot(const char *format);
 // Load the lookup table for translucency calculations from the TINTTAB
 // lump.
 
-void V_LoadTintTable(void);
+void V_LoadTintTable(GameMission_t mission);
 
 // villsa [STRIFE]
 // Load the lookup table for translucency calculations from the XLATAB
