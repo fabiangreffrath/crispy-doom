@@ -753,7 +753,7 @@ void R_AddSprites(sector_t * sec)
 
     for (thing = sec->thinglist; thing; thing = thing->snext)
     {
-        // [crispy] draw base frame and translucent current frame for mummyleader attack
+        // [crispy] draw base frame and translucent current frame for MT_MUMMYLEADER attack
         if (crispy->translucency & TRANSLUCENCY_MISSILE)
         {
             if (thing->info->doomednum == 45 && thing->frame == (24 | FF_FULLBRIGHT))
