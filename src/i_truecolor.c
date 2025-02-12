@@ -88,25 +88,25 @@ const uint32_t I_BlendOverTranmap (const uint32_t bg, const uint32_t fg)
 }
 
 // [crispy] TINTTAB blending emulation, used for Heretic
-const uint32_t I_BlendOverHerTinttab (const uint32_t bg, const uint32_t fg)
+const uint32_t I_BlendStrongOverTinttab (const uint32_t bg, const uint32_t fg)
 {
     return I_BlendOver(bg, fg, 0x8E); // 142 (56% opacity)
 }
 
 // [crispy] Less opaque ("Alt") TINTTAB blending emulation, used for Heretic
-const uint32_t I_BlendOverHerAltTinttab (const uint32_t bg, const uint32_t fg)
+const uint32_t I_BlendWeakOverAltTinttab (const uint32_t bg, const uint32_t fg)
 {
     return I_BlendOver(bg, fg, 0x60); // 96 (38% opacity)
 }
 
 // [crispy] TINTTAB blending emulation, used for Hexen
-const uint32_t I_BlendOverHexTinttab (const uint32_t bg, const uint32_t fg)
+const uint32_t I_BlendWeakOverTinttab (const uint32_t bg, const uint32_t fg)
 {
     return I_BlendOver(bg, fg, 0x60); // 96 (38% opacity)
 }
 
 // [crispy] More opaque ("Alt") TINTTAB blending emulation, used for Hexen
-const uint32_t I_BlendOverHexAltTinttab (const uint32_t bg, const uint32_t fg)
+const uint32_t I_BlendStrongOverAltTinttab (const uint32_t bg, const uint32_t fg)
 {
     return I_BlendOver(bg, fg, 0x8E); // 142 (56% opacity)
 }

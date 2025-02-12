@@ -33,10 +33,10 @@ const uint32_t I_BlendDark (const uint32_t bg_i, const int d);
 const uint32_t I_BlendOver (const uint32_t bg_i, const uint32_t fg_i, const int amount);
 
 const uint32_t I_BlendOverTranmap (const uint32_t bg, const uint32_t fg);
-const uint32_t I_BlendOverHerTinttab (const uint32_t bg, const uint32_t fg);
-const uint32_t I_BlendOverHerAltTinttab (const uint32_t bg, const uint32_t fg);
-const uint32_t I_BlendOverHexTinttab (const uint32_t bg, const uint32_t fg);
-const uint32_t I_BlendOverHexAltTinttab (const uint32_t bg, const uint32_t fg);
+const uint32_t I_BlendStrongOverTinttab (const uint32_t bg, const uint32_t fg);
+const uint32_t I_BlendWeakOverAltTinttab (const uint32_t bg, const uint32_t fg);
+const uint32_t I_BlendWeakOverTinttab (const uint32_t bg, const uint32_t fg);
+const uint32_t I_BlendStrongOverAltTinttab (const uint32_t bg, const uint32_t fg);
 const uint32_t I_BlendOverXlatab (const uint32_t bg, const uint32_t fg);
 const uint32_t I_BlendOverAltXlatab (const uint32_t bg, const uint32_t fg);
 
