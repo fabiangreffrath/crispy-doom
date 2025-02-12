@@ -462,9 +462,8 @@ void R_InitTranslationTables(void)
     int i;
     byte *transLump;
     int lumpnum;
-    GameMission_t mission = hexen;
 
-    V_LoadTintTable(mission);
+    V_LoadTintTable((GameMission_t) hexen);
 
     // Allocate translation tables
     translationtables = Z_Malloc(256 * 3 * (maxplayers - 1), PU_STATIC, 0);

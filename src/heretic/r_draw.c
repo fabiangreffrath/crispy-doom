@@ -339,9 +339,8 @@ void R_DrawTranslatedTLColumn(void)
 void R_InitTranslationTables(void)
 {
     int i;
-    GameMission_t mission = heretic;
 
-    V_LoadTintTable(mission);
+    V_LoadTintTable((GameMission_t) heretic);
 
     // Allocate translation tables
     translationtables = Z_Malloc(256 * 3, PU_STATIC, 0);
