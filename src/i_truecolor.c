@@ -87,16 +87,16 @@ const uint32_t I_BlendOverTranmap (const uint32_t bg, const uint32_t fg)
     return I_BlendOver(bg, fg, 0xA8); // 168 (66% opacity)
 }
 
-// [crispy] TINTTAB blending emulation, Heretic Tinttab - Hexen AltTinttab
-const uint32_t I_BlendStrongOverTinttab (const uint32_t bg, const uint32_t fg)
-{
-    return I_BlendOver(bg, fg, 0x8E); // 142 (56% opacity)
-}
-
 // [crispy] TINTTAB blending emulation, Heretic AltTinttab - Hexen Tinttab
 const uint32_t I_BlendWeakOverTinttab (const uint32_t bg, const uint32_t fg)
 {
     return I_BlendOver(bg, fg, 0x60); // 96 (38% opacity)
+}
+
+// [crispy] TINTTAB blending emulation, Heretic Tinttab - Hexen AltTinttab
+const uint32_t I_BlendStrongOverTinttab (const uint32_t bg, const uint32_t fg)
+{
+    return I_BlendOver(bg, fg, 0x8E); // 142 (56% opacity)
 }
 
 // [crispy] More opaque XLATAB blending emulation, used for Strife
