@@ -764,12 +764,12 @@ void V_LoadTintTable(GameMission_t mission)
     if (mission == heretic)
     {
         I_BlendOverTinttab = I_BlendStrongOverTinttab;
-        I_BlendOverAltTinttab = I_BlendWeakOverAltTinttab;
+        I_BlendOverAltTinttab = I_BlendWeakOverTinttab;
     }
     else
     {
         I_BlendOverTinttab = I_BlendWeakOverTinttab;
-        I_BlendOverAltTinttab = I_BlendStrongOverAltTinttab;
+        I_BlendOverAltTinttab = I_BlendStrongOverTinttab;
     }
 #endif
 }

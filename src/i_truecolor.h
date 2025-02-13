@@ -34,9 +34,7 @@ const uint32_t I_BlendOver (const uint32_t bg_i, const uint32_t fg_i, const int 
 
 const uint32_t I_BlendOverTranmap (const uint32_t bg, const uint32_t fg);
 const uint32_t I_BlendStrongOverTinttab (const uint32_t bg, const uint32_t fg);
-const uint32_t I_BlendWeakOverAltTinttab (const uint32_t bg, const uint32_t fg);
 const uint32_t I_BlendWeakOverTinttab (const uint32_t bg, const uint32_t fg);
-const uint32_t I_BlendStrongOverAltTinttab (const uint32_t bg, const uint32_t fg);
 const uint32_t I_BlendOverXlatab (const uint32_t bg, const uint32_t fg);
 const uint32_t I_BlendOverAltXlatab (const uint32_t bg, const uint32_t fg);
 

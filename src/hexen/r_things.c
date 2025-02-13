@@ -677,7 +677,7 @@ void R_ProjectSprite(mobj_t * thing)
     else
     if (thing->flags & MF_ALTSHADOW)
     {
-        vis->blendfunc = I_BlendStrongOverAltTinttab;
+        vis->blendfunc = I_BlendStrongOverTinttab;
     }
 #endif
 }
@@ -839,7 +839,7 @@ void R_DrawPSprite(pspdef_t * psp)
             {
                 vis->mobjflags |= MF_ALTSHADOW;
 #ifdef CRISPY_TRUECOLOR
-                vis->blendfunc = I_BlendStrongOverAltTinttab;
+                vis->blendfunc = I_BlendStrongOverTinttab;
 #endif
             }
         }
