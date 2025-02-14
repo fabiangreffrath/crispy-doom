@@ -463,7 +463,11 @@ void R_InitTranslationTables(void)
     byte *transLump;
     int lumpnum;
 
-    V_LoadTintTable((GameMission_t) hexen);
+#ifndef CRISPY_TRUECOLOR
+    V_LoadTintTable();
+#else
+    I_InitTinttab((GameMission_t) hexen);
+#endif
 
     // Allocate translation tables
     translationtables = Z_Malloc(256 * 3 * (maxplayers - 1), PU_STATIC, 0);

@@ -470,7 +470,7 @@ void R_DrawVisSprite(vissprite_t * vis, int x1, int x2)
 
     colfunc = basecolfunc;
 #ifdef CRISPY_TRUECOLOR
-    blendfunc = I_BlendWeakOverTinttab;
+    blendfunc = I_BlendOverTinttab;
 #endif
 }
 
@@ -672,12 +672,12 @@ void R_ProjectSprite(mobj_t * thing)
     // bright states to preserve look & feel of original Hexen's translucency
     if (thing->flags & MF_SHADOW)
     {
-        vis->blendfunc = I_BlendWeakOverTinttab;
+        vis->blendfunc = I_BlendOverTinttab;
     }
     else
     if (thing->flags & MF_ALTSHADOW)
     {
-        vis->blendfunc = I_BlendStrongOverTinttab;
+        vis->blendfunc = I_BlendOverAltTinttab;
     }
 #endif
 }
@@ -832,14 +832,14 @@ void R_DrawPSprite(pspdef_t * psp)
             {                   // don't draw the psprite
                 vis->mobjflags |= MF_SHADOW;
 #ifdef CRISPY_TRUECOLOR
-                vis->blendfunc = I_BlendWeakOverTinttab;
+                vis->blendfunc = I_BlendOverTinttab;
 #endif
             }
             else if (viewplayer->mo->flags & MF_SHADOW)
             {
                 vis->mobjflags |= MF_ALTSHADOW;
 #ifdef CRISPY_TRUECOLOR
-                vis->blendfunc = I_BlendStrongOverTinttab;
+                vis->blendfunc = I_BlendOverAltTinttab;
 #endif
             }
         }
@@ -847,7 +847,7 @@ void R_DrawPSprite(pspdef_t * psp)
         {
             vis->mobjflags |= MF_SHADOW;
 #ifdef CRISPY_TRUECOLOR
-            vis->blendfunc = I_BlendWeakOverTinttab;
+            vis->blendfunc = I_BlendOverTinttab;
 #endif
         }
     }

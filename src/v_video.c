@@ -62,8 +62,6 @@ byte *dp_translation = NULL;
 boolean dp_translucent = false;
 #ifdef CRISPY_TRUECOLOR
 extern pixel_t *pal_color;
-static const uint32_t (*I_BlendOverTinttab) (const uint32_t fg, const uint32_t bg); // [crispy] points to function for heretic/hexen normal blending
-static const uint32_t (*I_BlendOverAltTinttab) (const uint32_t fg, const uint32_t bg); // [crispy] points to function for heretic/hexen alternative blending
 #endif
 
 // villsa [STRIFE] Blending table used for Strife
@@ -756,22 +754,9 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch)
 // Load tint table from TINTTAB lump.
 //
 
-void V_LoadTintTable(GameMission_t mission)
+void V_LoadTintTable()
 {
-#ifndef CRISPY_TRUECOLOR
     tinttable = W_CacheLumpName("TINTTAB", PU_STATIC);
-#else
-    if (mission == heretic)
-    {
-        I_BlendOverTinttab = I_BlendStrongOverTinttab;
-        I_BlendOverAltTinttab = I_BlendWeakOverTinttab;
-    }
-    else
-    {
-        I_BlendOverTinttab = I_BlendWeakOverTinttab;
-        I_BlendOverAltTinttab = I_BlendStrongOverTinttab;
-    }
-#endif
 }
 
 //
