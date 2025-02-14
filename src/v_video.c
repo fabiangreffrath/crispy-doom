@@ -754,7 +754,7 @@ void V_DrawShadowedPatch(int x, int y, patch_t *patch)
 // Load tint table from TINTTAB lump.
 //
 
-void V_LoadTintTable()
+void V_LoadTintTable(void)
 {
     tinttable = W_CacheLumpName("TINTTAB", PU_STATIC);
 }

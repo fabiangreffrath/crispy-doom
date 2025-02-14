@@ -104,7 +104,7 @@ void V_ScreenShot(const char *format);
 // Load the lookup table for translucency calculations from the TINTTAB
 // lump.
 
-void V_LoadTintTable();
+void V_LoadTintTable(void);
 
 // villsa [STRIFE]
 // Load the lookup table for translucency calculations from the XLATAB
