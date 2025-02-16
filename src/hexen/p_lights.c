@@ -275,7 +275,7 @@ void T_Phase(thinker_t *thinker)
     if (a11y_sector_lighting)
         phase->sector->rlightlevel = phase->sector->lightlevel;
     else
-        phase->sector->rlightlevel = phase->base + PhaseTable[0];
+        phase->sector->rlightlevel = phase->base + MAXPHASE;
 }
 
 //==========================================================================

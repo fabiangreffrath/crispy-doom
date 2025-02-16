@@ -1555,7 +1555,7 @@ static void StreamIn_phase_t(thinker_t *thinker)
     str->base = SV_ReadLong();
 
     if (!a11y_sector_lighting) // [crispy] A11Y
-        str->sector->rlightlevel = str->base + 128;;
+        str->sector->rlightlevel = str->base + MAXPHASE;;
 }
 
 static void StreamOut_phase_t(thinker_t *thinker)
