@@ -230,11 +230,13 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 rtn = false;
                 break;
         }
+
         // [crispy] A11Y
         if (!a11y_sector_lighting)
-        {
             light->sector->rlightlevel = (light->sector->lightlevel > light->value1) ? light->sector->lightlevel : light->value1;
-        }
+        else
+            light->sector->rlightlevel = light->sector->lightlevel;
+            
         if (think)
         {
             P_AddThinker(&light->thinker);
@@ -302,11 +304,12 @@ void P_SpawnPhasedLight(sector_t * sector, int base, int index)
     phase->base = base & 255;
     sector->lightlevel = phase->base + PhaseTable[phase->index];
     phase->thinker.function = T_Phase;
+   
     // [crispy] A11Y
     if (!a11y_sector_lighting)
-    {
         phase->sector->rlightlevel = phase->base + PhaseTable[0];
-    }
+    else
+        phase->sector->rlightlevel = sector->lightlevel;
 
     sector->special = 0;
 }
