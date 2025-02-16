@@ -22,6 +22,7 @@
 #include "i_system.h"
 #include "p_local.h"
 #include "s_sound.h"
+#include "a11y.h" // [crispy] A11Y
 
 // MACROS ------------------------------------------------------------------
 
@@ -255,6 +256,7 @@ static void P_LightningFlash(void)
                     }
                     tempLight++;
                 }
+                tempSec->rlightlevel = tempSec->lightlevel; // [crispy] A11Y
             }
         }
         else
@@ -270,6 +272,7 @@ static void P_LightningFlash(void)
                     tempSec->lightlevel = *tempLight;
                     tempLight++;
                 }
+                tempSec->rlightlevel = tempSec->lightlevel; // [crispy] A11Y
             }
             Sky1Texture = P_GetMapSky1Texture(gamemap);
         }
@@ -314,6 +317,7 @@ static void P_LightningFlash(void)
             tempLight++;
             foundSec = true;
         }
+        tempSec->rlightlevel = tempSec->lightlevel; // [crispy] A11Y
     }
     if (foundSec)
     {

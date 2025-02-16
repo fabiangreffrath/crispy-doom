@@ -106,7 +106,7 @@ void T_Light(thinker_t *thinker)
     if (a11y_sector_lighting)
         light->sector->rlightlevel = light->sector->lightlevel;
     else
-        light->sector->rlightlevel = light->value1;
+        light->sector->rlightlevel = (light->sector->lightlevel > light->value1) ? light->sector->lightlevel : light->value1;
 }
 
 //============================================================================
@@ -154,6 +154,7 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
         light->type = type;
         light->sector = sec;
         light->count = 0;
+        light->value1 = 0; // [crispy] initialize value1 for A11Y usage
         rtn = true;
         switch (type)
         {
@@ -229,6 +230,11 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 rtn = false;
                 break;
         }
+        // [crispy] A11Y
+        if (!a11y_sector_lighting)
+        {
+            light->sector->rlightlevel = (light->sector->lightlevel > light->value1) ? light->sector->lightlevel : light->value1;
+        }
         if (think)
         {
             P_AddThinker(&light->thinker);
@@ -264,6 +270,12 @@ void T_Phase(thinker_t *thinker)
     phase_t *phase = (phase_t *) thinker;
     phase->index = (phase->index + 1) & 63;
     phase->sector->lightlevel = phase->base + PhaseTable[phase->index];
+
+    // [crispy] A11Y
+    if (a11y_sector_lighting)
+        phase->sector->rlightlevel = phase->sector->lightlevel;
+    else
+        phase->sector->rlightlevel = phase->base + PhaseTable[0];
 }
 
 //==========================================================================
@@ -290,6 +302,11 @@ void P_SpawnPhasedLight(sector_t * sector, int base, int index)
     phase->base = base & 255;
     sector->lightlevel = phase->base + PhaseTable[phase->index];
     phase->thinker.function = T_Phase;
+    // [crispy] A11Y
+    if (!a11y_sector_lighting)
+    {
+        phase->sector->rlightlevel = phase->base + PhaseTable[0];
+    }
 
     sector->special = 0;
 }
