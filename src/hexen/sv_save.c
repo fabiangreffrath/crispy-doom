@@ -22,6 +22,7 @@
 #include "m_misc.h"
 #include "i_swap.h"
 #include "p_local.h"
+#include "a11y.h"
 
 // MACROS ------------------------------------------------------------------
 
@@ -1429,6 +1430,10 @@ static void StreamIn_light_t(thinker_t *thinker)
 
     // int count;
     str->count = SV_ReadLong();
+
+    if (!a11y_sector_lighting && 
+            str->sector->rlightlevel < str->value1) // [crispy] Ensure maxlight among competing thinkers. 
+        str->sector->rlightlevel = str->value1;
 }
 
 static void StreamOut_light_t(thinker_t *thinker)
@@ -2585,6 +2590,7 @@ static void UnarchiveWorld(void)
         sec->floorpic = SV_ReadWord();
         sec->ceilingpic = SV_ReadWord();
         sec->lightlevel = SV_ReadWord();
+        sec->rlightlevel = sec->lightlevel; // [crispy] A11Y
         sec->special = SV_ReadWord();
         sec->tag = SV_ReadWord();
         sec->seqType = SV_ReadWord();

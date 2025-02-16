@@ -18,6 +18,7 @@
 #include "h2def.h"
 #include "m_random.h"
 #include "p_local.h"
+#include "a11y.h" // [crispy] A11Y
 
 //============================================================================
 //
@@ -100,6 +101,12 @@ void T_Light(thinker_t *thinker)
         default:
             break;
     }
+    
+    // [crispy] A11Y
+    if (a11y_sector_lighting)
+        light->sector->rlightlevel = light->sector->lightlevel;
+    else
+        light->sector->rlightlevel = light->value1;
 }
 
 //============================================================================
