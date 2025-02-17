@@ -164,6 +164,7 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 {
                     sec->lightlevel = 255;
                 }
+                light->value1 = light->sector->rlightlevel = sec->lightlevel; // [crispy] A11Y
                 break;
             case LITE_LOWERBYVALUE:
                 sec->lightlevel -= arg1;
@@ -171,6 +172,7 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 {
                     sec->lightlevel = 0;
                 }
+                light->value1 = light->sector->rlightlevel = sec->lightlevel; // [crispy] A11Y
                 break;
             case LITE_CHANGETOVALUE:
                 sec->lightlevel = arg1;
@@ -182,6 +184,7 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 {
                     sec->lightlevel = 255;
                 }
+                light->value1 = light->sector->rlightlevel = sec->lightlevel; // [crispy] A11Y
                 break;
             case LITE_FADE:
                 think = true;
