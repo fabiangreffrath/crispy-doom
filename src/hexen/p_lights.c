@@ -103,7 +103,7 @@ void T_Light(thinker_t *thinker)
     }
     
     // [crispy] A11Y
-    if (a11y_sector_lighting)
+    if (a11y_sector_lighting || light->type == LITE_FADE)
         light->sector->rlightlevel = light->sector->lightlevel;
     // else
     //     light->sector->rlightlevel = (light->sector->lightlevel > light->value1) ? light->sector->lightlevel : light->value1;
@@ -164,7 +164,6 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 {
                     sec->lightlevel = 255;
                 }
-                light->value1 = light->sector->rlightlevel = sec->lightlevel; // [crispy] A11Y
                 break;
             case LITE_LOWERBYVALUE:
                 sec->lightlevel -= arg1;
@@ -172,7 +171,6 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 {
                     sec->lightlevel = 0;
                 }
-                light->value1 = light->sector->rlightlevel = sec->lightlevel; // [crispy] A11Y
                 break;
             case LITE_CHANGETOVALUE:
                 sec->lightlevel = arg1;
@@ -184,7 +182,6 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 {
                     sec->lightlevel = 255;
                 }
-                light->value1 = light->sector->rlightlevel = sec->lightlevel; // [crispy] A11Y
                 break;
             case LITE_FADE:
                 think = true;
@@ -198,7 +195,6 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 {
                     light->tics2 = -1;
                 }
-                light->sector->rlightlevel = light->value1; // [crispy] A11Y
                 break;
             case LITE_GLOW:
                 think = true;
@@ -236,7 +232,7 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
         }
 
         // [crispy] A11Y
-        if (!a11y_sector_lighting)
+        if (!a11y_sector_lighting && type >= LITE_GLOW) // [crispy] for glow, flicker and strobe
         {
             light->sector->rlightlevel = MAX(light->sector->rlightlevel, light->value1);
         }
