@@ -105,8 +105,6 @@ void T_Light(thinker_t *thinker)
     // [crispy] A11Y
     if (a11y_sector_lighting || light->type == LITE_FADE)
         light->sector->rlightlevel = light->sector->lightlevel;
-    // else
-    //     light->sector->rlightlevel = (light->sector->lightlevel > light->value1) ? light->sector->lightlevel : light->value1;
 }
 
 //============================================================================
@@ -280,8 +278,6 @@ void T_Phase(thinker_t *thinker)
     // [crispy] A11Y
     if (a11y_sector_lighting)
         phase->sector->rlightlevel = phase->sector->lightlevel;
-    // else
-    //     phase->sector->rlightlevel = phase->base + MAXPHASE;
 }
 
 //==========================================================================
