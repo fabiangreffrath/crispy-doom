@@ -198,6 +198,7 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
                 {
                     light->tics2 = -1;
                 }
+                light->sector->rlightlevel = light->value1; // [crispy] A11Y
                 break;
             case LITE_GLOW:
                 think = true;
