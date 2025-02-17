@@ -234,7 +234,7 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
         // [crispy] A11Y
         if (!a11y_sector_lighting)
         {
-            light->sector->rlightlevel = (light->sector->rlightlevel < light->value1) ? light->value1 : light->sector->rlightlevel;
+            light->sector->rlightlevel = MAX(light->sector->rlightlevel, light->value1);
         }
         else
         {
@@ -312,7 +312,7 @@ void P_SpawnPhasedLight(sector_t * sector, int base, int index)
     // [crispy] A11Y
     if (!a11y_sector_lighting)
     {
-        phase->sector->rlightlevel = (phase->sector->rlightlevel < (phase->base + MAXPHASE)) ? (phase->base + MAXPHASE) : phase->sector->rlightlevel;
+        phase->sector->rlightlevel = MAX(phase->base + MAXPHASE, phase->sector->rlightlevel);
     }
     else
     {

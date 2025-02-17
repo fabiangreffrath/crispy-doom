@@ -256,7 +256,8 @@ static void P_LightningFlash(void)
                     }
                     tempLight++;
                 }
-                tempSec->rlightlevel = tempSec->lightlevel; // [crispy] A11Y
+                if (a11y_sector_lighting)
+                    tempSec->rlightlevel = tempSec->lightlevel; // [crispy] A11Y
             }
         }
         else
@@ -272,7 +273,8 @@ static void P_LightningFlash(void)
                     tempSec->lightlevel = *tempLight;
                     tempLight++;
                 }
-                tempSec->rlightlevel = tempSec->lightlevel; // [crispy] A11Y
+                if (a11y_sector_lighting)
+                    tempSec->rlightlevel = tempSec->lightlevel; // [crispy] A11Y
             }
             Sky1Texture = P_GetMapSky1Texture(gamemap);
         }
@@ -317,7 +319,8 @@ static void P_LightningFlash(void)
             tempLight++;
             foundSec = true;
         }
-        tempSec->rlightlevel = tempSec->lightlevel; // [crispy] A11Y
+        if (a11y_sector_lighting)
+            tempSec->rlightlevel = tempSec->lightlevel; // [crispy] A11Y
     }
     if (foundSec)
     {
