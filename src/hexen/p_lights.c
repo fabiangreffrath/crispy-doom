@@ -105,8 +105,8 @@ void T_Light(thinker_t *thinker)
     // [crispy] A11Y
     if (a11y_sector_lighting)
         light->sector->rlightlevel = light->sector->lightlevel;
-    else
-        light->sector->rlightlevel = (light->sector->lightlevel > light->value1) ? light->sector->lightlevel : light->value1;
+    // else
+    //     light->sector->rlightlevel = (light->sector->lightlevel > light->value1) ? light->sector->lightlevel : light->value1;
 }
 
 //============================================================================
@@ -233,9 +233,13 @@ boolean EV_SpawnLight(line_t * line, byte * arg, lighttype_t type)
 
         // [crispy] A11Y
         if (!a11y_sector_lighting)
-            light->sector->rlightlevel = (light->sector->lightlevel > light->value1) ? light->sector->lightlevel : light->value1;
+        {
+            light->sector->rlightlevel = (light->sector->rlightlevel < light->value1) ? light->value1 : light->sector->rlightlevel;
+        }
         else
+        {
             light->sector->rlightlevel = light->sector->lightlevel;
+        }            
             
         if (think)
         {
@@ -276,8 +280,8 @@ void T_Phase(thinker_t *thinker)
     // [crispy] A11Y
     if (a11y_sector_lighting)
         phase->sector->rlightlevel = phase->sector->lightlevel;
-    else
-        phase->sector->rlightlevel = phase->base + MAXPHASE;
+    // else
+    //     phase->sector->rlightlevel = phase->base + MAXPHASE;
 }
 
 //==========================================================================
@@ -307,9 +311,13 @@ void P_SpawnPhasedLight(sector_t * sector, int base, int index)
    
     // [crispy] A11Y
     if (!a11y_sector_lighting)
-        phase->sector->rlightlevel = phase->base + PhaseTable[0];
+    {
+        phase->sector->rlightlevel = (phase->sector->rlightlevel < (phase->base + MAXPHASE)) ? (phase->base + MAXPHASE) : phase->sector->rlightlevel;
+    }
     else
-        phase->sector->rlightlevel = sector->lightlevel;
+    {
+        phase->sector->rlightlevel = phase->sector->lightlevel;
+    }
 
     sector->special = 0;
 }

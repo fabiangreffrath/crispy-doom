@@ -1431,8 +1431,8 @@ static void StreamIn_light_t(thinker_t *thinker)
     // int count;
     str->count = SV_ReadLong();
 
-    if (!a11y_sector_lighting) // [crispy] A11Y
-        str->sector->rlightlevel = (str->sector->lightlevel > str->value1) ? str->sector->lightlevel : str->value1;
+    if (!a11y_sector_lighting && (str->sector->rlightlevel < str->value1)) // [crispy] A11Y - maxlight among competing thinkers. 
+        str->sector->rlightlevel = str->value1;
 }
 
 static void StreamOut_light_t(thinker_t *thinker)
@@ -1554,7 +1554,7 @@ static void StreamIn_phase_t(thinker_t *thinker)
     // int base;
     str->base = SV_ReadLong();
 
-    if (!a11y_sector_lighting) // [crispy] A11Y
+    if (!a11y_sector_lighting && (str->sector->rlightlevel < (str->base + MAXPHASE))) // [crispy] A11Y - maxlight among competing thinkers. 
         str->sector->rlightlevel = str->base + MAXPHASE;;
 }
 
