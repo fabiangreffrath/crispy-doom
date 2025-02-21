@@ -997,78 +997,56 @@ void R_DrawPlayerSprites(void)
     {
         if (psp->state)
         {
-            // // [crispy] draw base frame for transparent or deactivated weapon flashes
-            // if (!a11y_weapon_pspr ||
-            //         (crispy->translucency & TRANSLUCENCY_ITEM &&
-            //         !(viewplayer->powers[pw_invisibility] > 4*32 || viewplayer->powers[pw_invisibility] & 8)))
-            // {
-            //     drawbase = 1;
-            //     tmpframe = psp->state->frame;
+            // [crispy] draw base frame for transparent or deactivated weapon flashes
+            if (crispy->translucency & TRANSLUCENCY_ITEM)
+            {
+                drawbase = 1;
+                tmpframe = psp->state->frame;
 
-            //     switch (psp->state->sprite)
-            //     {         
-            //         case SPR_GWND:
-            //             if (tmpframe == 1)
-            //                 offset = spriteoffsets[SPR_GWND_F1].offset;
-            //             else 
-            //             if (tmpframe == 2)
-            //                 offset = spriteoffsets[SPR_GWND_F2].offset;
-            //             else 
-            //             if (tmpframe == 3)
-            //                 offset = spriteoffsets[SPR_GWND_F3].offset;
-            //             else
-            //                 drawbase = 0;
-            //             break;
-            //         case SPR_BLSR:
-            //             if (tmpframe == 1)
-            //                 offset = spriteoffsets[SPR_BLSR_F1].offset;
-            //             else 
-            //             if (tmpframe == 2)
-            //                 offset = spriteoffsets[SPR_BLSR_F2].offset;
-            //             else 
-            //             if (tmpframe == 3)
-            //                 offset = spriteoffsets[SPR_BLSR_F3].offset;
-            //             else
-            //                 drawbase = 0;
-            //             break;
-            //         case SPR_HROD:
-            //             if (tmpframe == 1)
-            //                 offset = spriteoffsets[SPR_HROD_F1].offset;
-            //             else 
-            //             if (tmpframe > 1 && tmpframe < 6)
-            //                 offset = spriteoffsets[SPR_HROD_F2_5].offset;
-            //             else 
-            //             if (tmpframe == 6)
-            //                 offset = spriteoffsets[SPR_HROD_F6].offset;
-            //             else
-            //                 drawbase = 0;
-            //             break;
-            //         case SPR_PHNX:
-            //             if (tmpframe == 1)
-            //                 offset = spriteoffsets[SPR_PHNX_F1].offset;
-            //             else 
-            //             if (tmpframe == 2 || tmpframe > 3)
-            //                 offset = spriteoffsets[SPR_PHNX_F2].offset;
-            //             else 
-            //             if (tmpframe == 3)
-            //                 offset = spriteoffsets[SPR_PHNX_F3].offset;
-            //             else
-            //                 drawbase = 0;
-            //             break;
-            //         default:
-            //             offset = 0x0;
-            //             drawbase = 0;
-            //             break;
-            //     }
-            //     if (drawbase && psp->state->sprite != SPR_GAUN)
-            //     {
-            //         psp->state->frame = 0; // set base frame
-            //         R_DrawPSprite(psp, offset, 0);
-            //         psp->state->frame = tmpframe; // restore attack frame
-            //     }
-            // }
-            // if (!a11y_weapon_pspr && drawbase) 
-            //     continue; // [crispy] A11Y no weapon flash, use base instead
+                switch (psp->state->sprite)
+                {         
+                    case SPR_MWND:
+                        if (tmpframe == 32769)
+                            offset = spriteoffsets[SPR_GWND_F1].offset;
+                        else
+                            drawbase = 0;
+                        break;
+                    case SPR_MSTF:
+                        if (tmpframe == 6)
+                            offset = spriteoffsets[SPR_GWND_F1].offset;
+                        else 
+                        if (tmpframe == 32775)
+                            offset = spriteoffsets[SPR_GWND_F1].offset;
+                        else
+                        if (tmpframe == 8)
+                            offset = spriteoffsets[SPR_GWND_F1].offset;
+                        else
+                            drawbase = 0;
+                        break;
+                    case SPR_CSSF:
+                        if (tmpframe == 9)
+                            offset = spriteoffsets[SPR_GWND_F1].offset;
+                        else
+                            drawbase = 0;
+                        break;
+                    case SPR_CHLY:
+                        if (tmpframe >= 32768 && tmpframe <= 32773)
+                            offset = spriteoffsets[SPR_GWND_F1].offset;
+                        else
+                            drawbase = 0;
+                        break;
+                    default:
+                        offset = 0x0;
+                        drawbase = 0;
+                        break;
+                }
+                if (drawbase)
+                {
+                    psp->state->frame = 0; // set base frame
+                    R_DrawPSprite(psp, offset, 0);
+                    psp->state->frame = tmpframe; // restore attack frame
+                }
+            }
             R_DrawPSprite(psp, 0x0, drawbase); // [crispy] translucent when base was drawn
         }      
     }
