@@ -35,29 +35,6 @@ typedef struct
     int bottomclip;
 } maskdraw_t;
 
-typedef enum
-{
-    SPR_GWND_F1,
-    SPR_GWND_F2,
-    SPR_GWND_F3,
-    SPR_BLSR_F1,
-    SPR_BLSR_F2,
-    SPR_BLSR_F3,
-    SPR_HROD_F1,
-    SPR_HROD_F2_5,
-    SPR_HROD_F6,
-    SPR_PHNX_F1,
-    SPR_PHNX_F2,
-    SPR_PHNX_F3, 
-    NUMSOFFSETS
-} spriteoffsetenum_t;
-
-typedef struct
-{
-    spriteoffsetenum_t sprite;
-    int offset;
-} spriteoffset_t;
-
 /*
 
 Sprite rotation 0 is facing the viewer, rotation 1 is one angle turn CLOCKWISE around the axis.
@@ -91,23 +68,6 @@ int numsprites;
 spriteframe_t sprtemp[30];
 int maxframe;
 static const char *spritename;
-
-
-// [crispy] Y-Offsets for various sprite frames used for weapon fire translucency
-spriteoffset_t spriteoffsets[NUMSOFFSETS] = {
-    {SPR_GWND_F1, 0 * FRACUNIT},
-    {SPR_GWND_F2, 8 * FRACUNIT},
-    {SPR_GWND_F3, 4 * FRACUNIT},
-    {SPR_BLSR_F1, 0 * FRACUNIT},
-    {SPR_BLSR_F2, 1 * FRACUNIT},
-    {SPR_BLSR_F3, 4 * FRACUNIT},
-    {SPR_HROD_F1, 5 * FRACUNIT},
-    {SPR_HROD_F2_5, 0 * FRACUNIT},
-    {SPR_HROD_F6, 4 * FRACUNIT},
-    {SPR_PHNX_F1, 0 * FRACUNIT},
-    {SPR_PHNX_F2, 12 * FRACUNIT},
-    {SPR_PHNX_F3, 6 * FRACUNIT}
-};
 
 /*
 =================
@@ -780,7 +740,7 @@ int PSpriteSY[NUMCLASSES][NUMWEAPONS] = {
 
 boolean pspr_interp = true; // [crispy] interpolate weapon bobbing
 
-void R_DrawPSprite(pspdef_t * psp, int psyoffset, int translucent) // [crispy] y-offset and translucency for weapon flash translucency
+void R_DrawPSprite(pspdef_t * psp, int translucent) // [crispy] translucency for weapon flash translucency
 {
     fixed_t tx;
     int x1, x2;
@@ -844,7 +804,7 @@ void R_DrawPSprite(pspdef_t * psp, int psyoffset, int translucent) // [crispy] y
     vis->psprite = true;
     vis->floorclip = 0;
     vis->texturemid = (BASEYCENTER << FRACBITS) /* + FRACUNIT / 2 */
-        - (psp->sy2 - spritetopoffset[lump] + psyoffset);
+        - (psp->sy2 - spritetopoffset[lump]);
     if (viewheight == SCREENHEIGHT)
     {
         vis->texturemid -= PSpriteSY[viewplayer->class]
@@ -969,7 +929,7 @@ void R_DrawPSprite(pspdef_t * psp, int psyoffset, int translucent) // [crispy] y
 void R_DrawPlayerSprites(void)
 {
     int i, lightnum;
-    int tmpframe, offset, drawbase = 0; // [crispy] for drawing base frames
+    int tmpframe, drawbase = 0; // [crispy] for drawing base frames
     pspdef_t *psp;
 
 //
@@ -1000,54 +960,39 @@ void R_DrawPlayerSprites(void)
             // [crispy] draw base frame for transparent or deactivated weapon flashes
             if (crispy->translucency & TRANSLUCENCY_ITEM)
             {
-                drawbase = 1;
                 tmpframe = psp->state->frame;
 
                 switch (psp->state->sprite)
                 {         
                     case SPR_MWND:
-                        if (tmpframe == 32769)
-                            offset = spriteoffsets[SPR_GWND_F1].offset;
-                        else
-                            drawbase = 0;
+                        if (tmpframe == (1 | FF_FULLBRIGHT))
+                            drawbase = 1;
                         break;
                     case SPR_MSTF:
-                        if (tmpframe == 6)
-                            offset = spriteoffsets[SPR_GWND_F1].offset;
-                        else 
-                        if (tmpframe == 32775)
-                            offset = spriteoffsets[SPR_GWND_F1].offset;
-                        else
-                        if (tmpframe == 8)
-                            offset = spriteoffsets[SPR_GWND_F1].offset;
-                        else
-                            drawbase = 0;
+                        if ((tmpframe >= 6 && tmpframe <= 9) ||
+                                tmpframe == (7 | FF_FULLBRIGHT))
+                            drawbase = 1;
                         break;
                     case SPR_CSSF:
                         if (tmpframe == 9)
-                            offset = spriteoffsets[SPR_GWND_F1].offset;
-                        else
-                            drawbase = 0;
+                            drawbase = 1;
                         break;
                     case SPR_CHLY:
-                        if (tmpframe >= 32768 && tmpframe <= 32773)
-                            offset = spriteoffsets[SPR_GWND_F1].offset;
-                        else
-                            drawbase = 0;
+                        if (tmpframe >= (0 | FF_FULLBRIGHT) && tmpframe <= (5 | FF_FULLBRIGHT))
+                            drawbase = 1;
                         break;
                     default:
-                        offset = 0x0;
                         drawbase = 0;
                         break;
                 }
                 if (drawbase)
                 {
                     psp->state->frame = 0; // set base frame
-                    R_DrawPSprite(psp, offset, 0);
+                    R_DrawPSprite(psp, 0);
                     psp->state->frame = tmpframe; // restore attack frame
                 }
             }
-            R_DrawPSprite(psp, 0x0, drawbase); // [crispy] translucent when base was drawn
+            R_DrawPSprite(psp, drawbase); // [crispy] translucent when base was drawn
         }      
     }
 }
