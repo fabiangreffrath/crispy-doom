@@ -427,7 +427,7 @@ void R_DrawVisSprite(vissprite_t * vis, int x1, int x2)
             ((vis->mobjflags & MF_TRANSLATION) >> (MF_TRANSSHIFT - 8));
     }
     // [crispy] translucent sprites
-    else if (crispy->translucency && vis->mobjflags & MF_TRANSLUCENT)
+    else if (colfunc != R_DrawAltTLColumn && crispy->translucency && vis->mobjflags & MF_TRANSLUCENT)
     {
     	if ((crispy->translucency & TRANSLUCENCY_MISSILE) ||
             (vis->psprite && crispy->translucency & TRANSLUCENCY_ITEM))
