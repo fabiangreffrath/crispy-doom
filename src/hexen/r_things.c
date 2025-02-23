@@ -961,7 +961,7 @@ void R_DrawPlayerSprites(void)
             if (crispy->translucency & TRANSLUCENCY_ITEM && 
                 (!(viewplayer->class == PCLASS_CLERIC) || !(viewplayer->powers[pw_invulnerability]) || 
                         !((viewplayer->powers[pw_invulnerability] > 4*32 || viewplayer->powers[pw_invulnerability] & 8) && 
-                        (viewplayer->mo->flags2 & MF2_DONTDRAW || viewplayer->mo->flags & MF_SHADOW)))) // [crispy] when cleric is non-translucent during invul
+                            viewplayer->mo->flags & MF_SHADOW))) // [crispy] when cleric is non-translucent during invul
             {
                 tmpframe = psp->state->frame;
 
