@@ -431,7 +431,12 @@ void R_DrawVisSprite(vissprite_t * vis, int x1, int x2)
     {
     	if ((crispy->translucency & TRANSLUCENCY_MISSILE) ||
             (vis->psprite && crispy->translucency & TRANSLUCENCY_ITEM))
-	        colfunc = tlcolfunc;
+            {
+	            colfunc = tlcolfunc;
+            }
+#ifdef CRISPY_TRUECOLOR
+            blendfunc = vis->blendfunc;
+#endif
     }
 
     dc_iscale = abs(vis->xiscale) >> detailshift;
@@ -675,7 +680,7 @@ void R_ProjectSprite(mobj_t * thing)
 #ifdef CRISPY_TRUECOLOR
     // [crispy] not using additive blending (I_BlendAdd) here for full
     // bright states to preserve look & feel of original Hexen's translucency
-    if (thing->flags & MF_SHADOW)
+    if (thing->flags & MF_SHADOW || thing->flags & MF_TRANSLUCENT)
     {
         vis->blendfunc = I_BlendOverTinttab;
     }
@@ -878,6 +883,9 @@ void R_DrawPSprite(pspdef_t * psp, int translucent) // [crispy] translucency for
     if (translucent)
     {
         vis->mobjflags |= MF_TRANSLUCENT;
+#ifdef CRISPY_TRUECOLOR
+        vis->blendfunc = I_BlendOverTinttab;
+#endif        
     }
 
     // [crispy] interpolate weapon bobbing
