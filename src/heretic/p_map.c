@@ -1425,7 +1425,7 @@ boolean PTR_ShootTraverse(intercept_t * in)
     if (PuffType == MT_BLASTERPUFF1)
     {                           // Make blaster big puff
         mo = P_SpawnMobj(x, y, z, MT_BLASTERPUFF2);
-        S_StartSound(mo, sfx_blshit);
+        S_StartSound(mo, sfx_phohit);
     }
     else
     {
