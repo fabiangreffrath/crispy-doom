@@ -963,7 +963,7 @@ void A_FireBlasterPL1(mobj_t *actor, player_t *player, pspdef_t *psp)
     }
     PuffType = MT_BLASTERPUFF1;
     P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
-    S_StartSound(player->mo, sfx_artiuse);
+    S_StartSound(player->mo, sfx_gldhit);
 }
 
 //----------------------------------------------------------------------------
@@ -983,7 +983,7 @@ void A_FireBlasterPL2(mobj_t *actor, player_t *player, pspdef_t *psp)
     {
         mo->thinker.function = P_BlasterMobjThinker;
     }
-    S_StartSound(player->mo, sfx_artiup);
+    S_StartSound(player->mo, sfx_gldhit);
 }
 
 //----------------------------------------------------------------------------
