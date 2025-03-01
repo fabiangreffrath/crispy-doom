@@ -9420,7 +9420,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      SFX_NONE,                  // activesound
-     MF_SPECIAL | MF_NOGRAVITY | MF_TRANSLUCENT, // flags
+     MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
 
@@ -9798,7 +9798,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] = {
      100,                       // mass
      0,                         // damage
      SFX_NONE,                  // activesound
-     MF_SPECIAL | MF_NOGRAVITY | MF_TRANSLUCENT, // flags
+     MF_SPECIAL | MF_NOGRAVITY, // flags
      0                          // flags2
      },
 
