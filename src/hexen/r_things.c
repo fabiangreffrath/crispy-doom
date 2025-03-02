@@ -61,6 +61,9 @@ boolean LevelUseFullBright;
 ===============================================================================
 */
 
+// [crispy] check if player sprite is translucent due to active power
+static boolean R_CheckPowerBasedTranslucency(void);
+
 // variables used to look up and range check thing_t sprites patches
 spritedef_t *sprites;
 int numsprites;
@@ -968,10 +971,7 @@ void R_DrawPlayerSprites(void)
         if (psp->state)
         {
             // [crispy] draw base frame for transparent or deactivated weapon flashes
-            if (crispy->translucency & TRANSLUCENCY_ITEM && 
-                (!(viewplayer->class == PCLASS_CLERIC) || !(viewplayer->powers[pw_invulnerability]) || 
-                        !((viewplayer->powers[pw_invulnerability] > 4*32 || viewplayer->powers[pw_invulnerability] & 8) && 
-                            viewplayer->mo->flags & MF_SHADOW))) // [crispy] when cleric is non-translucent during invul
+            if (crispy->translucency & TRANSLUCENCY_ITEM && !R_CheckPowerBasedTranslucency())
             {
                 tmpframe = psp->state->frame;
 
@@ -1010,6 +1010,24 @@ void R_DrawPlayerSprites(void)
     }
 }
 
+/*
+========================
+=
+= [crispy] R_CheckPowerBasedTranslucency
+=
+= Check if player sprite is translucent due to active power
+========================
+*/
+
+static boolean R_CheckPowerBasedTranslucency(void)
+{
+    if (viewplayer->class == PCLASS_CLERIC && viewplayer->powers[pw_invulnerability] &&
+        ((viewplayer->powers[pw_invulnerability] > 4*32 || viewplayer->powers[pw_invulnerability] & 8) && 
+         viewplayer->mo->flags & MF_SHADOW))
+        return true;
+    else
+        return false;
+}
 
 /*
 ========================
