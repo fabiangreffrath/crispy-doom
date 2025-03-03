@@ -1001,8 +1001,8 @@ void R_DrawPlayerSprites(void)
 
 static int R_CheckPSpriteDrawbase(pspdef_t * psp)
 {
-    int drawbase, frame = 0;
-     frame = psp->state->frame;
+    int drawbase = 0;
+    int frame = psp->state->frame;
 
     switch (psp->state->sprite)
     {         
