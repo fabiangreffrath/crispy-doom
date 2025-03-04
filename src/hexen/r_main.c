@@ -904,6 +904,7 @@ void R_SetupFrame(player_t * player)
     int intensity;
     static int x_quake, y_quake, quaketime; // [crispy]
     int pitch; // [crispy]
+    int tmpColormap; // [crispy] to overwrite colormap
 
     //drawbsp = 1;
     viewplayer = player;
@@ -994,7 +995,14 @@ void R_SetupFrame(player_t * player)
     sscount = 0;
     if (player->fixedcolormap)
     {
-        fixedcolormap = colormaps + player->fixedcolormap
+        tmpColormap = player->fixedcolormap;
+        // [crispy] A11Y - overwrite to disable torch flickering
+        if (!a11y_weapon_flash && player->powers[pw_infrared])
+        {
+            tmpColormap = 1; // [crispy] A11Y - static infrared map
+        }
+
+        fixedcolormap = colormaps + tmpColormap
             * (NUMCOLORMAPS / 32) // [crispy] smooth diminishing lighting
             // [crispy] sizeof(lighttable_t) not needed in paletted render
             // and breaks Torch's fixed colormap indexes in true color render
