@@ -60,6 +60,14 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
                       TXT_NewCheckBox("Invulnerability Colormap",
                                       &a11y_invul_colormap),
                       NULL);
+    } 
+    else if (gamemission == hexen)
+    {
+        // no invul map in hexen, use for weapon palette changes instead
+        TXT_AddWidgets(window,
+            TXT_NewCheckBox("Weapon Palette Changes",
+                            &a11y_invul_colormap), 
+            NULL);
     }
 
     TXT_SetTableColumns(window, 2);
