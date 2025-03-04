@@ -43,20 +43,20 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
     if (gamemission == doom || gamemission == heretic || gamemission == hexen)
     {
         TXT_AddWidgets(window,
-                      TXT_NewCheckBox("Flickering Sector Lighting",
-                                      &a11y_sector_lighting),
+                        TXT_NewCheckBox("Flickering Sector Lighting",
+                                        &a11y_sector_lighting),
+                        TXT_NewCheckBox("Weapon Flash Lighting",
+                                        &a11y_weapon_flash),
+                        TXT_NewCheckBox("Weapon Flash Sprite",
+                                        &a11y_weapon_pspr),
+                        TXT_NewCheckBox("Palette Changes",
+                                        &a11y_palette_changes),                                      
                       NULL);
     }
 
     if (gamemission == doom || gamemission == heretic)
     {
         TXT_AddWidgets(window,
-                      TXT_NewCheckBox("Weapon Flash Lighting",
-                                      &a11y_weapon_flash),
-                      TXT_NewCheckBox("Weapon Flash Sprite",
-                                      &a11y_weapon_pspr),
-                      TXT_NewCheckBox("Palette Changes",
-                                      &a11y_palette_changes),
                       TXT_NewCheckBox("Invulnerability Colormap",
                                       &a11y_invul_colormap),
                       NULL);
@@ -64,7 +64,7 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
 
     TXT_SetTableColumns(window, 2);
 
-    if (gamemission == doom || gamemission == heretic)
+    if (gamemission == doom || gamemission == heretic || gamemission == hexen)
     {
         TXT_AddWidgets(window,
                       TXT_NewLabel("Extra Lighting"),

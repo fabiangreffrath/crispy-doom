@@ -20,6 +20,7 @@
 #include "h2def.h"
 #include "m_bbox.h"
 #include "r_local.h"
+#include "a11y.h" // [crispy] A11Y
 
 int viewangleoffset;
 
@@ -966,7 +967,15 @@ void R_SetupFrame(player_t * player)
         quaketime = 0;
     }
 
+    // [crispy] A11Y
+    if (a11y_weapon_flash)
+    {
     extralight = player->extralight;
+    }
+    else
+        extralight = 0;
+    // [crispy] A11Y
+    extralight += a11y_extra_lighting;
 
     tableAngle = viewangle >> ANGLETOFINESHIFT;
 
