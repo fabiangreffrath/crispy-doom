@@ -83,7 +83,7 @@ int screenheightarray[MAXWIDTH]; // [crispy] 32-bit integer math
 */
 
 // [crispy] check if player sprite base frame has to be drawn
-static int R_CheckPSpriteDrawbase(pspdef_t * psp, int* offset);
+static int R_CheckPSpriteDrawbase(pspdef_t * psp, int * offset);
 
 // variables used to look up and range check thing_t sprites patches
 spritedef_t *sprites;
@@ -1036,7 +1036,7 @@ void R_DrawPlayerSprites(void)
 ========================
 */
 
-static int R_CheckPSpriteDrawbase(pspdef_t * psp, int* offset)
+static int R_CheckPSpriteDrawbase(pspdef_t * psp, int * offset)
 {
     int drawbase = 1;
     int frame = psp->state->frame;
