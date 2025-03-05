@@ -1188,8 +1188,8 @@ void A_MStaffAttack(mobj_t *actor, player_t *player, pspdef_t *psp)
     {
         player->damagecount = 0;
         player->bonuscount = 0;
-        // [crispy] A11Y - no invul map in hexen, use for weapon palette changes instead
-        if(a11y_invul_colormap)
+        // [crispy] A11Y
+        if(a11y_weapon_palette)
         {
 #ifndef CRISPY_TRUECOLOR
             I_SetPalette((byte *) W_CacheLumpNum(W_GetNumForName("playpal"),
@@ -1212,8 +1212,8 @@ void A_MStaffPalette(mobj_t *actor, player_t *player, pspdef_t *psp)
 {
     int pal;
 
-    // [crispy] A11Y - no invul map in hexen, use for weapon palette changes instead
-    if (a11y_invul_colormap && player == &players[consoleplayer]) 
+    // [crispy] A11Y
+    if (a11y_weapon_palette && player == &players[consoleplayer]) 
     {
         pal = STARTSCOURGEPAL + psp->state - (&states[S_MSTAFFATK_2]);
         if (pal == STARTSCOURGEPAL + 3)
@@ -1943,8 +1943,8 @@ void A_CHolyAttack(mobj_t *actor, player_t *player, pspdef_t *psp)
     {
         player->damagecount = 0;
         player->bonuscount = 0;
-        // [crispy] A11Y - no invul map in hexen, use for weapon palette changes instead
-        if(a11y_invul_colormap)
+        // [crispy] A11Y
+        if(a11y_weapon_palette)
         {
 #ifndef CRISPY_TRUECOLOR
             I_SetPalette((byte *) W_CacheLumpNum(W_GetNumForName("playpal"),
@@ -1967,8 +1967,8 @@ void A_CHolyPalette(mobj_t *actor, player_t *player, pspdef_t *psp)
 {
     int pal;
 
-    // [crispy] A11Y - no invul map in hexen, use for weapon palette changes instead
-    if (a11y_invul_colormap && player == &players[consoleplayer])
+    // [crispy] A11Y
+    if (a11y_weapon_palette && player == &players[consoleplayer])
     {
         pal = STARTHOLYPAL + psp->state - (&states[S_CHOLYATK_6]);
         if (pal == STARTHOLYPAL + 3)
