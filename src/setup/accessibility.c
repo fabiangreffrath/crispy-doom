@@ -41,14 +41,9 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
 
     TXT_SetWindowHelpURL(window, WINDOW_HELP_URL);
 
-    TXT_AddWidgets(window,
+    TXT_AddWidget(window,
                     TXT_NewCheckBox("Flickering Sector Lighting",
-                                    &a11y_sector_lighting),
-                    TXT_NewCheckBox("Weapon Flash Sprite",
-                                    &a11y_weapon_pspr),
-                    TXT_NewCheckBox("Palette Changes",
-                                    &a11y_palette_changes),                                      
-                    NULL);
+                                    &a11y_sector_lighting));
 
     if (gamemission == doom)
     {
@@ -56,13 +51,26 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
                         TXT_NewCheckBox("Weapon Flash Lighting",
                                         &a11y_weapon_flash));
     } 
-    else if (gamemission == heretic || gamemission == hexen)
+    else if (gamemission == heretic)
     {
         TXT_AddWidget(window,
-                        TXT_NewCheckBox("Weapon & Torch Flash",
+                        TXT_NewCheckBox("Gauntlet & Torch Flash",
+                                        &a11y_weapon_flash));
+    }
+    else if (gamemission == hexen)
+    {
+        TXT_AddWidget(window,
+                        TXT_NewCheckBox("Torch Flash",
                                         &a11y_weapon_flash));
     }
   
+    TXT_AddWidgets(window,
+                    TXT_NewCheckBox("Weapon Flash Sprite",
+                                    &a11y_weapon_pspr),
+                    TXT_NewCheckBox("Palette Changes",
+                                    &a11y_palette_changes),                                      
+                    NULL);
+
     if (gamemission == doom || gamemission == heretic)
     {
         TXT_AddWidget(window,
@@ -73,7 +81,7 @@ void AccessibilitySettings(TXT_UNCAST_ARG(widget), void *user_data)
     if (gamemission == hexen)
     {
         TXT_AddWidget(window,
-                        TXT_NewCheckBox("Weapon Palette Changes",
+                        TXT_NewCheckBox("Ultimate Weapon Palette",
                                         &a11y_weapon_palette));
     }
 

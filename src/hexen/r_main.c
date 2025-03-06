@@ -968,7 +968,7 @@ void R_SetupFrame(player_t * player)
         quaketime = 0;
     }
 
-    // [crispy] A11Y
+    // [crispy] A11Y - even if not used by Hexen
     if (a11y_weapon_flash)
     {
     extralight = player->extralight;
