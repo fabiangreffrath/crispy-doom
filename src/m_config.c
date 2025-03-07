@@ -2583,6 +2583,14 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(crispy_soundmono),
 
     //!
+    // @game heretic
+    //
+    // Alternative Sound for Dragonclaw. 
+    //
+
+    CONFIG_VARIABLE_INT(crispy_altdcsound),
+
+    //!
     // @game doom
     //
     // Level Stats Format.
