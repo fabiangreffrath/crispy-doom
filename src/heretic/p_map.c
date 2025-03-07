@@ -1429,7 +1429,7 @@ boolean PTR_ShootTraverse(intercept_t * in)
         if (!crispy->altdcsound)
             S_StartSound(mo, sfx_blshit);
         else
-            S_StartSound(mo, sfx_phohit);
+            S_StartSound(mo, sfx_hrnsht);
     }
     else
     {
