@@ -968,6 +968,7 @@ void A_FireBlasterPL1(mobj_t *actor, player_t *player, pspdef_t *psp)
         S_StartSound(player->mo, sfx_blssht);
     else
         S_StartSound(player->mo, sfx_gldhit);
+        // S_StartSoundAtVolume(player->mo, sfx_blssht, 60);
 }
 
 //----------------------------------------------------------------------------
@@ -992,6 +993,7 @@ void A_FireBlasterPL2(mobj_t *actor, player_t *player, pspdef_t *psp)
         S_StartSound(player->mo, sfx_blssht);
     else
         S_StartSound(player->mo, sfx_gldhit);
+        // S_StartSoundAtVolume(player->mo, sfx_blssht, 60);
 }
 
 //----------------------------------------------------------------------------
