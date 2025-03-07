@@ -967,8 +967,7 @@ void A_FireBlasterPL1(mobj_t *actor, player_t *player, pspdef_t *psp)
     if (!crispy->altdcsound)
         S_StartSound(player->mo, sfx_blssht);
     else
-        S_StartSound(player->mo, sfx_gldhit);
-        // S_StartSoundAtVolume(player->mo, sfx_blssht, 60);
+        S_StartSound(player->mo, sfx_hrnsht);
 }
 
 //----------------------------------------------------------------------------
@@ -992,8 +991,7 @@ void A_FireBlasterPL2(mobj_t *actor, player_t *player, pspdef_t *psp)
     if (!crispy->altdcsound)
         S_StartSound(player->mo, sfx_blssht);
     else
-        S_StartSound(player->mo, sfx_gldhit);
-        // S_StartSoundAtVolume(player->mo, sfx_blssht, 60);
+        S_StartSound(player->mo, sfx_hrnsht);
 }
 
 //----------------------------------------------------------------------------
