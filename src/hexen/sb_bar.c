@@ -1597,7 +1597,10 @@ void DrawFullScreenStuff(void)
                 // [crispy] check for translucent HUD
                 SB_Translucent(TRANSLUCENT_HUD);
             }
+            SB_Translucent(false); // selectbox is always opaque
             V_DrawSBPatch(48 + curpos * 31, 167, PatchSELECTBOX);
+            // [crispy] check for translucent HUD
+            SB_Translucent(TRANSLUCENT_HUD);
             if (x != 0)
             {
                 V_DrawSBPatch(xPosGem1, 167, !(leveltime & 4) ? PatchINVLFGEM1 :
