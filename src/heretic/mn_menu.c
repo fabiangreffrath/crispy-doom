@@ -3078,7 +3078,7 @@ static void DrawCrispness2(void)
     DrawCrispnessMultiItem(snd_Channels >> 4, 181, 45, multiitem_sndchannels, false);
 
     // Level Weapon Sounds
-    DrawCrispnessItem(crispy->lvlwpnsnd, 225, 55);
+    DrawCrispnessItem(crispy->lvlwpnsnd, 215, 55);
 
     DrawCrispnessSubheader("NAVIGATIONAL", 75);
 
