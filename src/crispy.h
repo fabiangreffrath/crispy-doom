@@ -77,7 +77,7 @@ typedef struct
 	int soundfix;
 	int soundfull;
 	int soundmono;
-	int altdcsound;
+	int lvlwpnsnd;
 	int statsformat;
 	int translucency;
 #ifdef CRISPY_TRUECOLOR

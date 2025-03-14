@@ -2591,10 +2591,10 @@ static default_t extra_defaults_list[] =
     //!
     // @game heretic
     //
-    // Alternative Sound for Dragonclaw. 
+    // Level Weapon Sounds
     //
 
-    CONFIG_VARIABLE_INT(crispy_altdcsound),
+    CONFIG_VARIABLE_INT(crispy_lvlwpnsnd),
 
     //!
     // @game doom

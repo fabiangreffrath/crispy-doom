@@ -963,11 +963,7 @@ void A_FireBlasterPL1(mobj_t *actor, player_t *player, pspdef_t *psp)
     }
     PuffType = MT_BLASTERPUFF1;
     P_LineAttack(mo, angle, MISSILERANGE, bulletslope, damage);
-    // [crispy] check for alternative dragonclaw sound
-    if (!crispy->altdcsound)
-        S_StartSound(player->mo, sfx_blssht);
-    else
-        S_StartSound(player->mo, sfx_hrnsht);
+    S_StartSound(player->mo, sfx_blssht);
 }
 
 //----------------------------------------------------------------------------
@@ -987,11 +983,7 @@ void A_FireBlasterPL2(mobj_t *actor, player_t *player, pspdef_t *psp)
     {
         mo->thinker.function = P_BlasterMobjThinker;
     }
-    // [crispy] check for alternative dragonclaw sound
-    if (!crispy->altdcsound)
-        S_StartSound(player->mo, sfx_blssht);
-    else
-        S_StartSound(player->mo, sfx_hrnsht);
+    S_StartSound(player->mo, sfx_blssht);
 }
 
 //----------------------------------------------------------------------------
