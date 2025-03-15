@@ -308,15 +308,23 @@ static void S_LevelWeaponSound(int sound_id, int * vol)
     {     
         case sfx_gntuse:
         case sfx_gntact:
-            // [crispy] lower gauntlet thunder
+            // [crispy] lower gauntlet sfx
             *vol -= snd_MaxVolume * 4;
             break;
+        case sfx_blshit:
+            // [crispy] lower dragonclaw impact sfx
+            *vol -= snd_MaxVolume * 2;
         case sfx_blssht:
-            // [crispy] lower dragonclaw shot
+            // [crispy] lower dragonclaw shot main sfx
             if (viewplayer->powers[pw_weaponlevel2])
                 *vol -= snd_MaxVolume * 3;
             else
                 *vol -= snd_MaxVolume * 4;
+            break;
+        case sfx_gldhit:
+            // [crispy] lower dragonclaw shot secondary sfx
+            if (viewplayer->readyweapon == wp_blaster)
+                *vol -= snd_MaxVolume * 3;
             break;
     }
 }
