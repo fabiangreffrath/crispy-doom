@@ -305,12 +305,18 @@ void S_StartSound(void *_origin, int sound_id)
 static void S_LevelWeaponSound(int sound_id, int * vol)
 {
     switch (sound_id)
-    {         
-        case sfx_blshit:
-        case sfx_blssht:
+    {     
         case sfx_gntuse:
         case sfx_gntact:
-            *vol = *vol >> 1; // [crispy] half volume for gauntlet and dragonclaw sfx
+            // [crispy] lower gauntlet thunder
+            *vol -= snd_MaxVolume * 4;
+            break;
+        case sfx_blssht:
+            // [crispy] lower dragonclaw shot
+            if (viewplayer->powers[pw_weaponlevel2])
+                *vol -= snd_MaxVolume * 3;
+            else
+                *vol -= snd_MaxVolume * 4;
             break;
     }
 }
