@@ -132,6 +132,7 @@ void P_ClearMessage(player_t * player)
 
 void P_HideSpecialThing(mobj_t * thing)
 {
+    thing->flags |= MF_TRANSLUCENT; // [crispy] special translucent
     thing->flags &= ~MF_SPECIAL;
     thing->flags2 |= MF2_DONTDRAW;
     P_SetMobjState(thing, S_HIDESPECIAL1);
@@ -919,6 +920,7 @@ void A_RestoreSpecialThing1(mobj_t * thing, player_t *player, pspdef_t *psp)
 
 void A_RestoreSpecialThing2(mobj_t * thing, player_t *player, pspdef_t *psp)
 {
+    thing->flags &= ~MF_TRANSLUCENT; // [crispy] thing respawn opaque
     thing->flags |= MF_SPECIAL;
     P_SetMobjState(thing, thing->info->spawnstate);
 }
