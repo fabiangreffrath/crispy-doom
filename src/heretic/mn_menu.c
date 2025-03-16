@@ -393,7 +393,7 @@ static Menu_t Crispness1Menu = {
 static MenuItem_t Crispness2Items[] = {
     {ITT_LRFUNC2, "MONO SFX:", CrispySoundMono, 0, MENU_NONE},
     {ITT_LRFUNC2, "SOUND CHANNELS:", CrispySndChannels, 0, MENU_NONE},
-    {ITT_LRFUNC2, "LEVEL WEAPON SOUNDS:", CrispyLvlWpnSnd, 0, MENU_NONE},
+    {ITT_LRFUNC2, "ALIGN WEAPON VOLUMES:", CrispyLvlWpnSnd, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_LRFUNC2, "SHOW LEVEL STATS:", CrispyAutomapStats, 0, MENU_NONE},
@@ -3077,8 +3077,8 @@ static void DrawCrispness2(void)
     // Sound Channels
     DrawCrispnessMultiItem(snd_Channels >> 4, 181, 45, multiitem_sndchannels, false);
 
-    // Level Weapon Sounds
-    DrawCrispnessItem(crispy->lvlwpnsnd, 215, 55);
+    // Align weapon volumes
+    DrawCrispnessItem(crispy->lvlwpnsnd, 219, 55);
 
     DrawCrispnessSubheader("NAVIGATIONAL", 75);
 

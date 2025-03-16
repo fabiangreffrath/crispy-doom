@@ -40,7 +40,7 @@
 
 void S_ShutDown(void);
 boolean S_StopSoundID(int sound_id, int priority);
-static void S_LevelWeaponSound(int sound_id, int * vol); // [crispy] level weapon sounds
+static void S_LevelWeaponSound(int sound_id, int *vol); // [crispy] level weapon sounds
 
 static channel_t channel[MAX_CHANNELS];
 
@@ -302,8 +302,9 @@ void S_StartSound(void *_origin, int sound_id)
     }
 }
 
-static void S_LevelWeaponSound(int sound_id, int * vol)
+static void S_LevelWeaponSound(int sound_id, int *vol)
 {
+    // [crispy] base is snd_MaxVolume, used to generate soundCurve values
     switch (sound_id)
     {     
         case sfx_gntuse:
