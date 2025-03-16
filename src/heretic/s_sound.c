@@ -325,7 +325,7 @@ static void S_LevelWeaponSound(int sound_id, int *vol)
         case sfx_gldhit:
             // [crispy] lower dragonclaw shot secondary sfx
             if (viewplayer->readyweapon == wp_blaster)
-                *vol -= snd_MaxVolume * 3;
+                *vol -= snd_MaxVolume * 2;
             break;
     }
 }
