@@ -1982,12 +1982,12 @@ void AM_Drawer(void)
     if (grid)
         AM_drawGrid(GRIDCOLORS);
     AM_drawWalls();
+    AM_drawMarks(); // [crispy] restore mapmarker functionality
     AM_drawPlayers();
     if (cheating == 2)
         AM_drawThings(THINGCOLORS, THINGRANGE);
 //  AM_drawCrosshair(XHAIRCOLORS);
 
-    AM_drawMarks(); // [crispy] restore mapmarker functionality
     if (gameskill == sk_baby || crispy->keysloc)
     {
         AM_drawkeys();
