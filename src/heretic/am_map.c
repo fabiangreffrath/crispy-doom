@@ -595,10 +595,10 @@ void AM_Stop(void)
     BorderNeedRefresh = true;
 }
 
+// [crispy] moved here for extended savegames
+static int lastlevel = -1, lastepisode = -1;
 void AM_Start(void)
 {
-    static int lastlevel = -1, lastepisode = -1;
-
     if (!stopped)
         AM_Stop();
     stopped = false;
@@ -2009,4 +2009,40 @@ void AM_Drawer(void)
     }
 //  I_Update();
 //  V_MarkRect(f_x, f_y, f_w, f_h);
+}
+
+// [crispy] extended savegames
+void AM_GetMarkPoints (int *n, long *p)
+{
+	int i;
+
+	*n = markpointnum;
+	*p = -1L;
+
+	// [crispy] prevent saving markpoints from previous map
+	if (lastlevel == gamemap && lastepisode == gameepisode)
+	{
+		for (i = 0; i < AM_NUMMARKPOINTS; i++)
+		{
+			*p++ = (long)markpoints[i].x;
+			*p++ = (markpoints[i].x == -1) ? 0L : (long)markpoints[i].y;
+		}
+	}
+}
+
+void AM_SetMarkPoints (int n, long *p)
+{
+	int i;
+
+	AM_LevelInit(false);
+	lastlevel = gamemap;
+	lastepisode = gameepisode;
+
+	markpointnum = n;
+
+	for (i = 0; i < AM_NUMMARKPOINTS; i++)
+	{
+		markpoints[i].x = (int64_t)*p++;
+		markpoints[i].y = (int64_t)*p++;
+	}
 }

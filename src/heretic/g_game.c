@@ -37,6 +37,7 @@
 
 #include "deh_main.h" // [crispy] for demo footer
 #include "memio.h"
+#include "p_extsaveg.h" // [crispy] for extended savegame information
 
 // Macros
 
@@ -2109,6 +2110,30 @@ void G_DoLoadGame(void)
 
     SV_OpenRead(savename);
 
+    // [crispy] read extended savegame data,
+    //          first pass: read "savewadfilename"
+    P_ReadExtendedSaveGameData(0);
+
+    // // [crispy] check if WAD file is valid to restore saved map
+    // if (savename)
+    // {
+    //     // [crispy] strings are not equal
+    //     if (!savemaplumpinfo ||
+    //         // [crispy] case-insensitive, so "doom.wad" matches "DOOM.WAD"
+    //         strcasecmp(savename, W_WadNameForLump(savemaplumpinfo)))
+    //     {
+    //         M_ForceLoadGame();
+    //         fclose(SaveGameFP);
+    //         return;
+    //     }
+    //     else
+    //     // [crispy] strings are equal, but not identical
+    //     if (savewadfilename != W_WadNameForLump(savemaplumpinfo))
+    //     {
+    //         free(savewadfilename);
+    //     }
+    // }
+
     free(savename);
     savename = NULL;
 
@@ -2161,8 +2186,10 @@ void G_DoLoadGame(void)
     {                           // Missing savegame termination marker
         I_Error("Bad savegame");
     }
+    
+    // [crispy] read more extended savegame data
+    P_ReadExtendedSaveGameData(1);
 }
-
 
 /*
 ====================
@@ -2889,6 +2916,10 @@ void G_DoSaveGame(void)
     P_ArchiveWorld();
     P_ArchiveThinkers();
     P_ArchiveSpecials();
+    // [crispy] write EOF separately before extsavg
+    SV_WriteSaveGameEOF();
+    // [crispy] write extended savegame data
+    P_WriteExtendedSaveGameData();
     SV_Close(filename);
 
     gameaction = ga_nothing;

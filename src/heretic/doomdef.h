@@ -615,6 +615,8 @@ extern int testcontrols_mousespeed;
 extern int vanilla_savegame_limit;
 extern int vanilla_demo_limit;
 
+extern FILE *SaveGameFP; // [crispy] for usage in extsavg
+
 /*
 ===============================================================================
 
@@ -713,6 +715,7 @@ void G_SaveGame(int slot, char *description);
 char *SV_Filename(int slot);
 void SV_Open(char *fileName);
 void SV_OpenRead(char *fileName);
+void SV_WriteSaveGameEOF(void); // [crispy]
 void SV_Close(char *fileName);
 void SV_Write(void *buffer, int size);
 void SV_WriteByte(byte val);
