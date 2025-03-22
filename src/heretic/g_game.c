@@ -2114,26 +2114,6 @@ void G_DoLoadGame(void)
     //          first pass: read "savewadfilename"
     P_ReadExtendedSaveGameData(0);
 
-    // // [crispy] check if WAD file is valid to restore saved map
-    // if (savename)
-    // {
-    //     // [crispy] strings are not equal
-    //     if (!savemaplumpinfo ||
-    //         // [crispy] case-insensitive, so "doom.wad" matches "DOOM.WAD"
-    //         strcasecmp(savename, W_WadNameForLump(savemaplumpinfo)))
-    //     {
-    //         M_ForceLoadGame();
-    //         fclose(SaveGameFP);
-    //         return;
-    //     }
-    //     else
-    //     // [crispy] strings are equal, but not identical
-    //     if (savewadfilename != W_WadNameForLump(savemaplumpinfo))
-    //     {
-    //         free(savewadfilename);
-    //     }
-    // }
-
     free(savename);
     savename = NULL;
 

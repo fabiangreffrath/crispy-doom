@@ -157,24 +157,6 @@ void P_ReadExtendedSaveGameData (int pass)
 
 	curpos = ftell(SaveGameFP);
 
-	// // [crispy] check which map we would want to load
-	// fseek(SaveGameFP, SAVESTRINGSIZE + VERSIONSIZE + 1, SEEK_SET); // [crispy] + 1 for "gameskill"
-	// if (fread(&episode, 1, 1, SaveGameFP) == 1 &&
-	//     fread(&map, 1, 1, SaveGameFP) == 1)
-	// {
-	// 	lumpnum = P_GetNumForMap ((int) episode, (int) map, false);
-	// }
-
-	// if (lumpnum >= 0)
-	// {
-	// 	savemaplumpinfo = lumpinfo[lumpnum];
-	// }
-	// else
-	// {
-	// 	// [crispy] unavailable map!
-	// 	savemaplumpinfo = NULL;
-	// }
-
 	// [crispy] read key/value pairs past the end of the regular savegame data
 	fseek(SaveGameFP, 0, SEEK_END);
 	endpos = ftell(SaveGameFP);
