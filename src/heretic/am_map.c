@@ -1879,22 +1879,30 @@ void AM_drawThings(int colors, int colorrange)
 // [crispy] restore mapmarker functionality
 void AM_drawMarks(void)
 {
-  int i, fx, fy, w, h;
+    int i, fx, fy, w, h;
+    mpoint_t pt;
 
-  for (i=0;i<AM_NUMMARKPOINTS;i++)
-  {
-    if (markpoints[i].x != -1)
+    for (i=0;i<AM_NUMMARKPOINTS;i++)
     {
-    //   w = SHORT(marknums[i]->width);
-    //   h = SHORT(marknums[i]->height);
-        w = 6;
-        h = 7;
-      fx = (CXMTOF(markpoints[i].x) >> crispy->hires) - 1;
-      fy = (CYMTOF(markpoints[i].y) >> crispy->hires) - 2;
-      if (fx >= f_x && fx <= (f_w >> crispy->hires) - w && fy >= f_y && fy <= (f_h >> crispy->hires) - h)
-  			V_DrawPatch(fx - WIDESCREENDELTA, fy, marknums[i]);
+        if (markpoints[i].x != -1)
+        {
+            //   w = SHORT(marknums[i]->width);
+            //   h = SHORT(marknums[i]->height);
+            w = 6; // [crispy] based on doom +1 for increased size
+            h = 7; // [crispy] based on doom +1 for increased size
+            // [crispy] center marks around player
+            pt.x = markpoints[i].x;
+            pt.y = markpoints[i].y;
+            if (crispy->automaprotate)
+            {
+                AM_rotatePoint(&pt);
+            }
+            fx = (CXMTOF(pt.x) >> crispy->hires) - 1;
+            fy = (CYMTOF(pt.y) >> crispy->hires) - 2;
+            if (fx >= f_x && fx <= (f_w >> crispy->hires) - w && fy >= f_y && fy <= (f_h >> crispy->hires) - h)
+                V_DrawPatch(fx - WIDESCREENDELTA, fy, marknums[i]);
+        }
     }
-  }
 }
 
 void AM_drawkeys(void)
