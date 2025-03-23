@@ -2169,6 +2169,8 @@ void G_DoLoadGame(void)
     
     // [crispy] read more extended savegame data
     P_ReadExtendedSaveGameData(1);
+
+    fclose(SaveGameFP);
 }
 
 /*
