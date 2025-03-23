@@ -534,11 +534,11 @@ void AM_unloadPics(void)
 // [crispy] restore mapmarker functionality
 void AM_clearMarks(void)
 {
-  int i;
+    int i;
 
-  for (i=0;i<AM_NUMMARKPOINTS;i++) 
-  markpoints[i].x = -1; // means empty
-  markpointnum = 0;
+    for (i=0;i<AM_NUMMARKPOINTS;i++) 
+        markpoints[i].x = -1; // means empty
+    markpointnum = 0;
 }
 
 
