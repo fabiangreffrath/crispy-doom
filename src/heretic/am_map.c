@@ -536,7 +536,7 @@ void AM_unloadPics(void)
   
     for (i=0;i<10;i++)
     {
-        DEH_snprintf(namebuf, 9, "SMALLIN%d", i);
+        M_snprintf(namebuf, 9, "SMALLIN%d", i);
         W_ReleaseLumpName(namebuf);
     }
 }
