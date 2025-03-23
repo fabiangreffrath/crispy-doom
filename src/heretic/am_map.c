@@ -569,7 +569,8 @@ void AM_LevelInit(boolean reinit)
     next_mapxstart = next_mapystart = mapxstart = mapystart = 0;
 
     // [crispy] restore mapmarker functionality
-    AM_clearMarks();
+    if (!reinit)
+        AM_clearMarks();
 
     AM_findMinMaxBoundaries();
 
