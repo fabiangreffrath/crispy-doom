@@ -187,6 +187,7 @@ static short next_mapxstart, next_mapystart; // [crispy] for interpolation
 // [crispy] automap rotate
 void AM_rotate(fixed_t* x, fixed_t* y, angle_t a);
 static void AM_rotatePoint(mpoint_t *pt);
+static void AM_drawCrosshair(int color, boolean force); // [crispy] restore crosshair
 static mpoint_t mapcenter;
 static angle_t mapangle;
 
@@ -576,6 +577,7 @@ void AM_LevelInit(boolean reinit)
     if (reinit && f_h_old)
     {
         scale_mtof = scale_mtof * f_h / f_h_old;
+        AM_drawCrosshair(XHAIRCOLORS, true);
     }
     else
     {
@@ -1954,9 +1956,34 @@ void AM_drawkeys(void)
     }
 }
 
-void AM_drawCrosshair(int color)
+static void AM_drawCrosshair(int color, boolean force)
 {
-    fb[(f_w * (f_h + 1)) / 2] = color;  // single point for now
+    // [crispy] draw an actual crosshair
+    if (!followplayer || force)
+    {
+	static fline_t h, v;
+
+	if (!h.a.x || force)
+	{
+	    h.a.x = h.b.x = v.a.x = v.b.x = f_x + f_w / 2;
+	    h.a.y = h.b.y = v.a.y = v.b.y = f_y + f_h / 2;
+	    h.a.x -= 2; h.b.x += 2;
+	    v.a.y -= 2; v.b.y += 2;
+	}
+
+	AM_drawFline(&h, color);
+	AM_drawFline(&v, color);
+    }
+// [crispy] do not draw the useless dot on the player arrow
+/*
+    else
+#ifndef CRISPY_TRUECOLOR
+    fb[(f_w*(f_h+1))/2] = color; // single point for now
+#else
+    fb[(f_w*(f_h+1))/2] = pal_color[color]; // single point for now
+#endif
+*/
+
 }
 
 void AM_Drawer(void)
@@ -2004,7 +2031,7 @@ void AM_Drawer(void)
     AM_drawPlayers();
     if (cheating == 2)
         AM_drawThings(THINGCOLORS, THINGRANGE);
-//  AM_drawCrosshair(XHAIRCOLORS);
+    AM_drawCrosshair(XHAIRCOLORS, false);
 
     if (gameskill == sk_baby || crispy->keysloc)
     {
