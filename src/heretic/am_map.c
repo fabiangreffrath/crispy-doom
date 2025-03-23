@@ -269,9 +269,19 @@ void AM_restoreScaleAndLoc(void)
 // [crispy] restore mapmarker functionality
 void AM_addMark(void)
 {
-  markpoints[markpointnum].x = m_x + m_w/2;
-  markpoints[markpointnum].y = m_y + m_h/2;
-  markpointnum = (markpointnum + 1) % AM_NUMMARKPOINTS;
+    // [crispy] keep the map static in overlay mode
+    // if not following the player
+    if (!(!followplayer && crispy->automapoverlay))
+    {
+        markpoints[markpointnum].x = m_x + m_w/2;
+        markpoints[markpointnum].y = m_y + m_h/2;
+    }
+    else
+    {
+        markpoints[markpointnum].x = plr->mo->x >> FRACTOMAPBITS;
+        markpoints[markpointnum].y = plr->mo->y >> FRACTOMAPBITS;
+    }
+    markpointnum = (markpointnum + 1) % AM_NUMMARKPOINTS;
 }
 
 void AM_findMinMaxBoundaries(void)
