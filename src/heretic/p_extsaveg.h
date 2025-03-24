@@ -25,7 +25,7 @@
 extern char *savewadfilename;
 
 extern void P_WriteExtendedSaveGameData (void);
-extern void P_ReadExtendedSaveGameData (int pass);
+extern void P_ReadExtendedSaveGameData (void);
 
 /* p_saveg.c */
 // extern uint32_t P_ThinkerToIndex (thinker_t* thinker);

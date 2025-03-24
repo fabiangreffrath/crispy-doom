@@ -2110,10 +2110,6 @@ void G_DoLoadGame(void)
 
     SV_OpenRead(savename);
 
-    // [crispy] read extended savegame data,
-    //          first pass: read "savewadfilename" - not yet used
-    // P_ReadExtendedSaveGameData(0);
-
     free(savename);
     savename = NULL;
 
@@ -2168,7 +2164,7 @@ void G_DoLoadGame(void)
     }
     
     // [crispy] read more extended savegame data
-    P_ReadExtendedSaveGameData(1);
+    P_ReadExtendedSaveGameData();
 
     fclose(SaveGameFP);
 }

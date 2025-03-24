@@ -135,62 +135,14 @@ static void P_ReadKeyValuePairs (int pass)
 // [crispy] pointer to the info struct for the map lump about to load
 lumpinfo_t *savemaplumpinfo = NULL;
 
-void P_ReadExtendedSaveGameData (int pass)
+void P_ReadExtendedSaveGameData (void)
 {
-	long p, curpos, endpos;
-	byte episode, map;
-	int lumpnum = -1;
-
 	line = malloc(MAX_LINE_LEN);
 	string = malloc(MAX_STRING_LEN);
 
-	// [crispy] two-pass reading of extended savegame data
-	if (pass == 1)
-	{
-		P_ReadKeyValuePairs(1);
-
-		free(line);
-		free(string);
-
-		return;
-	}
-
-	curpos = ftell(SaveGameFP);
-
-	// [crispy] read key/value pairs past the end of the regular savegame data
-	fseek(SaveGameFP, 0, SEEK_END);
-	endpos = ftell(SaveGameFP);
-
-	for (p = endpos - 1; p > 0; p--)
-	{
-		byte curbyte;
-
-		fseek(SaveGameFP, p, SEEK_SET);
-
-		if (fread(&curbyte, 1, 1, SaveGameFP) < 1)
-		{
-			break;
-		}
-
-		if (curbyte == SAVE_GAME_TERMINATOR)
-		{
-			if (!fgets(line, MAX_LINE_LEN, SaveGameFP))
-			{
-				continue;
-			}
-
-			if (sscanf(line, "%s", string) == 1 &&
-			    !strncmp(string, extsavegdata[0].key, MAX_STRING_LEN))
-			{
-				P_ReadKeyValuePairs(0);
-				break;
-			}
-		}
-	}
+	// [crispy] only second pass for Heretic
+	P_ReadKeyValuePairs(1);
 
 	free(line);
 	free(string);
-
-	// [crispy] back to where we started
-	fseek(SaveGameFP, curpos, SEEK_SET);
 }
