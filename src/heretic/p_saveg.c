@@ -76,22 +76,6 @@ void SV_OpenRead(char *filename)
     }
 }
 
-
-//
-// Write the end of file marker
-//
-
-//==========================================================================
-//
-// [crispy] SV_WriteSaveGameEOF
-//
-//==========================================================================
-
-void SV_WriteSaveGameEOF(void)
-{
-    SV_WriteByte(SAVE_GAME_TERMINATOR);
-}
-
 //==========================================================================
 //
 // SV_WriteSaveGameEOF
@@ -100,6 +84,8 @@ void SV_WriteSaveGameEOF(void)
 
 void SV_WriteSaveGameEOF(void)
 {
+    SV_WriteByte(SAVE_GAME_TERMINATOR);
+
     // Enforce the same savegame size limit as in Vanilla Heretic
 
     if (vanilla_savegame_limit && ftell(SaveGameFP) > SAVEGAMESIZE)
