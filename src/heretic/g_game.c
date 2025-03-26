@@ -2162,9 +2162,11 @@ void G_DoLoadGame(void)
     {                           // Missing savegame termination marker
         I_Error("Bad savegame");
     }
-    
+
     // [crispy] read more extended savegame data
     P_ReadExtendedSaveGameData();
+
+    SV_Close();
 }
 
 /*
@@ -2892,11 +2894,10 @@ void G_DoSaveGame(void)
     P_ArchiveWorld();
     P_ArchiveThinkers();
     P_ArchiveSpecials();
-    // [crispy] write EOF separately before extsavg
     SV_WriteSaveGameEOF();
     // [crispy] write extended savegame data
     P_WriteExtendedSaveGameData();
-    SV_Close(filename);
+    SV_Close();
 
     gameaction = ga_nothing;
     savedescription[0] = 0;

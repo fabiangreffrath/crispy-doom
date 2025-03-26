@@ -94,11 +94,11 @@ void SV_WriteSaveGameEOF(void)
 
 //==========================================================================
 //
-// SV_Close
+// SV_WriteSaveGameEOF
 //
 //==========================================================================
 
-void SV_Close(char *fileName)
+void SV_WriteSaveGameEOF(void)
 {
     // Enforce the same savegame size limit as in Vanilla Heretic
 
@@ -106,8 +106,21 @@ void SV_Close(char *fileName)
     {
         I_Error("Savegame buffer overrun");
     }
+}
 
-    fclose(SaveGameFP);
+//==========================================================================
+//
+// SV_Close
+//
+//==========================================================================
+
+void SV_Close(void)
+{
+    if (SaveGameFP)
+    {
+        fclose(SaveGameFP);
+        SaveGameFP = NULL;
+    }
 }
 
 //==========================================================================
