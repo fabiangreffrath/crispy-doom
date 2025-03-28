@@ -567,6 +567,7 @@ void AM_LevelInit(boolean reinit)
     f_w = finit_width;
     f_h = finit_height;
     next_mapxstart = next_mapystart = mapxstart = mapystart = 0;
+    fb = I_VideoBuffer; // [crispy] to consider highres toggle
 
     // [crispy] restore mapmarker functionality
     if (!reinit)
