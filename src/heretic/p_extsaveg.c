@@ -37,8 +37,8 @@ static char *line, *string;
 
 static void P_WritePackageTarname (const char *key)
 {
-	M_snprintf(line, MAX_LINE_LEN, "%s %s\n", key, PACKAGE_VERSION);
-	fputs(line, SaveGameFP);
+    M_snprintf(line, MAX_LINE_LEN, "%s %s\n", key, PACKAGE_VERSION);
+    fputs(line, SaveGameFP);
 }
 
 // markpoints[]
@@ -48,88 +48,88 @@ extern void AM_SetMarkPoints (int n, long *p);
 
 static void P_WriteMarkPoints (const char *key)
 {
-	int n;
-	long p[20];
+    int n;
+    long p[20];
 
-	AM_GetMarkPoints(&n, p);
+    AM_GetMarkPoints(&n, p);
 
-	if (p[0] != -1)
-	{
-		M_snprintf(line, MAX_LINE_LEN, "%s %d %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n",
-		           key, n,
-		           p[0], p[1], p[2], p[3], p[4],
-		           p[5], p[6], p[7], p[8], p[9],
-		           p[10], p[11], p[12], p[13], p[14],
-		           p[15], p[16], p[17], p[18], p[19]);
-		fputs(line, SaveGameFP);
-	}
+    if (p[0] != -1)
+    {
+        M_snprintf(line, MAX_LINE_LEN, "%s %d %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n",
+                   key, n,
+                   p[0], p[1], p[2], p[3], p[4],
+                   p[5], p[6], p[7], p[8], p[9],
+                   p[10], p[11], p[12], p[13], p[14],
+                   p[15], p[16], p[17], p[18], p[19]);
+        fputs(line, SaveGameFP);
+    }
 }
 
 static void P_ReadMarkPoints (const char *key)
 {
-	int n;
-	long p[20];
+    int n;
+    long p[20];
 
-	if (sscanf(line, "%s %d %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n",
-	           string, &n,
-	           &p[0], &p[1], &p[2], &p[3], &p[4],
-	           &p[5], &p[6], &p[7], &p[8], &p[9],
-	           &p[10], &p[11], &p[12], &p[13], &p[14],
-	           &p[15], &p[16], &p[17], &p[18], &p[19]) == 22 &&
-	    !strncmp(string, key, MAX_STRING_LEN))
-	{
-		AM_SetMarkPoints(n, p);
-	}
+    if (sscanf(line, "%s %d %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld %ld\n",
+               string, &n,
+               &p[0], &p[1], &p[2], &p[3], &p[4],
+               &p[5], &p[6], &p[7], &p[8], &p[9],
+               &p[10], &p[11], &p[12], &p[13], &p[14],
+               &p[15], &p[16], &p[17], &p[18], &p[19]) == 22 &&
+        !strncmp(string, key, MAX_STRING_LEN))
+    {
+        AM_SetMarkPoints(n, p);
+    }
 }
 
 typedef struct
 {
-	const char *key;
-	void (* extsavegwritefn) (const char *key);
-	void (* extsavegreadfn) (const char *key);
-	const int pass;
+    const char *key;
+    void (* extsavegwritefn) (const char *key);
+    void (* extsavegreadfn) (const char *key);
+    const int pass;
 } extsavegdata_t;
 
 static const extsavegdata_t extsavegdata[] =
 {
-	// [crispy] @FORKS: please change this if you are going to introduce incompatible changes!
-	{"crispy-heretic", P_WritePackageTarname, NULL, 0},
-	{"markpoints", P_WriteMarkPoints, P_ReadMarkPoints, 1},
+    // [crispy] @FORKS: please change this if you are going to introduce incompatible changes!
+    {"crispy-heretic", P_WritePackageTarname, NULL, 0},
+    {"markpoints", P_WriteMarkPoints, P_ReadMarkPoints, 1},
 };
 
 void P_WriteExtendedSaveGameData (void)
 {
-	int i;
+    int i;
 
-	line = malloc(MAX_LINE_LEN);
+    line = malloc(MAX_LINE_LEN);
 
-	for (i = 0; i < arrlen(extsavegdata); i++)
-	{
-		extsavegdata[i].extsavegwritefn(extsavegdata[i].key);
-	}
+    for (i = 0; i < arrlen(extsavegdata); i++)
+    {
+        extsavegdata[i].extsavegwritefn(extsavegdata[i].key);
+    }
 
-	free(line);
+    free(line);
 }
 
 static void P_ReadKeyValuePairs (int pass)
 {
-	while (fgets(line, MAX_LINE_LEN, SaveGameFP))
-	{
-		if (sscanf(line, "%s", string) == 1)
-		{
-			int i;
+    while (fgets(line, MAX_LINE_LEN, SaveGameFP))
+    {
+        if (sscanf(line, "%s", string) == 1)
+        {
+            int i;
 
-			for (i = 1; i < arrlen(extsavegdata); i++)
-			{
-				if (extsavegdata[i].extsavegreadfn &&
-				    extsavegdata[i].pass == pass &&
-				    !strncmp(string, extsavegdata[i].key, MAX_STRING_LEN))
-				{
-					extsavegdata[i].extsavegreadfn(extsavegdata[i].key);
-				}
-			}
-		}
-	}
+            for (i = 1; i < arrlen(extsavegdata); i++)
+            {
+                if (extsavegdata[i].extsavegreadfn &&
+                    extsavegdata[i].pass == pass &&
+                    !strncmp(string, extsavegdata[i].key, MAX_STRING_LEN))
+                {
+                    extsavegdata[i].extsavegreadfn(extsavegdata[i].key);
+                }
+            }
+        }
+    }
 }
 
 // [crispy] pointer to the info struct for the map lump about to load
@@ -137,12 +137,12 @@ lumpinfo_t *savemaplumpinfo = NULL;
 
 void P_ReadExtendedSaveGameData (void)
 {
-	line = malloc(MAX_LINE_LEN);
-	string = malloc(MAX_STRING_LEN);
+    line = malloc(MAX_LINE_LEN);
+    string = malloc(MAX_STRING_LEN);
 
-	// [crispy] only second pass for Heretic
-	P_ReadKeyValuePairs(1);
+    // [crispy] only second pass for Heretic
+    P_ReadKeyValuePairs(1);
 
-	free(line);
-	free(string);
+    free(line);
+    free(string);
 }

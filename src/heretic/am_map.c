@@ -1963,18 +1963,18 @@ static void AM_drawCrosshair(int color, boolean force)
     // [crispy] draw an actual crosshair
     if (!followplayer || force)
     {
-	static fline_t h, v;
+        static fline_t h, v;
 
-	if (!h.a.x || force)
-	{
-	    h.a.x = h.b.x = v.a.x = v.b.x = f_x + f_w / 2;
-	    h.a.y = h.b.y = v.a.y = v.b.y = f_y + f_h / 2;
-	    h.a.x -= 2; h.b.x += 2;
-	    v.a.y -= 2; v.b.y += 2;
-	}
+        if (!h.a.x || force)
+        {
+            h.a.x = h.b.x = v.a.x = v.b.x = f_x + f_w / 2;
+            h.a.y = h.b.y = v.a.y = v.b.y = f_y + f_h / 2;
+            h.a.x -= 2; h.b.x += 2;
+            v.a.y -= 2; v.b.y += 2;
+        }
 
-	AM_drawFline(&h, color);
-	AM_drawFline(&v, color);
+        AM_drawFline(&h, color);
+        AM_drawFline(&v, color);
     }
 // [crispy] do not draw the useless dot on the player arrow
 /*
@@ -2064,35 +2064,35 @@ void AM_Drawer(void)
 // [crispy] extended savegames
 void AM_GetMarkPoints (int *n, long *p)
 {
-	int i;
+    int i;
 
-	*n = markpointnum;
-	*p = -1L;
+    *n = markpointnum;
+    *p = -1L;
 
-	// [crispy] prevent saving markpoints from previous map
-	if (lastlevel == gamemap && lastepisode == gameepisode)
-	{
-		for (i = 0; i < AM_NUMMARKPOINTS; i++)
-		{
-			*p++ = (long)markpoints[i].x;
-			*p++ = (markpoints[i].x == -1) ? 0L : (long)markpoints[i].y;
-		}
-	}
+    // [crispy] prevent saving markpoints from previous map
+    if (lastlevel == gamemap && lastepisode == gameepisode)
+    {
+        for (i = 0; i < AM_NUMMARKPOINTS; i++)
+        {
+            *p++ = (long)markpoints[i].x;
+            *p++ = (markpoints[i].x == -1) ? 0L : (long)markpoints[i].y;
+        }
+    }
 }
 
 void AM_SetMarkPoints (int n, long *p)
 {
-	int i;
+    int i;
 
-	AM_LevelInit(false);
-	lastlevel = gamemap;
-	lastepisode = gameepisode;
+    AM_LevelInit(false);
+    lastlevel = gamemap;
+    lastepisode = gameepisode;
 
-	markpointnum = n;
+    markpointnum = n;
 
-	for (i = 0; i < AM_NUMMARKPOINTS; i++)
-	{
-		markpoints[i].x = (int64_t)*p++;
-		markpoints[i].y = (int64_t)*p++;
-	}
+    for (i = 0; i < AM_NUMMARKPOINTS; i++)
+    {
+        markpoints[i].x = (int64_t)*p++;
+        markpoints[i].y = (int64_t)*p++;
+    }
 }
