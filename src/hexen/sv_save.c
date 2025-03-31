@@ -151,7 +151,7 @@ static mobj_t **MobjList;
 static mobj_t ***TargetPlayerAddrs;
 static int TargetPlayerCount;
 static boolean SavingPlayers;
-static FILE *SavingFP;
+FILE *SavingFP;
 
 // CODE --------------------------------------------------------------------
 
@@ -2020,6 +2020,9 @@ void SV_SaveGame(int slot, const char *description)
     // Place a termination marker
     SV_WriteLong(ASEG_END);
 
+    // [crispy] write extended savegame data
+    // P_WriteExtendedSaveGameData();
+
     // Close the output file
     SV_Close();
 
@@ -2146,6 +2149,9 @@ void SV_LoadGame(int slot)
     {
         playerBackup[i] = players[i];
     }
+
+    // [crispy] read more extended savegame data
+    // P_ReadExtendedSaveGameData();
 
     SV_Close();
 
