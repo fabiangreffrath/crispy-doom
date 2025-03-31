@@ -21,7 +21,7 @@
 #ifndef __SV_EXTSAVEG__
 #define __SV_EXTSAVEG__
 
-extern void P_WriteExtendedSaveGameData (void);
-extern void P_ReadExtendedSaveGameData (void);
+extern void SV_WriteExtendedSaveGameData (void);
+extern void SV_ReadExtendedSaveGameData (void);
 
 #endif

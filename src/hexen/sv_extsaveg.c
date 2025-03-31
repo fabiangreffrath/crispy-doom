@@ -35,7 +35,7 @@
 
 static char *line, *string;
 
-static void P_WritePackageTarname (const char *key)
+static void SV_WritePackageTarname (const char *key)
 {
     M_snprintf(line, MAX_LINE_LEN, "%s %s\n", key, PACKAGE_VERSION);
     fputs(line, SavingFP);
@@ -46,7 +46,7 @@ static void P_WritePackageTarname (const char *key)
 extern void AM_GetMarkPoints (int *n, long *p);
 extern void AM_SetMarkPoints (int n, long *p);
 
-static void P_WriteMarkPoints (const char *key)
+static void SV_WriteMarkPoints (const char *key)
 {
     int n;
     long p[20];
@@ -65,7 +65,7 @@ static void P_WriteMarkPoints (const char *key)
     }
 }
 
-static void P_ReadMarkPoints (const char *key)
+static void SV_ReadMarkPoints (const char *key)
 {
     int n;
     long p[20];
@@ -93,11 +93,11 @@ typedef struct
 static const extsavegdata_t extsavegdata[] =
 {
     // [crispy] @FORKS: please change this if you are going to introduce incompatible changes!
-    {"crispy-hexen", P_WritePackageTarname, NULL, 0},
-    {"markpoints", P_WriteMarkPoints, P_ReadMarkPoints, 1},
+    {"crispy-hexen", SV_WritePackageTarname, NULL, 0},
+    {"markpoints", SV_WriteMarkPoints, SV_ReadMarkPoints, 1},
 };
 
-void P_WriteExtendedSaveGameData (void)
+void SV_WriteExtendedSaveGameData (void)
 {
     int i;
 
@@ -111,7 +111,7 @@ void P_WriteExtendedSaveGameData (void)
     free(line);
 }
 
-static void P_ReadKeyValuePairs (int pass)
+static void SV_ReadKeyValuePairs (int pass)
 {
     while (fgets(line, MAX_LINE_LEN, SavingFP))
     {
@@ -132,13 +132,13 @@ static void P_ReadKeyValuePairs (int pass)
     }
 }
 
-void P_ReadExtendedSaveGameData (void)
+void SV_ReadExtendedSaveGameData (void)
 {
     line = malloc(MAX_LINE_LEN);
     string = malloc(MAX_STRING_LEN);
 
     // [crispy] only second pass for Hexen
-    P_ReadKeyValuePairs(1);
+    SV_ReadKeyValuePairs(1);
 
     free(line);
     free(string);

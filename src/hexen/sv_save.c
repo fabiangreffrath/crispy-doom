@@ -23,6 +23,7 @@
 #include "i_swap.h"
 #include "p_local.h"
 #include "a11y.h"
+#include "sv_extsaveg.h" // [crispy] for extended savegame information
 
 // MACROS ------------------------------------------------------------------
 
@@ -2020,9 +2021,6 @@ void SV_SaveGame(int slot, const char *description)
     // Place a termination marker
     SV_WriteLong(ASEG_END);
 
-    // [crispy] write extended savegame data
-    // P_WriteExtendedSaveGameData();
-
     // Close the output file
     SV_Close();
 
@@ -2072,6 +2070,9 @@ void SV_SaveMap(boolean savePlayers)
 
     // Place a termination marker
     SV_WriteLong(ASEG_END);
+
+    // [crispy] write extended savegame data
+    SV_WriteExtendedSaveGameData();
 
     // Close the output file
     SV_Close();
@@ -2149,9 +2150,6 @@ void SV_LoadGame(int slot)
     {
         playerBackup[i] = players[i];
     }
-
-    // [crispy] read more extended savegame data
-    // P_ReadExtendedSaveGameData();
 
     SV_Close();
 
@@ -2455,6 +2453,9 @@ void SV_LoadMap(void)
     UnarchiveMisc();
 
     AssertSegment(ASEG_END);
+
+    // [crispy] read more extended savegame data
+    SV_ReadExtendedSaveGameData();
 
     // Free mobj list and save buffer
     Z_Free(MobjList);
