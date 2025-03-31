@@ -87,17 +87,21 @@ typedef struct
     const char *key;
     void (* extsavegwritefn) (const char *key);
     void (* extsavegreadfn) (const char *key);
+    const savetarget_t location;
     const int pass;
 } extsavegdata_t;
 
 static const extsavegdata_t extsavegdata[] =
 {
     // [crispy] @FORKS: please change this if you are going to introduce incompatible changes!
-    {"crispy-hexen", SV_WritePackageTarname, NULL, 0},
-    {"markpoints", SV_WriteMarkPoints, SV_ReadMarkPoints, 1},
+    // BOTH:
+    {"crispy-hexen", SV_WritePackageTarname, NULL, EXTSAVEG_BOTH, 0},
+    // MAP:
+    {"markpoints", SV_WriteMarkPoints, SV_ReadMarkPoints, EXTSAVEG_MAP, 1},
+    // GAME:
 };
 
-void SV_WriteExtendedSaveGameData (void)
+void SV_WriteExtendedSaveGameData (savetarget_t location)
 {
     int i;
 
@@ -105,13 +109,14 @@ void SV_WriteExtendedSaveGameData (void)
 
     for (i = 0; i < arrlen(extsavegdata); i++)
     {
-        extsavegdata[i].extsavegwritefn(extsavegdata[i].key);
+        if (extsavegdata[i].location & location)
+            extsavegdata[i].extsavegwritefn(extsavegdata[i].key);
     }
 
     free(line);
 }
 
-static void SV_ReadKeyValuePairs (int pass)
+static void SV_ReadKeyValuePairs (savetarget_t location, int pass)
 {
     while (fgets(line, MAX_LINE_LEN, SavingFP))
     {
@@ -123,6 +128,7 @@ static void SV_ReadKeyValuePairs (int pass)
             {
                 if (extsavegdata[i].extsavegreadfn &&
                     extsavegdata[i].pass == pass &&
+                    extsavegdata[i].location & location &&
                     !strncmp(string, extsavegdata[i].key, MAX_STRING_LEN))
                 {
                     extsavegdata[i].extsavegreadfn(extsavegdata[i].key);
@@ -132,13 +138,13 @@ static void SV_ReadKeyValuePairs (int pass)
     }
 }
 
-void SV_ReadExtendedSaveGameData (void)
+void SV_ReadExtendedSaveGameData (savetarget_t location)
 {
     line = malloc(MAX_LINE_LEN);
     string = malloc(MAX_STRING_LEN);
 
     // [crispy] only second pass for Hexen
-    SV_ReadKeyValuePairs(1);
+    SV_ReadKeyValuePairs(location, 1);
 
     free(line);
     free(string);

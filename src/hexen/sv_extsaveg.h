@@ -21,7 +21,14 @@
 #ifndef __SV_EXTSAVEG__
 #define __SV_EXTSAVEG__
 
-extern void SV_WriteExtendedSaveGameData (void);
-extern void SV_ReadExtendedSaveGameData (void);
+typedef enum
+{
+    EXTSAVEG_MAP = 1,
+    EXTSAVEG_GAME,
+    EXTSAVEG_BOTH // for checks only
+} savetarget_t;
+
+extern void SV_WriteExtendedSaveGameData (savetarget_t location);
+extern void SV_ReadExtendedSaveGameData (savetarget_t location);
 
 #endif
