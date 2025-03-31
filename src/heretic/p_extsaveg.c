@@ -132,9 +132,6 @@ static void P_ReadKeyValuePairs (int pass)
     }
 }
 
-// [crispy] pointer to the info struct for the map lump about to load
-lumpinfo_t *savemaplumpinfo = NULL;
-
 void P_ReadExtendedSaveGameData (void)
 {
     line = malloc(MAX_LINE_LEN);
