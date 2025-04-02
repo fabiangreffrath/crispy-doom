@@ -406,7 +406,6 @@ void R_DrawPlanes(void)
     int frac;
     int fracstep = FRACUNIT >> crispy->hires;
     static int interpfactor; // [crispy]
-    int heightmask; // [crispy]
     int angle2, smoothDelta1 = 0, smoothDelta2 = 0; // [crispy] smooth sky scrolling
 
 #ifdef RANGECHECK
@@ -470,71 +469,29 @@ void R_DrawPlanes(void)
                         source2 = R_GetColumn(skyTexture2, angle2 + offset2);
                         dest = ylookup[dc_yl] + columnofs[x];
                         frac = SKYTEXTUREMIDSHIFTED * FRACUNIT + (dc_yl - centery) * fracstep;
-                        heightmask = SKYTEXTUREMIDSHIFTED - 1; // [crispy]
-
-                        // not a power of 2 -- killough
-                        if (SKYTEXTUREMIDSHIFTED & heightmask)
+                        do
                         {
-                            heightmask++;
-                            heightmask <<= FRACBITS;
-
-                            if (frac < 0)
-                                while ((frac += heightmask) < 0);
+                            if (source[frac >> FRACBITS])
+                            {
+#ifndef CRISPY_TRUECOLOR
+                                *dest = source[frac >> FRACBITS];
+#else
+                                *dest = pal_color[source[frac >> FRACBITS]];
+#endif
+                            }
                             else
-                                while (frac >= heightmask)
-                                    frac -= heightmask;
-
-                            do
                             {
-                                if (source[frac >> FRACBITS])
-                                {
 #ifndef CRISPY_TRUECOLOR
-                                    *dest = source[frac >> FRACBITS];
+                                *dest = source2[frac >> FRACBITS];
 #else
-                                    *dest = pal_color[source[frac >> FRACBITS]];
+                                *dest = pal_color[source2[frac >> FRACBITS]];
 #endif
-                                }
-                                else
-                                {
-#ifndef CRISPY_TRUECOLOR
-                                    *dest = source2[frac >> FRACBITS];
-#else
-                                    *dest = pal_color[source2[frac >> FRACBITS]];
-#endif
-                                }
-                                dest += SCREENWIDTH;
-                                if ((frac += fracstep) >= heightmask)
-                                {
-                                    frac -= heightmask;
-                                }
-                            } while (count--);
-                        }
-                        // texture height is a power of 2 -- killough
-                        else
-                        {
-                            do
-                            {
-                                if (source[(frac >> FRACBITS) & heightmask])
-                                {
-#ifndef CRISPY_TRUECOLOR
-                                    *dest = source[(frac >> FRACBITS) & heightmask];
-#else
-                                    *dest = pal_color[source[(frac >> FRACBITS) & heightmask]];
-#endif
-                                }
-                                else
-                                {
-#ifndef CRISPY_TRUECOLOR
-                                    *dest = source2[(frac >> FRACBITS) & heightmask];
-#else
-                                    *dest = pal_color[source2[(frac >> FRACBITS) & heightmask]];
-#endif
-                                }
+                            }
 
                                 dest += SCREENWIDTH;
                                 frac += fracstep;
-                            } while (count--);
                         }
+                        while (count--);
                     }
                 }
                 continue;       // Next visplane
@@ -575,48 +532,17 @@ void R_DrawPlanes(void)
                         source = R_GetColumn(skyTexture, angle + offset);
                         dest = ylookup[dc_yl] + columnofs[x];
                         frac = SKYTEXTUREMIDSHIFTED * FRACUNIT + (dc_yl - centery) * fracstep;
-                        heightmask = SKYTEXTUREMIDSHIFTED - 1; // [crispy]
-                        // not a power of 2 -- killough
-                        if (SKYTEXTUREMIDSHIFTED & heightmask)
+                        do
                         {
-                            heightmask++;
-                            heightmask <<= FRACBITS;
-
-                            if (frac < 0)
-                                while ((frac += heightmask) < 0);
-                            else
-                                while (frac >= heightmask)
-                                    frac -= heightmask;
-
-                            do
-                            {
 #ifndef CRISPY_TRUECOLOR
-                                *dest = source[frac >> FRACBITS];
+                            *dest = source[frac >> FRACBITS];
 #else
-                                *dest = pal_color[source[frac >> FRACBITS]];
+                            *dest = pal_color[source[frac >> FRACBITS]];
 #endif
-                                dest += SCREENWIDTH;
-
-                                if ((frac += fracstep) >= heightmask)
-                                {
-                                    frac -= heightmask;
-                                }
-                            } while (count--);
+                            dest += SCREENWIDTH;
+                            frac += fracstep;
                         }
-                        // texture height is a power of 2 -- killough
-                        else
-                        {
-                            do
-                            {
-#ifndef CRISPY_TRUECOLOR
-                                *dest = source[(frac >> FRACBITS) & heightmask];
-#else
-                                *dest = pal_color[source[(frac >> FRACBITS) & heightmask]];
-#endif
-                                dest += SCREENWIDTH;
-                                frac += fracstep;
-                            } while (count--);
-                        }
+                        while (count--);
                     }
                 }
                 continue;       // Next visplane
