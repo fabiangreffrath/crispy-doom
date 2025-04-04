@@ -415,7 +415,6 @@ void R_MakeSpans(int x, unsigned int t1, unsigned int b1, unsigned int t2, unsig
 ================
 */
 
-#define SKYTEXTUREMIDSHIFTED 200 // [crispy]
 #define FLATSCROLL(X) \
     ((interpfactor << (X)) - (((63 - ((leveltime >> 1) & 63)) << (X) & 63) * FRACUNIT))
 
@@ -432,7 +431,6 @@ void R_DrawPlanes(void)
     pixel_t *dest;
     int count;
     fixed_t frac, fracstep;
-    int heightmask; // [crispy]
     static int interpfactor; // [crispy]
 
 #ifdef RANGECHECK
@@ -503,49 +501,20 @@ void R_DrawPlanes(void)
 
                     fracstep = dc_iscale;
                     frac = dc_texturemid + (dc_yl - centery) * fracstep;
-                    heightmask = SKYTEXTUREMIDSHIFTED - 1; // [crispy]
-                    // not a power of 2 -- killough
-                    if (SKYTEXTUREMIDSHIFTED & heightmask)
+
+                    do
                     {
-                        heightmask++;
-                        heightmask <<= FRACBITS;
-
-                        if (frac < 0)
-                            while ((frac += heightmask) < 0);
-                        else
-                            while (frac >= heightmask)
-                                frac -= heightmask;
-                        do
-                        {
 #ifndef CRISPY_TRUECOLOR
-                            *dest = dc_source[frac >> FRACBITS];
+                        *dest = dc_source[frac >> FRACBITS];
 #else
-                            *dest = pal_color[dc_source[frac >> FRACBITS]];
+                        *dest = pal_color[frac >> FRACBITS];
 #endif
-                            dest += SCREENWIDTH;
-
-                            if ((frac += fracstep) >= heightmask)
-                            {
-                                frac -= heightmask;
-                            }
-                        } while (count--);
+                        dest += SCREENWIDTH;
+                        frac += fracstep;
+                    }
+                    while (count--);
 
 //                                      colfunc ();
-                    }
-                    // texture height is a power of 2 -- killough
-                    else
-                    {
-                        do
-                        {
-#ifndef CRISPY_TRUECOLOR
-                            *dest = dc_source[(frac >> FRACBITS) & heightmask];
-#else
-                            *dest = pal_color[dc_source[(frac >> FRACBITS) & heightmask]];
-#endif
-                            dest += SCREENWIDTH;
-                            frac += fracstep;
-                        } while (count--);
-                    }
                 }
             }
             continue;
