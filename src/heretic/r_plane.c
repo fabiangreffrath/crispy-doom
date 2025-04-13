@@ -473,7 +473,7 @@ void R_DrawPlanes(void)
 		flip = 0;
 	    }
 
-            if(texture != prev_texture)
+            if (texture != prev_texture)
             {
                 skyheight = R_GetPatchHeight(texture, 0);
                 prev_texture = texture;
@@ -540,6 +540,7 @@ void R_DrawPlanes(void)
                     else
                     {
                         heightmask = skyheight - 1;
+
                         do
                         {
 #ifndef CRISPY_TRUECOLOR
