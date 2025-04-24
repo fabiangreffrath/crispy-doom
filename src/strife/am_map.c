@@ -461,8 +461,8 @@ void AM_changeWindowLoc(void)
         AM_rotate(&incx, &incy, -mapangle);
     }
 
-    m_x = prev_m_x + incx;
-    m_y = prev_m_y + incy;
+    m_x += incx;
+    m_y += incy;
 
     if (m_x + m_w/2 > max_x)
 	next_m_x = m_x = max_x - m_w/2;
