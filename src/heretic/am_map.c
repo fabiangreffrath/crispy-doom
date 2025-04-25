@@ -228,8 +228,8 @@ void AM_activateNewScale(void)
     m_y -= m_h / 2;
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
-    next_m_x = m_x; // [crispy]
-    next_m_y = m_y; // [crispy]
+    next_m_x = prev_m_x = m_x; // [crispy]
+    next_m_y = prev_m_y = m_y; // [crispy]
 }
 
 void AM_saveScaleAndLoc(void)
@@ -381,8 +381,8 @@ void AM_changeWindowLoc(void)
     {
         AM_rotate(&incx, &incy, -mapangle);
     }
-    m_x += incx;
-    m_y += incy;
+    m_x = prev_m_x + incx;
+    m_y = prev_m_y + incy;
 
     if (m_x + m_w / 2 > max_x)
     {
