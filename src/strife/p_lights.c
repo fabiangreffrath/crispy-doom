@@ -24,6 +24,7 @@
 
 #include "doomdef.h"
 #include "p_local.h"
+#include "a11y.h" // [crispy] A11Y
 
 
 // State.
@@ -55,6 +56,12 @@ void T_FireFlicker (fireflicker_t* flick)
 
     // [STRIFE] flicker count made random!
     flick->count = (P_Random() & 3) + 1;
+
+    // [crispy] A11Y
+    if (a11y_sector_lighting)
+        flick->sector->rlightlevel = flick->sector->lightlevel;
+    else
+        flick->sector->rlightlevel = flick->maxlight;
 }
 
 
@@ -112,6 +119,12 @@ void T_LightFlash (lightflash_t* flash)
         flash->sector->lightlevel = flash->maxlight;
         flash->count = (P_Random()&flash->maxtime)+1;
     }
+
+    // [crispy] A11Y
+    if (a11y_sector_lighting)
+        flash->sector->rlightlevel = flash->sector->lightlevel;
+    else
+        flash->sector->rlightlevel = flash->maxlight;
 }
 
 
@@ -172,6 +185,12 @@ void T_StrobeFlash (strobe_t*           flash)
         flash-> sector->lightlevel = flash->minlight;
         flash->count =flash->darktime;
     }
+
+    // [crispy] A11Y
+    if (a11y_sector_lighting)
+        flash->sector->rlightlevel = flash->sector->lightlevel;
+    else
+        flash->sector->rlightlevel = flash->maxlight;
 }
 
 
@@ -269,6 +288,8 @@ void EV_TurnTagLightsOff(line_t* line)
                     min = tsec->lightlevel;
             }
             sector->lightlevel = min;
+            // [crispy] A11Y
+            sector->rlightlevel = sector->lightlevel;
         }
     }
 }
@@ -314,6 +335,8 @@ EV_LightTurnOn
                 }
             }
             sector-> lightlevel = bright;
+            // [crispy] A11Y
+            sector->rlightlevel = sector->lightlevel;
         }
     }
 }
@@ -348,6 +371,12 @@ void T_Glow(glow_t*     g)
         }
         break;
     }
+
+    // [crispy] A11Y
+    if (a11y_sector_lighting)
+        g->sector->rlightlevel = g->sector->lightlevel;
+    else
+        g->sector->rlightlevel = g->maxlight;
 }
 
 //
