@@ -317,6 +317,7 @@ static int markpointnum = 0; // next point to be assigned
 static int followplayer = 1; // specifies whether to follow the player around
 
 cheatseq_t cheat_amap = CHEAT("iddt", 0);
+cheatseq_t cheat_iddst = CHEAT("iddst", 0);
 
 static boolean stopped = true;
 
@@ -728,6 +729,64 @@ void AM_ResetIDDTcheat (void)
 	cheating = 0;
 }
 
+// [crispy] center automap on point
+void AM_SetMapCenter(fixed_t px, fixed_t py)
+{
+	// [crispy] FTOM(MTOF()) is needed to fix map line jitter in follow mode.
+	if (crispy->hires)
+	{
+		m_x = (px >> FRACTOMAPBITS) - m_w/2;
+		m_y = (py >> FRACTOMAPBITS) - m_h/2;
+	}
+	else
+	{
+		m_x = FTOM(MTOF(px >> FRACTOMAPBITS)) - m_w/2;
+		m_y = FTOM(MTOF(py >> FRACTOMAPBITS)) - m_h/2;
+	}
+	next_m_x = m_x;
+	next_m_y = m_y;
+	m_x2 = m_x + m_w;
+	m_y2 = m_y + m_h;
+}
+
+// [woof] center the automap around the lowest numbered unfound secret sector
+static void AM_CheatRevealSecret(void)
+{
+	static int last_secret = -1;
+
+	if (automapactive)
+	{
+		int i, start_i;
+
+		i = last_secret + 1;
+		if (i >= numsectors)
+			i = 0;
+		start_i = i;
+
+		do
+		{
+			sector_t *sec = &sectors[i];
+
+			if (sec->special == 9)
+			{
+				followplayer = false;
+
+				// This is probably not necessary
+				if (sec->lines && sec->lines[0] && sec->lines[0]->v1)
+				{
+					AM_SetMapCenter(sec->lines[0]->v1->x, sec->lines[0]->v1->y);
+					last_secret = i;
+					break;
+				}
+			}
+
+			i++;
+			if (i >= numsectors)
+				i = 0;
+		} while (i != start_i);
+	}
+}
+
 //
 // set the window scale to the maximum size
 //
@@ -977,6 +1036,10 @@ AM_Responder
             rc = false;
             cheating = (cheating + 1) % 3;
         }
+        else if (cht_CheckCheat(&cheat_iddst, ev->data2))
+        {
+	        AM_CheatRevealSecret();
+        }
     }
     else if (ev->type == ev_keyup)
     {
@@ -1037,34 +1100,12 @@ void AM_changeWindowScale(void)
 	AM_activateNewScale();
 }
 
-
 //
 //
 //
 void AM_doFollowPlayer(void)
 {
-    // [crispy] FTOM(MTOF()) is needed to fix map line jitter in follow mode.
-    if (crispy->hires)
-    {
-        m_x = (viewx >> FRACTOMAPBITS) - m_w/2;
-        m_y = (viewy >> FRACTOMAPBITS) - m_h/2;
-    }
-    else
-    {
-        m_x = FTOM(MTOF(viewx >> FRACTOMAPBITS)) - m_w/2;
-        m_y = FTOM(MTOF(viewy >> FRACTOMAPBITS)) - m_h/2;
-    }
-        next_m_x = m_x;
-        next_m_y = m_y;
-	m_x2 = m_x + m_w;
-	m_y2 = m_y + m_h;
-
-	//  m_x = FTOM(MTOF(plr->mo->x - m_w/2));
-	//  m_y = FTOM(MTOF(plr->mo->y - m_h/2));
-	//  m_x = plr->mo->x - m_w/2;
-	//  m_y = plr->mo->y - m_h/2;
-
-
+	AM_SetMapCenter(viewx, viewy);
 }
 
 //
