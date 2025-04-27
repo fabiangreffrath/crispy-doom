@@ -60,8 +60,6 @@ void T_FireFlicker (fireflicker_t* flick)
     // [crispy] A11Y
     if (a11y_sector_lighting)
         flick->sector->rlightlevel = flick->sector->lightlevel;
-    else
-        flick->sector->rlightlevel = flick->maxlight;
 }
 
 
@@ -123,8 +121,6 @@ void T_LightFlash (lightflash_t* flash)
     // [crispy] A11Y
     if (a11y_sector_lighting)
         flash->sector->rlightlevel = flash->sector->lightlevel;
-    else
-        flash->sector->rlightlevel = flash->maxlight;
 }
 
 
@@ -189,8 +185,6 @@ void T_StrobeFlash (strobe_t*           flash)
     // [crispy] A11Y
     if (a11y_sector_lighting)
         flash->sector->rlightlevel = flash->sector->lightlevel;
-    else
-        flash->sector->rlightlevel = flash->maxlight;
 }
 
 
@@ -375,8 +369,6 @@ void T_Glow(glow_t*     g)
     // [crispy] A11Y
     if (a11y_sector_lighting)
         g->sector->rlightlevel = g->sector->lightlevel;
-    else
-        g->sector->rlightlevel = g->maxlight;
 }
 
 //
