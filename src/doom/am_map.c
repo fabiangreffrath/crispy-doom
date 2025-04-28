@@ -733,7 +733,7 @@ void AM_ResetIDDTcheat (void)
 }
 
 // [crispy] center automap on point
-void AM_SetMapCenter(fixed_t px, fixed_t py)
+static void AM_SetMapCenter(fixed_t px, fixed_t py)
 {
 	// [crispy] FTOM(MTOF()) is needed to fix map line jitter in follow mode.
 	if (crispy->hires)
@@ -791,7 +791,7 @@ static void AM_CheatRevealSecret(void)
 }
 
 
-// [woof] auxiliary function for "reveal secret" and "reveal kill" cheats
+// [woof] auxiliary function for "reveal item" and "reveal kill" cheats
 static void AM_CycleMobj(mobj_t **last_mobj, int *last_count, int flags, int alive)
 {
 	thinker_t *th, *start_th;
