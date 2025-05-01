@@ -465,6 +465,19 @@ R_DrawVisSprite
         colfunc = transcolfunc;
         dc_translation = translationtables - 256 + (translation >> (MF_TRANSSHIFT - 8));
     }
+    // [crispy] translucent sprites
+    else if (crispy->translucency && vis->mobjflags2 & MF_TRANSLUCENT)
+    {
+        if ((crispy->translucency & TRANSLUCENCY_MISSILE) ||
+            (vis->psprite && crispy->translucency & TRANSLUCENCY_ITEM))
+            {
+                colfunc = R_DrawTRTLColumn;
+                // dc_translation = translationtables - 256 + (translation >> (MF_TRANSSHIFT - 8));
+            }
+#ifdef CRISPY_TRUECOLOR
+            blendfunc = vis->blendfunc;
+#endif
+    }
 
     dc_iscale = abs(vis->xiscale)>>detailshift;
     dc_texturemid = vis->texturemid;
@@ -627,6 +640,7 @@ void R_ProjectSprite (mobj_t* thing)
     // store information in a vissprite
     vis = R_NewVisSprite ();
     vis->mobjflags = thing->flags;
+    vis->psprite = false;
     vis->scale = xscale<<detailshift;
     vis->gx = interpx;
     vis->gy = interpy;
@@ -741,7 +755,8 @@ void R_AddSprites (sector_t* sec)
 
 boolean pspr_interp = true; // [crispy] interpolate weapon bobbing
 
-void R_DrawPSprite (pspdef_t* psp, psprnum_t psprnum) // [crispy] read psprnum
+void R_DrawPSprite (pspdef_t* psp, psprnum_t psprnum, int psyoffset, int translucent) // [crispy] read psprnum, y-offset, and 
+                                                                                      // translucency for weapon flash translucency
 {
     fixed_t		tx;
     int			x1;
@@ -793,6 +808,7 @@ void R_DrawPSprite (pspdef_t* psp, psprnum_t psprnum) // [crispy] read psprnum
     // store information in a vissprite
     vis = &avis;
     vis->mobjflags = 0;
+    vis->psprite = true;
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
     vis->scale = pspritescale<<detailshift;
@@ -811,7 +827,7 @@ void R_DrawPSprite (pspdef_t* psp, psprnum_t psprnum) // [crispy] read psprnum
     // villsa [STRIFE] calculate y offset with view pitch
     // [crispy] weapons drawn 1 pixel too high when player is idle; moved free
     // look to end of function after interpolation
-    vis->texturemid = ((BASEYCENTER<<FRACBITS)+FRACUNIT/4)-(psp->sy2-spritetopoffset[lump]);
+    vis->texturemid = ((BASEYCENTER<<FRACBITS)+FRACUNIT/4)-(psp->sy2-spritetopoffset[lump]+psyoffset);
 
     if (vis->x1 > x1)
         vis->startfrac += vis->xiscale*(vis->x1-x1);
@@ -853,6 +869,12 @@ void R_DrawPSprite (pspdef_t* psp, psprnum_t psprnum) // [crispy] read psprnum
     {
         // When MVIS, use invulnerability colormap
         vis->colormap = colormaps + INVERSECOLORMAP * 256 * sizeof(lighttable_t);
+    }
+
+    // [crispy] translucent weapon flash sprites
+    if (translucent)
+    {
+        vis->mobjflags |= MF_TRANSLUCENT;
     }
 
     // [crispy] interpolate weapon bobbing; don't interpolate targeter
@@ -905,6 +927,7 @@ void R_DrawPlayerSprites (void)
 {
     int		i;
     int		lightnum;
+    int tmpframe, offset, translucent = 0; // [crispy] temps for drawing translucent psrites
     pspdef_t*	psp;
     
     // get light level
@@ -924,12 +947,81 @@ void R_DrawPlayerSprites (void)
     mceilingclip = negonearray;
     
     // add all active psprites
-    for (i=0, psp=viewplayer->psprites;
-	 i<NUMPSPRITES;
-	 i++,psp++)
+    for (i=0, psp=viewplayer->psprites; i<NUMPSPRITES; i++,psp++)
     {
-	if (psp->state)
-	    R_DrawPSprite (psp, i); // [crispy] pass psprnum
+        if (psp->state)
+        {
+            // // [crispy] Draw offset base frame and translucent current frame
+            // if (crispy->translucency & TRANSLUCENCY_ITEM &&
+            //     !(viewplayer->powers[pw_invisibility] > 4*32 || viewplayer->powers[pw_invisibility] & 8))
+            // {
+            //     translucent = 1;
+            //     tmpframe = psp->state->frame;
+
+            //     switch (psp->state->sprite)
+            //     {         
+            //         case SPR_GWND:
+            //             if (tmpframe == 1)
+            //                 offset = spriteoffsets[SPR_GWND_F1].offset;
+            //             else 
+            //             if (tmpframe == 2)
+            //                 offset = spriteoffsets[SPR_GWND_F2].offset;
+            //             else 
+            //             if (tmpframe == 3)
+            //                 offset = spriteoffsets[SPR_GWND_F3].offset;
+            //             else
+            //                 translucent = 0;
+            //             break;
+            //         case SPR_BLSR:
+            //             if (tmpframe == 1)
+            //                 offset = spriteoffsets[SPR_BLSR_F1].offset;
+            //             else 
+            //             if (tmpframe == 2)
+            //                 offset = spriteoffsets[SPR_BLSR_F2].offset;
+            //             else 
+            //             if (tmpframe == 3)
+            //                 offset = spriteoffsets[SPR_BLSR_F3].offset;
+            //             else
+            //                 translucent = 0;
+            //             break;
+            //         case SPR_HROD:
+            //             if (tmpframe == 1)
+            //                 offset = spriteoffsets[SPR_HROD_F1].offset;
+            //             else 
+            //             if (tmpframe > 1 && tmpframe < 6)
+            //                 offset = spriteoffsets[SPR_HROD_F2_5].offset;
+            //             else 
+            //             if (tmpframe == 6)
+            //                 offset = spriteoffsets[SPR_HROD_F6].offset;
+            //             else
+            //                 translucent = 0;
+            //             break;
+            //         case SPR_PHNX:
+            //             if (tmpframe == 1)
+            //                 offset = spriteoffsets[SPR_PHNX_F1].offset;
+            //             else 
+            //             if (tmpframe == 2 || tmpframe > 3)
+            //                 offset = spriteoffsets[SPR_PHNX_F2].offset;
+            //             else 
+            //             if (tmpframe == 3)
+            //                 offset = spriteoffsets[SPR_PHNX_F3].offset;
+            //             else
+            //                 translucent = 0;
+            //             break;
+            //         default:
+            //             offset = 0x0;
+            //             translucent = 0;
+            //             break;
+            //     }
+            //     if (translucent && psp->state->sprite != SPR_GAUN)
+            //     {
+            //         psp->state->frame = 0; // draw base frame
+            //         R_DrawPSprite(psp, offset, 0);
+            //         psp->state->frame = tmpframe; // restore frame
+            //     }
+            // }
+            R_DrawPSprite (psp, i, 0, 0); // [crispy] pass psprnum
+        }
     }
 }
 

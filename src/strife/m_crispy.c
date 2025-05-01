@@ -55,6 +55,14 @@ multiitem_t multiitem_freelook[NUM_FREELOOKS_HH] =
     {FREELOOK_HH_SPRING, "Spring"},
 };
 
+multiitem_t multiitem_translucency[NUM_TRANSLUCENCY] =
+{
+    {TRANSLUCENCY_OFF, "off"},
+    {TRANSLUCENCY_MISSILE, "projectiles"},
+    {TRANSLUCENCY_ITEM, "weapon flashes"},
+    {TRANSLUCENCY_BOTH, "both"},
+};
+
 multiitem_t multiitem_sndchannels[3] =
 {
     {8, "8"},
@@ -279,6 +287,11 @@ void M_CrispyToggleSmoothLighting(int choice)
     choice = 0;
 
     crispy->post_rendering_hook = M_CrispyToggleSmoothLightingHook;
+}
+
+void M_CrispyToggleTranslucency(int choice)
+{
+    ChangeSettingEnum(&crispy->translucency, choice, NUM_TRANSLUCENCY);
 }
 
 void M_CrispyToggleSmoothMap(int choice)

@@ -440,6 +440,7 @@ enum
 
     crispness_sep_visual,
     crispness_smoothlight,
+    crispness_translucency,
     crispness_sep_visual_,
 
     crispness1_next,
@@ -459,6 +460,7 @@ static menuitem_t Crispness1Menu[] =
     {-1, "", 0, '\0'},
     {-1, "", 0, '\0'},
     {2, "", M_CrispyToggleSmoothLighting, 's'},
+    {3, "", M_CrispyToggleTranslucency, 'e'},
     {-1, "", 0, '\0'},
     {1, "", M_CrispnessNext, 'n'},
     {1, "", M_CrispnessPrev, 'p'},
@@ -1519,6 +1521,7 @@ static void M_DrawCrispness1(void)
 
     M_DrawCrispnessSeparator(crispness_sep_visual, "Visual");
     M_DrawCrispnessItem(crispness_smoothlight, "Smooth Diminishing Lighting", crispy->smoothlight, true);
+    M_DrawCrispnessMultiItem(crispness_translucency, "Enable Transl.", multiitem_translucency, crispy->translucency, true);
 
     M_DrawCrispnessGoto(crispness1_next, "Next Page >");
     M_DrawCrispnessGoto(crispness1_prev, "< Last Page");

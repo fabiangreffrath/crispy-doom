@@ -231,6 +231,15 @@ typedef enum
 
 } mobjflag_t;
 
+//
+// [crispy] Misc. mobj flags2
+//
+typedef enum
+{
+    // [crispy] translucent sprite
+    MF_TRANSLUCENT          = 1,
+
+} mobjflag2_t;
 
 // Map Object definition.
 //

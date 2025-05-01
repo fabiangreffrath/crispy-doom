@@ -409,7 +409,11 @@ typedef struct vissprite_s
     lighttable_t*	colormap;
    
     int			mobjflags;
+
+    int			mobjflags2; // [crispy]
     
+    boolean		psprite;    // [crispy] true if psprite
+
 #ifdef CRISPY_TRUECOLOR
     const pixel_t	(*blendfunc)(const pixel_t fg, const pixel_t bg);
 #endif
