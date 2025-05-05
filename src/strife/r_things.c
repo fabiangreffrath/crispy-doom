@@ -471,8 +471,7 @@ R_DrawVisSprite
         if ((crispy->translucency & TRANSLUCENCY_MISSILE) ||
             (vis->psprite && crispy->translucency & TRANSLUCENCY_ITEM))
             {
-                colfunc = R_DrawTRTLColumn;
-                // dc_translation = translationtables - 256 + (translation >> (MF_TRANSSHIFT - 8));
+                colfunc = R_DrawMVisTLColumn;
             }
 #ifdef CRISPY_TRUECOLOR
             blendfunc = vis->blendfunc;
