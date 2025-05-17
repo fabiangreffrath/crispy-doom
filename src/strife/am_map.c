@@ -586,7 +586,6 @@ void AM_LevelInit(boolean reinit)
     f_x = f_y = 0;
     f_w = SCREENWIDTH;
     f_h = SCREENHEIGHT - (ST_HEIGHT << crispy->hires);
-    fb = I_VideoBuffer; // [crispy] to consider highres toggle
 
     AM_drawFline = crispy->smoothmap ? AM_drawFline_Smooth : AM_drawFline_Vanilla;
 
