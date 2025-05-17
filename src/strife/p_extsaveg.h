@@ -20,14 +20,7 @@
 #ifndef __P_EXTSAVEG__
 #define __P_EXTSAVEG__
 
-typedef enum
-{
-    EXTSAVEG_MAP = 1,
-    EXTSAVEG_GAME,
-    EXTSAVEG_BOTH // for checks only
-} savetarget_t;
-
-extern void P_WriteExtendedSaveGameData (savetarget_t location);
-extern void P_ReadExtendedSaveGameData (savetarget_t location);
+extern void P_WriteExtendedSaveGameData ();
+extern void P_ReadExtendedSaveGameData ();
 
 #endif

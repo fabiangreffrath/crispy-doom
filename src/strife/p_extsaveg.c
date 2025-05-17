@@ -86,21 +86,17 @@ typedef struct
     const char *key;
     void (* extsavegwritefn) (const char *key);
     void (* extsavegreadfn) (const char *key);
-    const savetarget_t location;
     const int pass;
 } extsavegdata_t;
 
 static const extsavegdata_t extsavegdata[] =
 {
     // [crispy] @FORKS: please change this if you are going to introduce incompatible changes!
-    // BOTH:
-    {"crispy-strife", P_WritePackageTarname, NULL, EXTSAVEG_BOTH, 0},
-    // MAP:
-    {"markpoints", P_WriteMarkPoints, P_ReadMarkPoints, EXTSAVEG_MAP, 1},
-    // GAME:
+    {"crispy-strife", P_WritePackageTarname, NULL, 0},
+    {"markpoints", P_WriteMarkPoints, P_ReadMarkPoints, 1},
 };
 
-void P_WriteExtendedSaveGameData (savetarget_t location)
+void P_WriteExtendedSaveGameData ()
 {
     int i;
 
@@ -108,14 +104,13 @@ void P_WriteExtendedSaveGameData (savetarget_t location)
 
     for (i = 0; i < arrlen(extsavegdata); i++)
     {
-        if (extsavegdata[i].location & location)
-            extsavegdata[i].extsavegwritefn(extsavegdata[i].key);
+        extsavegdata[i].extsavegwritefn(extsavegdata[i].key);
     }
 
     free(line);
 }
 
-static void P_ReadKeyValuePairs (savetarget_t location, int pass)
+static void P_ReadKeyValuePairs (int pass)
 {
     while (fgets(line, MAX_LINE_LEN, save_stream))
     {
@@ -127,7 +122,6 @@ static void P_ReadKeyValuePairs (savetarget_t location, int pass)
             {
                 if (extsavegdata[i].extsavegreadfn &&
                     extsavegdata[i].pass == pass &&
-                    extsavegdata[i].location & location &&
                     !strncmp(string, extsavegdata[i].key, MAX_STRING_LEN))
                 {
                     extsavegdata[i].extsavegreadfn(extsavegdata[i].key);
@@ -137,13 +131,13 @@ static void P_ReadKeyValuePairs (savetarget_t location, int pass)
     }
 }
 
-void P_ReadExtendedSaveGameData (savetarget_t location)
+void P_ReadExtendedSaveGameData ()
 {
     line = malloc(MAX_LINE_LEN);
     string = malloc(MAX_STRING_LEN);
 
-    // [crispy] only second pass for Hexen
-    P_ReadKeyValuePairs(location, 1);
+    // [crispy] second pass for Strife maps
+    P_ReadKeyValuePairs(1);
 
     free(line);
     free(string);

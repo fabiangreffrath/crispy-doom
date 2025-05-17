@@ -2095,8 +2095,8 @@ void G_DoLoadGame (boolean userload)
     if (!P_ReadSaveGameEOF())
         I_Error ("Bad savegame");
 
-    // [crispy] read more extended savegame data for map
-    P_ReadExtendedSaveGameData(EXTSAVEG_MAP);
+    // [crispy] read more extended savegame data
+    P_ReadExtendedSaveGameData();
 
     fclose(save_stream);
     
@@ -2219,8 +2219,8 @@ void G_DoSaveGame (char *path)
 
     P_WriteSaveGameEOF();
 
-    // [crispy] write extended savegame data for map
-    P_WriteExtendedSaveGameData(EXTSAVEG_MAP);
+    // [crispy] write extended savegame data
+    P_WriteExtendedSaveGameData();
 
     // [crispy] unconditionally disable savegame and demo limits
     /*
