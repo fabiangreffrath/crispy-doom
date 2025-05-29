@@ -1926,8 +1926,7 @@ static void HU_DrawCrosshair (void)
         CPlayer->playerstate != PST_LIVE ||
         (automapactive && !crispy->automapoverlay) ||
         MenuActive ||
-        paused /*||
-        secret_on*/)
+        paused)
 	    return;
     else
     {
@@ -1946,7 +1945,24 @@ static void HU_DrawCrosshair (void)
         int x = ORIGWIDTH / 2;
         int y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2;
 
-        SB_drawLine(x, y, 1, 85);
+        // dot
+        // SB_drawLine(x, y, 1, 83);
+
+        // cross
+        SB_drawLine(x-2, y, 2, 83);
+        SB_drawLine(x+1, y, 2, 83);
+        SB_drawLine(x, y-1, 1, 83);
+        SB_drawLine(x, y+1, 1, 83);
+        SB_drawLine(x, y-2, 1, 83);
+        SB_drawLine(x, y+2, 1, 83);
+
+        // chevron
+        // SB_drawLine(x, y, 1, 83);
+        // SB_drawLine(x-1, y+1, 1, 83);
+        // SB_drawLine(x+1, y+1, 1, 83);
+        // SB_drawLine(x-2, y+2, 1, 83);
+        // SB_drawLine(x+2, y+2, 1, 83);
+
     }
 }
 
