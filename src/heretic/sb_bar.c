@@ -77,6 +77,7 @@ static void CheatHomDetectFunc(player_t *player, Cheat_t *cheat);
 
 // [crispy] player crosshair functions
 static void HU_DrawCrosshair(void);
+static void SB_drawLine(int x, int y, int len, int color);
 
 // Public Data
 
@@ -1930,16 +1931,42 @@ static void HU_DrawCrosshair (void)
 	    return;
     else
     {
-        patch_t *const patch = W_CacheLumpName("TGLTH0", PU_STATIC);
-        const int x = ORIGWIDTH / 2 - SHORT(patch->width) / 2 +
-                      SHORT(patch->leftoffset);
-        const int y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2 -
-                      SHORT(patch->height) / 2 + SHORT(patch->topoffset);
+        // patch_t *const patch = W_CacheLumpName("TGLTH0", PU_STATIC);
+        // const int x = ORIGWIDTH / 2 - SHORT(patch->width) / 2 +
+        //               SHORT(patch->leftoffset);
+        // const int y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2 -
+        //               SHORT(patch->height) / 2 + SHORT(patch->topoffset);
 
-        // dp_translation = R_CrosshairColor();
+        // // dp_translation = R_CrosshairColor();
 
-        dp_translation = cr[CR_GOLD];
-        V_DrawSBPatch(x, y, patch);
-        dp_translation = NULL;
+        // dp_translation = cr[CR_GOLD];
+        // V_DrawSBPatch(x, y, patch);
+        // dp_translation = NULL;
+
+        int x = ORIGWIDTH / 2;
+        int y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2;
+
+        SB_drawLine(x, y, 1, 85);
+    }
+}
+
+// [crispy] SB_drawLine
+static void SB_drawLine(int x, int y, int len, int color)
+{
+    byte putcolor = (byte)(color);
+    pixel_t *drawpos = I_VideoBuffer + (y << crispy->hires) * SCREENWIDTH + ((x + WIDESCREENDELTA) << crispy->hires);
+    int i = 0;
+
+    while(i < (len << crispy->hires))
+    {
+        if (crispy->hires)
+#ifndef CRISPY_TRUECOLOR
+            *(drawpos + SCREENWIDTH) = putcolor;
+        *drawpos++ = putcolor;
+#else
+            *(drawpos + SCREENWIDTH) = pal_color[putcolor];
+        *drawpos++ = pal_color[putcolor];
+#endif
+        ++i;
     }
 }
