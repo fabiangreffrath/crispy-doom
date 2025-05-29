@@ -77,7 +77,6 @@ static void CheatHomDetectFunc(player_t *player, Cheat_t *cheat);
 
 // [crispy] player crosshair functions
 static void HU_DrawCrosshair(void);
-static void SB_drawLine(int x, int y, int len, int color);
 
 // Public Data
 
@@ -804,9 +803,13 @@ void SB_Drawer(void)
     }
 
     // [crispy] draw player crosshair
-    SB_Translucent(false); // xhair always opaque
-    HU_DrawCrosshair();
-    SB_Translucent(TRANSLUCENT_HUD);
+    if (crispy->crosshair)
+    {
+        SB_Translucent(crispy->crosshair == CROSSHAIR_HE_TRANSLUCENT);
+        HU_DrawCrosshair();
+        SB_Translucent(TRANSLUCENT_HUD);
+    }
+
 /*
 		if(CPlayer->powers[pw_weaponlevel2] > BLINKTHRESHOLD
 			|| (CPlayer->powers[pw_weaponlevel2]&8))
@@ -1897,92 +1900,68 @@ static void CheatNoTargetFunc(player_t *player, Cheat_t *cheat)
     }
 }
 
-// [crispy] crosshair color determined by health
-// static byte *R_CrosshairColor (void)
-// {
-//     if (crispy->crosshairhealth)
-//     {
-//         const int health = players[consoleplayer].health;
-
-//         if (health < 25)
-//             return cr[CR_RED];
-//         else if (health < 50)
-//             return cr[CR_NONE];
-//         else
-//             return cr[CR_GREEN];
-//     }
-
-//     return NULL;
-// }
-
 // [crispy] static, non-projected crosshair
 static void HU_DrawCrosshair (void)
 {
-    static patch_t*	patch;
-
+    static patch_t *patch = NULL;
+    int x, y;
     CPlayer = &players[consoleplayer];
 
     if (wpnlev1info[CPlayer->readyweapon].ammo == am_noammo ||
+        wpnlev2info[CPlayer->readyweapon].ammo == am_noammo ||
         CPlayer->playerstate != PST_LIVE ||
         (automapactive && !crispy->automapoverlay) ||
         MenuActive ||
         paused)
 	    return;
-    else
+
+    // select crosshairtype
+    switch (crispy->crosshairtype)
     {
-        // patch_t *const patch = W_CacheLumpName("TGLTH0", PU_STATIC);
-        // const int x = ORIGWIDTH / 2 - SHORT(patch->width) / 2 +
-        //               SHORT(patch->leftoffset);
-        // const int y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2 -
-        //               SHORT(patch->height) / 2 + SHORT(patch->topoffset);
+        case CROSSHAIRTYPE_HE_DOT:
+            patch = W_CacheLumpName("FONTB28", PU_STATIC);
+            break;
 
-        // // dp_translation = R_CrosshairColor();
+        case CROSSHAIRTYPE_HE_CROSS1:
+            patch = W_CacheLumpName("TGLTH0", PU_STATIC);
+            break;
 
-        // dp_translation = cr[CR_GOLD];
-        // V_DrawSBPatch(x, y, patch);
-        // dp_translation = NULL;
+        case CROSSHAIRTYPE_HE_CROSS2:
+            patch = W_CacheLumpName("TGLTF0", PU_STATIC);
+            break;
 
-        int x = ORIGWIDTH / 2;
-        int y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2;
-
-        // dot
-        // SB_drawLine(x, y, 1, 83);
-
-        // cross
-        SB_drawLine(x-2, y, 2, 83);
-        SB_drawLine(x+1, y, 2, 83);
-        SB_drawLine(x, y-1, 1, 83);
-        SB_drawLine(x, y+1, 1, 83);
-        SB_drawLine(x, y-2, 1, 83);
-        SB_drawLine(x, y+2, 1, 83);
-
-        // chevron
-        // SB_drawLine(x, y, 1, 83);
-        // SB_drawLine(x-1, y+1, 1, 83);
-        // SB_drawLine(x+1, y+1, 1, 83);
-        // SB_drawLine(x-2, y+2, 1, 83);
-        // SB_drawLine(x+2, y+2, 1, 83);
-
+        default:
+            patch = W_CacheLumpName("FONTB28", PU_STATIC);
+            break;
     }
-}
 
-// [crispy] SB_drawLine
-static void SB_drawLine(int x, int y, int len, int color)
-{
-    byte putcolor = (byte)(color);
-    pixel_t *drawpos = I_VideoBuffer + (y << crispy->hires) * SCREENWIDTH + ((x + WIDESCREENDELTA) << crispy->hires);
-    int i = 0;
+    // crosshair position
+    x = ORIGWIDTH / 2 - SHORT(patch->width) / 2 +
+                    SHORT(patch->leftoffset);
+    y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2 -
+                    SHORT(patch->height) / 2 + SHORT(patch->topoffset);    
 
-    while(i < (len << crispy->hires))
+
+    // select crosshair color
+    switch (crispy->crosshaircolor)
     {
-        if (crispy->hires)
-#ifndef CRISPY_TRUECOLOR
-            *(drawpos + SCREENWIDTH) = putcolor;
-        *drawpos++ = putcolor;
-#else
-            *(drawpos + SCREENWIDTH) = pal_color[putcolor];
-        *drawpos++ = pal_color[putcolor];
-#endif
-        ++i;
+        case CROSSHAIRCOLOR_HE_GOLD:
+            dp_translation = cr[CR_GOLD];
+            break;
+
+        case CROSSHAIRCOLOR_HE_WHITE:
+            dp_translation = cr[CR_GRAY];
+            break;
+
+        case CROSSHAIRCOLOR_HE_GREEN:
+            dp_translation = cr[CR_GREEN];
+            break;
+        
+        default:
+            dp_translation = cr[CR_GOLD];
+            break;
     }
+
+    V_DrawSBPatch(x, y, patch);
+    dp_translation = NULL;
 }

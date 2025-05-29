@@ -2363,7 +2363,7 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(crispy_coloredhud),
 
     //!
-    // @game doom
+    // @game doom, heretic
     //
     // Draw a crosshair.
     //
@@ -2387,12 +2387,20 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(crispy_crosshairtarget),
 
     //!
-    // @game doom
+    // @game doom, heretic
     //
     // Crosshair type.
     //
 
     CONFIG_VARIABLE_INT(crispy_crosshairtype),
+
+    //!
+    // @game heretic
+    //
+    // Crosshair color.
+    //
+
+    CONFIG_VARIABLE_INT(crispy_crosshaircolor),
 
     //!
     // @game doom heretic hexen
