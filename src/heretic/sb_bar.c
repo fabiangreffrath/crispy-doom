@@ -27,9 +27,7 @@
 #include "s_sound.h"
 #include "v_video.h"
 #include "am_map.h"
-#ifdef CRISPY_TRUECOLOR
-#include "v_trans.h" // [crispy] I_BlendDark()
-#endif
+#include "v_trans.h" // [crispy] dp_translation & blend truecolor
 #include "a11y.h" // [crispy] A11Y
 
 // Types
@@ -76,6 +74,9 @@ static void CheatAddRemoveWpnFunc(player_t *player, Cheat_t *cheat);
 static void CheatSpecHitFunc(player_t *player, Cheat_t *cheat);
 static void CheatNoMomentumFunc(player_t *player, Cheat_t *cheat);
 static void CheatHomDetectFunc(player_t *player, Cheat_t *cheat);
+
+// [crispy] player crosshair functions
+static void HU_DrawCrosshair(void);
 
 // Public Data
 
@@ -800,6 +801,11 @@ void SB_Drawer(void)
             UpdateState |= I_MESSAGES;
         }
     }
+
+    // [crispy] draw player crosshair
+    SB_Translucent(false); // xhair always opaque
+    HU_DrawCrosshair();
+    SB_Translucent(TRANSLUCENT_HUD);
 /*
 		if(CPlayer->powers[pw_weaponlevel2] > BLINKTHRESHOLD
 			|| (CPlayer->powers[pw_weaponlevel2]&8))
@@ -1887,5 +1893,53 @@ static void CheatNoTargetFunc(player_t *player, Cheat_t *cheat)
     else
     {
         P_SetMessage(player, DEH_String(TXT_CHEATNOTARGETOFF), false);
+    }
+}
+
+// [crispy] crosshair color determined by health
+// static byte *R_CrosshairColor (void)
+// {
+//     if (crispy->crosshairhealth)
+//     {
+//         const int health = players[consoleplayer].health;
+
+//         if (health < 25)
+//             return cr[CR_RED];
+//         else if (health < 50)
+//             return cr[CR_NONE];
+//         else
+//             return cr[CR_GREEN];
+//     }
+
+//     return NULL;
+// }
+
+// [crispy] static, non-projected crosshair
+static void HU_DrawCrosshair (void)
+{
+    static patch_t*	patch;
+
+    CPlayer = &players[consoleplayer];
+
+    if (wpnlev1info[CPlayer->readyweapon].ammo == am_noammo ||
+        CPlayer->playerstate != PST_LIVE ||
+        (automapactive && !crispy->automapoverlay) ||
+        MenuActive ||
+        paused /*||
+        secret_on*/)
+	    return;
+    else
+    {
+        patch_t *const patch = W_CacheLumpName("TGLTH0", PU_STATIC);
+        const int x = ORIGWIDTH / 2 - SHORT(patch->width) / 2 +
+                      SHORT(patch->leftoffset);
+        const int y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2 -
+                      SHORT(patch->height) / 2 + SHORT(patch->topoffset);
+
+        // dp_translation = R_CrosshairColor();
+
+        dp_translation = cr[CR_GOLD];
+        V_DrawSBPatch(x, y, patch);
+        dp_translation = NULL;
     }
 }
