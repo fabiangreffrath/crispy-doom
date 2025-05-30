@@ -29,6 +29,7 @@
 #include "i_swap.h"
 #include "am_map.h"
 #include "a11y.h" // [crispy] A11Y
+#include "v_trans.h" // [crispy] dp_translation
 
 
 // TYPES -------------------------------------------------------------------
@@ -88,6 +89,9 @@ static void CheatTrackFunc2(player_t * player, Cheat_t * cheat);
 
 // [crispy] new cheat functions
 static void CheatShowFpsFunc(player_t * player, Cheat_t * cheat);
+
+// [crispy] player crosshair functions
+static void HU_DrawCrosshair(void);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -883,6 +887,14 @@ void SB_Drawer(void)
         }
     }
     DrawAnimatedIcons();
+
+    // [crispy] draw player crosshair
+    if (crispy->crosshair)
+    {
+        SB_Translucent(crispy->crosshair == CROSSHAIR_HE_TRANSLUCENT);
+        HU_DrawCrosshair();
+        SB_Translucent(TRANSLUCENT_HUD);
+    }
 }
 
 //==========================================================================
@@ -2374,4 +2386,70 @@ static void CheatShowFpsFunc(player_t* player, Cheat_t* cheat)
     {
         P_SetMessage(player, TXT_SHOWFPSOFF, false);
     }
+}
+
+
+// [crispy] static, non-projected crosshair
+static void HU_DrawCrosshair (void)
+{
+    static patch_t *patch = NULL;
+    int x, y;
+    CPlayer = &players[consoleplayer];
+
+    if (WeaponInfo[CPlayer->readyweapon][CPlayer->class].mana == MANA_NONE ||
+        CPlayer->playerstate != PST_LIVE ||
+        (automapactive && !crispy->automapoverlay) ||
+        MenuActive ||
+        paused)
+	    return;
+
+    // select crosshairtype
+    switch (crispy->crosshairtype)
+    {
+        case CROSSHAIRTYPE_HE_DOT:
+            patch = W_CacheLumpName("FONTB28", PU_STATIC);
+            break;
+
+        case CROSSHAIRTYPE_HE_CROSS1:
+            patch = W_CacheLumpName("TLGLC0", PU_STATIC);
+            break;
+
+        case CROSSHAIRTYPE_HE_CROSS2:
+            patch = W_CacheLumpName("TLGLA0", PU_STATIC);
+            break;
+
+        default:
+            patch = W_CacheLumpName("FONTB28", PU_STATIC);
+            break;
+    }
+
+    // crosshair position
+    x = ORIGWIDTH / 2 - SHORT(patch->width) / 2 +
+                    SHORT(patch->leftoffset);
+    y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2 -
+                    SHORT(patch->height) / 2 + SHORT(patch->topoffset);    
+
+
+    // select crosshair color
+    switch (crispy->crosshaircolor)
+    {
+        case CROSSHAIRCOLOR_HE_GOLD:
+            dp_translation = cr[CR_GOLD];
+            break;
+
+        case CROSSHAIRCOLOR_HE_WHITE:
+            dp_translation = cr[CR_GRAY];
+            break;
+
+        case CROSSHAIRCOLOR_HE_GREEN:
+            dp_translation = cr[CR_GREEN];
+            break;
+
+        default:
+            dp_translation = cr[CR_GOLD];
+            break;
+    }
+
+    V_DrawSBPatch(x, y, patch);
+    dp_translation = NULL;
 }
