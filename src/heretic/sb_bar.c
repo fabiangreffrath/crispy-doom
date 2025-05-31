@@ -1953,7 +1953,7 @@ static void HU_DrawCrosshair (void)
             dp_translation = cr[CR_GRAY];
             break;
 
-        case CROSSHAIRCOLOR_HE_GREEN:
+        case CROSSHAIRCOLOR_HE_FSHUD:
             dp_translation = cr[CR_GREEN];
             break;
         

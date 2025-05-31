@@ -532,7 +532,7 @@ multiitem_t multiitem_he_crosshaircolor[] =
     {-1, "none"},
     {CROSSHAIRCOLOR_HE_GOLD, "gold"},
     {CROSSHAIRCOLOR_HE_WHITE, "white"},
-    {CROSSHAIRCOLOR_HE_GREEN, "green"},
+    {CROSSHAIRCOLOR_HE_FSHUD, "red"},
 };
 
 multiitem_t multiitem_translucency[NUM_TRANSLUCENCY] =

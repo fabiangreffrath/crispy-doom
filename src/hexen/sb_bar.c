@@ -2441,8 +2441,8 @@ static void HU_DrawCrosshair (void)
             dp_translation = cr[CR_GRAY];
             break;
 
-        case CROSSHAIRCOLOR_HE_GREEN:
-            dp_translation = cr[CR_GREEN];
+        case CROSSHAIRCOLOR_HE_FSHUD:
+            dp_translation = cr[CR_RED];
             break;
 
         default:
