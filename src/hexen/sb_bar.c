@@ -2396,7 +2396,10 @@ static void HU_DrawCrosshair (void)
     int x, y;
     CPlayer = &players[consoleplayer];
 
-    if (WeaponInfo[CPlayer->readyweapon][CPlayer->class].mana == MANA_NONE ||
+    if (WeaponInfo[CPlayer->readyweapon][CPlayer->class].atkstate == S_PUNCHATK1_1 ||
+        WeaponInfo[CPlayer->readyweapon][CPlayer->class].atkstate == S_CMACEATK_1 ||
+        WeaponInfo[CPlayer->readyweapon][CPlayer->class].atkstate == S_SNOUTATK1 ||
+        WeaponInfo[CPlayer->readyweapon][CPlayer->class].atkstate == S_FAXEATK_1 ||
         CPlayer->playerstate != PST_LIVE ||
         (automapactive && !crispy->automapoverlay) ||
         MenuActive ||
