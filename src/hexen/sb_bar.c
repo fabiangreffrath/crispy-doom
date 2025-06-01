@@ -92,6 +92,7 @@ static void CheatShowFpsFunc(player_t * player, Cheat_t * cheat);
 
 // [crispy] player crosshair functions
 static void HU_DrawCrosshair(void);
+static byte *R_CrosshairColor(void);
 
 // EXTERNAL DATA DECLARATIONS ----------------------------------------------
 
@@ -2388,6 +2389,22 @@ static void CheatShowFpsFunc(player_t* player, Cheat_t* cheat)
     }
 }
 
+// [crispy] crosshair color selection
+static byte *R_CrosshairColor (void)
+{
+    if (crispy->crosshaircolor == CROSSHAIRCOLOR_HE_GOLD)
+    {
+        return cr[CR_GOLD];
+    }
+    else if (crispy->crosshaircolor == CROSSHAIRCOLOR_HE_WHITE)
+    {
+        return cr[CR_GRAY];
+    }
+    else
+    {
+        return cr[CR_RED];
+    }
+}
 
 // [crispy] static, non-projected crosshair
 static void HU_DrawCrosshair (void)
@@ -2432,27 +2449,8 @@ static void HU_DrawCrosshair (void)
     y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2 -
                     SHORT(patch->height) / 2 + SHORT(patch->topoffset);    
 
-
-    // select crosshair color
-    switch (crispy->crosshaircolor)
-    {
-        case CROSSHAIRCOLOR_HE_GOLD:
-            dp_translation = cr[CR_GOLD];
-            break;
-
-        case CROSSHAIRCOLOR_HE_WHITE:
-            dp_translation = cr[CR_GRAY];
-            break;
-
-        case CROSSHAIRCOLOR_HE_FSHUD:
-            dp_translation = cr[CR_RED];
-            break;
-
-        default:
-            dp_translation = cr[CR_GOLD];
-            break;
-    }
-
+    // crosshair color
+    dp_translation = R_CrosshairColor();
     V_DrawSBPatch(x, y, patch);
     dp_translation = NULL;
 }

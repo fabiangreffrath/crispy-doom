@@ -531,6 +531,10 @@ multiitem_t multiitem_he_crosshairtype[] =
     {CROSSHAIRTYPE_HE_CROSS2, "cross2"},
 };
 
+// [crispy] crosshair colors for heretic
+// gold: corresponding with normal hud / crispy hud font
+// white: corresponding with hud messages / providing high visibility
+// green: corresponding with vanilla fullscreen hud font
 multiitem_t multiitem_he_crosshaircolor[] =
 {
     {-1, "none"},
