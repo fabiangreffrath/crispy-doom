@@ -141,6 +141,14 @@ int FontBNumBase;
 int spinbooklump;
 int spinflylump;
 
+// [crispy] keep in sync with multiitem_t multiitem_he_crosshairtype[] in mn_menu.c
+static crosshairpatch_t crosshairpatch_m[NUM_HE_CROSSHAIRTYPE] = {
+    {0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0},
+};
+static crosshairpatch_t *crosshairpatch = crosshairpatch_m;
+
 // Toggle god mode
 cheatseq_t CheatGodSeq = CHEAT("quicken", 0);
 
@@ -281,6 +289,32 @@ void SB_Init(void)
     playpalette = W_GetNumForName(DEH_String("PLAYPAL"));
     spinbooklump = W_GetNumForName(DEH_String("SPINBK0"));
     spinflylump = W_GetNumForName(DEH_String("SPFLY0"));
+
+    // [crispy] initialize the crosshair types
+    for (i = 0; i < NUM_HE_CROSSHAIRTYPE; i++)
+    {
+        patch_t *patch = NULL;
+
+        if (i == CROSSHAIRTYPE_HE_DOT)
+        {
+            crosshairpatch[i].l = W_GetNumForName("FONTB28");
+        }
+        else if (i == CROSSHAIRTYPE_HE_CROSS1)
+        {
+            crosshairpatch[i].l = W_GetNumForName("TGLTH0");
+        }
+        else
+        {
+            crosshairpatch[i].l = W_GetNumForName("TGLTF0");
+        }
+
+        patch = W_CacheLumpNum(crosshairpatch[i].l, PU_STATIC);
+
+        crosshairpatch[i].w = SHORT(patch->width) / 2;
+        crosshairpatch[i].h = SHORT(patch->height) / 2;
+        crosshairpatch[i].loffset = SHORT(patch->leftoffset);
+        crosshairpatch[i].toffset = SHORT(patch->topoffset);
+    }
 
     st_backing_screen = (pixel_t *) Z_Malloc(MAXWIDTH * (42 << 1) * sizeof(*st_backing_screen), PU_STATIC, 0);
 }
@@ -1921,8 +1955,8 @@ static byte *R_CrosshairColor (void)
 // [crispy] static, non-projected crosshair
 static void HU_DrawCrosshair (void)
 {
-    static patch_t *patch = NULL;
-    int x, y;
+    static int		lump;
+    static patch_t*	patch;
     CPlayer = &players[consoleplayer];
 
     if (wpnlev1info[CPlayer->readyweapon].ammo == am_noammo ||
@@ -1933,34 +1967,18 @@ static void HU_DrawCrosshair (void)
         paused)
 	    return;
 
-    // select crosshairtype
-    switch (crispy->crosshairtype)
+    if (lump != crosshairpatch[crispy->crosshairtype].l)
     {
-        case CROSSHAIRTYPE_HE_DOT:
-            patch = W_CacheLumpName("FONTB28", PU_STATIC);
-            break;
-
-        case CROSSHAIRTYPE_HE_CROSS1:
-            patch = W_CacheLumpName("TGLTH0", PU_STATIC);
-            break;
-
-        case CROSSHAIRTYPE_HE_CROSS2:
-            patch = W_CacheLumpName("TGLTF0", PU_STATIC);
-            break;
-
-        default:
-            patch = W_CacheLumpName("FONTB28", PU_STATIC);
-            break;
+        lump = crosshairpatch[crispy->crosshairtype].l;
+        patch = W_CacheLumpNum(lump, PU_STATIC);
     }
-
-    // crosshair position
-    x = ORIGWIDTH / 2 - SHORT(patch->width) / 2 +
-                    SHORT(patch->leftoffset);
-    y = (ORIGHEIGHT - (screenblocks < 11 ? 42 : 0)) / 2 -
-                    SHORT(patch->height) / 2 + SHORT(patch->topoffset);    
-
+   
     // crosshair color
     dp_translation = R_CrosshairColor();
-    V_DrawSBPatch(x, y, patch);
+    V_DrawSBPatch(ORIGWIDTH / 2 -
+            crosshairpatch[crispy->crosshairtype].w + crosshairpatch[crispy->crosshairtype].loffset,
+            ((screenblocks < 11) ? (ORIGHEIGHT - (SBARHEIGHT >> crispy->hires)) / 2 : ORIGHEIGHT / 2) -
+            crosshairpatch[crispy->crosshairtype].h + crosshairpatch[crispy->crosshairtype].toffset,
+            patch);
     dp_translation = NULL;
 }
