@@ -1272,9 +1272,9 @@ void I_GraphicsCheckCommandLine(void)
 
     //!
     // @category video
-    // @arg <x>
+    // @arg <W>
     //
-    // Specify the screen width, in pixels. Implies -window.
+    // Specify the screen width, in pixels.  Implies -window.
     //
 
     i = M_CheckParmWithArgs("-width", 1);
@@ -1287,9 +1287,9 @@ void I_GraphicsCheckCommandLine(void)
 
     //!
     // @category video
-    // @arg <y>
+    // @arg <H>
     //
-    // Specify the screen height, in pixels. Implies -window.
+    // Specify the screen height, in pixels.  Implies -window.
     //
 
     i = M_CheckParmWithArgs("-height", 1);
@@ -1302,9 +1302,9 @@ void I_GraphicsCheckCommandLine(void)
 
     //!
     // @category video
-    // @arg <WxY>
+    // @arg <WxH>
     //
-    // Specify the dimensions of the window. Implies -window.
+    // Specify the dimensions of the window.  Implies -window.
     //
 
     i = M_CheckParmWithArgs("-geometry", 1);
@@ -1343,7 +1343,7 @@ void I_GraphicsCheckCommandLine(void)
     //!
     // @category video
     //
-    // Don't scale up the screen. Implies -window.
+    // Don't scale up the screen.  Implies -window.
     //
 
     if (M_CheckParm("-1")) 
@@ -1354,7 +1354,7 @@ void I_GraphicsCheckCommandLine(void)
     //!
     // @category video
     //
-    // Double up the screen to 2x its normal size. Implies -window.
+    // Double up the screen to 2x its normal size.  Implies -window.
     //
 
     if (M_CheckParm("-2")) 
@@ -1365,7 +1365,7 @@ void I_GraphicsCheckCommandLine(void)
     //!
     // @category video
     //
-    // Double up the screen to 3x its normal size. Implies -window.
+    // Double up the screen to 3x its normal size.  Implies -window.
     //
 
     if (M_CheckParm("-3")) 
