@@ -2924,14 +2924,27 @@ static void DragonSeek(mobj_t * actor, angle_t thresh, angle_t turnMax)
                                             actor->target->y);
             for (i = 0; i < 5; i++)
             {
+                int mo_x, mo_y;
                 if (!target->args[i])
                 {
                     continue;
                 }
                 search = -1;
                 mo = P_FindMobjFromTID(target->args[i], &search);
+                // [crispy] fix wyvern + porkalator bug
+                if (mo == NULL)
+                {
+                    fprintf(stderr, "DragonSeek: P_FindMobjFromTID() returned NULL mobj!\n");
+                    mo_x = 0;
+                    mo_y = 0;
+                }
+                else
+                {
+                    mo_x = mo->x;
+                    mo_y = mo->y;
+                }
                 angleToSpot = R_PointToAngle2(actor->x, actor->y,
-                                              mo->x, mo->y);
+                                              mo_x, mo_y);
                 if (abs((int) angleToSpot - (int) angleToTarget) < bestAngle)
                 {
                     bestAngle = abs((int) angleToSpot - (int) angleToTarget);

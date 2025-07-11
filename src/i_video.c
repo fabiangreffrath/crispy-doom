@@ -300,6 +300,14 @@ void I_ShutdownGraphics(void)
     {
         SetShowCursor(true);
 
+        SDL_FreeSurface(argbbuffer);
+#ifndef CRISPY_TRUECOLOR
+        SDL_FreeSurface(screenbuffer);
+#endif
+        SDL_DestroyTexture(texture_upscaled);
+        SDL_DestroyTexture(texture);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(screen);
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
 
         initialized = false;

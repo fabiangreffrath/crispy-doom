@@ -637,20 +637,36 @@ void R_GenerateLookup (int texnum)
 //
 // R_GetColumn
 //
+
+// [crispy] wrapping column getter function for any non-power-of-two textures
 byte*
 R_GetColumn
 ( int		tex,
   int		col )
 {
-    int		ofs;
-	
-    col &= texturewidthmask[tex];
-    ofs = texturecolumnofs2[tex][col];
+  const int width = texturewidth[tex];
+  const int mask = texturewidthmask[tex];
+  int ofs;
 
-    if (!texturecomposite2[tex])
-	R_GenerateComposite (tex);
+  if (mask + 1 == width)
+  {
+    col &= mask;
+  }
+  else
+  {
+    while (col < 0)
+    {
+      col += width;
+    }
+    col %= width;
+  }
 
-    return texturecomposite2[tex] + ofs;
+  ofs  = texturecolumnofs2[tex][col];
+
+  if (!texturecomposite2[tex])
+    R_GenerateComposite(tex);
+
+  return texturecomposite2[tex] + ofs;
 }
 
 // [crispy] wrapping column getter function for composited translucent mid-textures on 2S walls
@@ -672,27 +688,6 @@ R_GetColumnMod
 
     return texturecomposite[tex] + ofs;
 }
-
-// [crispy] wrapping column getter function for non-power-of-two wide sky textures
-byte*
-R_GetColumnMod2
-( int		tex,
-  int		col )
-{
-    int		ofs;
-
-    while (col < 0)
-	col += texturewidth[tex];
-
-    col %= texturewidth[tex];
-    ofs = texturecolumnofs2[tex][col];
-
-    if (!texturecomposite2[tex])
-	R_GenerateComposite(tex);
-
-    return texturecomposite2[tex] + ofs;
-}
-
 
 static void GenerateTextureHashTable(void)
 {
