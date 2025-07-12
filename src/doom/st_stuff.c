@@ -560,7 +560,9 @@ static int ST_cheat_spechits()
     {
 	if (gamemap == 7 ||
 	// [crispy] Master Levels in PC slot 7
-	(gamemission == pack_master && (gamemap == 14 || gamemap == 15 || gamemap == 16)))
+	(gamemission == pack_master && 
+        ((!masterlvlkex && (gamemap == 14 || gamemap == 15 || gamemap == 16)) ||
+        (masterlvlkex && (gamemap == 13 || gamemap == 19 || gamemap == 20)))))
 	{
 	    // Mancubi
 	    speciallines += EV_DoFloor(&dummy, lowerFloorToLowest);

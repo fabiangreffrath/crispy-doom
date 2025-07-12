@@ -455,6 +455,12 @@ static boolean CheckMasterlevelsLoaded (void)
 	{
 		gamemission = pack_master;
 
+		// kex instead of unity MASTERLEVELS.WAD?
+		if (W_CheckNumForName("M_DOOM_M") != -1)
+		{
+			masterlvlkex = true;
+		}
+
 		return true;
 	}
 
