@@ -1746,7 +1746,9 @@ void A_BossDeath (mobj_t* mo)
     {
 	if (gamemap != 7 &&
 	// [crispy] Master Levels in PC slot 7
-	!(gamemission == pack_master && (gamemap == 14 || gamemap == 15 || gamemap == 16)))
+	!(gamemission == pack_master && 
+        ((!masterlvlkex && (gamemap == 14 || gamemap == 15 || gamemap == 16)) ||
+        (masterlvlkex && (gamemap == 13 || gamemap == 19 || gamemap == 20)))))
 	    return;
 		
 	if ((mo->type != MT_FATSO)
@@ -1791,7 +1793,9 @@ void A_BossDeath (mobj_t* mo)
     {
 	if (gamemap == 7 ||
 	// [crispy] Master Levels in PC slot 7
-	(gamemission == pack_master && (gamemap == 14 || gamemap == 15 || gamemap == 16)))
+	(gamemission == pack_master && 
+        ((!masterlvlkex && (gamemap == 14 || gamemap == 15 || gamemap == 16)) ||
+        (masterlvlkex && (gamemap == 13 || gamemap == 19 || gamemap == 20)))))
 	{
 	    if (mo->type == MT_FATSO)
 	    {

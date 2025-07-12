@@ -30,6 +30,9 @@ GameVariant_t   gamevariant = vanilla;
 // Set if homebrew PWAD stuff has been added.
 boolean	modifiedgame;
 
+// [crispy] Set if pack_master has kex sequence
+boolean masterlvlkex;
+
 
 
 

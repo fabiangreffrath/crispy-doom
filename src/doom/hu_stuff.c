@@ -732,8 +732,8 @@ void HU_Start(void)
       case pack_master:
 	if (gamemap <= 21)
 	{
-	  if (W_CheckNumForName("M_DOOM_M") != -1)
-	    s = mapnames_commercial[(kex_masterlevels[gamemap-1] + 105 + 3)-1];
+	  if (masterlvlkex)
+	    s = mapnames_commercial[(kex_masterlevels[gamemap-1] + 105 + 3) - 1];
 	  else
 	    s = HU_TITLEM;
 	}

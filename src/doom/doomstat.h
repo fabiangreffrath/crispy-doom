@@ -72,6 +72,8 @@ extern GameVariant_t    gamevariant;
 // Set if homebrew PWAD stuff has been added.
 extern  boolean	modifiedgame;
 
+// [crispy] Set if pack_master has kex sequence
+extern boolean masterlvlkex;
 
 // -------------------------------------------
 // Selected skill type, map etc.
