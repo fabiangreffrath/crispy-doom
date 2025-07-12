@@ -592,6 +592,31 @@ static void HU_SetSpecialLevelName (const char *wad, const char **name)
 
 static int hu_widescreendelta;
 
+static const int kex_masterlevels[] =
+{
+    1,  //  1
+    2,  //  2
+    3,  //  3
+    5,  //  4
+    4,  //  5
+    9,  //  6
+    8,  //  7
+    10, //  8
+    6,  //  9
+    19, // 10
+    12, // 11
+    13, // 12
+    16, // 13
+    17, // 14
+    18, // 15
+    7, // 16
+    11, // 17
+    20, // 18
+    14, // 19
+    15, // 20
+    21  // 21
+};
+
 void HU_Start(void)
 {
 
@@ -706,7 +731,12 @@ void HU_Start(void)
 	break;
       case pack_master:
 	if (gamemap <= 21)
-	  s = HU_TITLEM;
+	{
+	  if (W_CheckNumForName("M_DOOM_M") != -1)
+	    s = mapnames_commercial[(kex_masterlevels[gamemap-1] + 105 + 3)-1];
+	  else
+	    s = HU_TITLEM;
+	}
 	else
 	  s = HU_TITLE2;
 	break;
