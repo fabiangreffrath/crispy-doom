@@ -1730,6 +1730,22 @@ static boolean CheckBossEnd(mobjtype_t motype)
     }
 }
 
+// [crispy] Check if the correct map is active to perform special triggers
+boolean CheckMasterTag666Map (void)
+{
+    if (gamemission == pack_master && (
+        (!masterlevels_kex && (gamemap == 14 || gamemap == 15 || gamemap == 16)) ||
+        (masterlevels_kex && (gamemap == 13 || gamemap == 19 || gamemap == 20))
+    ))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 //
 // A_BossDeath
 // Possibly trigger special effects
@@ -1746,9 +1762,7 @@ void A_BossDeath (mobj_t* mo)
     {
 	if (gamemap != 7 &&
 	// [crispy] Master Levels in PC slot 7
-	!(gamemission == pack_master && 
-        ((!masterlvlkex && (gamemap == 14 || gamemap == 15 || gamemap == 16)) ||
-        (masterlvlkex && (gamemap == 13 || gamemap == 19 || gamemap == 20)))))
+	!(CheckMasterTag666Map()))
 	    return;
 		
 	if ((mo->type != MT_FATSO)
@@ -1793,9 +1807,7 @@ void A_BossDeath (mobj_t* mo)
     {
 	if (gamemap == 7 ||
 	// [crispy] Master Levels in PC slot 7
-	(gamemission == pack_master && 
-        ((!masterlvlkex && (gamemap == 14 || gamemap == 15 || gamemap == 16)) ||
-        (masterlvlkex && (gamemap == 13 || gamemap == 19 || gamemap == 20)))))
+	(CheckMasterTag666Map()))
 	{
 	    if (mo->type == MT_FATSO)
 	    {

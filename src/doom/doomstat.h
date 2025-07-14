@@ -73,7 +73,7 @@ extern GameVariant_t    gamevariant;
 extern  boolean	modifiedgame;
 
 // [crispy] Set if pack_master has kex sequence
-extern boolean masterlvlkex;
+extern boolean masterlevels_kex;
 
 // -------------------------------------------
 // Selected skill type, map etc.

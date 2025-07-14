@@ -26,9 +26,11 @@
 #include "m_argv.h"
 #include "m_config.h"
 #include "m_misc.h"
+#include "p_local.h" // [crispy] evaluate CWILV19 width
 #include "w_main.h"
 #include "w_wad.h"
 #include "w_merge.h" // [crispy] W_MergeFile()
+#include "z_zone.h"  // [crispy]
 
 extern char *iwadfile;
 
@@ -443,6 +445,30 @@ void D_LoadNerveWad (void)
 	}
 }
 
+// [crispy] check if the single MASTERLEVELS.WAD is the kex 2024 version
+static void CheckMasterlevelKex (void)
+{
+	int		lumpnum;
+	patch_t *patch;
+
+	if (masterlevels_kex)
+	{
+		return;
+	}
+	// kex instead of psn/unity MASTERLEVELS.WAD?
+	lumpnum = W_CheckNumForName("MWILV19");
+	if (lumpnum == -1)
+	{
+		// loaded as PWAD
+		lumpnum = W_CheckNumForName("CWILV19");
+	}
+	patch = W_CacheLumpNum(lumpnum, PU_STATIC);
+	if (patch != NULL && patch->width == 258)
+	{
+		masterlevels_kex = true;
+	}
+}
+
 // [crispy] check if the single MASTERLEVELS.WAD is already loaded as a PWAD
 static boolean CheckMasterlevelsLoaded (void)
 {
@@ -454,12 +480,7 @@ static boolean CheckMasterlevelsLoaded (void)
 	    !strcasecmp(W_WadNameForLump(lumpinfo[j]), "MASTERLEVELS.WAD"))
 	{
 		gamemission = pack_master;
-
-		// kex instead of unity MASTERLEVELS.WAD?
-		if (W_CheckNumForName("M_DOOM_M") != -1)
-		{
-			masterlvlkex = true;
-		}
+		CheckMasterlevelKex();
 
 		return true;
 	}
@@ -567,6 +588,8 @@ static boolean CheckLoadMasterlevels (void)
 
 	// [crispy] regenerate the hashtable
 	W_GenerateHashTable();
+
+	CheckMasterlevelKex();
 
 	return true;
 }

@@ -31,7 +31,7 @@ GameVariant_t   gamevariant = vanilla;
 boolean	modifiedgame;
 
 // [crispy] Set if pack_master has kex sequence
-boolean masterlvlkex;
+boolean masterlevels_kex;
 
 
 
