@@ -448,8 +448,8 @@ void D_LoadNerveWad (void)
 // [crispy] check if the single MASTERLEVELS.WAD is the kex 2024 version
 boolean D_CheckMasterlevelKex (void)
 {
-	int		lumpnum;
-	int 	width = 0;
+	int lumpnum;
+	int width = 0;
 	patch_t *patch;
 	static boolean masterlevels_kex, checked;
 
