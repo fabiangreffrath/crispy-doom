@@ -446,27 +446,49 @@ void D_LoadNerveWad (void)
 }
 
 // [crispy] check if the single MASTERLEVELS.WAD is the kex 2024 version
-static void CheckMasterlevelKex (void)
+boolean D_CheckMasterlevelKex (void)
 {
 	int		lumpnum;
+	int 	width = 0;
 	patch_t *patch;
+	static boolean masterlevels_kex, checked;
 
-	if (masterlevels_kex)
+	// already checked?
+	if (checked)
 	{
-		return;
+		return masterlevels_kex;
 	}
-	// kex instead of psn/unity MASTERLEVELS.WAD?
-	lumpnum = W_CheckNumForName("MWILV19");
+
+	// read width of patch CWILV17
+	lumpnum = W_CheckNumForName("MWILV17");
 	if (lumpnum == -1)
 	{
 		// loaded as PWAD
-		lumpnum = W_CheckNumForName("CWILV19");
+		lumpnum = W_CheckNumForName("CWILV17");
 	}
-	patch = W_CacheLumpNum(lumpnum, PU_STATIC);
-	if (patch != NULL && patch->width == 258)
+	patch = W_CacheLumpNum(lumpnum, PU_CACHE);
+	if (patch != NULL)
+	{
+		width = patch->width;
+	}
+
+	// read width of patch CWILV18
+	lumpnum = W_CheckNumForName("MWILV18");
+	if (lumpnum == -1)
+	{
+		// loaded as PWAD
+		lumpnum = W_CheckNumForName("CWILV18");
+	}
+	patch = W_CacheLumpNum(lumpnum, PU_CACHE);
+
+	// in kex CWILV17 is the widest patch: "The Express Elevator To Hell"
+	if (patch != NULL && patch->width < width)
 	{
 		masterlevels_kex = true;
 	}
+	checked = true;
+
+	return masterlevels_kex;
 }
 
 // [crispy] check if the single MASTERLEVELS.WAD is already loaded as a PWAD
@@ -480,7 +502,7 @@ static boolean CheckMasterlevelsLoaded (void)
 	    !strcasecmp(W_WadNameForLump(lumpinfo[j]), "MASTERLEVELS.WAD"))
 	{
 		gamemission = pack_master;
-		CheckMasterlevelKex();
+		D_CheckMasterlevelKex();
 
 		return true;
 	}
@@ -589,7 +611,7 @@ static boolean CheckLoadMasterlevels (void)
 	// [crispy] regenerate the hashtable
 	W_GenerateHashTable();
 
-	CheckMasterlevelKex();
+	D_CheckMasterlevelKex();
 
 	return true;
 }

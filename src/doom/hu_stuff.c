@@ -38,6 +38,7 @@
 #include "m_argv.h" // [crispy] M_ParmExists()
 #include "st_stuff.h" // [crispy] ST_HEIGHT, ST_WIDESCREENDELTA
 #include "p_setup.h" // maplumpinfo
+#include "d_pwad.h" // [crispy] kex masterlevels
 
 #include "s_sound.h"
 
@@ -732,7 +733,7 @@ void HU_Start(void)
       case pack_master:
 	if (gamemap <= 21)
 	{
-	  if (masterlevels_kex)
+	  if (D_CheckMasterlevelKex())
 	    s = mapnames_commercial[(kex_masterlevels[gamemap-1] + 105 + 3) - 1];
 	  else
 	    s = HU_TITLEM;

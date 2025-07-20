@@ -26,6 +26,7 @@
 
 #include "doomdef.h"
 #include "p_local.h"
+#include "d_pwad.h" // [crispy] kex masterlevels
 
 #include "s_sound.h"
 
@@ -1730,15 +1731,24 @@ static boolean CheckBossEnd(mobjtype_t motype)
     }
 }
 
-// [crispy] Check if the correct map is active to perform special triggers
-boolean CheckMasterTag666Map (void)
+// [crispy] Check if the there is a Doom 2 / Masterlevel Tag 666 present in map
+boolean CheckMapTag666 (void)
 {
-    if (gamemission == pack_master && (
-        (!masterlevels_kex && (gamemap == 14 || gamemap == 15 || gamemap == 16)) ||
-        (masterlevels_kex && (gamemap == 13 || gamemap == 19 || gamemap == 20))
-    ))
+    if (D_CheckMasterlevelKex())
     {
-        return true;
+        // kex materlevels.wad
+        return (gamemap == 13 || gamemap == 19 || gamemap == 20);
+    }
+    else if (gamemission == pack_master)
+    {
+        // psn or unity masterlevels.wad
+        // TODO: consider Master Levels in PC slot 7!
+        return (gamemap == 14 || gamemap == 15 || gamemap == 16);
+    }
+    else if (gamemission == doom2)
+    {
+        // Doom 2 Map 7
+        return (gamemap == 7);
     }
     else
     {
@@ -1760,9 +1770,7 @@ void A_BossDeath (mobj_t* mo)
 		
     if ( gamemode == commercial)
     {
-	if (gamemap != 7 &&
-	// [crispy] Master Levels in PC slot 7
-	!(CheckMasterTag666Map()))
+	if (!CheckMapTag666())
 	    return;
 		
 	if ((mo->type != MT_FATSO)
@@ -1805,9 +1813,7 @@ void A_BossDeath (mobj_t* mo)
     // victory!
     if ( gamemode == commercial)
     {
-	if (gamemap == 7 ||
-	// [crispy] Master Levels in PC slot 7
-	(CheckMasterTag666Map()))
+	if (CheckMapTag666())
 	{
 	    if (mo->type == MT_FATSO)
 	    {
