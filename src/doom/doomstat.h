@@ -72,6 +72,7 @@ extern GameVariant_t    gamevariant;
 // Set if homebrew PWAD stuff has been added.
 extern  boolean	modifiedgame;
 
+
 // -------------------------------------------
 // Selected skill type, map etc.
 //
