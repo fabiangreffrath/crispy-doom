@@ -446,25 +446,25 @@ void D_LoadNerveWad (void)
 }
 
 // [crispy] check if the single MASTERLEVELS.WAD is the kex 2024 version
-boolean D_CheckMasterlevelKex (void)
+int D_CheckMasterlevelKex (void)
 {
 	int lumpnum;
 	int width = 0;
 	patch_t *patch;
-	static boolean masterlevels_kex, checked;
+	static int masterlevels_kex = -1;
 
 	// already checked?
-	if (checked)
+	if (masterlevels_kex > -1)
 	{
 		return masterlevels_kex;
 	}
 
-	// read width of patch CWILV17
-	lumpnum = W_CheckNumForName("MWILV17");
+	// read width of patch CWILV19
+	lumpnum = W_CheckNumForName("MWILV19");
 	if (lumpnum == -1)
 	{
 		// loaded as PWAD
-		lumpnum = W_CheckNumForName("CWILV17");
+		lumpnum = W_CheckNumForName("CWILV19");
 	}
 	patch = W_CacheLumpNum(lumpnum, PU_CACHE);
 	if (patch != NULL)
@@ -472,21 +472,26 @@ boolean D_CheckMasterlevelKex (void)
 		width = patch->width;
 	}
 
-	// read width of patch CWILV18
-	lumpnum = W_CheckNumForName("MWILV18");
+	// read width of patch CWILV14
+	lumpnum = W_CheckNumForName("MWILV14");
 	if (lumpnum == -1)
 	{
 		// loaded as PWAD
-		lumpnum = W_CheckNumForName("CWILV18");
+		lumpnum = W_CheckNumForName("CWILV14");
 	}
 	patch = W_CacheLumpNum(lumpnum, PU_CACHE);
 
-	// in kex CWILV17 is the widest patch: "The Express Elevator To Hell"
+	// compare width of patches CWILV19 vs CWILV14
+	// kex: CWILV19:"Mephisto's Maosoleum" > CWILV14:"Vesperas"
+	// psn/unity: CWILV19:"The Express Elevator to Hell" < CWILV14:"Mephisto's Maosoleum"
 	if (patch != NULL && patch->width < width)
 	{
 		masterlevels_kex = true;
 	}
-	checked = true;
+	else
+	{
+		masterlevels_kex = false;
+	}
 
 	return masterlevels_kex;
 }

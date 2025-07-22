@@ -67,7 +67,7 @@
 extern int screenblocks; // [crispy] for the Crispy HUD
 extern boolean inhelpscreens; // [crispy] prevent palette changes
 
-extern boolean CheckMapTag666 (void); // [crispy] for spechits cheat
+extern boolean P_CheckMapTag666 (void); // [crispy] for spechits cheat
 
 //
 // STATUS BAR DATA
@@ -560,7 +560,7 @@ static int ST_cheat_spechits()
     dummy.tag = 666;
     if (gamemode == commercial)
     {
-	if (CheckMapTag666())
+	if (P_CheckMapTag666())
 	{
 	    // Mancubi
 	    speciallines += EV_DoFloor(&dummy, lowerFloorToLowest);

@@ -1731,29 +1731,31 @@ static boolean CheckBossEnd(mobjtype_t motype)
     }
 }
 
-// [crispy] Check if the there is a Doom 2 / Masterlevel Tag 666 present in map
-boolean CheckMapTag666 (void)
+// [crispy] check if the there is a Doom 2 / Masterlevel tag 666 present in map
+boolean P_CheckMapTag666 (void)
 {
-    if (D_CheckMasterlevelKex())
+    if (gamemode == commercial)
     {
-        // kex materlevels.wad
-        return (gamemap == 13 || gamemap == 19 || gamemap == 20);
+        if (gamemission == pack_master)
+        {
+            if (D_CheckMasterlevelKex())
+            {
+                // kex materlevels.wad
+                return (gamemap == 13 || gamemap == 19 || gamemap == 20);
+            }
+            else
+            {
+                // psn/unity masterlevels.wad
+                return (gamemap == 14 || gamemap == 15 || gamemap == 16);
+            }
+        }
+        else if (gamemission == doom2)
+        {
+            // Doom 2 Map 7
+            return (gamemap == 7);
+        }        
     }
-    else if (gamemission == pack_master)
-    {
-        // psn or unity masterlevels.wad
-        // TODO: consider Master Levels in PC slot 7!
-        return (gamemap == 14 || gamemap == 15 || gamemap == 16);
-    }
-    else if (gamemission == doom2)
-    {
-        // Doom 2 Map 7
-        return (gamemap == 7);
-    }
-    else
-    {
-        return false;
-    }
+    return false;
 }
 
 //
@@ -1770,7 +1772,7 @@ void A_BossDeath (mobj_t* mo)
 		
     if ( gamemode == commercial)
     {
-	if (!CheckMapTag666())
+	if (!P_CheckMapTag666())
 	    return;
 		
 	if ((mo->type != MT_FATSO)
@@ -1813,7 +1815,7 @@ void A_BossDeath (mobj_t* mo)
     // victory!
     if ( gamemode == commercial)
     {
-	if (CheckMapTag666())
+	if (P_CheckMapTag666())
 	{
 	    if (mo->type == MT_FATSO)
 	    {
