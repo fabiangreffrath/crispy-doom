@@ -624,7 +624,8 @@ void HU_Start(void)
     int		i;
     const char *s;
     // [crispy] string buffers for map title and WAD file name
-    char	buf[8], mapbuf[8], *ptr, *replacement;
+    char	buf[8], mapbuf[8];
+    char	*ptr = NULL, *replacement = NULL;
 
     if (headsupactive)
 	HU_Stop();
@@ -801,7 +802,12 @@ void HU_Start(void)
 	HUlib_addCharToTextLine(&w_title, *(s++));
 
     free(ptr);
-    free(replacement);
+
+    // [crispy] free kex digit replacement string
+    if (replacement != NULL)
+    {
+        free(replacement);
+    }
 
     // create the chat widget
     HUlib_initIText(&w_chat,
