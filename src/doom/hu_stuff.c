@@ -624,7 +624,7 @@ void HU_Start(void)
     int		i;
     const char *s;
     // [crispy] string buffers for map title and WAD file name
-    char	buf[8], *ptr;
+    char	buf[8], mapbuf[8], *ptr, *replacement;
 
     if (headsupactive)
 	HU_Stop();
@@ -776,6 +776,22 @@ void HU_Start(void)
 
     s = DEH_String(s);
     
+    // [crispy] replace map title numbers in kex
+    if (logical_gamemission == pack_master && D_CheckMasterlevelKex())
+    {
+        if (gamemap <= 21)
+        {
+            // store actual kex gamemap digits
+            M_snprintf(mapbuf, sizeof(mapbuf), "%d", gamemap);
+            // lookup psn/unity digits to be replaced 
+            M_snprintf(buf, sizeof(buf), "%d", kex_masterlevels[gamemap-1]);
+            
+            // replace unity digits with actual kex gamemap digits
+            replacement = M_StringReplace(s, buf, mapbuf);
+            s = replacement;
+        }
+    }
+
     // [crispy] print the map title in white from the first colon onward
     M_snprintf(buf, sizeof(buf), "%s%s", ":", crstr[CR_GRAY]);
     ptr = M_StringReplace(s, ":", buf);
@@ -785,6 +801,7 @@ void HU_Start(void)
 	HUlib_addCharToTextLine(&w_title, *(s++));
 
     free(ptr);
+    free(replacement);
 
     // create the chat widget
     HUlib_initIText(&w_chat,
