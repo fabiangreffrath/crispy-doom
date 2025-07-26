@@ -789,7 +789,9 @@ P_KillMobj
         target->type == MT_BARREL)
         target->flags |= MF_TRANSLUCENT;
 
-    if (target->health < -target->info->spawnhealth 
+    if ((target->health < -target->info->spawnhealth
+    // [JN] Gib health feature from DOOM Retro.
+    ||  (target->health <  target->info->gibhealth && singleplayer))
 	&& target->info->xdeathstate)
     {
 	P_SetMobjState (target, target->info->xdeathstate);
