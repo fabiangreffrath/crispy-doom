@@ -791,7 +791,9 @@ P_KillMobj
 
     if ((target->health < -target->info->spawnhealth
     // [JN] Gib health feature from DOOM Retro.
-    ||  (target->health <  target->info->gibhealth && singleplayer))
+    // Logic: if gibhealth < 0, i.e. explicitly modified via DEHACKED,
+    // and the current health is lower than the defined gibhealth.
+    || (target->info->gibhealth < 0 && target->health < target->info->gibhealth))
 	&& target->info->xdeathstate)
     {
 	P_SetMobjState (target, target->info->xdeathstate);

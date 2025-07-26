@@ -118,39 +118,6 @@ static void DEH_InitThingProperties (void)
 
 	for (i = 0; i < NUMMOBJTYPES; i++)
 	{
-		// [JN] Gib health feature from DOOM Retro.
-		switch (i)
-		{
-			// For player and monsters, set gib health to negative of their current value.
-			case MT_PLAYER:
-			case MT_POSSESSED:
-			case MT_SHOTGUY:
-			case MT_CHAINGUY:
-			case MT_TROOP:
-			case MT_SERGEANT:
-			case MT_SHADOWS:
-			case MT_SKULL:
-			case MT_HEAD:
-			case MT_KNIGHT:
-			case MT_BRUISER:
-			case MT_BABY:
-			case MT_PAIN:
-			case MT_UNDEAD:
-			case MT_FATSO:
-			case MT_VILE:
-			case MT_SPIDER:
-			case MT_CYBORG:
-			case MT_BOSSBRAIN:
-			case MT_WOLFSS:
-			case MT_KEEN:
-			mobjinfo[i].gibhealth = -mobjinfo[i].spawnhealth;
-			break;
-
-			// For all other mobjs, just set it to zero.
-			default:
-			mobjinfo[i].gibhealth = 0;
-		}
-
 		// [crispy] mobj id for item dropped on death
 		switch (i)
 		{
