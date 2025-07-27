@@ -1749,13 +1749,16 @@ boolean P_CheckMapTag666 (void)
                 return (gamemap == 14 || gamemap == 15 || gamemap == 16);
             }
         }
-        else if (gamemission == doom2)
+        else
         {
-            // Doom 2 Map 7
+            // other Doom2-based gamemissions
             return (gamemap == 7);
         }        
     }
-    return false;
+    else
+    {
+        return false;
+    }
 }
 
 //
