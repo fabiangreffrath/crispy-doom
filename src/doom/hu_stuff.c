@@ -623,8 +623,8 @@ void HU_Start(void)
 
     int		i;
     const char *s;
-    // [crispy] string buffers for map title and WAD file name
-    char	buf[8], mapbuf[8];
+    // [crispy] string buffers for map title, WAD file name and level digits
+    char	buf[8], digitbuf[4];
     char	*ptr = NULL, *replacement = NULL;
 
     if (headsupactive)
@@ -783,12 +783,12 @@ void HU_Start(void)
         if (gamemap <= 21)
         {
             // store actual kex gamemap digits
-            M_snprintf(mapbuf, sizeof(mapbuf), "%d", gamemap);
+            M_snprintf(digitbuf, sizeof(digitbuf), "%d", gamemap);
             // lookup psn/unity digits to be replaced 
             M_snprintf(buf, sizeof(buf), "%d", kex_masterlevels[gamemap-1]);
             
             // replace unity digits with actual kex gamemap digits
-            replacement = M_StringReplace(s, buf, mapbuf);
+            replacement = M_StringReplace(s, buf, digitbuf);
             s = replacement;
         }
     }
