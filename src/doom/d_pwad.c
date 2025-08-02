@@ -26,9 +26,11 @@
 #include "m_argv.h"
 #include "m_config.h"
 #include "m_misc.h"
+#include "p_local.h" // [crispy] kex masterlevels
 #include "w_main.h"
 #include "w_wad.h"
 #include "w_merge.h" // [crispy] W_MergeFile()
+#include "z_zone.h"  // [crispy] kex masterlevels
 
 extern char *iwadfile;
 
@@ -443,6 +445,57 @@ void D_LoadNerveWad (void)
 	}
 }
 
+// [crispy] check if the single MASTERLEVELS.WAD is the kex 2024 version
+int D_CheckMasterlevelKex (void)
+{
+	int lumpnum;
+	int width = 0;
+	patch_t *patch;
+	static int masterlevels_kex = -1;
+
+	// already checked?
+	if (masterlevels_kex > -1)
+	{
+		return masterlevels_kex;
+	}
+
+	// read width of patch CWILV17
+	lumpnum = W_CheckNumForName("MWILV17");
+	if (lumpnum == -1)
+	{
+		// loaded as PWAD
+		lumpnum = W_CheckNumForName("CWILV17");
+	}
+	patch = W_CacheLumpNum(lumpnum, PU_CACHE);
+	if (patch != NULL)
+	{
+		width = patch->width;
+	}
+
+	// read width of patch CWILV14
+	lumpnum = W_CheckNumForName("MWILV14");
+	if (lumpnum == -1)
+	{
+		// loaded as PWAD
+		lumpnum = W_CheckNumForName("CWILV14");
+	}
+	patch = W_CacheLumpNum(lumpnum, PU_CACHE);
+
+	// compare width of patches CWILV17 vs CWILV14
+	// kex: CWILV17:"The Express Elevator\nTo Hell" > CWILV14:"Vesperas"
+	// psn/unity: CWILV17:"Vesperas" < CWILV14:"Mephistos Maosoleum"
+	if (patch != NULL && patch->width < width)
+	{
+		masterlevels_kex = true;
+	}
+	else
+	{
+		masterlevels_kex = false;
+	}
+
+	return masterlevels_kex;
+}
+
 // [crispy] check if the single MASTERLEVELS.WAD is already loaded as a PWAD
 static boolean CheckMasterlevelsLoaded (void)
 {
@@ -454,6 +507,7 @@ static boolean CheckMasterlevelsLoaded (void)
 	    !strcasecmp(W_WadNameForLump(lumpinfo[j]), "MASTERLEVELS.WAD"))
 	{
 		gamemission = pack_master;
+		D_CheckMasterlevelKex();
 
 		return true;
 	}
@@ -561,6 +615,8 @@ static boolean CheckLoadMasterlevels (void)
 
 	// [crispy] regenerate the hashtable
 	W_GenerateHashTable();
+
+	D_CheckMasterlevelKex();
 
 	return true;
 }

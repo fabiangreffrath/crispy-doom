@@ -97,6 +97,8 @@ DEH_BEGIN_MAPPING(thing_mapping, mobjinfo_t)
   DEH_MAPPING("Action sound",        activesound)
   DEH_MAPPING("Bits",                flags)
   DEH_MAPPING("Respawn frame",       raisestate)
+  // [JN] Gib health feature from DOOM Retro.
+  DEH_MAPPING("Gib health",          gibhealth)
   // [crispy] Thing id to drop after death
   DEH_MAPPING("Dropped item",        droppeditem)
   // [crispy] Distance to switch from missile to melee attack

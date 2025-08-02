@@ -284,6 +284,9 @@ extern mobj_t**		blocklinks;	// for thing chains
 // [crispy] factor out map lump name and number finding into a separate function
 extern int P_GetNumForMap (int episode, int map, boolean critical);
 
+// [crispy] check if the there is a Doom 2 / Masterlevel tag 666 present in map
+extern boolean P_CheckMapTag666 (void);
+
 // [crispy] blinking key or skull in the status bar
 #define KEYBLINKMASK 0x8
 #define KEYBLINKTICS (7*KEYBLINKMASK)
