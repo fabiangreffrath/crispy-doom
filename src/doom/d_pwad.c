@@ -459,12 +459,12 @@ int D_CheckMasterlevelKex (void)
 		return masterlevels_kex;
 	}
 
-	// read width of patch CWILV19
-	lumpnum = W_CheckNumForName("MWILV19");
+	// read width of patch CWILV17
+	lumpnum = W_CheckNumForName("MWILV17");
 	if (lumpnum == -1)
 	{
 		// loaded as PWAD
-		lumpnum = W_CheckNumForName("CWILV19");
+		lumpnum = W_CheckNumForName("CWILV17");
 	}
 	patch = W_CacheLumpNum(lumpnum, PU_CACHE);
 	if (patch != NULL)
@@ -481,9 +481,9 @@ int D_CheckMasterlevelKex (void)
 	}
 	patch = W_CacheLumpNum(lumpnum, PU_CACHE);
 
-	// compare width of patches CWILV19 vs CWILV14
-	// kex: CWILV19:"Mephisto's Maosoleum" > CWILV14:"Vesperas"
-	// psn/unity: CWILV19:"The Express Elevator to Hell" < CWILV14:"Mephisto's Maosoleum"
+	// compare width of patches CWILV17 vs CWILV14
+	// kex: CWILV17:"The Express Elevator\nTo Hell" > CWILV14:"Vesperas"
+	// psn/unity: CWILV17:"Vesperas" < CWILV14:"Mephistos Maosoleum"
 	if (patch != NULL && patch->width < width)
 	{
 		masterlevels_kex = true;
