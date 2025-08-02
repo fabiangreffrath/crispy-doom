@@ -67,7 +67,6 @@
 extern int screenblocks; // [crispy] for the Crispy HUD
 extern boolean inhelpscreens; // [crispy] prevent palette changes
 
-extern boolean P_CheckMapTag666 (void); // [crispy] for spechits cheat
 
 //
 // STATUS BAR DATA

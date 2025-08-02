@@ -21,7 +21,6 @@
 #ifndef __D_PWAD__
 #define __D_PWAD__
 
-#include "doomdef.h"
 
 void D_LoadSigilWads(void);
 void D_LoadNerveWad(void);
