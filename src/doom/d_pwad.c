@@ -30,7 +30,7 @@
 #include "w_main.h"
 #include "w_wad.h"
 #include "w_merge.h" // [crispy] W_MergeFile()
-#include "z_zone.h"  // [crispy]
+#include "z_zone.h"  // [crispy] kex masterlevels
 
 extern char *iwadfile;
 
