@@ -67,7 +67,6 @@
 extern int screenblocks; // [crispy] for the Crispy HUD
 extern boolean inhelpscreens; // [crispy] prevent palette changes
 
-
 //
 // STATUS BAR DATA
 //

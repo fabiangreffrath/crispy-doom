@@ -26,7 +26,7 @@
 #include "m_argv.h"
 #include "m_config.h"
 #include "m_misc.h"
-#include "p_local.h" // [crispy] evaluate CWILV19 width
+#include "p_local.h" // [crispy] kex masterlevels
 #include "w_main.h"
 #include "w_wad.h"
 #include "w_merge.h" // [crispy] W_MergeFile()
