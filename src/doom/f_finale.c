@@ -40,6 +40,7 @@
 #include "m_controls.h" // [crispy] key_*
 #include "m_misc.h" // [crispy] M_StringDuplicate()
 #include "m_random.h" // [crispy] Crispy_Random()
+#include "d_pwad.h" // [crispy] kex secret level
 
 typedef enum
 {
@@ -156,6 +157,12 @@ void F_StartFinale (void)
             finaletext = screen->text;
             finaleflat = screen->background;
         }
+    }
+
+    // Hack for kex masterlevels
+    if (D_CheckMasterlevelKex() && players[consoleplayer].didsecret)
+    {
+        finaletext = M2TEXT;
     }
 
     // Do dehacked substitutions of strings

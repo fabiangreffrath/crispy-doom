@@ -81,6 +81,8 @@
 #include "deh_main.h" // [crispy] for demo footer
 #include "memio.h"
 
+#include "d_pwad.h" // [crispy] kex secret level
+
 #define SAVEGAMESIZE	0x2c000
 
 void	G_ReadDemoTiccmd (ticcmd_t* cmd); 
@@ -2146,7 +2148,20 @@ void G_DoCompleted (void)
     else
     if ( gamemission == pack_master && gamemap <= 21 )
     {
-	wminfo.next = gamemap;
+    if (D_CheckMasterlevelKex() && gamemap == 18 && secretexit)
+    {
+        // [crispy] bad dream secret exit in TEETH
+        wminfo.next = 20;
+    }
+    else if (D_CheckMasterlevelKex() && gamemap == 21)
+    {
+        // [crispy] bloodsea keep after bad dream secret
+        wminfo.next = 18;
+    }
+    else
+    {
+        wminfo.next = gamemap;
+    }
     }
     else
     if ( gamemode == commercial)
@@ -2331,6 +2346,13 @@ void G_WorldDone (void)
     else
     if ( gamemission == pack_master )
     {
+    if (D_CheckMasterlevelKex())
+    {
+        if (gamemap == 20)
+        F_StartFinale ();
+    }
+    else
+    {
 	switch (gamemap)
 	{
 	  case 20:
@@ -2339,7 +2361,8 @@ void G_WorldDone (void)
 	  case 21:
 	    F_StartFinale ();
 	    break;
-	}
+	}      
+    }
     }
     else
     if ( gamemode == commercial )
