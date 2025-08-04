@@ -1004,7 +1004,21 @@ void G_DoLoadLevel (void)
     {
         const char *skytexturename;
 
-        if (gamemap < 12)
+        if((gameepisode == 3 || gamemission == pack_master) && D_CheckMasterlevelKex())
+        {
+            // masterlevels kex skies
+            if (gamemap == 10)
+                skytexturename = "SKY3";                
+            else
+            if (gamemap <= 9)
+                skytexturename = "SKYM1";
+            else
+            if (gamemap >= 16)
+                skytexturename = "SKYM3";
+            else
+            skytexturename = "SKYM2";   
+        }        
+        else if (gamemap < 12)
         {
             if ((gameepisode == 2 || gamemission == pack_nerve) && gamemap >= 4 && gamemap <= 8)
                 skytexturename = "SKY3";
