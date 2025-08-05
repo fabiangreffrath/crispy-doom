@@ -1004,42 +1004,53 @@ void G_DoLoadLevel (void)
     {
         const char *skytexturename;
 
-        if((gameepisode == 3 || gamemission == pack_master) && D_CheckMasterlevelKex())
+        if (gamemap < 12 && (gameepisode == 2 || gamemission == pack_nerve))
         {
-            // masterlevels kex skies
-            if (gamemap == 10)
-                skytexturename = "SKY3";                
-            else
-            if (gamemap <= 9)
-                skytexturename = "SKYM1";
-            else
-            if (gamemap >= 16)
-                skytexturename = "SKYM3";
-            else
-            skytexturename = "SKYM2";   
-        }        
-        else if (gamemap < 12)
-        {
-            if ((gameepisode == 2 || gamemission == pack_nerve) && gamemap >= 4 && gamemap <= 8)
+            // nerve skies
+            if (gamemap >= 4 && gamemap <= 8)
                 skytexturename = "SKY3";
             else
-            skytexturename = "SKY1";
-        }
-        else if (gamemap < 21)
-        {
-            // [crispy] BLACKTWR (MAP25) and TEETH (MAP31 and MAP32)
-            if ((gameepisode == 3 || gamemission == pack_master) && gamemap >= 19)
-                skytexturename = "SKY3";
-            else
-            // [crispy] BLOODSEA and MEPHISTO (both MAP07)
-            if ((gameepisode == 3 || gamemission == pack_master) && (gamemap == 14 || gamemap == 15))
                 skytexturename = "SKY1";
-            else
-            skytexturename = "SKY2";
         }
+        else if (gamemap < 21 && (gameepisode == 3 || gamemission == pack_master))
+        {
+            // masterlevel skies
+            if (D_CheckMasterlevelKex())
+            {
+                // masterlevels kex skies
+                if (gamemap == 10)
+                    skytexturename = "SKY3";                
+                else
+                if (gamemap <= 9)
+                    skytexturename = "SKYM1";
+                else
+                if (gamemap >= 16)
+                    skytexturename = "SKYM3";
+                else
+                skytexturename = "SKYM2";   
+            }
+            else
+            {
+                // masterlevels psn/unity skies
+                if (gamemap < 12 || gamemap == 14 || gamemap == 15)
+                    skytexturename = "SKY1";                
+                else
+                if (gamemap >= 19)
+                    skytexturename = "SKY3";
+                else
+                skytexturename = "SKY2";   
+            }
+        }        
         else
         {
-            skytexturename = "SKY3";
+            // doom2 skies
+            if (gamemap < 12)
+                skytexturename = "SKY1";
+            else
+            if (gamemap < 21)
+                skytexturename = "SKY2";
+            else
+                skytexturename = "SKY3";
         }
 
         skytexturename = DEH_String(skytexturename);
@@ -2162,20 +2173,17 @@ void G_DoCompleted (void)
     else
     if ( gamemission == pack_master && gamemap <= 21 )
     {
-    if (D_CheckMasterlevelKex() && gamemap == 18 && secretexit)
-    {
-        // [crispy] bad dream secret exit in TEETH
-        wminfo.next = 20;
-    }
-    else if (D_CheckMasterlevelKex() && gamemap == 21)
-    {
-        // [crispy] bloodsea keep after bad dream secret
-        wminfo.next = 18;
-    }
-    else
-    {
         wminfo.next = gamemap;
-    }
+        // [crispy] kex masterlevel secret detour?
+        if (D_CheckMasterlevelKex())
+        {
+            // [crispy] bad dream secret exit in TEETH
+            if (gamemap == 18 && secretexit)
+                wminfo.next = 20;
+            // [crispy] bloodsea keep after bad dream secret
+            if(gamemap == 21)
+                wminfo.next = 18;
+        }
     }
     else
     if ( gamemode == commercial)
