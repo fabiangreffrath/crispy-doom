@@ -1004,22 +1004,22 @@ void G_DoLoadLevel (void)
     {
         const char *skytexturename;
 
+        // nerve skies
         if (gamemap < 12 && (gameepisode == 2 || gamemission == pack_nerve))
         {
-            // nerve skies
             if (gamemap >= 4 && gamemap <= 8)
                 skytexturename = "SKY3";
             else
                 skytexturename = "SKY1";
         }
+        // masterlevel skies
         else if (gamemap < 21 && (gameepisode == 3 || gamemission == pack_master))
         {
-            // masterlevel skies
             if (D_CheckMasterlevelKex())
             {
                 // masterlevels kex skies
                 if (gamemap == 10)
-                    skytexturename = "SKY3";                
+                    skytexturename = "SKY3";
                 else
                 if (gamemap <= 9)
                     skytexturename = "SKYM1";
@@ -1027,23 +1027,23 @@ void G_DoLoadLevel (void)
                 if (gamemap >= 16)
                     skytexturename = "SKYM3";
                 else
-                skytexturename = "SKYM2";   
+                    skytexturename = "SKYM2";
             }
             else
             {
                 // masterlevels psn/unity skies
                 if (gamemap < 12 || gamemap == 14 || gamemap == 15)
-                    skytexturename = "SKY1";                
+                    skytexturename = "SKY1";
                 else
                 if (gamemap >= 19)
                     skytexturename = "SKY3";
                 else
-                skytexturename = "SKY2";   
+                    skytexturename = "SKY2";
             }
-        }        
+        }
+        // doom2 skies
         else
         {
-            // doom2 skies
             if (gamemap < 12)
                 skytexturename = "SKY1";
             else
