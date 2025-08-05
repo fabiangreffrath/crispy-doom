@@ -988,6 +988,36 @@ void G_DoLoadLevel (void)
 { 
     int             i; 
 
+    // [crispy] NRFTL / The Master Levels
+    if (crispy->havenerve || crispy->havemaster)
+    {
+        if (crispy->havemaster && gameepisode == 3)
+        {
+            gamemission = pack_master;
+        }
+        else
+        if (crispy->havenerve && gameepisode == 2)
+        {
+            gamemission = pack_nerve;
+        }
+        else
+        {
+            gamemission = doom2;
+        }
+    }
+    else
+    {
+        if (gamemission == pack_master)
+        {
+            gameepisode = 3;
+        }
+        else
+        if (gamemission == pack_nerve)
+        {
+            gameepisode = 2;
+        }
+    }
+
     // Set the sky map.
     // First thing, we have a dummy sky texture name,
     //  a flat. The data is in the WAD only because
