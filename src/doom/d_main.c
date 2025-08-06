@@ -34,6 +34,7 @@
 #include "dstrings.h"
 #include "sounds.h"
 
+#include "d_dmapinfo.h"
 #include "d_iwad.h"
 #include "d_pwad.h" // [crispy] D_Load{Sigil,Nerve,Masterlevels}Wad()
 
@@ -2048,6 +2049,7 @@ void D_DoomMain (void)
         printf("  loaded %i DEHACKED lumps from PWAD files.\n", loaded);
     }
 
+<<<<<<< HEAD
     // [crispy] process .deh files from PWADs autoload directories
 
     if (!M_ParmExists("-noautoload") && gamemode != shareware)
@@ -2073,6 +2075,26 @@ void D_DoomMain (void)
         }
     }
 
+||||||| bce2b974
+=======
+    // [crispy] load DMAPINFO lumps
+    if (!M_ParmExists("-nodmapinfo"))
+    {
+        int i, loaded = 0;
+
+        for (i = numiwadlumps; i < numlumps; ++i)
+        {
+            if (!strncmp(lumpinfo[i]->name, "DMAPINFO", 8))
+            {
+                DMAPINFO_LoadLump(i);
+                loaded++;
+            }
+        }
+
+        printf("  loaded %i DMAPINFO lumps from PWAD files.\n", loaded);
+    }
+
+>>>>>>> crispy-dmapinfo
     // Set the gamedescription string. This is only possible now that
     // we've finished loading Dehacked patches.
     D_SetGameDescription();

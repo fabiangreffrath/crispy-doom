@@ -24,6 +24,7 @@
 
 #include "z_zone.h"
 
+#include "d_dmapinfo.h"
 #include "deh_main.h"
 #include "i_input.h"
 #include "i_swap.h"
@@ -776,6 +777,16 @@ void HU_Start(void)
     // dehacked substitution to get modified level name
 
     s = DEH_String(s);
+
+    // [crispy] DMAPINFO map names
+    if (dmapinfo.num_maps)
+    {
+        dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+        if (d_map)
+        {
+            s = DMAPINFO_GetString(d_map->ofs_displayed_name);
+        }
+    }
     
     // [crispy] replace map title numbers in kex
     if (logical_gamemission == pack_master && D_CheckMasterlevelKex())
