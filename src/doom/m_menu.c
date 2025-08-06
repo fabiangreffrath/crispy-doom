@@ -66,6 +66,8 @@
 
 #include "v_trans.h" // [crispy] colored "invert mouse" message
 
+#include "d_pwad.h" // [crispy] kex secret level
+
 //
 // defaulted values
 //
@@ -2229,6 +2231,14 @@ static int G_GotoNextLevel(void)
         doom2_next[1] = 3;
         doom2_next[14] = 16;
         doom2_next[20] = 1;
+        if (D_CheckMasterlevelKex())
+        {
+            // [crispy] kex secret detour
+            doom2_next[17] = 21;
+            doom2_next[20] = 19;
+            doom2_next[18] = 20;
+            doom2_next[19] = 1;
+        }
       }
     }
     else
