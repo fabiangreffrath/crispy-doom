@@ -214,6 +214,7 @@ void F_Ticker (void)
 	if (gamemission == pack_nerve && gamemap == 8)
 	  F_StartCast ();
 	else
+    // [crispy] kex lvl 20 (checked in G_WorldDone), psn/unity lvl 20 or 21
 	if (gamemission == pack_master && (gamemap == 20 || gamemap == 21))
 	  F_StartCast ();
 	else
