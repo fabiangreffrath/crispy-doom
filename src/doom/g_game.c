@@ -2211,7 +2211,7 @@ void G_DoCompleted (void)
             if (gamemap == 18 && secretexit)
                 wminfo.next = 20;
             // [crispy] bloodsea keep after bad dream secret
-            if(gamemap == 21)
+            else if (gamemap == 21)
                 wminfo.next = 18;
         }
     }
