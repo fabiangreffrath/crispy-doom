@@ -463,13 +463,19 @@ int D_CheckMasterlevelKex (void)
 	lumpnum = W_CheckNumForName("MWILV17");
 	if (lumpnum == -1)
 	{
-		// loaded as PWAD
+		// loaded as PWAD?
 		lumpnum = W_CheckNumForName("CWILV17");
 	}
-	patch = W_CacheLumpNum(lumpnum, PU_CACHE);
-	if (patch != NULL)
+
+	if (lumpnum > -1)
 	{
+		patch = W_CacheLumpNum(lumpnum, PU_CACHE);
 		width = patch->width;
+	}
+	else
+	{
+		// something's wrong
+		return masterlevels_kex = false;
 	}
 
 	// read width of patch CWILV14
