@@ -291,7 +291,19 @@ void F_DemonScroll(void)
         else // [crispy] assume RAW format
         {
             int width = W_LumpLength(i1) / ORIGHEIGHT;
-            int x = ((SCREENWIDTH >> crispy->hires) - width) / 2 - WIDESCREENDELTA;
+            int x = ((SCREENWIDTH >> crispy->hires) - width) / 2
+                    - WIDESCREENDELTA;
+
+            // [crispy] pillar boxing
+            if (SCREENWIDTH != NONWIDEWIDTH)
+            {
+                V_DrawFilledBox(0, 0, WIDESCREENDELTA << crispy->hires,
+                                SCREENHEIGHT, 0);
+                V_DrawFilledBox(
+                    SCREENWIDTH - (WIDESCREENDELTA << crispy->hires), 0,
+                    WIDESCREENDELTA << crispy->hires, SCREENHEIGHT, 0);
+            }
+
             V_DrawScaledBlock(x, y - 200, width, ORIGHEIGHT, p2);
             V_DrawScaledBlock(x, 0 + y, width, ORIGHEIGHT, p1);
             y++;

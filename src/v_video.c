@@ -938,6 +938,15 @@ static void V_DrawRawScreen(byte *raw, int size)
 {
     int width = size / ORIGHEIGHT;
     int x = ((SCREENWIDTH >> crispy->hires) - width) / 2 - WIDESCREENDELTA;
+
+    // [crispy] pillar boxing
+    if (SCREENWIDTH != NONWIDEWIDTH)
+    {
+        V_DrawFilledBox(0, 0, WIDESCREENDELTA << crispy->hires, SCREENHEIGHT, 0);
+        V_DrawFilledBox(SCREENWIDTH - (WIDESCREENDELTA << crispy->hires), 0,
+                        WIDESCREENDELTA << crispy->hires, SCREENHEIGHT, 0);
+    }
+
     V_DrawScaledBlock(x, 0, width, ORIGHEIGHT, raw);
 }
 
