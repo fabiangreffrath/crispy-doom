@@ -268,14 +268,7 @@ void F_DemonScroll(void)
     }
     if (yval < 64000)
     {
-        if ((W_LumpLength(i1) == 64000) && (W_LumpLength(i2) == 64000))
-        {
-            V_CopyScaledBuffer(I_VideoBuffer, p2 + ORIGHEIGHT * ORIGWIDTH - yval, yval);
-            V_CopyScaledBuffer(I_VideoBuffer + yval_dest, p1, ORIGHEIGHT * ORIGWIDTH - yval);
-
-            yval_dest += SCREENWIDTH << crispy->hires;
-        }
-        else // [crispy] assume that FINAL1 and FINAL2 are in patch format
+        if (V_IsPatchLump(i1) && V_IsPatchLump(i2))
         {
             patch1 = (patch_t *)p1;
             patch2 = (patch_t *)p2;
@@ -293,6 +286,14 @@ void F_DemonScroll(void)
 
             V_DrawPatch(x, y - 200, patch2);
             V_DrawPatch(x, 0 + y, patch1);
+            y++;
+        }
+        else // [crispy] assume RAW format
+        {
+            int width = W_LumpLength(i1) / ORIGHEIGHT;
+            int x = ((SCREENWIDTH >> crispy->hires) - width) / 2 - WIDESCREENDELTA;
+            V_DrawScaledBlock(x, y - 200, width, ORIGHEIGHT, p2);
+            V_DrawScaledBlock(x, 0 + y, width, ORIGHEIGHT, p1);
             y++;
         }
         yval += ORIGWIDTH;
