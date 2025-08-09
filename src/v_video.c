@@ -867,7 +867,7 @@ void V_DrawScaledBlock(int x, int y, int width, int height, byte *src)
         {
             const int src_x = (j + xoff) >> crispy->hires;
 #ifndef CRISPY_TRUECOLOR
-            dest[i * SCREENWIDTH + j] = *(src_row + src_x);
+            dest[i * SCREENWIDTH + j] = src_row[src_x];
 #else
             dest[i * SCREENWIDTH + j] = pal_color[src_row[src_x]];
 #endif
@@ -967,7 +967,7 @@ void V_DrawFullscreenRawOrPatch(lumpindex_t index)
     }
     else if (size % 200 == 0)
     {
-        V_DrawRawScreen((byte*)patch, W_LumpLength(index));
+        V_DrawRawScreen((byte*)patch, size);
     }
     else
     {

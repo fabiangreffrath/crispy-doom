@@ -245,7 +245,6 @@ void F_DemonScroll(void)
 {
     byte *p1, *p2;
     static int yval = 0;
-    static int yval_dest = 0; // [crispy]
     static int nextscroll = 0;
     lumpindex_t i1, i2; // [crispy]
     int x; // [crispy]
