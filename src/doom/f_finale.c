@@ -160,7 +160,7 @@ void F_StartFinale (void)
     }
 
     // Hack for kex masterlevels finale text
-    if (gamemission == pack_master && D_CheckMasterlevelKex() && players[consoleplayer].didsecret)
+    if (logical_gamemission == pack_master && D_CheckMasterlevelKex() && players[consoleplayer].didsecret)
     {
         finaletext = M2TEXT;
     }
