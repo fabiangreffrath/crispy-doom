@@ -40,6 +40,7 @@
 #include "m_controls.h" // [crispy] key_*
 #include "m_misc.h" // [crispy] M_StringDuplicate()
 #include "m_random.h" // [crispy] Crispy_Random()
+#include "d_pwad.h" // [crispy] kex secret level
 
 typedef enum
 {
@@ -158,6 +159,12 @@ void F_StartFinale (void)
         }
     }
 
+    // Hack for kex masterlevels finale text
+    if (logical_gamemission == pack_master && D_CheckMasterlevelKex() && players[consoleplayer].didsecret)
+    {
+        finaletext = M2TEXT;
+    }
+
     // Do dehacked substitutions of strings
   
     finaletext = DEH_String(finaletext);
@@ -207,6 +214,7 @@ void F_Ticker (void)
 	if (gamemission == pack_nerve && gamemap == 8)
 	  F_StartCast ();
 	else
+    // [crispy] kex lvl 20 (checked in G_WorldDone), psn/unity lvl 20 or 21
 	if (gamemission == pack_master && (gamemap == 20 || gamemap == 21))
 	  F_StartCast ();
 	else

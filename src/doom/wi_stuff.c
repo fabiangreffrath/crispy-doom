@@ -47,6 +47,8 @@
 #include "st_stuff.h" // [crispy] ST_DrawDemoTimer()
 #include "wi_stuff.h"
 
+#include "d_pwad.h" // [crispy] kex secret level
+
 //
 // Data needed to add patches to full screen intermission pics.
 // Patches are statistics messages, and animations.
@@ -878,7 +880,7 @@ void WI_drawShowNextLoc(void)
 
     if ((gamemission == pack_nerve && wbs->last == 7) ||
         (gamemission == pack_master && wbs->last == 19 && !secretexit) ||
-        (gamemission == pack_master && wbs->last == 20))
+        (gamemission == pack_master && !D_CheckMasterlevelKex() && wbs->last == 20))
         return;
 
     // draws which level you are entering..

@@ -1137,36 +1137,6 @@ P_SetupLevel
 	    = players[i].itemcount = 0;
     }
 
-    // [crispy] NRFTL / The Master Levels
-    if (crispy->havenerve || crispy->havemaster)
-    {
-        if (crispy->havemaster && episode == 3)
-        {
-            gamemission = pack_master;
-        }
-        else
-        if (crispy->havenerve && episode == 2)
-        {
-            gamemission = pack_nerve;
-        }
-        else
-        {
-            gamemission = doom2;
-        }
-    }
-    else
-    {
-        if (gamemission == pack_master)
-        {
-            episode = gameepisode = 3;
-        }
-        else
-        if (gamemission == pack_nerve)
-        {
-            episode = gameepisode = 2;
-        }
-    }
-
     // Initial height of PointOfView
     // will be set by player think.
     players[consoleplayer].viewz = 1; 

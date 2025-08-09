@@ -81,6 +81,8 @@
 #include "deh_main.h" // [crispy] for demo footer
 #include "memio.h"
 
+#include "d_pwad.h" // [crispy] kex secret level
+
 #define SAVEGAMESIZE	0x2c000
 
 void	G_ReadDemoTiccmd (ticcmd_t* cmd); 
@@ -986,6 +988,36 @@ void G_DoLoadLevel (void)
 { 
     int             i; 
 
+    // [crispy] NRFTL / The Master Levels
+    if (crispy->havenerve || crispy->havemaster)
+    {
+        if (crispy->havemaster && gameepisode == 3)
+        {
+            gamemission = pack_master;
+        }
+        else
+        if (crispy->havenerve && gameepisode == 2)
+        {
+            gamemission = pack_nerve;
+        }
+        else
+        {
+            gamemission = doom2;
+        }
+    }
+    else
+    {
+        if (gamemission == pack_master)
+        {
+            gameepisode = 3;
+        }
+        else
+        if (gamemission == pack_nerve)
+        {
+            gameepisode = 2;
+        }
+    }
+
     // Set the sky map.
     // First thing, we have a dummy sky texture name,
     //  a flat. The data is in the WAD only because
@@ -1002,28 +1034,53 @@ void G_DoLoadLevel (void)
     {
         const char *skytexturename;
 
-        if (gamemap < 12)
+        // nerve skies
+        if (gamemap < 12 && (gameepisode == 2 || gamemission == pack_nerve))
         {
-            if ((gameepisode == 2 || gamemission == pack_nerve) && gamemap >= 4 && gamemap <= 8)
+            if (gamemap >= 4 && gamemap <= 8)
                 skytexturename = "SKY3";
             else
-            skytexturename = "SKY1";
-        }
-        else if (gamemap < 21)
-        {
-            // [crispy] BLACKTWR (MAP25) and TEETH (MAP31 and MAP32)
-            if ((gameepisode == 3 || gamemission == pack_master) && gamemap >= 19)
-                skytexturename = "SKY3";
-            else
-            // [crispy] BLOODSEA and MEPHISTO (both MAP07)
-            if ((gameepisode == 3 || gamemission == pack_master) && (gamemap == 14 || gamemap == 15))
                 skytexturename = "SKY1";
-            else
-            skytexturename = "SKY2";
         }
+        // masterlevel skies
+        else if (gamemap < 21 && (gameepisode == 3 || gamemission == pack_master))
+        {
+            if (D_CheckMasterlevelKex())
+            {
+                // masterlevels kex skies
+                if (gamemap == 10)
+                    skytexturename = "SKY3";
+                else
+                if (gamemap <= 9)
+                    skytexturename = "SKYM1";
+                else
+                if (gamemap >= 16)
+                    skytexturename = "SKYM3";
+                else
+                    skytexturename = "SKYM2";
+            }
+            else
+            {
+                // masterlevels psn/unity skies
+                if (gamemap < 12 || gamemap == 14 || gamemap == 15)
+                    skytexturename = "SKY1";
+                else
+                if (gamemap >= 19)
+                    skytexturename = "SKY3";
+                else
+                    skytexturename = "SKY2";
+            }
+        }
+        // doom2 skies
         else
         {
-            skytexturename = "SKY3";
+            if (gamemap < 12)
+                skytexturename = "SKY1";
+            else
+            if (gamemap < 21)
+                skytexturename = "SKY2";
+            else
+                skytexturename = "SKY3";
         }
 
         skytexturename = DEH_String(skytexturename);
@@ -2146,7 +2203,17 @@ void G_DoCompleted (void)
     else
     if ( gamemission == pack_master && gamemap <= 21 )
     {
-	wminfo.next = gamemap;
+        wminfo.next = gamemap;
+        // [crispy] kex masterlevel secret detour?
+        if (D_CheckMasterlevelKex())
+        {
+            // [crispy] bad dream secret exit in TEETH
+            if (gamemap == 18 && secretexit)
+                wminfo.next = 20;
+            // [crispy] bloodsea keep after bad dream secret
+            else if (gamemap == 21)
+                wminfo.next = 18;
+        }
     }
     else
     if ( gamemode == commercial)
@@ -2331,6 +2398,13 @@ void G_WorldDone (void)
     else
     if ( gamemission == pack_master )
     {
+    if (D_CheckMasterlevelKex())
+    {
+        if (gamemap == 20)
+        F_StartFinale ();
+    }
+    else
+    {
 	switch (gamemap)
 	{
 	  case 20:
@@ -2339,7 +2413,8 @@ void G_WorldDone (void)
 	  case 21:
 	    F_StartFinale ();
 	    break;
-	}
+	}      
+    }
     }
     else
     if ( gamemode == commercial )
