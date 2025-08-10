@@ -2209,9 +2209,14 @@ void G_InitNew(skill_t skill, int episode, int map)
 {
     int i;
     int speed;
-    static const char *skyLumpNames[5] = {
-        "SKY1", "SKY2", "SKY3", "SKY1", "SKY3"
+    // [crispy] Support for sky textures from H+H IWAD.
+    static const char *skyLumpNames[2][5] = {
+        { "SKY1", "SKY2", "SKY3", "SKY1", "SKY3" },
+        { "SKY1", "SKY2", "SKY3", "SKY4", "SKY5" }
     };
+    const boolean RemasterSky = (R_CheckTextureNumForName(DEH_String("SKY4")) != -1)
+                             && (R_CheckTextureNumForName(DEH_String("SKY5")) != -1);
+    const char *ep6Sky = DEH_String(RemasterSky ? "SKY6" : "SKY1");
 
     if (paused)
     {
@@ -2274,11 +2279,11 @@ void G_InitNew(skill_t skill, int episode, int map)
     // Set the sky map
     if (episode > 5)
     {
-        skytexture = R_TextureNumForName(DEH_String("SKY1"));
+        skytexture = R_TextureNumForName(ep6Sky);
     }
     else
     {
-        skytexture = R_TextureNumForName(DEH_String(skyLumpNames[episode - 1]));
+        skytexture = R_TextureNumForName(DEH_String(skyLumpNames[RemasterSky][episode - 1]));
     }
 
 //
