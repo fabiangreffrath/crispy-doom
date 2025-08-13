@@ -113,7 +113,7 @@ static const char *strife_skills[] =
 
 static const char *character_classes[] = { "Fighter", "Cleric", "Mage" };
 
-static const char *gamemodes[] = { "Co-operative", "Deathmatch", "Deathmatch 2.0", "Deathmatch 3.0" };
+static const char *gamemodes[] = { "Co-operative", "Deathmatch", "Deathmatch 2.0", "Deathmatch 3.0", "Coop 2" };
 
 static const char *strife_gamemodes[] =
 {
@@ -271,6 +271,10 @@ static void StartGame(int multiplayer)
         else if (deathmatch == 3) // AX: this is a Crispy-specific change
         {
             AddCmdLineParameter(exec, "-dm3");
+        }
+        else if (deathmatch == 4) // [cripsy] Coop 2
+        {
+            AddCmdLineParameter(exec, "-coop2");
         }
 
         if (timer > 0)
