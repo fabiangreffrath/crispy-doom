@@ -43,6 +43,8 @@ static boolean LoadSigilWad (const char *iwaddir, boolean pwadtexture)
 	char *autoload_dir;
 
 	const char *const sigil_wads[] = {
+		"SIGIL_V1_23_REG.wad",
+		"SIGIL_V1_23.wad",
 		"SIGIL_v1_21.wad",
 		"SIGIL_v1_2.wad",
 		"SIGIL.wad"
