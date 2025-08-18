@@ -559,8 +559,9 @@ void D_DoomMain(void)
     //!
     // @category game
     //
-    // Mana pickups give 50% more mana. This option is not allowed when recording a
-    // demo, playing back a demo or when starting a network game.
+    // Mana pickups give 50% more mana.  This option is not allowed when
+    // recording a demo, playing back a demo or when starting a network
+    // game.
     //
 
     crispy->moreammo = M_ParmExists("-moremana");
@@ -568,7 +569,7 @@ void D_DoomMain(void)
     //!
     // @category game
     //
-    // Fast monsters. This option is not allowed when recording a demo,
+    // Fast monsters.  This option is not allowed when recording a demo,
     // playing back a demo or when starting a network game.
     //
 
@@ -1393,7 +1394,7 @@ void H2_StartTitle(void)
 //
 // CheckRecordFrom
 //
-// -recordfrom <savegame num> <demoname>
+// -recordfrom <save-num> <demo-name>
 //
 //==========================================================================
 
@@ -1404,10 +1405,10 @@ static void CheckRecordFrom(void)
     //!
     // @vanilla
     // @category demo
-    // @arg <savenum> <demofile>
+    // @arg <save-num> <demo-name>
     //
-    // Record a demo, loading from the given filename. Equivalent
-    // to -loadgame <savenum> -record <demofile>.
+    // Load a game from the given savegame slot and record a demo from
+    // it.  Equivalent to -loadgame <save-num> -record <demo-name>.
     //
     p = M_CheckParm("-recordfrom");
     if (!p || p > myargc - 2)
