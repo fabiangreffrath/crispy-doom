@@ -83,6 +83,7 @@ int			showMessages = 1;
 int			detailLevel = 0;
 int			screenblocks = 10; // [crispy] increased
 
+
 // temp for screenblocks (0-9)
 int			screenSize;
 
@@ -642,6 +643,10 @@ enum
     crispness_demobar,
     crispness_demousetimer,
     crispness_sep_demos_,
+    
+    crispness_sep_other,
+    crispness_bosscounters,
+    crispness_sep_other_,
 
     crispness4_next,
     crispness4_prev,
@@ -661,6 +666,9 @@ static menuitem_t Crispness4Menu[]=
     {3,"",	M_CrispyToggleDemoTimerDir,'a'},
     {3,"",	M_CrispyToggleDemoBar,'w'},
     {3,"",	M_CrispyToggleDemoUseTimer,'u'},
+    {-1,"",0,'\0'},
+    {-1,"",0,'\0'},
+    {3,"",	M_CrispyToggleBossCounters,'s'},
     {-1,"",0,'\0'},
     {1,"",	M_CrispnessNext,'n'},
     {1,"",	M_CrispnessPrev,'p'},
@@ -1661,6 +1669,10 @@ static void M_DrawCrispness4(void)
     M_DrawCrispnessMultiItem(crispness_demotimerdir, "Playback Timer Direction", multiitem_demotimerdir, crispy->demotimerdir + 1, crispy->demotimer & DEMOTIMER_PLAYBACK);
     M_DrawCrispnessItem(crispness_demobar, "Show Demo Progress Bar", crispy->demobar, true);
     M_DrawCrispnessItem(crispness_demousetimer, "\"Use\" Button Timer", crispy->btusetimer, true);
+    
+    M_DrawCrispnessSeparator(crispness_sep_other, "Other");
+    
+    M_DrawCrispnessItem(crispness_bosscounters, "Boss level tally (Doom 1/Chex)", crispy->bosscounters, true);
 
     M_DrawCrispnessGoto(crispness4_next, "First Page >");
     M_DrawCrispnessGoto(crispness4_prev, "< Prev Page");

@@ -202,6 +202,12 @@ void M_CrispyToggleBobfactor(int choice)
     ChangeSettingEnum(&crispy->bobfactor, choice, NUM_BOBFACTORS);
 }
 
+void M_CrispyToggleBossCounters(int choice)
+{
+    choice = 0;
+    crispy->bosscounters = !crispy->bosscounters;
+}
+
 void M_CrispyToggleBrightmaps(int choice)
 {
     ChangeSettingEnum(&crispy->brightmaps, choice, NUM_BRIGHTMAPS);

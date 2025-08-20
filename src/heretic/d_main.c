@@ -895,6 +895,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_automapstats",    &crispy->automapstats);
     M_BindIntVariable("crispy_brightmaps",      &crispy->brightmaps);
     M_BindIntVariable("crispy_bobfactor",       &crispy->bobfactor);
+    M_BindIntVariable("crispy_bosscounters",    &crispy->bosscounters);
     M_BindIntVariable("crispy_centerweapon",    &crispy->centerweapon);
     M_BindIntVariable("crispy_crosshair",       &crispy->crosshair);
     M_BindIntVariable("crispy_crosshairtype",   &crispy->crosshairtype);

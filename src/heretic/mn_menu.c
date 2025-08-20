@@ -78,6 +78,7 @@ typedef enum
     MENU_CRISPNESS1,
     MENU_CRISPNESS2,
     MENU_CRISPNESS3,
+    MENU_CRISPNESS4,
     MENU_NONE
 } MenuType_t;
 
@@ -152,6 +153,7 @@ static boolean CrispyCrosshairColor(int option);
 static boolean CrispyUncapped(int option);
 static boolean CrispyFpsLimit(int option);
 static boolean CrispyVsync(int option);
+static boolean CrispyBossCounters(int option);
 static boolean CrispyNextPage(int option);
 static boolean CrispyPrevPage(int option);
 static void DrawMainMenu(void);
@@ -170,6 +172,7 @@ static void DrawCrispness(void);
 static void DrawCrispness1(void);
 static void DrawCrispness2(void);
 static void DrawCrispness3(void);
+static void DrawCrispness4(void);
 void MN_LoadSlotText(void);
 
 // External Functions
@@ -366,7 +369,7 @@ static Menu_t Options2Menu = {
 
 static int crispnessmenupage;
 
-#define NUM_CRISPNESS_MENUS 3
+#define NUM_CRISPNESS_MENUS 4
 
 static MenuItem_t Crispness1Items[] = {
     {ITT_LRFUNC2, "HIGH RESOLUTION RENDERING:", CrispyHires, 0, MENU_NONE},
@@ -431,7 +434,7 @@ static MenuItem_t Crispness3Items[] = {
     {ITT_LRFUNC2, "CROSSHAIR COLOR:", CrispyCrosshairColor, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_EFUNC, "FIRST PAGE", CrispyNextPage, 0, MENU_NONE},
+    {ITT_EFUNC, "NEXT PAGE", CrispyNextPage, 0, MENU_NONE},
     {ITT_EFUNC, "PREV PAGE", CrispyPrevPage, 0, MENU_NONE},
 };
 
@@ -443,16 +446,43 @@ static Menu_t Crispness3Menu = {
     MENU_OPTIONS
 };
 
+static MenuItem_t Crispness4Items[] = {
+    {ITT_LRFUNC2, "SHOW LEVEL TALLY FOR BOSS MAPS:", CrispyBossCounters, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EFUNC, "FIRST PAGE", CrispyNextPage, 0, MENU_NONE},
+    {ITT_EFUNC, "PREV PAGE", CrispyPrevPage, 0, MENU_NONE},
+};
+
+static Menu_t Crispness4Menu = {
+    68, 35,
+    DrawCrispness,
+    14, Crispness4Items,
+    0,
+    MENU_OPTIONS
+};
+
 static void (*CrispnessMenuDrawers[])(void) = {
     &DrawCrispness1,
     &DrawCrispness2,
     &DrawCrispness3,
+    &DrawCrispness4,
 };
 
 static MenuType_t CrispnessMenus[] = {
     MENU_CRISPNESS1,
     MENU_CRISPNESS2,
     MENU_CRISPNESS3,
+    MENU_CRISPNESS4,
 };
 
 static const multiitem_t multiitem_bobfactor[NUM_BOBFACTORS] =
@@ -571,6 +601,7 @@ static Menu_t *Menus[] = {
     &Crispness1Menu,
     &Crispness2Menu,
     &Crispness3Menu,
+    &Crispness4Menu,
 };
 
 // [crispy] gamma correction messages
@@ -1912,6 +1943,12 @@ static boolean CrispyCrosshairColor(int option)
     return true;
 }
 
+static boolean CrispyBossCounters(int option)
+{
+    crispy->bosscounters = !crispy->bosscounters;
+    return true;
+}
+
 static boolean CrispyNextPage(int option)
 {
     crispnessmenupage++;
@@ -3089,7 +3126,7 @@ static void DrawCrispnessNumericItem(int item, int x, int y, const char *zero,
 
 static void DrawCrispness1(void)
 {
-    DrawCrispnessHeader("CRISPNESS 1/3");
+    DrawCrispnessHeader("CRISPNESS 1/4");
 
     DrawCrispnessSubheader("RENDERING", 25);
 
@@ -3125,7 +3162,7 @@ static void DrawCrispness1(void)
 
 static void DrawCrispness2(void)
 {
-    DrawCrispnessHeader("CRISPNESS 2/3");
+    DrawCrispnessHeader("CRISPNESS 2/4");
 
     DrawCrispnessSubheader("AUDIBLE", 25);
 
@@ -3154,7 +3191,7 @@ static void DrawCrispness2(void)
 
 static void DrawCrispness3(void)
 {
-    DrawCrispnessHeader("CRISPNESS 3/3");
+    DrawCrispnessHeader("CRISPNESS 3/4");
 
     DrawCrispnessSubheader("TACTICAL", 25);
 
@@ -3184,4 +3221,13 @@ static void DrawCrispness3(void)
 
     // Crosshair Color
     DrawCrispnessMultiItem(crispy->crosshaircolor+1, 185, 125, multiitem_he_crosshaircolor, !crispy->crosshair);
+}
+
+static void DrawCrispness4(void)
+{
+    DrawCrispnessHeader("CRISPNESS 4/4");
+
+    DrawCrispnessSubheader("OTHER", 25);
+
+    DrawCrispnessItem(crispy->bosscounters, 289, 35);
 }

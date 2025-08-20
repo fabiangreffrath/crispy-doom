@@ -2321,6 +2321,14 @@ static default_t extra_defaults_list[] =
     //
 
     CONFIG_VARIABLE_INT(crispy_bobfactor),
+    
+    //!
+    // @game doom heretic
+    //
+    // Show level counters after boss levels. On by default.
+    //
+    
+    CONFIG_VARIABLE_INT(crispy_bosscounters),
 
     //!
     // @game doom

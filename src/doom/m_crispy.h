@@ -48,6 +48,7 @@ extern multiitem_t multiitem_difficulties[NUM_SKILLS];
 
 extern void M_CrispyToggleAutomapstats(int choice);
 extern void M_CrispyToggleBobfactor(int choice);
+extern void M_CrispyToggleBossCounters(int choice);
 extern void M_CrispyToggleBrightmaps(int choice);
 extern void M_CrispyToggleCenterweapon(int choice);
 extern void M_CrispyToggleColoredblood(int choice);
