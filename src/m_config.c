@@ -2325,10 +2325,10 @@ static default_t extra_defaults_list[] =
     //!
     // @game doom heretic
     //
-    // Show level counters after boss levels. On by default.
+    // Show intermission tally after boss levels. On by default.
     //
     
-    CONFIG_VARIABLE_INT(crispy_bosscounters),
+    CONFIG_VARIABLE_INT(crispy_bossleveltally),
 
     //!
     // @game doom

@@ -42,7 +42,7 @@ typedef struct
 	int automaprotate;
 	int automapstats;
 	int bobfactor;
-    int bosscounters;
+    int bossleveltally;
 	int brightmaps;
 	int btusetimer;
 	int centerweapon;

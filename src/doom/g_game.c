@@ -2134,7 +2134,7 @@ void G_DoCompleted (void)
         {
             // [crispy] display tally screen after Chex Quest E1M5
             // but ONLY if player wanted this to happen
-            if (gamemap == 5 && !crispy->bosscounters)
+            if (gamemap == 5 && !crispy->bossleveltally)
             {
                 gameaction = ga_victory;
                 return;
@@ -2148,7 +2148,7 @@ void G_DoCompleted (void)
             
               case 8:
                 // but ONLY if player wanted this to happen
-                if (!crispy->bosscounters)
+                if (!crispy->bossleveltally)
                 {
                     gameaction = ga_victory;
                     return;
@@ -2439,7 +2439,7 @@ void G_WorldDone (void)
     else
     {
         // but ONLY if player wanted this to happen
-        if (crispy->bosscounters)
+        if (crispy->bossleveltally)
         {
             if ( gamemap == 8 || (gameversion == exe_chex && gamemap == 5) )
             {

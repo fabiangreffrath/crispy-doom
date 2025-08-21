@@ -153,7 +153,7 @@ static boolean CrispyCrosshairColor(int option);
 static boolean CrispyUncapped(int option);
 static boolean CrispyFpsLimit(int option);
 static boolean CrispyVsync(int option);
-static boolean CrispyBossCounters(int option);
+static boolean CrispyBossLevelTally(int option);
 static boolean CrispyNextPage(int option);
 static boolean CrispyPrevPage(int option);
 static void DrawMainMenu(void);
@@ -447,7 +447,7 @@ static Menu_t Crispness3Menu = {
 };
 
 static MenuItem_t Crispness4Items[] = {
-    {ITT_LRFUNC2, "SHOW LEVEL TALLY FOR BOSS MAPS:", CrispyBossCounters, 0, MENU_NONE},
+    {ITT_LRFUNC2, "SHOW LEVEL TALLY FOR BOSS MAPS:", CrispyBossLevelTally, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
@@ -1943,9 +1943,9 @@ static boolean CrispyCrosshairColor(int option)
     return true;
 }
 
-static boolean CrispyBossCounters(int option)
+static boolean CrispyBossLevelTally(int option)
 {
-    crispy->bosscounters = !crispy->bosscounters;
+    crispy->bossleveltally = !crispy->bossleveltally;
     return true;
 }
 
@@ -3229,5 +3229,5 @@ static void DrawCrispness4(void)
 
     DrawCrispnessSubheader("OTHER", 25);
 
-    DrawCrispnessItem(crispy->bosscounters, 289, 35);
+    DrawCrispnessItem(crispy->bossleveltally, 289, 35);
 }

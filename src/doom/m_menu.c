@@ -645,7 +645,7 @@ enum
     crispness_sep_demos_,
     
     crispness_sep_other,
-    crispness_bosscounters,
+    crispness_bossleveltally,
     crispness_sep_other_,
 
     crispness4_next,
@@ -668,7 +668,7 @@ static menuitem_t Crispness4Menu[]=
     {3,"",	M_CrispyToggleDemoUseTimer,'u'},
     {-1,"",0,'\0'},
     {-1,"",0,'\0'},
-    {3,"",	M_CrispyToggleBossCounters,'s'},
+    {3,"",	M_CrispyToggleBossLevelTally,'s'},
     {-1,"",0,'\0'},
     {1,"",	M_CrispnessNext,'n'},
     {1,"",	M_CrispnessPrev,'p'},
@@ -1672,7 +1672,7 @@ static void M_DrawCrispness4(void)
     
     M_DrawCrispnessSeparator(crispness_sep_other, "Other");
     
-    M_DrawCrispnessItem(crispness_bosscounters, "Boss level tally (Doom 1/Chex)", crispy->bosscounters, true);
+    M_DrawCrispnessItem(crispness_bossleveltally, "Boss level tally (Doom 1/Chex)", crispy->bossleveltally, true);
 
     M_DrawCrispnessGoto(crispness4_next, "First Page >");
     M_DrawCrispnessGoto(crispness4_prev, "< Prev Page");
