@@ -1014,7 +1014,7 @@ void S_ChangeMusic(int musicnum, int looping)
 
         if (gamemode == commercial)
         {
-            musicnum = mus_runnin + (umusicnum % (NUMMUSIC - mus_runnin));
+            musicnum = mus_runnin + (umusicnum % (mus_nrftl1 - mus_runnin));
         }
         else
         {
