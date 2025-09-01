@@ -1006,7 +1006,7 @@ void S_ChangeMusic(int musicnum, int looping)
     }
 
     // [crispy] prevent music number under- and overflows
-    if (musicnum <= mus_None || (gamemode == commercial && musicnum < mus_runnin) ||
+    if (musicnum <= mus_None || (gamemode == commercial && musicnum < mus_runnin && !D_CheckMasterlevelKex()) ||
         musicnum >= NUMMUSIC || (gamemode != commercial && musicnum >= mus_runnin) ||
         S_music[musicnum].lumpnum == -1)
     {
