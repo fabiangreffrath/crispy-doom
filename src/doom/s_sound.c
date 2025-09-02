@@ -1006,7 +1006,7 @@ void S_ChangeMusic(int musicnum, int looping)
     }
 
     // [crispy] prevent music number under- and overflows
-    if (musicnum <= mus_None || (gamemode == commercial && musicnum < mus_runnin && !D_CheckMasterlevelKex()) ||
+    if (musicnum <= mus_None || (gamemode == commercial && musicnum < mus_runnin) ||
         musicnum >= NUMMUSIC || (gamemode != commercial && musicnum >= mus_runnin) ||
         S_music[musicnum].lumpnum == -1)
     {
@@ -1014,7 +1014,14 @@ void S_ChangeMusic(int musicnum, int looping)
 
         if (gamemode == commercial)
         {
-            musicnum = mus_runnin + (umusicnum % (mus_nrftl1 - mus_runnin));
+            if (logical_gamemission == pack_master && D_CheckMasterlevelKex())
+            {
+                // mlvlk using Doom 1 tracks - do not correct.
+            }
+            else
+            {
+                musicnum = mus_runnin + (umusicnum % (mus_nrftl1 - mus_runnin));
+            }
         }
         else
         {
