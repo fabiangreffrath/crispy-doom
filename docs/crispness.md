@@ -81,7 +81,17 @@ These options change how sound effects are played back.
 
 * Misc. Sound Fixes
 
-  Miscellaneous small fixes to sound quirks considered to be bugs in Vanilla Doom, e.g. fast doors making two closing sounds (default: on).
+  Miscellaneous small fixes to sound quirks considered to be bugs in Vanilla Doom (default: on):
+
+  * No "oof" sound when a dead player hits the ground.
+  * Proper sound clipping in Doom 2 MAP08 and The Ultimate Doom E4M8.
+  * Fix fast doors making two closing sounds.
+  * Fix fast doors reopening with wrong sound.
+  * Fix door-closing sound playing, even when the door is already closed (repeatable walkover trigger).
+  * Play a sound effect when a door is raised again while going down.
+  * Play a sound effect when a raised door is closed manually.
+  * Correct sound source for switches and buttons (line mid point instead of sector mid point).
+  * Play the DSFLAMST sound when the Arch-Vile spawns its fire attack.
 
 * Sound Channels
 

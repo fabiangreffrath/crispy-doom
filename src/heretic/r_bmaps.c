@@ -267,6 +267,11 @@ static const fullbright_t fullbright_walls[] = {
     {"SW1OFF",   surfaces},
     {"SW2ON",    surfaces},
     {"SW2OFF",   surfaces},
+    // [crispy] H+H IWAD textures
+    {"DOOREXI3", surfaces},
+    {"DOOREXI4", surfaces},
+    {"METLSIG1", surfaces},
+    {"METLSIG2", surfaces},
 };
 
 const byte *R_BrightmapForTexName (const char *texname)

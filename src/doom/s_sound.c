@@ -38,6 +38,7 @@
 #include "w_wad.h"
 #include "z_zone.h"
 #include "g_game.h" // [crispy] demo_gotonextlvl
+#include "d_pwad.h" // [crispy] masterlevel kex music
 
 // when to clip out sounds
 // Does not fit the large outdoor areas.
@@ -392,6 +393,31 @@ void S_Start(void)
             {mus_nrftl9, mus_ddtbl2},
         };
 
+        const int mlvlkmus[21][2] =
+        {
+            {mus_mlvlk1, mus_dm2int},
+            {mus_mlvlk2, mus_e2m2},
+            {mus_mlvlk3, mus_the_da},
+            {mus_mlvlk4, mus_e1m6},
+            {mus_mlvlk5, mus_dead},
+            {mus_mlvlk6, mus_stalks},
+            {mus_mlvlk7, mus_in_cit},
+            {mus_mlvlk8, mus_ddtblu},
+            {mus_mlvlk9, mus_e3m3},
+            {mus_mlvlk10, mus_victor},
+            {mus_mlvlk11, mus_e1m5},
+            {mus_mlvlk12, mus_e2m6},
+            {mus_mlvlk13, mus_romero},
+            {mus_mlvlk14, mus_e2m7},
+            {mus_mlvlk15, mus_e1m8},
+            {mus_mlvlk16, mus_messag},
+            {mus_mlvlk17, mus_e1m7},
+            {mus_mlvlk18, mus_e3m1},
+            {mus_mlvlk19, mus_tense},
+            {mus_mlvlk20, mus_read_m},
+            {mus_mlvlk21, mus_openin},
+        };
+
         if ((gameepisode == 2 || gamemission == pack_nerve) &&
             gamemap <= arrlen(nmus))
         {
@@ -403,6 +429,19 @@ void S_Start(void)
             {
                 mnum = nmus[gamemap - 1][1];
             }
+        }
+        else
+        if ((gameepisode == 3 || gamemission == pack_master) && D_CheckMasterlevelKex() &&
+            gamemap <= arrlen(mlvlkmus))
+        {
+            char name[9];
+
+            mnum = mlvlkmus[gamemap - 1][0];
+            M_snprintf(name, sizeof(name), "d_%s", S_music[mnum].name);
+            if (W_CheckNumForName(name) == -1)
+            {
+                mnum = mlvlkmus[gamemap - 1][1];
+            }            
         }
         else
         mnum = mus_runnin + gamemap - 1;
@@ -975,7 +1014,14 @@ void S_ChangeMusic(int musicnum, int looping)
 
         if (gamemode == commercial)
         {
-            musicnum = mus_runnin + (umusicnum % (NUMMUSIC - mus_runnin));
+            if (logical_gamemission == pack_master && D_CheckMasterlevelKex())
+            {
+                // mlvlk using Doom 1 tracks - do not correct.
+            }
+            else
+            {
+                musicnum = mus_runnin + (umusicnum % (mus_nrftl1 - mus_runnin));
+            }
         }
         else
         {
