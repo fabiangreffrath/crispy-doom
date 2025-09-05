@@ -595,16 +595,17 @@ R_GetColumn
   const int mask = texturewidthmask[tex];
   int ofs;
 
+  while (col < 0)
+  {
+    col += width;
+  }
+
   if (mask + 1 == width)
   {
     col &= mask;
   }
   else
   {
-    while (col < 0)
-    {
-      col += width;
-    }
     col %= width;
   }
 
@@ -622,12 +623,24 @@ R_GetColumnMod
 ( int		tex,
   int		col )
 {
-    int		ofs;
+    const int width = texturewidth[tex];
+    const int mask = texturewidthmask[tex];
+    int ofs;
 
     while (col < 0)
-	col += texturewidth[tex];
+    {
+        col += width;
+    }
 
-    col %= texturewidth[tex];
+    if (mask + 1 == width)
+    {
+        col &= mask;
+    }
+    else
+    {
+        col %= width;
+    }
+
     ofs = texturecolumnofs[tex][col];
 
     if (!texturecomposite[tex])
@@ -1503,7 +1516,3 @@ void R_PrecacheLevel (void)
 
     Z_Free(spritepresent);
 }
-
-
-
-
