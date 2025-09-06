@@ -53,6 +53,7 @@ int firstspritelump, lastspritelump, numspritelumps;
 int numtextures;
 texture_t **textures;
 int *texturewidthmask;
+int *texturewidth; // [crispy] texture width for wrapping column getter function
 fixed_t *textureheight;         // needed for texture pegging
 int *texturecompositesize;
 short **texturecolumnlump;
@@ -525,6 +526,7 @@ void R_InitTextures(void)
     texturecomposite = Z_Malloc(numtextures * sizeof(byte *), PU_STATIC, 0);
     texturecompositesize = Z_Malloc(numtextures * sizeof(int), PU_STATIC, 0);
     texturewidthmask = Z_Malloc(numtextures * sizeof(int), PU_STATIC, 0);
+    texturewidth = Z_Malloc (numtextures * sizeof(*texturewidth), PU_STATIC, 0);
     textureheight = Z_Malloc(numtextures * sizeof(fixed_t), PU_STATIC, 0);
     texturebrightmap = Z_Malloc (numtextures * sizeof(*texturebrightmap), PU_STATIC, 0);
 
@@ -571,6 +573,9 @@ void R_InitTextures(void)
             j <<= 1;
         texturewidthmask[i] = j - 1;
         textureheight[i] = texture->height << FRACBITS;
+
+        // [crispy] texture width for wrapping column getter function
+        texturewidth[i] = texture->width;
     }
 
     Z_Free(patchlookup);
