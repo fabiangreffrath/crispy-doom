@@ -1150,3 +1150,7 @@ void R_PrecacheLevel (void)
 
     Z_Free(spritepresent);
 }
+
+
+
+
