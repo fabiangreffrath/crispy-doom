@@ -400,7 +400,7 @@ R_GetColumn
 
     lump = texturecolumnlump[tex][col];
     ofs = texturecolumnofs[tex][col];
-
+    
     if (lump > 0)
 	return (byte *)W_CacheLumpNum(lump,PU_CACHE)+ofs;
 
