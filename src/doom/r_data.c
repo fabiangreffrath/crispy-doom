@@ -619,7 +619,7 @@ R_GetColumn
 
 // [crispy] wrapping column getter function for composited translucent mid-textures on 2S walls
 byte*
-R_GetColumnMod
+R_GetColumnMasked
 ( int		tex,
   int		col )
 {
