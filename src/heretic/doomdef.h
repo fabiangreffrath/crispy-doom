@@ -764,6 +764,8 @@ void G_ScreenShot(void);
 
 extern lumpinfo_t *maplumpinfo;
 
+extern int init_thinkers_count;
+
 void P_Ticker(void);
 // called by C_Ticker
 // can call G_PlayerExited
