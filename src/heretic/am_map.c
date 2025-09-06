@@ -23,6 +23,7 @@
 #include "i_timer.h"
 #include "i_video.h"
 #include "m_controls.h"
+#include "m_cheat.h"
 #include "p_local.h"
 #include "am_map.h"
 #include "am_data.h"
@@ -150,9 +151,33 @@ static int markpointnum = 0; // next point to be assigned
 
 static int followplayer = 1;    // specifies whether to follow the player around
 
-static char cheat_amap[] = { 'r', 'a', 'v', 'm', 'a', 'p' };
+cheatseq_t cheat_amap_seq = CHEAT("ravmap", 0);
+cheatseq_t cheat_altamap_seq = CHEAT("iddt", 0);
+cheatseq_t cheat_secret_seq = CHEAT("iddst", 0);
+cheatseq_t cheat_item_seq = CHEAT("iddit", 0);
+cheatseq_t cheat_kill_seq = CHEAT("iddkt", 0);
 
-static byte cheatcount = 0;
+static void AM_CheatRevealMap(void);
+static void AM_CheatRevealSecret(void);
+static void AM_CheatRevealItem(void);
+static void AM_CheatRevealKill(void);
+
+typedef struct Cheat_s
+{
+    void (*func) (void);
+    cheatseq_t *seq;
+} Cheat_t;
+
+static Cheat_t cheats[] = {
+    {AM_CheatRevealMap,    &cheat_amap_seq},
+    // [crispy] new cheats
+    {AM_CheatRevealMap,    &cheat_altamap_seq},
+    {AM_CheatRevealSecret, &cheat_secret_seq},
+    {AM_CheatRevealItem,   &cheat_item_seq},
+    {AM_CheatRevealKill,   &cheat_kill_seq},
+    {NULL,               NULL}
+};
+
 
 // [crispy] gradient table for map normal mode
 static byte antialias_normal[NUMALIAS][8] = {
@@ -458,8 +483,15 @@ static void AM_SetMapCenter(fixed_t px, fixed_t py)
     m_y2 = m_y + m_h;
 }
 
+
+static void AM_CheatRevealMap(void)
+{
+    cheating = (cheating + 1) % 3;
+}
+
+
 // [woof] center the automap around the lowest numbered unfound secret sector
-void AM_CheatRevealSecret(void)
+static void AM_CheatRevealSecret(void)
 {
     static int last_secret = -1;
 
@@ -991,30 +1023,12 @@ boolean AM_Responder(event_t * ev)
             rc = false;
         }
 
-        if (cheat_amap[cheatcount] == ev->data1 && !netgame)
-            cheatcount++;
-        else if (cheatcount == 3 && ev->data1 == 's')
+        for (int i = 0; cheats[i].func != NULL; i++)
         {
-            AM_CheatRevealSecret();
-            cheatcount = 0;
-        }
-        else if (cheatcount == 3 && ev->data1 == 'i')
-        {
-            AM_CheatRevealItem();
-            cheatcount = 0;
-        }
-        else if (cheatcount == 3 && ev->data1 == 'k')
-        {
-            AM_CheatRevealKill();
-            cheatcount = 0;
-        }
-        else
-            cheatcount = 0;
-        if (cheatcount == 6)
-        {
-            cheatcount = 0;
-            rc = false;
-            cheating = (cheating + 1) % 3;
+            if (cht_CheckCheat(cheats[i].seq, key))
+            {
+                cheats[i].func();
+            }
         }
     }
 
