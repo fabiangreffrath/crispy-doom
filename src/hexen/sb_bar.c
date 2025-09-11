@@ -477,6 +477,11 @@ void SB_Ticker(void)
         }
         HealthMarker += delta;
     }
+    // [crispy] play artifact flash animation independently of framerate
+    if (ArtifactFlash > 0)
+    {
+        ArtifactFlash--;
+    }
     SB_PaletteFlash(false);
 }
 
@@ -1184,7 +1189,7 @@ void DrawMainBar(void)
         V_DrawPatch(144, 160, PatchARTICLEAR);
         V_DrawPatch(148, 164, W_CacheLumpNum(W_GetNumForName("useartia")
                                              + ArtifactFlash - 1, PU_CACHE));
-        ArtifactFlash--;
+        // ArtifactFlash--; [crispy] moved to SB_Ticker
         oldarti = -1;           // so that the correct artifact fills in after the flash
         UpdateState |= I_STATBAR;
     }
