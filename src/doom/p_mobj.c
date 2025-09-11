@@ -1061,6 +1061,12 @@ void P_SpawnMapThing (mapthing_t* mthing)
 	return;
     }
     
+    // [crispy] Don't spawn any mp-only things except monsters in the netgame
+    if (netgame && coop2 && (mthing->options & 16) && !(i == MT_SKULL || (mobjinfo[i].flags & MF_COUNTKILL)))
+    {
+        return;
+    }
+
     // spawn it
     x = mthing->x << FRACBITS;
     y = mthing->y << FRACBITS;
