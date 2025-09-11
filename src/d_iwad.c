@@ -273,6 +273,7 @@ static registry_value_t root_path_keys[] =
 
 static char *root_path_subdirs[] =
 {
+    ".", // [crispy] moved to top, so reworked IWADs will be found before the legacy DOS ones
     "Doom2",
     "Final Doom",
     "Ultimate Doom",
@@ -281,7 +282,6 @@ static char *root_path_subdirs[] =
     "base\\wads",
     "dos\\base\\heretic",
     "dos\\base\\hexen",
-    ".",
 };
 
 // Location where Steam is installed
