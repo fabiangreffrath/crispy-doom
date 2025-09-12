@@ -2980,6 +2980,9 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 
 	gamekeydown[key_demo_quit] = false;
 
+	// [crispy] redraw status bar to get rid of demo progress bar
+	ST_Drawer(viewheight == SCREENHEIGHT, true);
+
 	// [crispy] find a new name for the continued demo
 	G_RecordDemo(actualname);
 	free(actualname);
