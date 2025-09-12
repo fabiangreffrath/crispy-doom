@@ -110,8 +110,7 @@ void IN_Start(void)
     interstate = 0;
     skipintermission = false;
     intertime = 0;
-    if (automapactive)
-        AM_Stop();
+    AM_Stop();
     for (i = 0; i < maxplayers; i++)
     {
         players[i].messageTics = 0;

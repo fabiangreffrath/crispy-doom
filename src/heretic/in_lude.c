@@ -189,8 +189,7 @@ void IN_Start(void)
     skipintermission = false;
     intertime = 0;
     oldintertime = 0;
-    if (automapactive)
-        AM_Stop();
+    AM_Stop();
     S_StartSong(mus_intr, true);
 }
 

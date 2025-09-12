@@ -682,8 +682,8 @@ void AM_loadPics(void)
     maplump = W_CacheLumpName(DEH_String("AUTOPAGE"), PU_STATIC);
 }
 
-// [crispy] restore mapmarker functionality
-void AM_unloadPics(void)
+// [crispy] small numbers have to remain PU_STATIC, never release
+/*void AM_unloadPics(void)
 {
     int i;
     char namebuf[9];
@@ -693,7 +693,7 @@ void AM_unloadPics(void)
         M_snprintf(namebuf, 9, "SMALLIN%d", i);
         W_ReleaseLumpName(namebuf);
     }
-}
+}*/
 
 // [crispy] restore mapmarker functionality
 void AM_clearMarks(void)
@@ -755,7 +755,7 @@ void AM_Stop(void)
 {
     //static event_t st_notify = { 0, ev_keyup, AM_MSGEXITED };
 
-    AM_unloadPics(); // [crispy] restore mapmarker functionality
+//  AM_unloadPics();
     automapactive = false;
 //  ST_Responder(&st_notify);
     stopped = true;
