@@ -957,7 +957,7 @@ void MN_Drawer(void)
         y = CurrentMenu->y + (CurrentItPos * (ITEM_HEIGHT/2)) + SELECTOR_YOFFSET;
         selName = DEH_String(MenuTime & 8 ? "INVGEMR1" : "INVGEMR2");
         V_DrawPatch(x + (SELECTOR_XOFFSET/2), y,
-                    W_CacheLumpName(selName, PU_CACHE));
+                    W_CacheLumpName(selName, PU_STATIC));
         }
         else
         {
