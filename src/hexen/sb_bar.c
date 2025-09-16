@@ -413,7 +413,8 @@ void SB_SetClassData(void)
                                      + class, PU_STATIC);
     PatchWEAPONFULL = W_CacheLumpNum(W_GetNumForName("wpfull0")
                                      + class, PU_STATIC);
-    // [crispy] support for kex and original iwad weapon piece lump numbers
+    // [crispy] support for kex and original iwad weapon pieces & lifegem lump numbers
+    // single player game uses red life gem (the second gem)
     switch (class)
     {
         case PCLASS_CLERIC:
@@ -423,6 +424,8 @@ void SB_SetClassData(void)
                                  PU_STATIC);
             PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecec3"),
                                  PU_STATIC);
+            PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegmc1")
+            + (netgame ? consoleplayer : 1), PU_STATIC);
             break;
         case PCLASS_MAGE:
             PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecem1"),
@@ -431,27 +434,29 @@ void SB_SetClassData(void)
                                  PU_STATIC);
             PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecem3"),
                                  PU_STATIC);
+            PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegmm1")
+            + (netgame ? consoleplayer : 1), PU_STATIC);
             break;
         default:
+            // fighter
             PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecef1"),
                                  PU_STATIC);
             PatchPIECE2 = W_CacheLumpNum(W_GetNumForName("wpiecef2"),
                                  PU_STATIC);
             PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecef3"),
                                  PU_STATIC);
+            if (netgame && consoleplayer == 0)
+            {
+             PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegem"),
+                                 PU_STATIC);       
+            }
+            else
+            {
+                PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegmf2")
+                + (netgame ? consoleplayer : 0), PU_STATIC);               
+            }
     }
     PatchCHAIN = W_CacheLumpNum(W_GetNumForName("chain") + class, PU_STATIC);
-    if (!netgame)
-    {                           // single player game uses red life gem (the second gem)
-        PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegem")
-                                      + maxplayers * class + 1, PU_STATIC);
-    }
-    else
-    {
-        PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegem")
-                                      + maxplayers * class + consoleplayer,
-                                      PU_STATIC);
-    }
     SB_state = -1;
     UpdateState |= I_FULLSCRN;
 }
