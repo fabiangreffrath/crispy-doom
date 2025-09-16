@@ -413,12 +413,33 @@ void SB_SetClassData(void)
                                      + class, PU_STATIC);
     PatchWEAPONFULL = W_CacheLumpNum(W_GetNumForName("wpfull0")
                                      + class, PU_STATIC);
-    PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecef1")
-                                 + class, PU_STATIC);
-    PatchPIECE2 = W_CacheLumpNum(W_GetNumForName("wpiecef2")
-                                 + class, PU_STATIC);
-    PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecef3")
-                                 + class, PU_STATIC);
+    // [crispy] support for kex and original iwad weapon piece lump numbers
+    switch (class)
+    {
+        case PCLASS_CLERIC:
+            PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecec1"),
+                                 PU_STATIC);
+            PatchPIECE2 = W_CacheLumpNum(W_GetNumForName("wpiecec2"),
+                                 PU_STATIC);
+            PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecec3"),
+                                 PU_STATIC);
+            break;
+        case PCLASS_MAGE:
+            PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecem1"),
+                                 PU_STATIC);
+            PatchPIECE2 = W_CacheLumpNum(W_GetNumForName("wpiecem2"),
+                                 PU_STATIC);
+            PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecem3"),
+                                 PU_STATIC);
+            break;
+        default:
+            PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecef1"),
+                                 PU_STATIC);
+            PatchPIECE2 = W_CacheLumpNum(W_GetNumForName("wpiecef2"),
+                                 PU_STATIC);
+            PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecef3"),
+                                 PU_STATIC);
+    }
     PatchCHAIN = W_CacheLumpNum(W_GetNumForName("chain") + class, PU_STATIC);
     if (!netgame)
     {                           // single player game uses red life gem (the second gem)
