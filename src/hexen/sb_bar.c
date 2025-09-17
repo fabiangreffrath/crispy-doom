@@ -407,6 +407,7 @@ void SB_Init(void)
 void SB_SetClassData(void)
 {
     int class;
+    char namebuf[9]; // [crispy]
 
     class = PlayerClass[consoleplayer]; // original player class (not pig)
     PatchWEAPONSLOT = W_CacheLumpNum(W_GetNumForName("wpslot0")
@@ -424,8 +425,8 @@ void SB_SetClassData(void)
                                  PU_STATIC);
             PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecec3"),
                                  PU_STATIC);
-            PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegmc1")
-            + (netgame ? consoleplayer : 1), PU_STATIC);
+            M_snprintf(namebuf, sizeof(namebuf), "lifegmc%d", (netgame ? consoleplayer + 1 : 2));
+            PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName(namebuf), PU_STATIC);
             break;
         case PCLASS_MAGE:
             PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecem1"),
@@ -434,8 +435,8 @@ void SB_SetClassData(void)
                                  PU_STATIC);
             PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecem3"),
                                  PU_STATIC);
-            PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegmm1")
-            + (netgame ? consoleplayer : 1), PU_STATIC);
+            M_snprintf(namebuf, sizeof(namebuf), "lifegmm%d", (netgame ? consoleplayer + 1 : 2));
+            PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName(namebuf), PU_STATIC);
             break;
         default:
             // fighter
@@ -452,8 +453,8 @@ void SB_SetClassData(void)
             }
             else
             {
-                PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegmf2")
-                + (netgame ? consoleplayer : 0), PU_STATIC);               
+                M_snprintf(namebuf, sizeof(namebuf), "lifegmf%d", (netgame ? consoleplayer + 1 : 2));
+                PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName(namebuf), PU_STATIC);               
             }
     }
     PatchCHAIN = W_CacheLumpNum(W_GetNumForName("chain") + class, PU_STATIC);
