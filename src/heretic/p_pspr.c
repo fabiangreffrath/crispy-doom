@@ -1200,9 +1200,10 @@ void A_MaceBallImpact2(mobj_t * ball, player_t *player, pspdef_t *psp)
     {                           // Bounce
         ball->momz = (ball->momz * 192) >> 8;
         P_SetMobjState(ball, ball->info->spawnstate);
-
+		for (int i = 0; i < 2; i++)
+		{
         tiny = P_SpawnMobj(ball->x, ball->y, ball->z, MT_MACEFX3);
-        angle = ball->angle + ANG90;
+        angle = ball->angle + (i ? -ANG90 : ANG90);
         tiny->target = ball->target;
         tiny->angle = angle;
         angle >>= ANGLETOFINESHIFT;
@@ -1212,18 +1213,8 @@ void A_MaceBallImpact2(mobj_t * ball, player_t *player, pspdef_t *psp)
                                                   finesine[angle]);
         tiny->momz = ball->momz;
         P_CheckMissileSpawn(tiny);
+		}
 
-        tiny = P_SpawnMobj(ball->x, ball->y, ball->z, MT_MACEFX3);
-        angle = ball->angle - ANG90;
-        tiny->target = ball->target;
-        tiny->angle = angle;
-        angle >>= ANGLETOFINESHIFT;
-        tiny->momx = (ball->momx >> 1) + FixedMul(ball->momz - FRACUNIT,
-                                                  finecosine[angle]);
-        tiny->momy = (ball->momy >> 1) + FixedMul(ball->momz - FRACUNIT,
-                                                  finesine[angle]);
-        tiny->momz = ball->momz;
-        P_CheckMissileSpawn(tiny);
     }
 }
 
