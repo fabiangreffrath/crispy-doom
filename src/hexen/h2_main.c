@@ -1140,6 +1140,12 @@ static void DrawAndBlit(void)
                 AM_Drawer();
                 BorderNeedRefresh = true;
             }
+            // [crispy] don't draw any GUI elements when taking a clean screenshot
+            if (crispy->cleanscreenshot)
+            {
+                I_FinishUpdate();
+                return;
+            }
             // [crispy] check for translucent HUD
             SB_Translucent(TRANSLUCENT_HUD && (!automapactive || crispy->automapoverlay));
             CT_Drawer();

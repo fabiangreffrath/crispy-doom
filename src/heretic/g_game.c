@@ -1437,6 +1437,16 @@ void G_PrepTiccmd (void)
     }
 }
 
+// [crispy] take a screenshot after rendering the next frame
+static void G_CrispyScreenShot()
+{
+	// [crispy] increase screenshot filename limit
+	V_ScreenShot("HTIC%04i.%s");
+	P_SetMessage(&players[consoleplayer], "SCREEN SHOT", false);
+	crispy->cleanscreenshot = 0;
+}
+
+
 /*
 ===============================================================================
 =
@@ -1482,7 +1492,15 @@ void G_Ticker(void)
                 G_DoPlayDemo();
                 break;
             case ga_screenshot:
-                V_ScreenShot("HTIC%02i.%s");
+                // [crispy] redraw view without weapons and HUD
+                if (gamestate == GS_LEVEL && (crispy->cleanscreenshot))
+                {
+                crispy->post_rendering_hook = G_CrispyScreenShot;
+                }
+                else
+                {
+                G_CrispyScreenShot();
+                }
                 gameaction = ga_nothing;
                 break;
             case ga_completed:

@@ -2191,8 +2191,14 @@ boolean MN_Responder(event_t * event)
         return (true);          //make the info screen eat the keypress
     }
 
+    // [crispy] take screen shot without weapons and HUD
+    if (key != 0 && key == key_menu_cleanscreenshot)
+    {
+	crispy->cleanscreenshot = (screenblocks > 10) ? 1 : 0;
+    }
+
     if ((ravpic && key == KEY_F1) ||
-        (key != 0 && key == key_menu_screenshot))
+        (key != 0 && (key == key_menu_screenshot || key == key_menu_cleanscreenshot)))
     {
         G_ScreenShot();
         return (true);
