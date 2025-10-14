@@ -128,8 +128,9 @@ void DrawMessage(void)
     player_t *player;
 
     player = &players[consoleplayer];
-    if (player->messageTics <= 0 || !player->message)
+    if (player->messageTics <= 0 || !player->message || crispy->screenshotmsg)
     {                           // No message
+        crispy->screenshotmsg = 0;
         return;
     }
     MN_DrTextA(player->message, 160 - MN_TextAWidth(player->message) / 2, 1);

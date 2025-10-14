@@ -1212,8 +1212,9 @@ static void DrawMessage(void)
     player_t *player;
 
     player = &players[consoleplayer];
-    if (player->messageTics <= 0)
+    if (player->messageTics <= 0 || crispy->screenshotmsg)
     {                           // No message
+        crispy->screenshotmsg = 0;
         return;
     }
     if (player->yellowMessage)

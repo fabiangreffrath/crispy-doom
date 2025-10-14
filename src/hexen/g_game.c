@@ -1422,16 +1422,10 @@ void G_Ticker(void)
                 G_DoPlayDemo();
                 break;
             case ga_screenshot:
-                // [crispy] redraw view without weapons and HUD
-                if (gamestate == GS_LEVEL && (crispy->cleanscreenshot))
-                {
+                // [crispy] screenshot always after drawing is done
                 crispy->post_rendering_hook = G_CrispyScreenShot;
-                }
-                else
-                {
-                G_CrispyScreenShot();
-                }
-                gameaction = ga_nothing; 
+                crispy->screenshotmsg = 1;
+                gameaction = ga_nothing;
                 break;
             case ga_leavemap:
                 Draw_TeleportIcon();
