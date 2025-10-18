@@ -2689,7 +2689,7 @@ boolean M_Responder (event_t* ev)
     // [crispy] take screen shot without weapons and HUD
     if (key != 0 && key == key_menu_cleanscreenshot)
     {
-	crispy->cleanscreenshot = (screenblocks > 10) ? 2 : 1;
+	crispy->cleanscreenshot = 2;
     }
 
     if ((devparm && key == key_menu_help) ||

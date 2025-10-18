@@ -38,6 +38,7 @@
 
 // External functions
 
+extern void R_ExecuteSetViewSize(void); // [crispy] for clean screenshot
 
 // Functions
 
@@ -1364,10 +1365,14 @@ void G_PrepTiccmd (void)
 // [crispy] take a screenshot after rendering the next frame
 static void G_CrispyScreenShot()
 {
-	// [crispy] increase screenshot filename limit
-	V_ScreenShot("HEXEN%04i.%s");
-	P_SetMessage(&players[consoleplayer], "SCREEN SHOT", false);
-	crispy->cleanscreenshot = 0;
+    // [crispy] increase screenshot filename limit
+    V_ScreenShot("HEXEN%04i.%s");
+    P_SetMessage(&players[consoleplayer], "SCREEN SHOT", false);
+    if (crispy->cleanscreenshot)
+    {
+        R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
+    }
+    crispy->cleanscreenshot = 0;
 }
 
 
@@ -1422,6 +1427,11 @@ void G_Ticker(void)
                 G_DoPlayDemo();
                 break;
             case ga_screenshot:
+                if(gamestate == GS_LEVEL && crispy->cleanscreenshot)
+                {
+                    R_SetViewSize(11, detailLevel);
+                    R_ExecuteSetViewSize(); 
+                }
                 // [crispy] screenshot always after drawing is done
                 crispy->post_rendering_hook = G_CrispyScreenShot;
                 crispy->screenshotmsg = 1;

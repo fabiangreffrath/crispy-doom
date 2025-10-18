@@ -2194,7 +2194,7 @@ boolean MN_Responder(event_t * event)
     // [crispy] take screen shot without weapons and HUD
     if (key != 0 && key == key_menu_cleanscreenshot)
     {
-	    crispy->cleanscreenshot = (screenblocks > 10) ? 1 : 0;
+	    crispy->cleanscreenshot = 1;
     }
 
     if ((ravpic && key == KEY_F1) ||
