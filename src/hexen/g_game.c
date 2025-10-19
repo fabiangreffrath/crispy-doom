@@ -1367,7 +1367,8 @@ static void G_CrispyScreenShot()
 {
     // [crispy] increase screenshot filename limit
     V_ScreenShot("HEXEN%04i.%s");
-    P_SetMessage(&players[consoleplayer], "SCREEN SHOT", false);
+    if (gamestate == GS_LEVEL)
+        P_SetMessage(&players[consoleplayer], "SCREEN SHOT", false);
     if (crispy->cleanscreenshot)
     {
         R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
@@ -1427,14 +1428,17 @@ void G_Ticker(void)
                 G_DoPlayDemo();
                 break;
             case ga_screenshot:
-                if(gamestate == GS_LEVEL && crispy->cleanscreenshot)
+                if (gamestate == GS_LEVEL)
                 {
-                    R_SetViewSize(11, detailLevel);
-                    R_ExecuteSetViewSize(); 
+                    if (crispy->cleanscreenshot)
+                    {
+                        R_SetViewSize(11, detailLevel);
+                        R_ExecuteSetViewSize();                         
+                    }
+                    crispy->screenshotmsg = 1;
                 }
                 // [crispy] screenshot always after drawing is done
                 crispy->post_rendering_hook = G_CrispyScreenShot;
-                crispy->screenshotmsg = 1;
                 gameaction = ga_nothing;
                 break;
             case ga_leavemap:
