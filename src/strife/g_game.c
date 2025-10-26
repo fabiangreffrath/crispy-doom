@@ -1244,7 +1244,8 @@ static void G_CrispyScreenShot()
 {
     // [crispy] increase screenshot filename limit
     V_ScreenShot("STRIFE%04i.%s"); // [STRIFE] file name, message
-    players[consoleplayer].message = DEH_String("STRIFE  by Rogue entertainment");
+    if (gamestate == GS_LEVEL)
+        players[consoleplayer].message = DEH_String("STRIFE  by Rogue entertainment");
     if (crispy->screenshot == 2)
     {
         R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
