@@ -128,9 +128,8 @@ void DrawMessage(void)
     player_t *player;
 
     player = &players[consoleplayer];
-    if (player->messageTics <= 0 || !player->message || crispy->screenshotmsg)
+    if (player->messageTics <= 0 || !player->message || crispy->screenshot)
     {                           // No message
-        crispy->screenshotmsg = 0;
         return;
     }
     MN_DrTextA(player->message, 160 - MN_TextAWidth(player->message) / 2, 1);
@@ -292,7 +291,7 @@ void D_Display(void)
                 BorderNeedRefresh = true;
             }
             // [crispy] don't draw any GUI elements when taking a clean screenshot
-            if (crispy->cleanscreenshot)
+            if (crispy->screenshot == 2)
             {
                 I_FinishUpdate();
                 return;

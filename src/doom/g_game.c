@@ -1427,12 +1427,11 @@ static void G_CrispyScreenShot()
     // [crispy] increase screenshot filename limit
     V_ScreenShot("DOOM%04i.%s");
     players[consoleplayer].message = DEH_String("screen shot");
-    if (crispy->cleanscreenshot)
+    if (crispy->screenshot == 2)
     {
         R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
     }
-    crispy->cleanscreenshot = 0;
-    crispy->screenshotmsg = 2;
+    crispy->screenshot = 0;
 }
 
 //
@@ -1485,20 +1484,16 @@ void G_Ticker (void)
 	    break; 
 	  case ga_screenshot: 
 	    // [crispy] redraw view without weapons and HUD
-	    if (gamestate == GS_LEVEL && (crispy->cleanscreenshot || crispy->screenshotmsg == 1))
-	    {
-   	    if (crispy->cleanscreenshot)
-	    {
-		R_SetViewSize(11, detailLevel);
-		R_ExecuteSetViewSize(); 
-	    }
-		crispy->screenshotmsg = 4;
-		crispy->post_rendering_hook = G_CrispyScreenShot;
-	    }
-	    else
-	    {
-		G_CrispyScreenShot();
-	    }
+        if (gamestate == GS_LEVEL)
+        {
+            if (crispy->screenshot == 2)
+            {
+                R_SetViewSize(11, detailLevel);
+                R_ExecuteSetViewSize();                         
+            }
+        }
+        // [crispy] screenshot always after drawing is done
+        crispy->post_rendering_hook = G_CrispyScreenShot;
 	    gameaction = ga_nothing; 
 	    break; 
 	  case ga_nothing: 

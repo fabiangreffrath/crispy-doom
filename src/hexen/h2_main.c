@@ -1141,7 +1141,7 @@ static void DrawAndBlit(void)
                 BorderNeedRefresh = true;
             }
             // [crispy] don't draw any GUI elements when taking a clean screenshot
-            if (crispy->cleanscreenshot)
+            if (crispy->screenshot == 2)
             {
                 I_FinishUpdate();
                 return;
@@ -1212,9 +1212,8 @@ static void DrawMessage(void)
     player_t *player;
 
     player = &players[consoleplayer];
-    if (player->messageTics <= 0 || crispy->screenshotmsg)
+    if (player->messageTics <= 0 || crispy->screenshot)
     {                           // No message
-        crispy->screenshotmsg = 0;
         return;
     }
     if (player->yellowMessage)

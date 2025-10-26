@@ -2624,7 +2624,7 @@ boolean M_Responder (event_t* ev)
     // [crispy] clean screenshot
     if (key != 0 && key == key_menu_cleanscreenshot)
     {
-        crispy->cleanscreenshot = 2;
+        crispy->screenshot = 2;
         G_ScreenShot();
         return true;
     }
@@ -2754,7 +2754,10 @@ boolean M_Responder (event_t* ev)
                 M_QuickLoad();
             }
             else
+            {
+                crispy->screenshot = 1;
                 G_ScreenShot();
+            }
             return true;
         }
         else if (key == key_menu_quit)     // Quit DOOM
@@ -2783,11 +2786,13 @@ boolean M_Responder (event_t* ev)
         else if(gameversion == exe_strife_1_31 && key == key_spy)
         {
             // haleyjd 20130301: 1.31 moved screenshots to F12.
+            crispy->screenshot = 1;
             G_ScreenShot();
             return true;
         }
         else if (key != 0 && key == key_menu_screenshot)
         {
+            crispy->screenshot = 1;
             G_ScreenShot();
             return true;
         }

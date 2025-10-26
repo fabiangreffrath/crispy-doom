@@ -1444,11 +1444,11 @@ static void G_CrispyScreenShot()
     V_ScreenShot("HTIC%04i.%s");
     if (gamestate == GS_LEVEL)
         P_SetMessage(&players[consoleplayer], DEH_String("SCREEN SHOT"), false);
-    if (crispy->cleanscreenshot)
+    if (crispy->screenshot == 2)
     {
         R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
     }
-    crispy->cleanscreenshot = 0;
+    crispy->screenshot = 0;
 }
 
 
@@ -1499,15 +1499,15 @@ void G_Ticker(void)
             case ga_screenshot:
                 if (gamestate == GS_LEVEL)
                 {
-                    if (crispy->cleanscreenshot)
+                    if (crispy->screenshot == 2)
                     {
                         R_SetViewSize(11, detailLevel);
                         R_ExecuteSetViewSize();                         
                     }
-                    crispy->screenshotmsg = 1;
                 }
                 // [crispy] screenshot always after drawing is done
                 crispy->post_rendering_hook = G_CrispyScreenShot;
+                BorderNeedRefresh = true;
                 gameaction = ga_nothing;
                 break;
             case ga_completed:
