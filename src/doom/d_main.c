@@ -324,7 +324,7 @@ boolean D_Display (void)
     }
 
     // [crispy] draw neither pause pic nor menu when taking a clean screenshot
-    if (crispy->screenshot == 2)
+    if (gamestate == GS_LEVEL && crispy->screenshot == 2)
     {
 	return false;
     }

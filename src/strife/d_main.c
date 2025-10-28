@@ -371,7 +371,7 @@ void D_Display (void)
     }
 
     // [crispy] draw neither pause pic nor menu when taking a clean screenshot
-    if (crispy->screenshot == 2 && !wipe)
+    if (gamestate == GS_LEVEL && crispy->screenshot == 2 && !wipe)
     {
         I_FinishUpdate();
         if (crispy->post_rendering_hook)
