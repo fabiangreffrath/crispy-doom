@@ -1464,6 +1464,7 @@ void G_Ticker(void)
 {
     int i, buf;
     ticcmd_t *cmd = NULL;
+    extern boolean automapactive;
 
 //
 // do player reborns if needed
@@ -1499,10 +1500,10 @@ void G_Ticker(void)
             case ga_screenshot:
                 if (gamestate == GS_LEVEL)
                 {
-                    if (crispy->screenshot == 2)
+                    if (crispy->screenshot == 2 && (!automapactive || crispy->automapoverlay))
                     {
                         R_SetViewSize(11, detailLevel);
-                        R_ExecuteSetViewSize();                         
+                        R_ExecuteSetViewSize();
                     }
                 }
                 // [crispy] screenshot always after drawing is done

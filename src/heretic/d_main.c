@@ -293,6 +293,9 @@ void D_Display(void)
             // [crispy] don't draw any GUI elements when taking a clean screenshot
             if (crispy->screenshot == 2)
             {
+                if (automapactive && !crispy->automapoverlay)
+                    SB_Drawer();                    
+                UpdateState |= I_FULLVIEW;
                 I_FinishUpdate();
                 return;
             }

@@ -1305,7 +1305,7 @@ void G_Ticker (void)
             // [crispy] redraw view without weapons and HUD
             if (gamestate == GS_LEVEL)
             {
-                if (crispy->screenshot == 2)
+                if (crispy->screenshot == 2 && (!automapactive || crispy->automapoverlay))
                 {
                     R_SetViewSize(11, detailLevel);
                     R_ExecuteSetViewSize();

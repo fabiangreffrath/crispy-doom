@@ -2185,6 +2185,10 @@ void AM_Drawer(void)
         numepisodes = 3;
     }
 
+    if (crispy->screenshot == 2)
+    {
+        return;
+    }
     // [crispy] check for translucent HUD
     SB_Translucent(TRANSLUCENT_HUD && (!automapactive || crispy->automapoverlay));
     if (gameepisode <= numepisodes && gamemap < 10)
