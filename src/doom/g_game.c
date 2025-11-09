@@ -2985,6 +2985,10 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 
 	gamekeydown[key_demo_quit] = false;
 
+	// [crispy] update turning resolution when joining a demo
+	// based upon longtics info taken from record
+	lowres_turn = !longtics;
+
 	// [crispy] redraw status bar to get rid of demo progress bar
 	ST_Drawer(viewheight == SCREENHEIGHT, true);
 
