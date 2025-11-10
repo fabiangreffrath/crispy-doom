@@ -1315,7 +1315,7 @@ void EV_SlidingDoor(line_t* line, mobj_t* thing)
         door = sec->specialdata;
         if(door->type == sdt_openAndClose)
         {
-            if(door->status == sd_waiting)
+            if(door->status == sd_waiting && sec->thinglist == NULL)
             {
                 door->status = sd_closing;
                 door->timer = SWAITTICS;    // villsa [STRIFE]
