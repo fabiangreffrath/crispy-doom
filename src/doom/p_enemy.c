@@ -33,6 +33,7 @@
 #include "g_game.h"
 
 // State.
+#include "d_dmapinfo.h"
 #include "doomstat.h"
 #include "r_state.h"
 
@@ -1732,8 +1733,15 @@ static boolean CheckBossEnd(mobjtype_t motype)
 }
 
 // [crispy] check if the there is a Doom 2 / Masterlevel tag 666 present in map
+// or DMAPINFO map07special
 boolean P_CheckMapTag666 (void)
 {
+    if (dmapinfo.num_maps)
+    {
+        dmapinfo_map_t *d_map = DMAPINFO_GetMap(gameepisode, gamemap);
+        return (d_map && d_map->map07special);
+    }
+
     if (gamemode == commercial)
     {
         if (gamemission == pack_master)
