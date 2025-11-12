@@ -1335,8 +1335,12 @@ void EV_SlidingDoor(line_t* line, mobj_t* thing)
                     door->line1->flags |= ML_BLOCKING;
                     door->line2->flags |= ML_BLOCKING;
 
-                    // play close sound
-                    S_StartSound(&sec->soundorg, slideCloseSounds[door->whichDoorIndex]);
+                    // [crispy] play sound effect when the door is closed manually
+	                if (crispy->soundfix)
+	                {
+	                    S_StartSound(&sec->soundorg,
+	                                 slideCloseSounds[door->whichDoorIndex]);
+	                }
 
                     door->status = sd_closing;
                     door->timer = SWAITTICS;
