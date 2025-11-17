@@ -299,7 +299,7 @@ R_RenderMaskedSegRange
 	    
 	    // draw the texture
 	    col = (column_t *)( 
-		(byte *)R_GetColumnMod(texnum,maskedtexturecol[dc_x]) -3);
+		(byte *)R_GetColumnMasked(texnum,maskedtexturecol[dc_x]) -3);
 			
 	    R_DrawMaskedColumn (col);
 	    maskedtexturecol[dc_x] = INT_MAX; // [crispy] 32-bit integer math

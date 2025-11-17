@@ -23,6 +23,7 @@
 #include "i_timer.h"
 #include "i_video.h"
 #include "m_controls.h"
+#include "m_cheat.h"
 #include "p_local.h"
 #include "am_map.h"
 #include "am_data.h"
@@ -150,9 +151,33 @@ static int markpointnum = 0; // next point to be assigned
 
 static int followplayer = 1;    // specifies whether to follow the player around
 
-static char cheat_amap[] = { 'r', 'a', 'v', 'm', 'a', 'p' };
+cheatseq_t cheat_amap_seq = CHEAT("ravmap", 0);
+cheatseq_t cheat_altamap_seq = CHEAT("iddt", 0);
+cheatseq_t cheat_secret_seq = CHEAT("iddst", 0);
+cheatseq_t cheat_item_seq = CHEAT("iddit", 0);
+cheatseq_t cheat_kill_seq = CHEAT("iddkt", 0);
 
-static byte cheatcount = 0;
+static void AM_CheatRevealMap(void);
+static void AM_CheatRevealSecret(void);
+static void AM_CheatRevealItem(void);
+static void AM_CheatRevealKill(void);
+
+typedef struct Cheat_s
+{
+    void (*func) (void);
+    cheatseq_t *seq;
+} Cheat_t;
+
+static Cheat_t cheats[] = {
+    {AM_CheatRevealMap,    &cheat_amap_seq},
+    // [crispy] new cheats
+    {AM_CheatRevealMap,    &cheat_altamap_seq},
+    {AM_CheatRevealSecret, &cheat_secret_seq},
+    {AM_CheatRevealItem,   &cheat_item_seq},
+    {AM_CheatRevealKill,   &cheat_kill_seq},
+    {NULL,               NULL}
+};
+
 
 // [crispy] gradient table for map normal mode
 static byte antialias_normal[NUMALIAS][8] = {
@@ -438,6 +463,134 @@ void AM_changeWindowLoc(void)
     m_y2 = m_y + m_h;
 }
 
+// [crispy] center automap on point
+static void AM_SetMapCenter(fixed_t px, fixed_t py)
+{
+    // [crispy] FTOM(MTOF()) is needed to fix map line jitter in follow mode.
+    if (crispy->hires)
+    {
+        m_x = (px >> FRACTOMAPBITS) - m_w/2;
+        m_y = (py >> FRACTOMAPBITS) - m_h/2;
+    }
+    else
+    {
+        m_x = FTOM(MTOF(px >> FRACTOMAPBITS)) - m_w/2;
+        m_y = FTOM(MTOF(py >> FRACTOMAPBITS)) - m_h/2;
+    }
+    next_m_x = m_x;
+    next_m_y = m_y;
+    m_x2 = m_x + m_w;
+    m_y2 = m_y + m_h;
+}
+
+
+static void AM_CheatRevealMap(void)
+{
+    cheating = (cheating + 1) % 3;
+}
+
+
+// [woof] center the automap around the lowest numbered unfound secret sector
+static void AM_CheatRevealSecret(void)
+{
+    static int last_secret = -1;
+
+    if (automapactive)
+    {
+        int i, start_i;
+
+        i = last_secret + 1;
+        if (i >= numsectors)
+            i = 0;
+        start_i = i;
+
+        do
+        {
+            sector_t *sec = &sectors[i];
+
+            if (sec->special == 9)
+            {
+                followplayer = false;
+
+                // This is probably not necessary
+                if (sec->lines && sec->lines[0] && sec->lines[0]->v1)
+                {
+                    AM_SetMapCenter(sec->lines[0]->v1->x, sec->lines[0]->v1->y);
+                    last_secret = i;
+                    break;
+                }
+            }
+
+            i++;
+            if (i >= numsectors)
+                i = 0;
+        } while (i != start_i);
+    }
+}
+
+// [woof] auxiliary function for "reveal item" and "reveal kill" cheats
+static void AM_CycleMobj(mobj_t **last_mobj, int *last_count, int flags, int alive)
+{
+    thinker_t *th, *start_th;
+
+    // If the thinkers have been wiped, addresses are invalid
+    if (*last_count != init_thinkers_count)
+    {
+        *last_count = init_thinkers_count;
+        *last_mobj = NULL;
+    }
+
+    if (*last_mobj)
+        th = &(*last_mobj)->thinker;
+    else
+        th = &thinkercap;
+
+    start_th = th;
+
+    do
+    {
+        th = th->next;
+        if (th->function == P_MobjThinker)
+        {
+            mobj_t *mobj;
+
+            mobj = (mobj_t *) th;
+
+            if ((!alive || mobj->health > 0) && mobj->flags & flags)
+            {
+                followplayer = false;
+                AM_SetMapCenter(mobj->x, mobj->y);
+                *last_mobj = mobj;
+                break;
+            }
+        }
+    } while (th != start_th);
+}
+
+// [woof] center the automap around the lowest numbered alive monster that counts towards the kill percentage
+static void AM_CheatRevealKill(void)
+{
+    if (automapactive)
+    {
+        static int last_count;
+        static mobj_t *last_mobj;
+
+        AM_CycleMobj(&last_mobj, &last_count, MF_COUNTKILL, true);
+    }
+}
+
+// [woof] center the automap around the lowest numbered uncollected item that counts towards the item percentage
+static void AM_CheatRevealItem(void)
+{
+    if (automapactive)
+    {
+        static int last_count;
+        static mobj_t *last_mobj;
+
+        AM_CycleMobj(&last_mobj, &last_count, MF_COUNTITEM, false);
+    }
+}
+
 void AM_initVariables(void)
 {
     int pnum;
@@ -529,8 +682,8 @@ void AM_loadPics(void)
     maplump = W_CacheLumpName(DEH_String("AUTOPAGE"), PU_STATIC);
 }
 
-// [crispy] restore mapmarker functionality
-void AM_unloadPics(void)
+// [crispy] small numbers have to remain PU_STATIC, never release
+/*void AM_unloadPics(void)
 {
     int i;
     char namebuf[9];
@@ -540,7 +693,7 @@ void AM_unloadPics(void)
         M_snprintf(namebuf, 9, "SMALLIN%d", i);
         W_ReleaseLumpName(namebuf);
     }
-}
+}*/
 
 // [crispy] restore mapmarker functionality
 void AM_clearMarks(void)
@@ -602,7 +755,7 @@ void AM_Stop(void)
 {
     //static event_t st_notify = { 0, ev_keyup, AM_MSGEXITED };
 
-    AM_unloadPics(); // [crispy] restore mapmarker functionality
+//  AM_unloadPics();
     automapactive = false;
 //  ST_Responder(&st_notify);
     stopped = true;
@@ -870,15 +1023,12 @@ boolean AM_Responder(event_t * ev)
             rc = false;
         }
 
-        if (cheat_amap[cheatcount] == ev->data1 && !netgame)
-            cheatcount++;
-        else
-            cheatcount = 0;
-        if (cheatcount == 6)
+        for (int i = 0; cheats[i].func != NULL; i++)
         {
-            cheatcount = 0;
-            rc = false;
-            cheating = (cheating + 1) % 3;
+            if (cht_CheckCheat(cheats[i].seq, key))
+            {
+                cheats[i].func();
+            }
         }
     }
 
@@ -942,21 +1092,7 @@ void AM_changeWindowScale(void)
 
 void AM_doFollowPlayer(void)
 {
-    // [crispy] FTOM(MTOF()) is needed to fix map line jitter in follow mode.
-    if (crispy->hires)
-    {
-        m_x = (viewx >> FRACTOMAPBITS) - m_w/2;
-        m_y = (viewy >> FRACTOMAPBITS) - m_h/2;
-    }
-    else
-    {
-        m_x = FTOM(MTOF(viewx >> FRACTOMAPBITS)) - m_w/2;
-        m_y = FTOM(MTOF(viewy >> FRACTOMAPBITS)) - m_h/2;
-    }
-    next_m_x = m_x;
-    next_m_y = m_y;
-    m_x2 = m_x + m_w;
-    m_y2 = m_y + m_h;
+	AM_SetMapCenter(viewx, viewy);
 
         // do the parallax parchment scrolling.
 /*
@@ -2049,6 +2185,10 @@ void AM_Drawer(void)
         numepisodes = 3;
     }
 
+    if (crispy->screenshot == 2)
+    {
+        return;
+    }
     // [crispy] check for translucent HUD
     SB_Translucent(TRANSLUCENT_HUD && (!automapactive || crispy->automapoverlay));
     if (gameepisode <= numepisodes && gamemap < 10)

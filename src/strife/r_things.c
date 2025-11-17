@@ -1230,7 +1230,7 @@ void R_DrawMasked (void)
 	    R_RenderMaskedSegRange (ds, ds->x1, ds->x2);
     
     // [crispy] don't draw player sprites for a fullscreen clean screenshot
-    if (crispy->cleanscreenshot == 2)
+    if (crispy->screenshot == 2)
         return;
 
     // draw the psprites on top of everything

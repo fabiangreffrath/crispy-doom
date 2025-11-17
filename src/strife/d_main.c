@@ -371,7 +371,7 @@ void D_Display (void)
     }
 
     // [crispy] draw neither pause pic nor menu when taking a clean screenshot
-    if (crispy->cleanscreenshot && !wipe)
+    if (gamestate == GS_LEVEL && crispy->screenshot == 2 && !wipe)
     {
         I_FinishUpdate();
         if (crispy->post_rendering_hook)
@@ -1705,7 +1705,8 @@ void D_DoomMain (void)
     // @category obscure
     // @vanilla
     //
-    // Set Rogue playtesting mode (godmode, noclip toggled by backspace)
+    // Set Rogue playtesting mode
+    // (god mode; no cliping mode toggled by backspace).
     //
 
     workparm = M_CheckParm ("-work");
@@ -2121,7 +2122,7 @@ void D_DoomMain (void)
     // // @arg <n>
     // // @vanilla
     // //
-    // // Start playing on episode n (1-4)
+    // // Start playing episode n (1-4).
     // //
 
     // p = M_CheckParmWithArgs("-episode", 1);

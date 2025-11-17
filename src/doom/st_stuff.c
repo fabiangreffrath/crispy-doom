@@ -1964,7 +1964,7 @@ void ST_Drawer (boolean fullscreen, boolean refresh)
         ST_createWidgets();
     }
 
-    if (crispy->cleanscreenshot == 2)
+    if (crispy->screenshot == 2)
         return;
 
     // [crispy] translucent HUD

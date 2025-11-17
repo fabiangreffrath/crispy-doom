@@ -1297,6 +1297,9 @@ void R_DrawMasked(void)
         if (ds->maskedtexturecol)
             R_RenderMaskedSegRange(ds, ds->x1, ds->x2);
 
+    if (crispy->screenshot == 2)
+        return;
+
 //
 // draw the psprites on top of everything
 //

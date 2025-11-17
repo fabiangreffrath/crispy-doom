@@ -25,6 +25,7 @@
 #include "m_argv.h"
 #include "m_bbox.h"
 #include "p_local.h"
+#include "p_rejectpad.h"
 #include "s_sound.h"
 #include "p_extnodes.h"
 
@@ -53,6 +54,8 @@ side_t *sides;
 
 int32_t *blockmap;	            // offsets in blockmap are from here // [crispy] BLOCKMAP limit
 int32_t *blockmaplump;          // [crispy] BLOCKMAP limit
+static int totallines;
+
 int bmapwidth, bmapheight;      // in mapblocks
 fixed_t bmaporgx, bmaporgy;     // origin of block map
 mobj_t **blocklinks;            // for thing chains
@@ -605,7 +608,7 @@ boolean P_LoadBlockMap(int lump)
 void P_GroupLines(void)
 {
     line_t **linebuffer;
-    int i, j, total;
+    int i, j;
     line_t *li;
     sector_t *sector;
     subsector_t *ss;
@@ -623,20 +626,20 @@ void P_GroupLines(void)
 
 // count number of lines in each sector
     li = lines;
-    total = 0;
+    totallines = 0;
     for (i = 0; i < numlines; i++, li++)
     {
-        total++;
+        totallines++;
         li->frontsector->linecount++;
         if (li->backsector && li->backsector != li->frontsector)
         {
             li->backsector->linecount++;
-            total++;
+            totallines++;
         }
     }
 
 // build line tables for each sector    
-    linebuffer = Z_Malloc(total * sizeof(line_t *), PU_LEVEL, 0);
+    linebuffer = Z_Malloc(totallines * sizeof(line_t *), PU_LEVEL, 0);
     for (i = 0; i < numsectors; ++i)
     {
         // Assign the line buffer for this sector
@@ -705,6 +708,35 @@ void P_GroupLines(void)
         sector->blockbox[BOXLEFT] = block;
     }
 
+}
+
+
+static void P_LoadReject(int lumpnum)
+{
+    int minlength;
+    int lumplen;
+
+    // Calculate the size that the REJECT lump *should* be.
+
+    minlength = (numsectors * numsectors + 7) / 8;
+
+    // If the lump meets the minimum length, it can be loaded directly.
+    // Otherwise, we need to allocate a buffer of the correct size
+    // and pad it with appropriate data.
+
+    lumplen = W_LumpLength(lumpnum);
+
+    if (lumplen >= minlength)
+    {
+        rejectmatrix = W_CacheLumpNum(lumpnum, PU_LEVEL);
+    }
+    else
+    {
+        rejectmatrix = Z_Malloc(minlength, PU_LEVEL, &rejectmatrix);
+        W_ReadLump(lumpnum, rejectmatrix);
+
+        PadRejectArray(rejectmatrix + lumplen, minlength - lumplen, totallines);
+    }
 }
 
 //=============================================================================
@@ -853,8 +885,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     P_LoadSegs(lumpnum + ML_SEGS);
     }
 
-    rejectmatrix = W_CacheLumpNum(lumpnum + ML_REJECT, PU_LEVEL);
     P_GroupLines();
+    P_LoadReject(lumpnum + ML_REJECT);
 
     // [crispy] remove slime trails
     P_RemoveSlimeTrails();

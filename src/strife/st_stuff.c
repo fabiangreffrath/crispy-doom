@@ -1525,7 +1525,7 @@ boolean ST_DrawExternal(void)
     int i;
 
     // [crispy] don't draw fullscreen HUD for a clean screenshot
-    if (crispy->cleanscreenshot && !st_statusbaron)
+    if (crispy->screenshot == 2 && !st_statusbaron)
         return false;
 
     if(st_statusbaron)
@@ -1558,7 +1558,7 @@ boolean ST_DrawExternal(void)
     }
 
     // [crispy] don't draw popups for a clean screenshot
-    if (!st_displaypopup || crispy->cleanscreenshot)
+    if (!st_displaypopup || crispy->screenshot == 2)
         return false;
 
     // villsa [STRIFE] added 20100926

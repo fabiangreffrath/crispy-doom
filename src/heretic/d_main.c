@@ -128,7 +128,7 @@ void DrawMessage(void)
     player_t *player;
 
     player = &players[consoleplayer];
-    if (player->messageTics <= 0 || !player->message)
+    if (player->messageTics <= 0 || !player->message || crispy->screenshot)
     {                           // No message
         return;
     }
@@ -289,6 +289,15 @@ void D_Display(void)
             {
                 AM_Drawer();
                 BorderNeedRefresh = true;
+            }
+            // [crispy] don't draw any GUI elements when taking a clean screenshot
+            if (crispy->screenshot == 2)
+            {
+                if (automapactive && !crispy->automapoverlay)
+                    SB_Drawer();                    
+                UpdateState |= I_FULLVIEW;
+                I_FinishUpdate();
+                return;
             }
             // [crispy] check for translucent HUD
             SB_Translucent(TRANSLUCENT_HUD && (!automapactive || crispy->automapoverlay));
@@ -585,7 +594,7 @@ void D_StartTitle(void)
 =
 = D_CheckRecordFrom
 =
-= -recordfrom <savegame num> <demoname>
+= -recordfrom <save-num> <demo-name>
 ==============
 */
 
@@ -597,10 +606,10 @@ void D_CheckRecordFrom(void)
     //!
     // @vanilla
     // @category demo
-    // @arg <savenum> <demofile>
+    // @arg <save-num> <demo-name>
     //
-    // Record a demo, loading from the given filename. Equivalent
-    // to -loadgame <savenum> -record <demofile>.
+    // Load a game from the given savegame slot and record a demo from
+    // it.  Equivalent to -loadgame <save-num> -record <demo-name>.
 
     p = M_CheckParmWithArgs("-recordfrom", 2);
     if (!p)
@@ -1020,7 +1029,7 @@ void D_DoomMain(void)
     // @arg <n>
     // @vanilla
     //
-    // Start playing on episode n (1-4)
+    // Start playing episode n (1-4).
     //
 
     p = M_CheckParmWithArgs("-episode", 1);

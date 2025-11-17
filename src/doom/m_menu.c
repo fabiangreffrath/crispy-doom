@@ -2686,17 +2686,21 @@ boolean M_Responder (event_t* ev)
 	return true;
     }
 
-    // [crispy] take screen shot without weapons and HUD
-    if (key != 0 && key == key_menu_cleanscreenshot)
-    {
-	crispy->cleanscreenshot = (screenblocks > 10) ? 2 : 1;
-    }
-
     if ((devparm && key == key_menu_help) ||
         (key != 0 && (key == key_menu_screenshot || key == key_menu_cleanscreenshot)))
     {
-	G_ScreenShot ();
-	return true;
+        if (key == key_menu_cleanscreenshot)
+        {
+            // [crispy] take screen shot without weapons and HUD
+            crispy->screenshot = 2;
+        }
+        else
+        {
+            // [crispy] take a normal screenshot
+            crispy->screenshot = 1;
+        }
+        G_ScreenShot ();
+        return true;
     }
 
     // F-Keys

@@ -88,9 +88,8 @@ typedef struct
 	int widescreen;
 
 	// [crispy] in-game switches and variables
-	int screenshotmsg;
 	int snowflakes;
-	int cleanscreenshot;
+	int screenshot; // 1 = normal, 2 = clean
 	int demowarp;
 	int fps;
 

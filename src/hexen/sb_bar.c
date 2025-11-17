@@ -407,30 +407,57 @@ void SB_Init(void)
 void SB_SetClassData(void)
 {
     int class;
+    char namebuf[9]; // [crispy]
 
     class = PlayerClass[consoleplayer]; // original player class (not pig)
     PatchWEAPONSLOT = W_CacheLumpNum(W_GetNumForName("wpslot0")
                                      + class, PU_STATIC);
     PatchWEAPONFULL = W_CacheLumpNum(W_GetNumForName("wpfull0")
                                      + class, PU_STATIC);
-    PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecef1")
-                                 + class, PU_STATIC);
-    PatchPIECE2 = W_CacheLumpNum(W_GetNumForName("wpiecef2")
-                                 + class, PU_STATIC);
-    PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecef3")
-                                 + class, PU_STATIC);
-    PatchCHAIN = W_CacheLumpNum(W_GetNumForName("chain") + class, PU_STATIC);
-    if (!netgame)
-    {                           // single player game uses red life gem (the second gem)
-        PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegem")
-                                      + maxplayers * class + 1, PU_STATIC);
-    }
-    else
+    // [crispy] support for kex and original iwad weapon pieces & lifegem lump numbers
+    // single player game uses red life gem (the second gem)
+    switch (class)
     {
-        PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegem")
-                                      + maxplayers * class + consoleplayer,
-                                      PU_STATIC);
+        case PCLASS_CLERIC:
+            PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecec1"),
+                                 PU_STATIC);
+            PatchPIECE2 = W_CacheLumpNum(W_GetNumForName("wpiecec2"),
+                                 PU_STATIC);
+            PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecec3"),
+                                 PU_STATIC);
+            M_snprintf(namebuf, sizeof(namebuf), "lifegmc%d", (netgame ? consoleplayer + 1 : 2));
+            PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName(namebuf), PU_STATIC);
+            break;
+        case PCLASS_MAGE:
+            PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecem1"),
+                                 PU_STATIC);
+            PatchPIECE2 = W_CacheLumpNum(W_GetNumForName("wpiecem2"),
+                                 PU_STATIC);
+            PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecem3"),
+                                 PU_STATIC);
+            M_snprintf(namebuf, sizeof(namebuf), "lifegmm%d", (netgame ? consoleplayer + 1 : 2));
+            PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName(namebuf), PU_STATIC);
+            break;
+        default:
+            // fighter
+            PatchPIECE1 = W_CacheLumpNum(W_GetNumForName("wpiecef1"),
+                                 PU_STATIC);
+            PatchPIECE2 = W_CacheLumpNum(W_GetNumForName("wpiecef2"),
+                                 PU_STATIC);
+            PatchPIECE3 = W_CacheLumpNum(W_GetNumForName("wpiecef3"),
+                                 PU_STATIC);
+            if (netgame && consoleplayer == 0)
+            {
+             PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName("lifegem"),
+                                 PU_STATIC);       
+            }
+            else
+            {
+                M_snprintf(namebuf, sizeof(namebuf), "lifegmf%d", (netgame ? consoleplayer + 1 : 2));
+                PatchLIFEGEM = W_CacheLumpNum(W_GetNumForName(namebuf), PU_STATIC);               
+            }
     }
+    PatchCHAIN = W_CacheLumpNum(W_GetNumForName("chain") + class, PU_STATIC);
     SB_state = -1;
     UpdateState |= I_FULLSCRN;
 }
@@ -476,6 +503,11 @@ void SB_Ticker(void)
             delta = 6;
         }
         HealthMarker += delta;
+    }
+    // [crispy] play artifact flash animation independently of framerate
+    if (ArtifactFlash > 0)
+    {
+        ArtifactFlash--;
     }
     SB_PaletteFlash(false);
 }
@@ -1184,7 +1216,7 @@ void DrawMainBar(void)
         V_DrawPatch(144, 160, PatchARTICLEAR);
         V_DrawPatch(148, 164, W_CacheLumpNum(W_GetNumForName("useartia")
                                              + ArtifactFlash - 1, PU_CACHE));
-        ArtifactFlash--;
+        // ArtifactFlash--; [crispy] moved to SB_Ticker
         oldarti = -1;           // so that the correct artifact fills in after the flash
         UpdateState |= I_STATBAR;
     }

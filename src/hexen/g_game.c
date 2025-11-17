@@ -38,6 +38,7 @@
 
 // External functions
 
+extern void R_ExecuteSetViewSize(void); // [crispy] for clean screenshot
 
 // Functions
 
@@ -1361,6 +1362,20 @@ void G_PrepTiccmd (void)
     }
 }
 
+// [crispy] take a screenshot after rendering the next frame
+static void G_CrispyScreenShot()
+{
+    // [crispy] increase screenshot filename limit
+    V_ScreenShot("HEXEN%04i.%s");
+    if (gamestate == GS_LEVEL)
+        P_SetMessage(&players[consoleplayer], "SCREEN SHOT", false);
+    if (crispy->screenshot == 2)
+    {
+        R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
+    }
+    crispy->screenshot = 0;
+}
+
 
 //==========================================================================
 //
@@ -1372,6 +1387,7 @@ void G_Ticker(void)
 {
     int i, buf;
     ticcmd_t *cmd = NULL;
+    extern boolean automapactive;
 
 //
 // do player reborns if needed
@@ -1413,8 +1429,17 @@ void G_Ticker(void)
                 G_DoPlayDemo();
                 break;
             case ga_screenshot:
-                V_ScreenShot("HEXEN%02i.%s");
-                P_SetMessage(&players[consoleplayer], "SCREEN SHOT", false);
+                if (gamestate == GS_LEVEL)
+                {
+                    if (crispy->screenshot == 2 && (!automapactive || crispy->automapoverlay))
+                    {
+                        R_SetViewSize(11, detailLevel);
+                        R_ExecuteSetViewSize();
+                    }
+                }
+                // [crispy] screenshot always after drawing is done
+                crispy->post_rendering_hook = G_CrispyScreenShot;
+                BorderNeedRefresh = true;
                 gameaction = ga_nothing;
                 break;
             case ga_leavemap:

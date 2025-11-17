@@ -1424,11 +1424,15 @@ static void G_ReadGameParms (void)
 // [crispy] take a screenshot after rendering the next frame
 static void G_CrispyScreenShot()
 {
-	// [crispy] increase screenshot filename limit
-	V_ScreenShot("DOOM%04i.%s");
-	players[consoleplayer].message = DEH_String("screen shot");
-	crispy->cleanscreenshot = 0;
-	crispy->screenshotmsg = 2;
+    // [crispy] increase screenshot filename limit
+    V_ScreenShot("DOOM%04i.%s");
+    if (gamestate == GS_LEVEL)
+        players[consoleplayer].message = DEH_String("screen shot");
+    if (crispy->screenshot == 2)
+    {
+        R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
+    }
+    crispy->screenshot = 0;
 }
 
 //
@@ -1481,15 +1485,16 @@ void G_Ticker (void)
 	    break; 
 	  case ga_screenshot: 
 	    // [crispy] redraw view without weapons and HUD
-	    if (gamestate == GS_LEVEL && (crispy->cleanscreenshot || crispy->screenshotmsg == 1))
-	    {
-		crispy->screenshotmsg = 4;
-		crispy->post_rendering_hook = G_CrispyScreenShot;
-	    }
-	    else
-	    {
-		G_CrispyScreenShot();
-	    }
+        if (gamestate == GS_LEVEL)
+        {
+            if (crispy->screenshot == 2 && (!automapactive || crispy->automapoverlay))
+            {
+                R_SetViewSize(11, detailLevel);
+                R_ExecuteSetViewSize();
+            }
+        }
+        // [crispy] screenshot always after drawing is done
+        crispy->post_rendering_hook = G_CrispyScreenShot;
 	    gameaction = ga_nothing; 
 	    break; 
 	  case ga_nothing: 
@@ -2979,6 +2984,13 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 	char *actualname = M_StringDuplicate(defdemoname);
 
 	gamekeydown[key_demo_quit] = false;
+
+	// [crispy] update turning resolution when joining a demo
+	// based upon longtics info taken from record
+	lowres_turn = !longtics;
+
+	// [crispy] redraw status bar to get rid of demo progress bar
+	ST_Drawer(viewheight == SCREENHEIGHT, true);
 
 	// [crispy] find a new name for the continued demo
 	G_RecordDemo(actualname);

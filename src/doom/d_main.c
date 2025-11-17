@@ -324,7 +324,7 @@ boolean D_Display (void)
     }
 
     // [crispy] draw neither pause pic nor menu when taking a clean screenshot
-    if (crispy->cleanscreenshot)
+    if (gamestate == GS_LEVEL && crispy->screenshot == 2)
     {
 	return false;
     }
@@ -1999,7 +1999,8 @@ void D_DoomMain (void)
     // Disable automatic loading of Master Levels, No Rest for the Living and
     // Sigil.
     //
-    if (!M_ParmExists("-nosideload") && gamemode != shareware && !demolumpname[0])
+    if (!M_ParmExists("-nosideload") && gamemode != shareware &&
+        !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))
     {
 	if (gamemode == retail &&
 	    gameversion == exe_ultimate &&
@@ -2206,7 +2207,7 @@ void D_DoomMain (void)
     // @arg <n>
     // @vanilla
     //
-    // Start playing on episode n (1-4)
+    // Start playing episode n (1-4).
     //
 
     p = M_CheckParmWithArgs("-episode", 1);
@@ -2255,7 +2256,7 @@ void D_DoomMain (void)
     // @vanilla
     //
     // Start a game immediately, warping to ExMy (Doom 1) or MAPxy
-    // (Doom 2)
+    // (Doom 2).
     //
 
     p = M_CheckParmWithArgs("-warp", 1);

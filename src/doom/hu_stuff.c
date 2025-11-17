@@ -881,7 +881,7 @@ static void HU_DrawCrosshair (void)
 void HU_Drawer(void)
 {
 
-    if (crispy->cleanscreenshot)
+    if (crispy->screenshot == 2)
     {
 	HU_Erase();
 	return;
@@ -904,11 +904,16 @@ void HU_Drawer(void)
     }
 
     dp_translation = NULL;
-    if (crispy->screenshotmsg == 4)
-	HUlib_eraseSText(&w_message);
+    // [crispy] erase when taking a screenshot
+    if (!crispy->screenshot)
+    {
+        HUlib_drawSText(&w_message);
+        HUlib_drawIText(&w_chat);
+    }
     else
-    HUlib_drawSText(&w_message);
-    HUlib_drawIText(&w_chat);
+    {
+        HUlib_eraseSText(&w_message);
+    }
 
     if (crispy->coloredhud & COLOREDHUD_TEXT)
 	dp_translation = cr[CR_GOLD];
@@ -1044,7 +1049,6 @@ void HU_Ticker(void)
     {
 	message_on = false;
 	message_nottobefuckedwith = false;
-	crispy->screenshotmsg >>= 1;
     }
 
     if (secret_counter && !--secret_counter)
@@ -1077,7 +1081,6 @@ void HU_Ticker(void)
 	    message_counter = HU_MSGTIMEOUT;
 	    message_nottobefuckedwith = message_dontfuckwithme;
 	    message_dontfuckwithme = 0;
-	    crispy->screenshotmsg >>= 1;
 	}
 
     } // else message_on = false;

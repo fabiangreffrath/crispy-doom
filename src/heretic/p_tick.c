@@ -37,6 +37,8 @@ structures will vary in size, but the first element must be thinker_t.
 
 thinker_t thinkercap;           // both the head and tail of the thinker list
 
+int init_thinkers_count = 0;
+
 /*
 ===============
 =
@@ -48,6 +50,7 @@ thinker_t thinkercap;           // both the head and tail of the thinker list
 void P_InitThinkers(void)
 {
     thinkercap.prev = thinkercap.next = &thinkercap;
+    ++init_thinkers_count;
 }
 
 

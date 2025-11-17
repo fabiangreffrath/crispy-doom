@@ -68,7 +68,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install \
-            python3-pip \
             libsdl2-dev \
             libsdl2-mixer-dev \
             libsdl2-net-dev \
@@ -86,7 +85,6 @@ jobs:
             sdl2_net \
             libpng \
             libsamplerate \
-            python3 \
             fluid-synth
 
       - name: Install dependencies (MSYS2)
@@ -99,6 +97,7 @@ jobs:
           install: >-
             autotools
             zip
+            ${{ matrix.config.msys-env }}-python-pip
             ${{ matrix.config.msys-env }}-gcc
             ${{ matrix.config.msys-env }}-SDL2
             ${{ matrix.config.msys-env }}-SDL2_mixer
@@ -106,7 +105,6 @@ jobs:
             ${{ matrix.config.msys-env }}-libpng
             ${{ matrix.config.msys-env }}-libsamplerate
             ${{ matrix.config.msys-env }}-fluidsynth
-            ${{ matrix.config.msys-env }}-python-pip
 
       - uses: actions/checkout@v4
         with:
@@ -136,7 +134,7 @@ jobs:
 
       - name: Test
         run: |
-          pip install --break-system-packages pyyaml
+          pip install pyyaml
           PREFIX=`sed -n '/PROGRAM_PREFIX/p' ${PWD}/config.h | cut -d '"' -f 2`
           make -j4 -C quickcheck check SOURCE_PORT=$PWD/src/${PREFIX}doom
 

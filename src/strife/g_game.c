@@ -1244,9 +1244,13 @@ static void G_CrispyScreenShot()
 {
     // [crispy] increase screenshot filename limit
     V_ScreenShot("STRIFE%04i.%s"); // [STRIFE] file name, message
-    players[consoleplayer].message = DEH_String("STRIFE  by Rogue entertainment");
-    crispy->cleanscreenshot = 0;
-    crispy->screenshotmsg = 2;
+    if (gamestate == GS_LEVEL)
+        players[consoleplayer].message = DEH_String("STRIFE  by Rogue entertainment");
+    if (crispy->screenshot == 2)
+    {
+        R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
+    }
+    crispy->screenshot = 0;
 }
 
 //
@@ -1299,15 +1303,16 @@ void G_Ticker (void)
             break; 
         case ga_screenshot: 
             // [crispy] redraw view without weapons and HUD
-            if (gamestate == GS_LEVEL && (crispy->cleanscreenshot || crispy->screenshotmsg == 1))
+            if (gamestate == GS_LEVEL)
             {
-                crispy->screenshotmsg = 4;
-                crispy->post_rendering_hook = G_CrispyScreenShot;
+                if (crispy->screenshot == 2 && (!automapactive || crispy->automapoverlay))
+                {
+                    R_SetViewSize(11, detailLevel);
+                    R_ExecuteSetViewSize();
+                }
             }
-            else
-            {
-                G_CrispyScreenShot();
-            }
+            // [crispy] screenshot always after drawing is done
+            crispy->post_rendering_hook = G_CrispyScreenShot;
             gameaction = ga_nothing; 
             break; 
         case ga_nothing: 

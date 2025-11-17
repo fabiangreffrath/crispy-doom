@@ -1272,9 +1272,9 @@ void I_GraphicsCheckCommandLine(void)
 
     //!
     // @category video
-    // @arg <x>
+    // @arg <W>
     //
-    // Specify the screen width, in pixels. Implies -window.
+    // Specify the screen width, in pixels.  Implies -window.
     //
 
     i = M_CheckParmWithArgs("-width", 1);
@@ -1287,9 +1287,9 @@ void I_GraphicsCheckCommandLine(void)
 
     //!
     // @category video
-    // @arg <y>
+    // @arg <H>
     //
-    // Specify the screen height, in pixels. Implies -window.
+    // Specify the screen height, in pixels.  Implies -window.
     //
 
     i = M_CheckParmWithArgs("-height", 1);
@@ -1302,9 +1302,9 @@ void I_GraphicsCheckCommandLine(void)
 
     //!
     // @category video
-    // @arg <WxY>
+    // @arg <WxH>
     //
-    // Specify the dimensions of the window. Implies -window.
+    // Specify the dimensions of the window.  Implies -window.
     //
 
     i = M_CheckParmWithArgs("-geometry", 1);
@@ -1343,7 +1343,7 @@ void I_GraphicsCheckCommandLine(void)
     //!
     // @category video
     //
-    // Don't scale up the screen. Implies -window.
+    // Don't scale up the screen.  Implies -window.
     //
 
     if (M_CheckParm("-1")) 
@@ -1354,7 +1354,7 @@ void I_GraphicsCheckCommandLine(void)
     //!
     // @category video
     //
-    // Double up the screen to 2x its normal size. Implies -window.
+    // Double up the screen to 2x its normal size.  Implies -window.
     //
 
     if (M_CheckParm("-2")) 
@@ -1365,7 +1365,7 @@ void I_GraphicsCheckCommandLine(void)
     //!
     // @category video
     //
-    // Double up the screen to 3x its normal size. Implies -window.
+    // Double up the screen to 3x its normal size.  Implies -window.
     //
 
     if (M_CheckParm("-3")) 
@@ -2073,19 +2073,9 @@ void I_RenderReadPixels(byte **data, int *w, int *h, int *p)
 	format = SDL_AllocFormat(png_format);
 	temp = rect.w * format->BytesPerPixel; // [crispy] pitch
 
-	// [crispy] As far as I understand the issue, SDL_RenderPresent()
-	// may return early, i.e. before it has actually finished rendering the
-	// current texture to screen -- from where we want to capture it.
-	// However, it does never return before it has finished rendering the
-	// *previous* texture.
-	// Thus, we add a second call to SDL_RenderPresent() here to make sure
-	// that it has at least finished rendering the previous texture, which
-	// already contains the scene that we actually want to capture.
-	if (crispy->post_rendering_hook)
-	{
-		SDL_RenderCopy(renderer, smooth_pixel_scaling ? texture_upscaled : texture, NULL, NULL);
-		SDL_RenderPresent(renderer);
-	}
+	// Refresh backbuffer with previous texture to ensure it is valid for reading the pixels
+	// See https://github.com/fabiangreffrath/crispy-doom/issues/1304
+	SDL_RenderCopy(renderer, smooth_pixel_scaling ? texture_upscaled : texture, NULL, NULL);
 
 	// [crispy] allocate memory for screenshot image
 	pixels = malloc(rect.h * temp);
