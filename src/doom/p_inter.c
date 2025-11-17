@@ -749,11 +749,36 @@ P_KillMobj
 	if (target->player)
 	    source->player->frags[target->player-players]++;
     }
-    else if (!netgame && (target->flags & MF_COUNTKILL) )
+    else if (target->flags & MF_COUNTKILL)
     {
 	// count all monster deaths,
 	// even those caused by other monsters
-	players[0].killcount++;
+        if (!netgame)
+        {
+	    players[0].killcount++;
+        }
+        else // netgame
+        {
+            if (!deathmatch)
+            {
+                if (target->lastenemy && target->lastenemy->health > 0 && target->lastenemy->player)
+                {
+                    target->lastenemy->player->killcount++;
+                }
+                else
+                {
+                    // add kill to first player who is still ingame
+                    for (unsigned int plridx = 0; plridx < MAXPLAYERS; plridx++)
+                    {
+                        if (playeringame[plridx])
+                        {
+                            players[plridx].killcount++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
     
     if (target->player)
@@ -988,6 +1013,10 @@ P_DamageMobj
     {
 	// if not intent on another player,
 	// chase after this one
+        if ( !target->lastenemy || target->lastenemy->health <= 0
+             || !target->lastenemy->player)
+           target->lastenemy = target->target;
+
 	target->target = source;
 	target->threshold = BASETHRESHOLD;
 	if (target->state == &states[target->info->spawnstate]
