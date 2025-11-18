@@ -81,6 +81,58 @@ static void P_ReadMarkPoints (const char *key)
     }
 }
 
+// flags2
+
+static void P_WriteFlags2 (const char *key)
+{
+    thinker_t* th;
+
+    for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
+    {
+        if (th->function.acp1 == (actionf_p1)P_MobjThinker)
+        {
+            mobj_t *mo = (mobj_t *)th;
+
+            M_snprintf(line, MAX_LINE_LEN, "%s %d\n",
+                    key,
+                    (int)mo->flags2);
+            fputs(line, save_stream);
+        }
+    }
+}
+
+static void P_ReadFlags2 (const char *key)
+{
+	int flags2;
+    static thinker_t* th;
+
+    if (th == NULL)
+    {
+        th = thinkercap.next;
+    }
+
+	if (sscanf(line, "%s %d\n",
+	           string,
+	           &flags2) == 2 &&
+	    !strncmp(string, key, MAX_STRING_LEN))
+	{
+        do
+        {
+            if (th->function.acp1 == (actionf_p1)P_MobjThinker)
+            {
+                mobj_t *mo = (mobj_t *)th;
+                mo->flags2 = flags2;
+
+                // move up in the list to return later
+                th=th->next;
+                return;
+            }
+            // no mobj found? move up anyways
+            th=th->next;
+        } while (th != &thinkercap);
+	}
+}
+
 typedef struct
 {
     const char *key;
@@ -94,6 +146,7 @@ static const extsavegdata_t extsavegdata[] =
     // [crispy] @FORKS: please change this if you are going to introduce incompatible changes!
     {"crispy-strife", P_WritePackageTarname, NULL, 0},
     {"markpoints", P_WriteMarkPoints, P_ReadMarkPoints, 1},
+    {"flags2", P_WriteFlags2, P_ReadFlags2, 1},
 };
 
 void P_WriteExtendedSaveGameData ()

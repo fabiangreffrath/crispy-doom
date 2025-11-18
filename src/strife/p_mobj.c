@@ -661,6 +661,7 @@ P_SpawnMobj
     mobj->radius = info->radius;
     mobj->height = info->height;
     mobj->flags = info->flags;
+    mobj->flags2 = info->flags2;
     mobj->health = info->spawnhealth;
 
     // haleyjd 09/25/10: [STRIFE] Doesn't do this; messes up flamethrower

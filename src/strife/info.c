@@ -4738,7 +4738,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_DROPOFF|MF_MISSILE,        //flags
         NULL,       //namepointer
-        0,       //flags2
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_PGRENADE*/
@@ -4766,7 +4766,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_DROPOFF|MF_MISSILE,        //flags
         NULL,       //namepointer
-        0,       //flags2
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_INQGRENADE*/
@@ -4794,7 +4794,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_DROPOFF|MF_MISSILE,        //flags
         NULL,       //namepointer
-        0,       //flags2
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_PFLAME*/
