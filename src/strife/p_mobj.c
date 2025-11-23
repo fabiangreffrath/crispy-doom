@@ -1199,6 +1199,7 @@ mobj_t *P_SubstNullMobj(mobj_t *mobj)
         dummy_mobj.y = 0;
         dummy_mobj.z = 0;
         dummy_mobj.flags = 0;
+        dummy_mobj.flags2 = 0;
 
         mobj = &dummy_mobj;
     }
