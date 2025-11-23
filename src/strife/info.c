@@ -4570,7 +4570,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE,       //flags
         NULL,       //namepointer
-        0,       //flags2
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SEEKMISSILE*/
@@ -4598,7 +4598,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE,       //flags
         NULL,       //namepointer
-        0,       //flags2
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_ELECARROW*/
