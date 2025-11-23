@@ -31,7 +31,7 @@ extern multiitem_t multiitem_centerweapon[NUM_CENTERWEAPON];
 extern multiitem_t multiitem_difficulties[NUM_SKILLS];
 extern multiitem_t multiitem_freelook[NUM_FREELOOKS_HH];
 extern multiitem_t multiitem_sndchannels[3];
-extern multiitem_t multiitem_translucency[NUM_TRANSLUCENCY];
+extern multiitem_t multiitem_translucency[NUM_TRANSLUCENCY-2];
 extern multiitem_t multiitem_widescreen[NUM_RATIOS];
 extern multiitem_t multiitem_widgets[NUM_WIDGETS];
 

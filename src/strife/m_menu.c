@@ -1521,7 +1521,7 @@ static void M_DrawCrispness1(void)
 
     M_DrawCrispnessSeparator(crispness_sep_visual, "Visual");
     M_DrawCrispnessItem(crispness_smoothlight, "Smooth Diminishing Lighting", crispy->smoothlight, true);
-    M_DrawCrispnessMultiItem(crispness_translucency, "Enable Transl.", multiitem_translucency, crispy->translucency, true);
+    M_DrawCrispnessMultiItem(crispness_translucency, "Translucency", multiitem_translucency, crispy->translucency, true);
 
     M_DrawCrispnessGoto(crispness1_next, "Next Page >");
     M_DrawCrispnessGoto(crispness1_prev, "< Last Page");
