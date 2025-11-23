@@ -385,6 +385,9 @@ static void saveg_read_mobj_t(mobj_t *str)
     // int flags;
     str->flags = saveg_read32();
 
+    // init flags2
+    str->flags2 = 0;
+
     // int health;
     str->health = saveg_read32();
 
