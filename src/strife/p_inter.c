@@ -778,8 +778,6 @@ void P_KillMobj(mobj_t* source, mobj_t* target)
     // are set a few lines later? watcom nonsense perhaps?
     target->flags &= ~(MF_SHOOTABLE|MF_FLOAT|MF_BOUNCE|MF_CORPSE|MF_DROPOFF);
 
-    // TODO: Translucent Barrel Explosion
-
     // villsa [STRIFE] unused
     /*
     if (target->type != MT_SKULL)
