@@ -937,10 +937,12 @@ void R_DrawPlayerSprites (void)
     mceilingclip = negonearray;
     
     // add all active psprites
-    for (i=0, psp=viewplayer->psprites; i<NUMPSPRITES; i++,psp++)
+    for (i=0, psp=viewplayer->psprites;
+     i<NUMPSPRITES;
+     i++,psp++)
     {
-        if (psp->state)
-            R_DrawPSprite (psp, i); // [crispy] pass psprnum
+    if (psp->state)
+        R_DrawPSprite (psp, i); // [crispy] pass psprnum
     }
 }
 
