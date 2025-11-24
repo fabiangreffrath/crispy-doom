@@ -639,7 +639,6 @@ void R_ProjectSprite (mobj_t* thing)
     vis = R_NewVisSprite ();
     vis->mobjflags = thing->flags;
     vis->mobjflags2 = thing->flags2;
-    vis->psprite = false;
     vis->scale = xscale<<detailshift;
     vis->gx = interpx;
     vis->gy = interpy;
@@ -807,7 +806,6 @@ void R_DrawPSprite (pspdef_t* psp, psprnum_t psprnum) // [crispy] read psprnum
     vis = &avis;
     vis->mobjflags = 0;
     vis->mobjflags2 = 0;
-    vis->psprite = true;
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
     vis->scale = pspritescale<<detailshift;
