@@ -938,11 +938,11 @@ void R_DrawPlayerSprites (void)
     
     // add all active psprites
     for (i=0, psp=viewplayer->psprites;
-     i<NUMPSPRITES;
-     i++,psp++)
+	 i<NUMPSPRITES;
+	 i++,psp++)
     {
-    if (psp->state)
-        R_DrawPSprite (psp, i); // [crispy] pass psprnum
+	if (psp->state)
+	    R_DrawPSprite (psp, i); // [crispy] pass psprnum
     }
 }
 
