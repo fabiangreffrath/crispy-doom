@@ -23,4 +23,8 @@
 extern void P_WriteExtendedSaveGameData ();
 extern void P_ReadExtendedSaveGameData ();
 
+/* p_saveg.c */
+extern uint32_t P_ThinkerToIndex (thinker_t* thinker);
+extern thinker_t* P_IndexToThinker (uint32_t index);
+
 #endif

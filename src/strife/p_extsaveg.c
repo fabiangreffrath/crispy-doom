@@ -86,9 +86,8 @@ static void P_ReadMarkPoints (const char *key)
 static void P_WriteFlags2 (const char *key)
 {
     thinker_t* th;
-    int i;
 
-    for (th = thinkercap.next, i = 0; th != &thinkercap; th=th->next, i++)
+    for (th = thinkercap.next; th != &thinkercap; th=th->next)
     {
         if (th->function.acp1 == (actionf_p1)P_MobjThinker)
         {
@@ -98,7 +97,7 @@ static void P_WriteFlags2 (const char *key)
             {
                 M_snprintf(line, MAX_LINE_LEN, "%s %d %d\n",
                         key,
-                        i,
+                        (uint32_t) P_ThinkerToIndex(th),
                         (int)mo->flags2);
                 fputs(line, save_stream);
             }
@@ -108,39 +107,18 @@ static void P_WriteFlags2 (const char *key)
 
 static void P_ReadFlags2 (const char *key)
 {
-	int flags2, index;
-    static thinker_t* th;
-    static int i;
+    int flags2;
+    uint32_t index;
 
-    if (th == NULL)
-    {
-        th = thinkercap.next;
-    }
-
-	if (sscanf(line, "%s %d %d\n",
-	           string,
+    if (sscanf(line, "%s %d %d\n",
+               string,
                &index,
-	           &flags2) == 3 &&
-	    !strncmp(string, key, MAX_STRING_LEN))
-	{
-        do
-        {
-            if (th->function.acp1 == (actionf_p1)P_MobjThinker)
-            {
-                mobj_t *mo = (mobj_t *)th;
-                if (index == i)
-                {
-                    mo->flags2 = flags2;
-
-                    // move up in the list to return later
-                    th=th->next; i++;
-                    return;
-                }
-            }
-            // no mobj found? move up anyways
-            th=th->next; i++;
-        } while (th != &thinkercap);
-	}
+               &flags2) == 3 &&
+        !strncmp(string, key, MAX_STRING_LEN))
+    {
+        mobj_t *mo = (mobj_t *) P_IndexToThinker(index);
+        mo->flags2 = flags2;
+    }
 }
 
 typedef struct
