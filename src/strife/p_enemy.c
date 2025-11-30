@@ -2800,7 +2800,8 @@ void A_DeathExplode5(mobj_t* actor)
 //
 void A_DeathExplode1(mobj_t* actor)
 {
-    actor->flags2 |= MF_TRANSLUCENT; // [crispy] translucent explosion
+    if (actor->type != MT_INQUISITOR)
+        actor->flags2 |= MF_TRANSLUCENT; // [crispy] translucent explosion
     P_RadiusAttack(actor, actor->target, 128);
     if(actor->target && actor->target->player)
         P_NoiseAlert(actor->target, actor); // inlined in asm
@@ -2813,7 +2814,8 @@ void A_DeathExplode1(mobj_t* actor)
 //
 void A_DeathExplode2(mobj_t* actor)
 {
-    actor->flags2 |= MF_TRANSLUCENT; // [crispy] translucent explosion
+    if (actor->type == MT_MISC_06)
+        actor->flags2 |= MF_TRANSLUCENT; // [crispy] translucent barrel explosion
     P_RadiusAttack(actor, actor->target, 64);
     if(actor->target && actor->target->player)
         P_NoiseAlert(actor->target, actor); // inlined in asm
@@ -2826,7 +2828,6 @@ void A_DeathExplode2(mobj_t* actor)
 //
 void A_DeathExplode3(mobj_t* actor)
 {
-    actor->flags2 |= MF_TRANSLUCENT; // [crispy] translucent explosion
     P_RadiusAttack(actor, actor->target, 32);
     if(actor->target && actor->target->player)
         P_NoiseAlert(actor->target, actor); // inlined in asm

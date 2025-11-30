@@ -918,7 +918,6 @@ void A_TorpedoExplode(mobj_t* actor)
     int i;
 
     actor->angle -= ANG180;
-    actor->flags2 |= MF_TRANSLUCENT; // [crispy] translucent explosion
     for(i = 0; i < 80; i++)
     {
         actor->angle += (ANG90 / 20);
