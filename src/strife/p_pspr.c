@@ -918,6 +918,7 @@ void A_TorpedoExplode(mobj_t* actor)
     int i;
 
     actor->angle -= ANG180;
+    
     for(i = 0; i < 80; i++)
     {
         actor->angle += (ANG90 / 20);
