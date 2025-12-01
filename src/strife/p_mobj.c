@@ -85,6 +85,7 @@ P_SetMobjState
 void P_ExplodeMissile (mobj_t* mo)
 {
     mo->momx = mo->momy = mo->momz = 0;
+    
     mo->flags2 |= MF_TRANSLUCENT; // [crispy] translucent explosion
     P_SetMobjState (mo, mobjinfo[mo->type].deathstate);
 

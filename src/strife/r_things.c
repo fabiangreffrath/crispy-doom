@@ -468,7 +468,7 @@ R_DrawVisSprite
     // [crispy] translucent sprites
     else if (crispy->translucency && vis->mobjflags2 & MF_TRANSLUCENT)
     {
-        if ((crispy->translucency & TRANSLUCENCY_MISSILE))
+        if (crispy->translucency & TRANSLUCENCY_MISSILE)
             {
                 colfunc = R_DrawMVisTLColumn;
             }
