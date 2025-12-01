@@ -460,7 +460,7 @@ static menuitem_t Crispness1Menu[] =
     {-1, "", 0, '\0'},
     {-1, "", 0, '\0'},
     {2, "", M_CrispyToggleSmoothLighting, 's'},
-    {3, "", M_CrispyToggleTranslucency, 'e'},
+    {3, "", M_CrispyToggleTranslucency, 't'},
     {-1, "", 0, '\0'},
     {1, "", M_CrispnessNext, 'n'},
     {1, "", M_CrispnessPrev, 'p'},
