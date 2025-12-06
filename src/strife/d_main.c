@@ -48,6 +48,7 @@
 #include "f_finale.h"
 #include "f_wipe.h"
 
+#include "a11y.h" // [crispy] A11Y
 #include "m_argv.h"
 #include "m_config.h"
 #include "m_controls.h"
@@ -224,9 +225,14 @@ void D_Display (void)
     
     if (crispy->uncapped)
     {
-        I_StartDisplay();
-        G_FastResponder();
-        G_PrepTiccmd();
+        I_UpdateFracTic();
+
+        if (!automapactive || crispy->automapoverlay)
+        {
+            I_StartDisplay();
+            G_FastResponder();
+            G_PrepTiccmd();
+        }
     }
 
     // change the view size if needed
@@ -365,7 +371,7 @@ void D_Display (void)
     }
 
     // [crispy] draw neither pause pic nor menu when taking a clean screenshot
-    if (crispy->cleanscreenshot && !wipe)
+    if (gamestate == GS_LEVEL && crispy->screenshot == 2 && !wipe)
     {
         I_FinishUpdate();
         if (crispy->post_rendering_hook)
@@ -505,6 +511,7 @@ void D_BindVariables(void)
     M_BindIntVariable("show_talk",              &dialogshowtext);
     M_BindIntVariable("screensize",             &screenblocks);
     M_BindIntVariable("snd_channels",           &snd_channels);
+    M_BindIntVariable("a11y_sector_lighting",   &a11y_sector_lighting); // [crispy]
     M_BindIntVariable("vanilla_savegame_limit", &vanilla_savegame_limit);
     M_BindIntVariable("vanilla_demo_limit",     &vanilla_demo_limit);
     M_BindIntVariable("show_endoom",            &show_endoom);
@@ -544,10 +551,11 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
     M_BindIntVariable("crispy_smoothlight",     &crispy->smoothlight);
     M_BindIntVariable("crispy_smoothmap",       &crispy->smoothmap);
-    M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
+    M_BindIntVariable("crispy_smoothscaling",   &smooth_pixel_scaling);
     M_BindIntVariable("crispy_soundfix",        &crispy->soundfix);
     M_BindIntVariable("crispy_soundfull",       &crispy->soundfull);
     M_BindIntVariable("crispy_soundmono",       &crispy->soundmono);
+    M_BindIntVariable("crispy_translucency",    &crispy->translucency);
 #ifdef CRISPY_TRUECOLOR
     M_BindIntVariable("crispy_truecolor",       &crispy->truecolor);
 #endif

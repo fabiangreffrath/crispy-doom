@@ -56,6 +56,7 @@ extern int NUMCOLORMAPS;      // number of diminishing
 #define LOOKDIRMIN 110 // [crispy] -110, actually
 #define LOOKDIRMAX 90
 #define LOOKDIRS (LOOKDIRMIN + 1 + LOOKDIRMAX) // [crispy] lookdir range: -110..0..90
+#define TRANSLUCENT_HUD (screenblocks == 14 || screenblocks == 16) // [crispy] determine if translucent hud is selected
 /*
 ==============================================================================
 
@@ -123,6 +124,9 @@ typedef struct
     //      the renderer.
     fixed_t	interpfloorheight;
     fixed_t	interpceilingheight;
+
+    // [crispy] A11Y light level used for rendering
+    short	rlightlevel;
 } sector_t;
 
 typedef struct
@@ -260,6 +264,11 @@ typedef struct vissprite_s
 
 
 extern visplane_t *floorplane, *ceilingplane;
+
+typedef struct
+{
+    int l, w, h, loffset, toffset;
+} crosshairpatch_t;
 
 // Sprites are patches with a special naming convention so they can be 
 // recognized by R_InitSprites.  The sprite and frame specified by a 
@@ -510,6 +519,7 @@ extern void R_InitColormaps(void);
 #ifdef CRISPY_TRUECOLOR
 extern void R_SetUnderwaterPalette(byte *palette);
 #endif
+extern int R_GetPatchHeight(int texture_num, int patch_index);
 
 //
 // R_things.c
@@ -591,5 +601,8 @@ void R_DrawSpanLow(void);
 
 void R_InitBuffer(int width, int height);
 void R_InitTranslationTables(void);
+
+extern void (*V_DrawSBPatch)(int x, int y, patch_t *patch); // [crispy] for conditional drawing of status bar elements
+void SB_Translucent(boolean translucent); // [crispy] on/off status bar translucency
 
 #endif // __R_LOCAL__

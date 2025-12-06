@@ -231,6 +231,15 @@ typedef enum
 
 } mobjflag_t;
 
+//
+// [crispy] Misc. mobj flags2
+//
+typedef enum
+{
+    // [crispy] translucent sprite
+    MF_TRANSLUCENT          = 1,
+
+} mobjflag2_t;
 
 // Map Object definition.
 //
@@ -286,6 +295,7 @@ typedef struct mobj_s
     int                 tics;   // state tic counter
     state_t*            state;
     int                 flags;
+    int                 flags2; // [crispy] extra strife flags
     int                 health;
 
     // Movement direction, movement generation (zig-zagging).

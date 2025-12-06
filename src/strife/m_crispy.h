@@ -31,6 +31,7 @@ extern multiitem_t multiitem_centerweapon[NUM_CENTERWEAPON];
 extern multiitem_t multiitem_difficulties[NUM_SKILLS];
 extern multiitem_t multiitem_freelook[NUM_FREELOOKS_HH];
 extern multiitem_t multiitem_sndchannels[3];
+extern multiitem_t multiitem_translucency[NUM_TRANSLUCENCY-2];
 extern multiitem_t multiitem_widescreen[NUM_RATIOS];
 extern multiitem_t multiitem_widgets[NUM_WIDGETS];
 
@@ -53,6 +54,7 @@ void M_CrispyToggleSmoothScaling(int choice);
 void M_CrispyToggleSndChannels(int choice);
 void M_CrispyToggleSoundfixes(int choice);
 void M_CrispyToggleSoundMono(int choice);
+void M_CrispyToggleTranslucency(int choice);
 void M_CrispyToggleUncapped(int choice);
 void M_CrispyToggleVsync(int choice);
 void M_CrispyToggleWidescreen(int choice);

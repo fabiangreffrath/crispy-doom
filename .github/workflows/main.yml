@@ -57,16 +57,6 @@ jobs:
             pkg-path: pkg/win32/*.zip
             pkg-dir: pkg/win32
 
-          - name: MSYS2 MINGW32
-            os: windows-latest
-            compiler: gcc
-            shell: 'msys2 {0}'
-            msystem: mingw32
-            msys-env: mingw-w64-i686
-            artifacts: true
-            pkg-path: pkg/win32/*.zip
-            pkg-dir: pkg/win32
-
     steps:
       - name: Install pandoc
         if: runner.os == 'Windows'
@@ -107,6 +97,7 @@ jobs:
           install: >-
             autotools
             zip
+            ${{ matrix.config.msys-env }}-python-pip
             ${{ matrix.config.msys-env }}-gcc
             ${{ matrix.config.msys-env }}-SDL2
             ${{ matrix.config.msys-env }}-SDL2_mixer
@@ -137,8 +128,13 @@ jobs:
       - name: Build
         run: make -j4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
       - name: Test
         run: |
+          pip install pyyaml
           PREFIX=`sed -n '/PROGRAM_PREFIX/p' ${PWD}/config.h | cut -d '"' -f 2`
           make -j4 -C quickcheck check SOURCE_PORT=$PWD/src/${PREFIX}doom
 

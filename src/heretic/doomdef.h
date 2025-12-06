@@ -254,6 +254,7 @@ typedef struct
 
 #define	MF_TRANSLATION	0xc000000 // if 0x4 0x8 or 0xc, use a translation
 #define	MF_TRANSSHIFT	26      // table for player colormaps
+#define MF_TRANSLUCENT  0x80000000 // [crispy] translucent sprite
 
 // --- mobj.flags2 ---
 
@@ -614,6 +615,8 @@ extern int testcontrols_mousespeed;
 extern int vanilla_savegame_limit;
 extern int vanilla_demo_limit;
 
+extern FILE *SaveGameFP; // [crispy] for usage in extsavg
+
 /*
 ===============================================================================
 
@@ -712,7 +715,8 @@ void G_SaveGame(int slot, char *description);
 char *SV_Filename(int slot);
 void SV_Open(char *fileName);
 void SV_OpenRead(char *fileName);
-void SV_Close(char *fileName);
+void SV_WriteSaveGameEOF(void);
+void SV_Close(void);
 void SV_Write(void *buffer, int size);
 void SV_WriteByte(byte val);
 void SV_WriteWord(unsigned short val);
@@ -759,6 +763,8 @@ void G_ScreenShot(void);
 //-----
 
 extern lumpinfo_t *maplumpinfo;
+
+extern int init_thinkers_count;
 
 void P_Ticker(void);
 // called by C_Ticker

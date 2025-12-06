@@ -1447,6 +1447,8 @@ typedef struct
     int	activesound;
     int	flags;
     int	raisestate;
+    // [JN] Gib health feature from DOOM Retro.
+    int gibhealth;
     // [crispy] height of the spawnstate's first sprite in pixels
     int	actualheight;
     // [crispy] mobj to drop after death

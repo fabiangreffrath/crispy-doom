@@ -38,6 +38,7 @@
 #include "m_argv.h" // [crispy] M_ParmExists()
 #include "st_stuff.h" // [crispy] ST_HEIGHT, ST_WIDESCREENDELTA
 #include "p_setup.h" // maplumpinfo
+#include "d_pwad.h" // [crispy] kex masterlevels
 
 #include "s_sound.h"
 
@@ -592,13 +593,39 @@ static void HU_SetSpecialLevelName (const char *wad, const char **name)
 
 static int hu_widescreendelta;
 
+static const int kex_masterlevels[] =
+{
+    1,  //  1
+    2,  //  2
+    3,  //  3
+    5,  //  4
+    4,  //  5
+    9,  //  6
+    8,  //  7
+    10, //  8
+    6,  //  9
+    19, // 10
+    12, // 11
+    13, // 12
+    16, // 13
+    17, // 14
+    18, // 15
+    7,  // 16
+    11, // 17
+    20, // 18
+    14, // 19
+    15, // 20
+    21  // 21
+};
+
 void HU_Start(void)
 {
 
     int		i;
     const char *s;
-    // [crispy] string buffers for map title and WAD file name
-    char	buf[8], *ptr;
+    // [crispy] string buffers for map title, WAD file name and level digits
+    char	buf[8], digitbuf[4];
+    char	*ptr = NULL, *replacement = NULL;
 
     if (headsupactive)
 	HU_Stop();
@@ -706,7 +733,12 @@ void HU_Start(void)
 	break;
       case pack_master:
 	if (gamemap <= 21)
-	  s = HU_TITLEM;
+	{
+	  if (D_CheckMasterlevelKex())
+	    s = mapnames_commercial[(kex_masterlevels[gamemap-1] + 105 + 3) - 1];
+	  else
+	    s = HU_TITLEM;
+	}
 	else
 	  s = HU_TITLE2;
 	break;
@@ -745,6 +777,22 @@ void HU_Start(void)
 
     s = DEH_String(s);
     
+    // [crispy] replace map title numbers in kex
+    if (logical_gamemission == pack_master && D_CheckMasterlevelKex())
+    {
+        if (gamemap <= 21)
+        {
+            // store actual kex gamemap digits
+            M_snprintf(digitbuf, sizeof(digitbuf), "%d", gamemap);
+            // lookup psn/unity digits to be replaced 
+            M_snprintf(buf, sizeof(buf), "%d", kex_masterlevels[gamemap-1]);
+            
+            // replace unity digits with actual kex gamemap digits
+            replacement = M_StringReplace(s, buf, digitbuf);
+            s = replacement;
+        }
+    }
+
     // [crispy] print the map title in white from the first colon onward
     M_snprintf(buf, sizeof(buf), "%s%s", ":", crstr[CR_GRAY]);
     ptr = M_StringReplace(s, ":", buf);
@@ -754,6 +802,12 @@ void HU_Start(void)
 	HUlib_addCharToTextLine(&w_title, *(s++));
 
     free(ptr);
+
+    // [crispy] free kex digit replacement string
+    if (replacement != NULL)
+    {
+        free(replacement);
+    }
 
     // create the chat widget
     HUlib_initIText(&w_chat,
@@ -827,7 +881,7 @@ static void HU_DrawCrosshair (void)
 void HU_Drawer(void)
 {
 
-    if (crispy->cleanscreenshot)
+    if (crispy->screenshot == 2)
     {
 	HU_Erase();
 	return;
@@ -850,11 +904,16 @@ void HU_Drawer(void)
     }
 
     dp_translation = NULL;
-    if (crispy->screenshotmsg == 4)
-	HUlib_eraseSText(&w_message);
+    // [crispy] erase when taking a screenshot
+    if (!crispy->screenshot)
+    {
+        HUlib_drawSText(&w_message);
+        HUlib_drawIText(&w_chat);
+    }
     else
-    HUlib_drawSText(&w_message);
-    HUlib_drawIText(&w_chat);
+    {
+        HUlib_eraseSText(&w_message);
+    }
 
     if (crispy->coloredhud & COLOREDHUD_TEXT)
 	dp_translation = cr[CR_GOLD];
@@ -990,7 +1049,6 @@ void HU_Ticker(void)
     {
 	message_on = false;
 	message_nottobefuckedwith = false;
-	crispy->screenshotmsg >>= 1;
     }
 
     if (secret_counter && !--secret_counter)
@@ -1023,7 +1081,6 @@ void HU_Ticker(void)
 	    message_counter = HU_MSGTIMEOUT;
 	    message_nottobefuckedwith = message_dontfuckwithme;
 	    message_dontfuckwithme = 0;
-	    crispy->screenshotmsg >>= 1;
 	}
 
     } // else message_on = false;

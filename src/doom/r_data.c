@@ -23,6 +23,7 @@
 #include "deh_main.h"
 #include "i_swap.h"
 #include "i_system.h"
+#include "v_video.h"
 #include "z_zone.h"
 
 
@@ -169,60 +170,6 @@ fixed_t*	spritetopoffset;
 
 lighttable_t	*colormaps;
 lighttable_t	*pal_color; // [crispy] array holding palette colors for true color mode
-
-// [FG] check if the lump can be a Doom patch
-// taken from PrBoom+ prboom2/src/r_patch.c:L350-L390
-
-static boolean R_IsPatchLump (const int lump)
-{
-  int size;
-  int width, height;
-  const patch_t *patch;
-  boolean result;
-
-  if (lump < 0)
-    return false;
-
-  size = W_LumpLength(lump);
-
-  // minimum length of a valid Doom patch
-  if (size < 13)
-    return false;
-
-  patch = (const patch_t *)W_CacheLumpNum(lump, PU_CACHE);
-
-  // [FG] detect patches in PNG format early
-  if (!memcmp(patch, "\211PNG\r\n\032\n", 8))
-    return false;
-
-  width = SHORT(patch->width);
-  height = SHORT(patch->height);
-
-  result = (height > 0 && height <= 16384 && width > 0 && width <= 16384 && width < size / 4);
-
-  if (result)
-  {
-    // The dimensions seem like they might be valid for a patch, so
-    // check the column directory for extra security. All columns
-    // must begin after the column directory, and none of them must
-    // point past the end of the patch.
-    int x;
-
-    for (x = 0; x < width; x++)
-    {
-      unsigned int ofs = LONG(patch->columnofs[x]);
-
-      // Need one byte for an empty column (but there's patches that don't know that!)
-      if (ofs < (unsigned int)width * 4 + 8 || ofs >= (unsigned int)size)
-      {
-        result = false;
-        break;
-      }
-    }
-  }
-
-  return result;
-}
 
 //
 // MAPTEXTURE_T CACHING
@@ -637,34 +584,63 @@ void R_GenerateLookup (int texnum)
 //
 // R_GetColumn
 //
+
+// [crispy] wrapping column getter function for any non-power-of-two textures
 byte*
 R_GetColumn
 ( int		tex,
   int		col )
 {
-    int		ofs;
-	
-    col &= texturewidthmask[tex];
-    ofs = texturecolumnofs2[tex][col];
+  const int width = texturewidth[tex];
+  const int mask = texturewidthmask[tex];
+  int ofs;
 
-    if (!texturecomposite2[tex])
-	R_GenerateComposite (tex);
+  while (col < 0)
+  {
+    col += width;
+  }
 
-    return texturecomposite2[tex] + ofs;
+  if (mask + 1 == width)
+  {
+    col &= mask;
+  }
+  else
+  {
+    col %= width;
+  }
+
+  ofs  = texturecolumnofs2[tex][col];
+
+  if (!texturecomposite2[tex])
+    R_GenerateComposite(tex);
+
+  return texturecomposite2[tex] + ofs;
 }
 
 // [crispy] wrapping column getter function for composited translucent mid-textures on 2S walls
 byte*
-R_GetColumnMod
+R_GetColumnMasked
 ( int		tex,
   int		col )
 {
-    int		ofs;
+    const int width = texturewidth[tex];
+    const int mask = texturewidthmask[tex];
+    int ofs;
 
     while (col < 0)
-	col += texturewidth[tex];
+    {
+        col += width;
+    }
 
-    col %= texturewidth[tex];
+    if (mask + 1 == width)
+    {
+        col &= mask;
+    }
+    else
+    {
+        col %= width;
+    }
+
     ofs = texturecolumnofs[tex][col];
 
     if (!texturecomposite[tex])
@@ -672,27 +648,6 @@ R_GetColumnMod
 
     return texturecomposite[tex] + ofs;
 }
-
-// [crispy] wrapping column getter function for non-power-of-two wide sky textures
-byte*
-R_GetColumnMod2
-( int		tex,
-  int		col )
-{
-    int		ofs;
-
-    while (col < 0)
-	col += texturewidth[tex];
-
-    col %= texturewidth[tex];
-    ofs = texturecolumnofs2[tex][col];
-
-    if (!texturecomposite2[tex])
-	R_GenerateComposite(tex);
-
-    return texturecomposite2[tex] + ofs;
-}
-
 
 static void GenerateTextureHashTable(void)
 {
@@ -874,7 +829,7 @@ void R_InitTextures (void)
 
 	    M_StringCopy(name, pnameslumps[i].name_p + j * 8, sizeof(name));
 	    p = W_CheckNumForName(name);
-	    if (!R_IsPatchLump(p))
+	    if (!V_IsPatchLump(p))
 	        p = -1;
 	    // [crispy] if the name is unambiguous, use the lump we found
 	    patchlookup[k++] = p;

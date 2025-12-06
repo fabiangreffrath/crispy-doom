@@ -35,6 +35,7 @@
 #include "i_swap.h" // [crispy] SHORT()
 #include "i_system.h"
 #include "i_timer.h"
+#include "a11y.h" // [crispy] A11Y
 #include "m_argv.h"
 #include "m_config.h"
 #include "m_controls.h"
@@ -180,6 +181,12 @@ void D_BindVariables(void)
     M_BindIntVariable("messageson",             &messageson);
     M_BindIntVariable("screenblocks",           &screenblocks);
     M_BindIntVariable("snd_channels",           &snd_Channels);
+    M_BindIntVariable("a11y_sector_lighting",   &a11y_sector_lighting);
+    M_BindIntVariable("a11y_extra_lighting",    &a11y_extra_lighting);
+    M_BindIntVariable("a11y_weapon_flash",      &a11y_weapon_flash);
+    M_BindIntVariable("a11y_weapon_pspr",       &a11y_weapon_pspr);
+    M_BindIntVariable("a11y_palette_changes",   &a11y_palette_changes);
+    M_BindIntVariable("a11y_weapon_palette",    &a11y_weapon_palette);
     M_BindIntVariable("vanilla_savegame_limit", &vanilla_savegame_limit);
     M_BindIntVariable("vanilla_demo_limit",     &vanilla_demo_limit);
 
@@ -201,6 +208,9 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_automaprotate",   &crispy->automaprotate);
     M_BindIntVariable("crispy_bobfactor",       &crispy->bobfactor);
     M_BindIntVariable("crispy_centerweapon",    &crispy->centerweapon);
+    M_BindIntVariable("crispy_crosshair",       &crispy->crosshair);
+    M_BindIntVariable("crispy_crosshairtype",   &crispy->crosshairtype);
+    M_BindIntVariable("crispy_crosshaircolor",  &crispy->crosshaircolor);
     M_BindIntVariable("crispy_defaultskill",    &crispy->defaultskill);
     M_BindIntVariable("crispy_fpslimit",        &crispy->fpslimit);
     M_BindIntVariable("crispy_freelook",        &crispy->freelook_hh);
@@ -209,11 +219,12 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_mouselook",       &crispy->mouselook);
     M_BindIntVariable("crispy_playercoords",    &crispy->playercoords);
     M_BindIntVariable("crispy_soundmono",       &crispy->soundmono);
+    M_BindIntVariable("crispy_translucency",    &crispy->translucency);
 #ifdef CRISPY_TRUECOLOR
     M_BindIntVariable("crispy_truecolor",       &crispy->truecolor);
 #endif
     M_BindIntVariable("crispy_smoothlight",     &crispy->smoothlight);
-    M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
+    M_BindIntVariable("crispy_smoothscaling",   &smooth_pixel_scaling);
     M_BindIntVariable("crispy_vsync",           &crispy->vsync);
     M_BindIntVariable("crispy_widescreen",      &crispy->widescreen);
     M_BindIntVariable("crispy_uncapped",        &crispy->uncapped);
@@ -1091,9 +1102,14 @@ static void DrawAndBlit(void)
 {
     if (crispy->uncapped)
     {
-        I_StartDisplay();
-        G_FastResponder();
-        G_PrepTiccmd();
+        I_UpdateFracTic();
+
+        if (!automapactive || crispy->automapoverlay)
+        {
+            I_StartDisplay();
+            G_FastResponder();
+            G_PrepTiccmd();
+        }
     }
 
     // Change the view size if needed
@@ -1125,10 +1141,22 @@ static void DrawAndBlit(void)
                 AM_Drawer();
                 BorderNeedRefresh = true;
             }
+            // [crispy] don't draw any GUI elements when taking a clean screenshot
+            if (crispy->screenshot == 2)
+            {
+                if (automapactive && !crispy->automapoverlay)
+                    SB_Drawer();                    
+                UpdateState |= I_FULLVIEW;
+                I_FinishUpdate();
+                return;
+            }
+            // [crispy] check for translucent HUD
+            SB_Translucent(TRANSLUCENT_HUD && (!automapactive || crispy->automapoverlay));
             CT_Drawer();
             UpdateState |= I_FULLVIEW;
             SB_Drawer();
             CrispyDrawStats();
+            SB_Translucent(false);
             break;
         case GS_INTERMISSION:
             IN_Drawer();
@@ -1159,8 +1187,13 @@ static void DrawAndBlit(void)
         }
     }
 
+    // [crispy] check for translucent HUD
+    SB_Translucent(TRANSLUCENT_HUD && (!automapactive || crispy->automapoverlay));
+
     // Draw current message
     DrawMessage();
+
+    SB_Translucent(false);
 
     // Draw Menu
     MN_Drawer();
@@ -1183,7 +1216,7 @@ static void DrawMessage(void)
     player_t *player;
 
     player = &players[consoleplayer];
-    if (player->messageTics <= 0)
+    if (player->messageTics <= 0 || crispy->screenshot)
     {                           // No message
         return;
     }
@@ -1309,6 +1342,7 @@ void H2_DoAdvanceDemo(void)
     advancedemo = false;
     usergame = false;           // can't save/end game here
     paused = false;
+    demoextend = false; // [crispy] at this point demos should no longer be extended (demo-reel)
     gameaction = ga_nothing;
     demosequence = (demosequence + 1) % 7;
     switch (demosequence)

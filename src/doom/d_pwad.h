@@ -24,6 +24,7 @@
 void D_LoadSigilWads(void);
 void D_LoadNerveWad(void);
 void D_LoadMasterlevelsWad(void);
+int D_CheckMasterlevelKex(void);
 
 #endif
 

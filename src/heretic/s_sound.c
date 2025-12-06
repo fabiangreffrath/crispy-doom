@@ -40,6 +40,7 @@
 
 void S_ShutDown(void);
 boolean S_StopSoundID(int sound_id, int priority);
+static void S_LevelWeaponSound(mobj_t *origin, int sound_id, int *vol); // [crispy] level weapon sounds
 
 static channel_t channel[MAX_CHANNELS];
 
@@ -260,6 +261,12 @@ void S_StartSound(void *_origin, int sound_id)
 //      vol = (snd_MaxVolume*16 + dist*(-snd_MaxVolume*16)/MAX_SND_DIST)>>9;
     vol = soundCurve[dist];
 
+    // [crispy] apply weapon sound leveling
+    if(crispy->lvlwpnsnd)
+    {
+        S_LevelWeaponSound(origin, sound_id, &vol);
+    }
+
     if (origin == listener || crispy->soundmono)
     {
         sep = 128;
@@ -292,6 +299,30 @@ void S_StartSound(void *_origin, int sound_id)
     else
     {
         S_sfx[sound_id].usefulness++;
+    }
+}
+
+static void S_LevelWeaponSound(mobj_t *origin, int sound_id, int *vol)
+{
+    // [crispy] only apply if origin is active player
+    if(&players[consoleplayer] == origin->player)
+    {
+        // [crispy] base is snd_MaxVolume, used to generate soundCurve values
+        switch (sound_id)
+        {     
+            case sfx_gntuse:
+            case sfx_gntact:
+                // [crispy] lower gauntlet sfx
+                *vol -= snd_MaxVolume * 3;
+                break;
+            case sfx_blshit:
+            case sfx_blssht:
+            case sfx_gldhit:
+                // [crispy] lower dragonclaw sfx
+                if (viewplayer->readyweapon == wp_blaster)
+                    *vol -= snd_MaxVolume * 3;
+                break;
+        }        
     }
 }
 

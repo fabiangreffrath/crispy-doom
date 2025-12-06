@@ -83,6 +83,7 @@ i_sdlmusic.c                               \
 i_sdlsound.c                               \
 i_sound.c            i_sound.h             \
 i_timer.c            i_timer.h             \
+i_truecolor.c        i_truecolor.h         \
 i_video.c            i_video.h             \
 i_videohr.c          i_videohr.h           \
 i_winmusic.c                               \
@@ -107,6 +108,7 @@ net_query.c          net_query.h           \
 net_sdl.c            net_sdl.h             \
 net_server.c         net_server.h          \
 net_structrw.c       net_structrw.h        \
+p_rejectpad.c        p_rejectpad.h         \
 sha1.c               sha1.h                \
 memio.c              memio.h               \
 tables.c             tables.h              \
@@ -155,6 +157,7 @@ EXTRA_LIBS =                                               \
                $(top_builddir)/pcsound/libpcsound.a        \
                $(top_builddir)/opl/libopl.a                \
                @LDFLAGS@                                   \
+               @EM_LDFLAGS@                                \
                @SDL_LIBS@                                  \
                @SDLMIXER_LIBS@                             \
                @SDLNET_LIBS@

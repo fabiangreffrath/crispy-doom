@@ -11,7 +11,7 @@ Valid options are
 .RB \(lq Linux \(rq
 for the Linux console mode driver,
 .RB \(lq BSD \(rq
-"BSD" for the NetBSD/OpenBSD PC speaker driver,
+for the NetBSD/OpenBSD PC speaker driver,
 and
 .RB \(lq SDL \(rq
 for SDL-based emulated PC speaker playback (using the digital output).

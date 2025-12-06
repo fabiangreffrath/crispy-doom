@@ -81,6 +81,8 @@
 #include "deh_main.h" // [crispy] for demo footer
 #include "memio.h"
 
+#include "d_pwad.h" // [crispy] kex secret level
+
 #define SAVEGAMESIZE	0x2c000
 
 void	G_ReadDemoTiccmd (ticcmd_t* cmd); 
@@ -986,6 +988,36 @@ void G_DoLoadLevel (void)
 { 
     int             i; 
 
+    // [crispy] NRFTL / The Master Levels
+    if (crispy->havenerve || crispy->havemaster)
+    {
+        if (crispy->havemaster && gameepisode == 3)
+        {
+            gamemission = pack_master;
+        }
+        else
+        if (crispy->havenerve && gameepisode == 2)
+        {
+            gamemission = pack_nerve;
+        }
+        else
+        {
+            gamemission = doom2;
+        }
+    }
+    else
+    {
+        if (gamemission == pack_master)
+        {
+            gameepisode = 3;
+        }
+        else
+        if (gamemission == pack_nerve)
+        {
+            gameepisode = 2;
+        }
+    }
+
     // Set the sky map.
     // First thing, we have a dummy sky texture name,
     //  a flat. The data is in the WAD only because
@@ -1002,28 +1034,53 @@ void G_DoLoadLevel (void)
     {
         const char *skytexturename;
 
-        if (gamemap < 12)
+        // nerve skies
+        if (gamemap < 12 && (gameepisode == 2 || gamemission == pack_nerve))
         {
-            if ((gameepisode == 2 || gamemission == pack_nerve) && gamemap >= 4 && gamemap <= 8)
+            if (gamemap >= 4 && gamemap <= 8)
                 skytexturename = "SKY3";
             else
-            skytexturename = "SKY1";
-        }
-        else if (gamemap < 21)
-        {
-            // [crispy] BLACKTWR (MAP25) and TEETH (MAP31 and MAP32)
-            if ((gameepisode == 3 || gamemission == pack_master) && gamemap >= 19)
-                skytexturename = "SKY3";
-            else
-            // [crispy] BLOODSEA and MEPHISTO (both MAP07)
-            if ((gameepisode == 3 || gamemission == pack_master) && (gamemap == 14 || gamemap == 15))
                 skytexturename = "SKY1";
-            else
-            skytexturename = "SKY2";
         }
+        // masterlevel skies
+        else if (gamemap < 21 && (gameepisode == 3 || gamemission == pack_master))
+        {
+            if (D_CheckMasterlevelKex())
+            {
+                // masterlevels kex skies
+                if (gamemap == 10)
+                    skytexturename = "SKY3";
+                else
+                if (gamemap <= 9)
+                    skytexturename = "SKYM1";
+                else
+                if (gamemap >= 16)
+                    skytexturename = "SKYM3";
+                else
+                    skytexturename = "SKYM2";
+            }
+            else
+            {
+                // masterlevels psn/unity skies
+                if (gamemap < 12 || gamemap == 14 || gamemap == 15)
+                    skytexturename = "SKY1";
+                else
+                if (gamemap >= 19)
+                    skytexturename = "SKY3";
+                else
+                    skytexturename = "SKY2";
+            }
+        }
+        // doom2 skies
         else
         {
-            skytexturename = "SKY3";
+            if (gamemap < 12)
+                skytexturename = "SKY1";
+            else
+            if (gamemap < 21)
+                skytexturename = "SKY2";
+            else
+                skytexturename = "SKY3";
         }
 
         skytexturename = DEH_String(skytexturename);
@@ -1367,11 +1424,15 @@ static void G_ReadGameParms (void)
 // [crispy] take a screenshot after rendering the next frame
 static void G_CrispyScreenShot()
 {
-	// [crispy] increase screenshot filename limit
-	V_ScreenShot("DOOM%04i.%s");
-	players[consoleplayer].message = DEH_String("screen shot");
-	crispy->cleanscreenshot = 0;
-	crispy->screenshotmsg = 2;
+    // [crispy] increase screenshot filename limit
+    V_ScreenShot("DOOM%04i.%s");
+    if (gamestate == GS_LEVEL)
+        players[consoleplayer].message = DEH_String("screen shot");
+    if (crispy->screenshot == 2)
+    {
+        R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
+    }
+    crispy->screenshot = 0;
 }
 
 //
@@ -1424,15 +1485,16 @@ void G_Ticker (void)
 	    break; 
 	  case ga_screenshot: 
 	    // [crispy] redraw view without weapons and HUD
-	    if (gamestate == GS_LEVEL && (crispy->cleanscreenshot || crispy->screenshotmsg == 1))
-	    {
-		crispy->screenshotmsg = 4;
-		crispy->post_rendering_hook = G_CrispyScreenShot;
-	    }
-	    else
-	    {
-		G_CrispyScreenShot();
-	    }
+        if (gamestate == GS_LEVEL)
+        {
+            if (crispy->screenshot == 2 && (!automapactive || crispy->automapoverlay))
+            {
+                R_SetViewSize(11, detailLevel);
+                R_ExecuteSetViewSize();
+            }
+        }
+        // [crispy] screenshot always after drawing is done
+        crispy->post_rendering_hook = G_CrispyScreenShot;
 	    gameaction = ga_nothing; 
 	    break; 
 	  case ga_nothing: 
@@ -1985,7 +2047,7 @@ static void G_FormatLevelStatTime(char *str, int tics)
 // [crispy] Write level statistics upon exit
 static void G_WriteLevelStat(void)
 {
-    static FILE *fstream = NULL;
+    FILE *fstream;
 
     int i, playerKills = 0, playerItems = 0, playerSecrets = 0;
 
@@ -1994,15 +2056,22 @@ static void G_WriteLevelStat(void)
     char totalTimeString[TIMESTRSIZE];
     char *decimal;
 
+    static boolean firsttime = true;
+
+    if (firsttime)
+    {
+        firsttime = false;
+        fstream = M_fopen("levelstat.txt", "w");
+    }
+    else
+    {
+        fstream = M_fopen("levelstat.txt", "a");
+    }
+
     if (fstream == NULL)
     {
-        fstream = fopen("levelstat.txt", "w");
-
-        if (fstream == NULL)
-        {
-            fprintf(stderr, "G_WriteLevelStat: Unable to open levelstat.txt for writing!\n");
-            return;
-        }
+        fprintf(stderr, "G_WriteLevelStat: Unable to open levelstat.txt for writing!\n");
+        return;
     }
     
     if (gamemode == commercial)
@@ -2039,6 +2108,8 @@ static void G_WriteLevelStat(void)
             levelString, (secretexit ? "s" : ""),
             levelTimeString, totalTimeString, playerKills, totalkills, 
             playerItems, totalitems, playerSecrets, totalsecret);
+
+    fclose(fstream);
 }
  
 void G_DoCompleted (void) 
@@ -2137,7 +2208,17 @@ void G_DoCompleted (void)
     else
     if ( gamemission == pack_master && gamemap <= 21 )
     {
-	wminfo.next = gamemap;
+        wminfo.next = gamemap;
+        // [crispy] kex masterlevel secret detour?
+        if (D_CheckMasterlevelKex())
+        {
+            // [crispy] bad dream secret exit in TEETH
+            if (gamemap == 18 && secretexit)
+                wminfo.next = 20;
+            // [crispy] bloodsea keep after bad dream secret
+            else if (gamemap == 21)
+                wminfo.next = 18;
+        }
     }
     else
     if ( gamemode == commercial)
@@ -2322,6 +2403,13 @@ void G_WorldDone (void)
     else
     if ( gamemission == pack_master )
     {
+    if (D_CheckMasterlevelKex())
+    {
+        if (gamemap == 20)
+        F_StartFinale ();
+    }
+    else
+    {
 	switch (gamemap)
 	{
 	  case 20:
@@ -2330,7 +2418,8 @@ void G_WorldDone (void)
 	  case 21:
 	    F_StartFinale ();
 	    break;
-	}
+	}      
+    }
     }
     else
     if ( gamemode == commercial )
@@ -2896,6 +2985,13 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 
 	gamekeydown[key_demo_quit] = false;
 
+	// [crispy] update turning resolution when joining a demo
+	// based upon longtics info taken from record
+	lowres_turn = !longtics;
+
+	// [crispy] redraw status bar to get rid of demo progress bar
+	ST_Drawer(viewheight == SCREENHEIGHT, true);
+
 	// [crispy] find a new name for the continued demo
 	G_RecordDemo(actualname);
 	free(actualname);
@@ -3429,10 +3525,10 @@ static size_t WriteCmdLineLump(MEMFILE *stream)
     return mem_ftell(stream) - pos;
 }
 
-static void WriteFileInfo(const char *name, size_t size, MEMFILE *stream)
+static long WriteFileInfo(const char *name, size_t size, long filepos,
+                          MEMFILE *stream)
 {
     filelump_t fileinfo = { 0 };
-    static long filepos = sizeof(wadinfo_t);
 
     fileinfo.filepos = LONG(filepos);
     fileinfo.size = LONG(size);
@@ -3450,12 +3546,14 @@ static void WriteFileInfo(const char *name, size_t size, MEMFILE *stream)
     mem_fwrite(&fileinfo, 1, sizeof(fileinfo), stream);
 
     filepos += size;
+    return filepos;
 }
 
 static void G_AddDemoFooter(void)
 {
     byte *data;
     size_t size;
+    long filepos;
 
     MEMFILE *stream = mem_fopen_write();
 
@@ -3473,10 +3571,11 @@ static void G_AddDemoFooter(void)
     mem_fwrite(&header, 1, sizeof(header), stream);
     mem_fseek(stream, 0, MEM_SEEK_END);
 
-    WriteFileInfo("PORTNAME", strlen(PACKAGE_STRING), stream);
-    WriteFileInfo(NULL, strlen(DEMO_FOOTER_SEPARATOR), stream);
-    WriteFileInfo("CMDLINE", size, stream);
-    WriteFileInfo(NULL, strlen(DEMO_FOOTER_SEPARATOR), stream);
+    filepos = sizeof(wadinfo_t);
+    filepos = WriteFileInfo("PORTNAME", strlen(PACKAGE_STRING), filepos, stream);
+    filepos = WriteFileInfo(NULL, strlen(DEMO_FOOTER_SEPARATOR), filepos, stream);
+    filepos = WriteFileInfo("CMDLINE", size, filepos, stream);
+    WriteFileInfo(NULL, strlen(DEMO_FOOTER_SEPARATOR), filepos, stream);
 
     mem_get_buf(stream, (void **)&data, &size);
 

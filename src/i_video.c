@@ -100,7 +100,6 @@ static SDL_Texture *bluepane = NULL;
 static SDL_Texture *graypane = NULL;
 static SDL_Texture *orngpane = NULL;
 static int pane_alpha;
-static unsigned int rmask, gmask, bmask, amask; // [crispy] moved up here
 extern pixel_t* pal_color; // [crispy] evil hack to get FPS dots working as in Vanilla
 #else
 static SDL_Color palette[256];
@@ -153,6 +152,9 @@ int fullscreen = true;
 
 int aspect_ratio_correct = true;
 static int actualheight;
+
+// Smooth pixel scaling
+int smooth_pixel_scaling = true;
 
 // Force integer scales for resolution-independent rendering
 
@@ -298,6 +300,14 @@ void I_ShutdownGraphics(void)
     {
         SetShowCursor(true);
 
+        SDL_FreeSurface(argbbuffer);
+#ifndef CRISPY_TRUECOLOR
+        SDL_FreeSurface(screenbuffer);
+#endif
+        SDL_DestroyTexture(texture_upscaled);
+        SDL_DestroyTexture(texture);
+        SDL_DestroyRenderer(renderer);
+        SDL_DestroyWindow(screen);
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
 
         initialized = false;
@@ -535,11 +545,14 @@ void I_StartTic (void)
     }
 }
 
-void I_StartDisplay(void) // [crispy]
+void I_UpdateFracTic(void) // [crispy]
 {
     // [AM] Figure out how far into the current tic we're in as a fixed_t.
     fractionaltic = I_GetFracRealTime();
+}
 
+void I_StartDisplay(void) // [crispy]
+{
     SDL_PumpEvents();
 
     if (usemouse && !nomouse && window_focused)
@@ -879,23 +892,22 @@ void I_FinishUpdate (void)
 
     SDL_RenderClear(renderer);
 
-    if (crispy->smoothscaling && !force_software_renderer)
+    if (smooth_pixel_scaling && !force_software_renderer)
     {
-    // Render this intermediate texture into the upscaled texture
-    // using "nearest" integer scaling.
+        // Render this intermediate texture into the upscaled texture
+        // using "nearest" integer scaling.
+        SDL_SetRenderTarget(renderer, texture_upscaled);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
 
-    SDL_SetRenderTarget(renderer, texture_upscaled);
-    SDL_RenderCopy(renderer, texture, NULL, NULL);
+        // Finally, render this upscaled texture to screen using linear scaling.
 
-    // Finally, render this upscaled texture to screen using linear scaling.
-
-    SDL_SetRenderTarget(renderer, NULL);
-    SDL_RenderCopy(renderer, texture_upscaled, NULL, NULL);
+        SDL_SetRenderTarget(renderer, NULL);
+        SDL_RenderCopy(renderer, texture_upscaled, NULL, NULL);
     }
     else
     {
-	SDL_SetRenderTarget(renderer, NULL);
-	SDL_RenderCopy(renderer, texture, NULL, NULL);
+        SDL_SetRenderTarget(renderer, NULL);
+        SDL_RenderCopy(renderer, texture, NULL, NULL);
     }
 
 #ifdef CRISPY_TRUECOLOR
@@ -1907,19 +1919,23 @@ void I_ReInitGraphics (int reinit)
 
 #ifndef CRISPY_TRUECOLOR
 		SDL_FreeSurface(screenbuffer);
-		screenbuffer = SDL_CreateRGBSurface(0,
-				                    SCREENWIDTH, SCREENHEIGHT, 8,
-				                    0, 0, 0, 0);
-#endif
+		screenbuffer = SDL_CreateRGBSurface(
+			0, SCREENWIDTH, SCREENHEIGHT, 8,
+			0, 0, 0, 0);
 
+		// pixels and pitch will be filled with the texture's values
+		// in I_FinishUpdate()
 		SDL_FreeSurface(argbbuffer);
-		argbbuffer = SDL_CreateRGBSurfaceWithFormat(0,
-				                    SCREENWIDTH, SCREENHEIGHT, 32,
-				                    SDL_PIXELFORMAT_ARGB8888);
-#ifndef CRISPY_TRUECOLOR
+		argbbuffer = SDL_CreateRGBSurfaceWithFormatFrom(
+			NULL, SCREENWIDTH, SCREENHEIGHT, 0, 0, SDL_PIXELFORMAT_ARGB8888);
+
 		// [crispy] re-set the framebuffer pointer
 		I_VideoBuffer = screenbuffer->pixels;
 #else
+		SDL_FreeSurface(argbbuffer);
+		argbbuffer = SDL_CreateRGBSurfaceWithFormat(
+			0, SCREENWIDTH, SCREENHEIGHT, 32, SDL_PIXELFORMAT_ARGB8888);
+
 		I_VideoBuffer = argbbuffer->pixels;
 #endif
 		V_RestoreBuffer();
@@ -2057,19 +2073,9 @@ void I_RenderReadPixels(byte **data, int *w, int *h, int *p)
 	format = SDL_AllocFormat(png_format);
 	temp = rect.w * format->BytesPerPixel; // [crispy] pitch
 
-	// [crispy] As far as I understand the issue, SDL_RenderPresent()
-	// may return early, i.e. before it has actually finished rendering the
-	// current texture to screen -- from where we want to capture it.
-	// However, it does never return before it has finished rendering the
-	// *previous* texture.
-	// Thus, we add a second call to SDL_RenderPresent() here to make sure
-	// that it has at least finished rendering the previous texture, which
-	// already contains the scene that we actually want to capture.
-	if (crispy->post_rendering_hook)
-	{
-		SDL_RenderCopy(renderer, crispy->smoothscaling ? texture_upscaled : texture, NULL, NULL);
-		SDL_RenderPresent(renderer);
-	}
+	// Refresh backbuffer with previous texture to ensure it is valid for reading the pixels
+	// See https://github.com/fabiangreffrath/crispy-doom/issues/1304
+	SDL_RenderCopy(renderer, smooth_pixel_scaling ? texture_upscaled : texture, NULL, NULL);
 
 	// [crispy] allocate memory for screenshot image
 	pixels = malloc(rect.h * temp);
@@ -2092,6 +2098,7 @@ void I_BindVideoVariables(void)
     M_BindIntVariable("video_display",             &video_display);
     M_BindIntVariable("aspect_ratio_correct",      &aspect_ratio_correct);
     M_BindIntVariable("integer_scaling",           &integer_scaling);
+    M_BindIntVariable("smooth_pixel_scaling",      &smooth_pixel_scaling);
     M_BindIntVariable("vga_porch_flash",           &vga_porch_flash);
     M_BindIntVariable("startup_delay",             &startup_delay);
     M_BindIntVariable("fullscreen_width",          &fullscreen_width);
@@ -2108,82 +2115,8 @@ void I_BindVideoVariables(void)
 }
 
 #ifdef CRISPY_TRUECOLOR
-const pixel_t I_BlendAdd (const pixel_t bg, const pixel_t fg)
-{
-	uint32_t r, g, b;
-
-	if ((r = (fg & rmask) + (bg & rmask)) > rmask) r = rmask;
-	if ((g = (fg & gmask) + (bg & gmask)) > gmask) g = gmask;
-	if ((b = (fg & bmask) + (bg & bmask)) > bmask) b = bmask;
-
-	return amask | r | g | b;
-}
-
-// [crispy] http://stereopsis.com/doubleblend.html
-const pixel_t I_BlendDark (const pixel_t bg, const int d)
-{
-	const uint32_t ag = (bg & 0xff00ff00) >> 8;
-	const uint32_t rb =  bg & 0x00ff00ff;
-
-	uint32_t sag = d * ag;
-	uint32_t srb = d * rb;
-
-	sag = sag & 0xff00ff00;
-	srb = (srb >> 8) & 0x00ff00ff;
-
-	return amask | sag | srb;
-}
-
-// [crispy] Main overlay blending function
-const pixel_t I_BlendOver (const pixel_t bg, const pixel_t fg, const int amount)
-{
-	const uint32_t r = ((amount * (fg & rmask) + (0xff - amount) * (bg & rmask)) >> 8) & rmask;
-	const uint32_t g = ((amount * (fg & gmask) + (0xff - amount) * (bg & gmask)) >> 8) & gmask;
-	const uint32_t b = ((amount * (fg & bmask) + (0xff - amount) * (bg & bmask)) >> 8) & bmask;
-
-	return amask | r | g | b;
-}
-
-// [crispy] TRANMAP blending emulation, used for Doom
-const pixel_t I_BlendOverTranmap (const pixel_t bg, const pixel_t fg)
-{
-	return I_BlendOver(bg, fg, 0xA8); // 168 (66% opacity)
-}
-
-// [crispy] TINTTAB blending emulation, used for Heretic and Hexen
-const pixel_t I_BlendOverTinttab (const pixel_t bg, const pixel_t fg)
-{
-	return I_BlendOver(bg, fg, 0x60); // 96 (38% opacity)
-}
-
-// [crispy] More opaque ("Alt") TINTTAB blending emulation, used for Hexen's MF_ALTSHADOW drawing
-const pixel_t I_BlendOverAltTinttab (const pixel_t bg, const pixel_t fg)
-{
-	return I_BlendOver(bg, fg, 0x8E); // 142 (56% opacity)
-}
-
-// [crispy] More opaque XLATAB blending emulation, used for Strife
-const pixel_t I_BlendOverXlatab (const pixel_t bg, const pixel_t fg)
-{
-	return I_BlendOver(bg, fg, 0xC0); // 192 (75% opacity)
-}
-
-// [crispy] Less opaque ("Alt") XLATAB blending emulation, used for Strife
-const pixel_t I_BlendOverAltXlatab (const pixel_t bg, const pixel_t fg)
-{
-	return I_BlendOver(bg, fg, 0x40); // 64 (25% opacity)
-}
-
-const pixel_t (*blendfunc) (const pixel_t fg, const pixel_t bg) = I_BlendOverTranmap;
-
 const pixel_t I_MapRGB (const uint8_t r, const uint8_t g, const uint8_t b)
 {
-/*
-	return amask |
-	        (((r * rmask) >> 8) & rmask) |
-	        (((g * gmask) >> 8) & gmask) |
-	        (((b * bmask) >> 8) & bmask);
-*/
 	return SDL_MapRGB(argbbuffer->format, r, g, b);
 }
 #endif

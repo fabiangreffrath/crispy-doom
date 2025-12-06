@@ -22,6 +22,8 @@
 #include "m_misc.h"
 #include "i_swap.h"
 #include "p_local.h"
+#include "a11y.h"
+#include "sv_extsaveg.h" // [crispy] for extended savegame information
 
 // MACROS ------------------------------------------------------------------
 
@@ -143,8 +145,6 @@ char *SavePath = DEFAULT_SAVEPATH;
 
 int vanilla_savegame_limit = 1;
 
-int savepage; // [crispy] support 8 pages of savegames
-
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
 static int MobjCount;
@@ -152,7 +152,7 @@ static mobj_t **MobjList;
 static mobj_t ***TargetPlayerAddrs;
 static int TargetPlayerCount;
 static boolean SavingPlayers;
-static FILE *SavingFP;
+FILE *SavingFP;
 
 // CODE --------------------------------------------------------------------
 
@@ -1431,6 +1431,9 @@ static void StreamIn_light_t(thinker_t *thinker)
 
     // int count;
     str->count = SV_ReadLong();
+
+    if (!a11y_sector_lighting && str->type >= LITE_GLOW) // [crispy] A11Y - maxlight among competing thinkers.
+        str->sector->rlightlevel = MAX(str->sector->rlightlevel, str->value1);
 }
 
 static void StreamOut_light_t(thinker_t *thinker)
@@ -1551,6 +1554,9 @@ static void StreamIn_phase_t(thinker_t *thinker)
 
     // int base;
     str->base = SV_ReadLong();
+
+    if (!a11y_sector_lighting) // [crispy] A11Y - maxlight among competing thinkers.
+        str->sector->rlightlevel = MAX(str->base + MAXPHASE, str->sector->rlightlevel);
 }
 
 static void StreamOut_phase_t(thinker_t *thinker)
@@ -1980,12 +1986,6 @@ void SV_SaveGame(int slot, const char *description)
     char versionText[HXS_VERSION_TEXT_LENGTH];
     unsigned int i;
 
-    // [crispy] get expanded save slot number
-    if (slot != BASE_SLOT && slot != REBORN_SLOT)
-    {
-        slot += savepage * 10;
-    }
-
     // Open the output file
     M_snprintf(fileName, sizeof(fileName), "%shex%d.hxs", SavePath, BASE_SLOT);
     SV_OpenWrite(fileName);
@@ -2020,6 +2020,9 @@ void SV_SaveGame(int slot, const char *description)
 
     // Place a termination marker
     SV_WriteLong(ASEG_END);
+
+    // [crispy] write extended savegame data for game
+    SV_WriteExtendedSaveGameData(EXTSAVEG_GAME);
 
     // Close the output file
     SV_Close();
@@ -2071,6 +2074,9 @@ void SV_SaveMap(boolean savePlayers)
     // Place a termination marker
     SV_WriteLong(ASEG_END);
 
+    // [crispy] write extended savegame data for map
+    SV_WriteExtendedSaveGameData(EXTSAVEG_MAP);
+
     // Close the output file
     SV_Close();
 }
@@ -2091,12 +2097,6 @@ void SV_LoadGame(int slot)
     player_t *p; // [crispy]
 
     p = &players[consoleplayer]; // [crispy]
-
-    // [crispy] get expanded save slot number
-    if (slot != BASE_SLOT && slot != REBORN_SLOT)
-    {
-        slot += savepage * 10;
-    }
 
     // Copy all needed save files to the base slot
     if (slot != BASE_SLOT)
@@ -2185,6 +2185,8 @@ void SV_LoadGame(int slot)
         }
     }
 
+    // Set Bestslideline after loading
+    P_InitSlideLine();
 }
 
 //==========================================================================
@@ -2457,6 +2459,9 @@ void SV_LoadMap(void)
 
     AssertSegment(ASEG_END);
 
+    // [crispy] read more extended savegame data for map
+    SV_ReadExtendedSaveGameData(EXTSAVEG_MAP);
+
     // Free mobj list and save buffer
     Z_Free(MobjList);
     SV_Close();
@@ -2599,6 +2604,7 @@ static void UnarchiveWorld(void)
         sec->floorpic = SV_ReadWord();
         sec->ceilingpic = SV_ReadWord();
         sec->lightlevel = SV_ReadWord();
+        sec->rlightlevel = sec->lightlevel; // [crispy] A11Y
         sec->special = SV_ReadWord();
         sec->tag = SV_ReadWord();
         sec->seqType = SV_ReadWord();
@@ -3284,12 +3290,6 @@ void SV_ClearSaveSlot(int slot)
     int i;
     char fileName[100];
 
-    // [crispy] get expanded save slot number
-    if (slot != BASE_SLOT && slot != REBORN_SLOT)
-    {
-        slot += savepage * 10;
-    }
-
     for (i = 0; i < MAX_MAPS; i++)
     {
         M_snprintf(fileName, sizeof(fileName),
@@ -3466,6 +3466,7 @@ static void SV_Close(void)
     if (SavingFP)
     {
         fclose(SavingFP);
+        SavingFP = NULL;
     }
 }
 

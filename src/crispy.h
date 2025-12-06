@@ -51,6 +51,7 @@ typedef struct
 	int crosshairhealth;
 	int crosshairtarget;
 	int crosshairtype;
+	int crosshaircolor;
 	int defaultskill;
 	int demotimer;
 	int demotimerdir;
@@ -73,10 +74,10 @@ typedef struct
 	int secretmessage;
 	int smoothlight;
 	int smoothmap;
-	int smoothscaling;
 	int soundfix;
 	int soundfull;
 	int soundmono;
+	int lvlwpnsnd;
 	int statsformat;
 	int translucency;
 #ifdef CRISPY_TRUECOLOR
@@ -87,9 +88,8 @@ typedef struct
 	int widescreen;
 
 	// [crispy] in-game switches and variables
-	int screenshotmsg;
 	int snowflakes;
-	int cleanscreenshot;
+	int screenshot; // 1 = normal, 2 = clean
 	int demowarp;
 	int fps;
 
@@ -184,6 +184,30 @@ enum
     CROSSHAIR_PROJECTED,
     NUM_CROSSHAIRS,
     CROSSHAIR_INTERCEPT = 0x10
+};
+
+enum
+{
+    CROSSHAIR_HE_OFF,
+    CROSSHAIR_HE_OPAQUE,
+    CROSSHAIR_HE_TRANSLUCENT,
+    NUM_HE_CROSSHAIRS
+};
+
+enum
+{
+    CROSSHAIRTYPE_HE_DOT,
+    CROSSHAIRTYPE_HE_CROSS1,
+    CROSSHAIRTYPE_HE_CROSS2,
+    NUM_HE_CROSSHAIRTYPE
+};
+
+enum
+{
+    CROSSHAIRCOLOR_HE_GOLD,
+    CROSSHAIRCOLOR_HE_WHITE,
+    CROSSHAIRCOLOR_HE_FSHUD,
+    NUM_HE_CROSSHAIRCOLOR
 };
 
 enum

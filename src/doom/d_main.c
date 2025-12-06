@@ -180,9 +180,14 @@ boolean D_Display (void)
     
     if (crispy->uncapped)
     {
-        I_StartDisplay();
-        G_FastResponder();
-        G_PrepTiccmd();
+        I_UpdateFracTic();
+
+        if (!automapactive || crispy->automapoverlay)
+        {
+            I_StartDisplay();
+            G_FastResponder();
+            G_PrepTiccmd();
+        }
     }
 
     // change the view size if needed
@@ -319,7 +324,7 @@ boolean D_Display (void)
     }
 
     // [crispy] draw neither pause pic nor menu when taking a clean screenshot
-    if (crispy->cleanscreenshot)
+    if (gamestate == GS_LEVEL && crispy->screenshot == 2)
     {
 	return false;
     }
@@ -475,7 +480,7 @@ void D_BindVariables(void)
     M_BindIntVariable("crispy_secretmessage",   &crispy->secretmessage);
     M_BindIntVariable("crispy_smoothlight",     &crispy->smoothlight);
     M_BindIntVariable("crispy_smoothmap",       &crispy->smoothmap);
-    M_BindIntVariable("crispy_smoothscaling",   &crispy->smoothscaling);
+    M_BindIntVariable("crispy_smoothscaling",   &smooth_pixel_scaling);
     M_BindIntVariable("crispy_soundfix",        &crispy->soundfix);
     M_BindIntVariable("crispy_soundfull",       &crispy->soundfull);
     M_BindIntVariable("crispy_soundmono",       &crispy->soundmono);
@@ -1996,7 +2001,8 @@ void D_DoomMain (void)
     // Disable automatic loading of Master Levels, No Rest for the Living and
     // Sigil.
     //
-    if (!M_ParmExists("-nosideload") && gamemode != shareware && !demolumpname[0])
+    if (!M_ParmExists("-nosideload") && gamemode != shareware &&
+        !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))
     {
 	if (gamemode == retail &&
 	    gameversion == exe_ultimate &&

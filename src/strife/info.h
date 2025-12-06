@@ -2212,6 +2212,7 @@ typedef struct
     int     activesound;
     int     flags;
     const char *name;
+    int     flags2; // [crispy] extra strife flags
 } mobjinfo_t;
 
 extern mobjinfo_t mobjinfo[NUMMOBJTYPES];

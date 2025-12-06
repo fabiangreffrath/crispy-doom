@@ -141,6 +141,7 @@ texture_t**     textures_hashtable;
 
 
 int*			texturewidthmask;
+int*			texturewidth; // [crispy] texture width for wrapping column getter function
 // needed for texture pegging
 fixed_t*		textureheight;		
 int*			texturecompositesize;
@@ -379,10 +380,24 @@ R_GetColumn
 ( int		tex,
   int		col )
 {
-    int		lump;
-    int		ofs;
-	
-    col &= texturewidthmask[tex];
+    const int width = texturewidth[tex];
+    const int mask = texturewidthmask[tex];
+    int lump, ofs;
+
+    while (col < 0)
+    {
+        col += width;
+    }
+
+    if (mask + 1 == width)
+    {
+        col &= mask;
+    }
+    else
+    {
+        col %= width;
+    }
+
     lump = texturecolumnlump[tex][col];
     ofs = texturecolumnofs[tex][col];
     
@@ -518,6 +533,7 @@ void R_InitTextures (void)
     texturecomposite = Z_Malloc (numtextures * sizeof(*texturecomposite), PU_STATIC, 0);
     texturecompositesize = Z_Malloc (numtextures * sizeof(*texturecompositesize), PU_STATIC, 0);
     texturewidthmask = Z_Malloc (numtextures * sizeof(*texturewidthmask), PU_STATIC, 0);
+    texturewidth = Z_Malloc (numtextures * sizeof(*texturewidth), PU_STATIC, 0);
     textureheight = Z_Malloc (numtextures * sizeof(*textureheight), PU_STATIC, 0);
 
     //	Really complex printing shit...
@@ -599,6 +615,9 @@ void R_InitTextures (void)
 
         texturewidthmask[i] = j-1;
         textureheight[i] = texture->height<<FRACBITS;
+
+        // [crispy] texture width for wrapping column getter function
+        texturewidth[i] = texture->width;
     }
 
     Z_Free(patchlookup);

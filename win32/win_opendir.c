@@ -45,6 +45,14 @@ SOFTWARE.
 #define FILE_NAME_NORMALIZED 0
 #endif /* FILE_NAME_NORMALIZED */
 
+struct __dir
+{
+    struct dirent *entries;
+    intptr_t fd;
+    long int count;
+    long int index;
+};
+
 int closedir(DIR *dirp)
 {
     struct __dir *data = NULL;
@@ -125,6 +133,8 @@ static __ino_t __inode(const wchar_t *name)
     typedef BOOL(__stdcall * pfnGetFileInformationByHandleEx)(
         HANDLE hFile, dirent_FILE_INFO_BY_HANDLE_CLASS FileInformationClass,
         LPVOID lpFileInformation, DWORD dwBufferSize);
+    pfnGetFileInformationByHandleEx fnGetFileInformationByHandleEx;
+    HANDLE hFile;
 
     HANDLE hKernel32 = GetModuleHandleW(L"kernel32.dll");
     if (!hKernel32)
@@ -132,7 +142,7 @@ static __ino_t __inode(const wchar_t *name)
         return value;
     }
 
-    pfnGetFileInformationByHandleEx fnGetFileInformationByHandleEx =
+    fnGetFileInformationByHandleEx =
         (pfnGetFileInformationByHandleEx) GetProcAddress(
             hKernel32, "GetFileInformationByHandleEx");
     if (!fnGetFileInformationByHandleEx)
@@ -140,8 +150,8 @@ static __ino_t __inode(const wchar_t *name)
         return value;
     }
 
-    HANDLE hFile = CreateFileW(name, GENERIC_READ, FILE_SHARE_READ, NULL,
-                               OPEN_EXISTING, 0, 0);
+    hFile = CreateFileW(name, GENERIC_READ, FILE_SHARE_READ, NULL,
+                        OPEN_EXISTING, 0, 0);
     if (hFile == INVALID_HANDLE_VALUE)
     {
         return value;
@@ -172,8 +182,6 @@ static DIR *__internal_opendir(wchar_t *wname, int size)
 {
     struct __dir *data = NULL;
     struct dirent *tmp_entries = NULL;
-    static char default_char = '?';
-    static wchar_t *prefix = L"\\\\?\\";
     static wchar_t *suffix = L"\\*.*";
     static int extra_prefix = 4; /* use prefix "\\?\" to handle long file names */
     static int extra_suffix = 4; /* use suffix "\*.*" to find everything */
@@ -225,7 +233,7 @@ static DIR *__internal_opendir(wchar_t *wname, int size)
     {
         WideCharToMultiByte(CP_UTF8, 0, w32fd.cFileName, -1,
                             data->entries[data->index].d_name, NAME_MAX,
-                            &default_char, NULL);
+                            NULL, NULL);
 
         memcpy(wname + size, w32fd.cFileName, sizeof(wchar_t) * NAME_MAX);
 
@@ -327,52 +335,6 @@ DIR *opendir(const char *name)
     return dirp;
 }
 
-DIR *_wopendir(const wchar_t *name)
-{
-    DIR *dirp = NULL;
-    wchar_t *wname = __get_buffer();
-    int size = 0;
-    if (!wname)
-    {
-        errno = ENOMEM;
-        return NULL;
-    }
-    size = (int) wcslen(name);
-    if (size > NTFS_MAX_PATH)
-    {
-        free(wname);
-        return NULL;
-    }
-    memcpy(wname + 4, name, sizeof(wchar_t) * (size + 1));
-    dirp = __internal_opendir(wname, size + 5);
-    free(wname);
-    return dirp;
-}
-
-DIR *fdopendir(intptr_t fd)
-{
-    DIR *dirp = NULL;
-    wchar_t *wname = __get_buffer();
-    int size = 0;
-
-    if (!wname)
-    {
-        errno = ENOMEM;
-        return NULL;
-    }
-    size = GetFinalPathNameByHandleW((HANDLE) fd, wname + 4, NTFS_MAX_PATH,
-                                     FILE_NAME_NORMALIZED);
-    if (0 == size)
-    {
-        free(wname);
-        errno = ENOTDIR;
-        return NULL;
-    }
-    dirp = __internal_opendir(wname, size + 5);
-    free(wname);
-    return dirp;
-}
-
 struct dirent *readdir(DIR *dirp)
 {
     struct __dir *data = (struct __dir *) dirp;
@@ -386,40 +348,6 @@ struct dirent *readdir(DIR *dirp)
         return &data->entries[data->index++];
     }
     return NULL;
-}
-
-void seekdir(DIR *dirp, long int offset)
-{
-    if (dirp)
-    {
-        struct __dir *data = (struct __dir *) dirp;
-        data->index = (offset < data->count) ? offset : data->index;
-    }
-}
-
-void rewinddir(DIR *dirp)
-{
-    seekdir(dirp, 0);
-}
-
-long int telldir(DIR *dirp)
-{
-    if (!dirp)
-    {
-        errno = EBADF;
-        return -1;
-    }
-    return ((struct __dir *) dirp)->count;
-}
-
-intptr_t dirfd(DIR *dirp)
-{
-    if (!dirp)
-    {
-        errno = EINVAL;
-        return -1;
-    }
-    return ((struct __dir *) dirp)->fd;
 }
 
 #endif /* _WIN32 */

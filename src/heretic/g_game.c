@@ -37,6 +37,7 @@
 
 #include "deh_main.h" // [crispy] for demo footer
 #include "memio.h"
+#include "p_extsaveg.h" // [crispy] for extended savegame information
 
 // Macros
 
@@ -461,6 +462,14 @@ void G_BuildTiccmd(ticcmd_t *cmd, int maketic)
     else
     {
         lspeed = 2;
+    }
+
+    // [crispy] add quick 180° reverse
+    if (gamekeydown[key_reverse] || mousebuttons[mousebreverse])
+    {
+        angle += ANG180 >> FRACBITS;
+        gamekeydown[key_reverse] = false;
+        mousebuttons[mousebreverse] = false;
     }
 
     // [crispy] toggle "always run"
@@ -1428,6 +1437,21 @@ void G_PrepTiccmd (void)
     }
 }
 
+// [crispy] take a screenshot after rendering the next frame
+static void G_CrispyScreenShot()
+{
+    // [crispy] increase screenshot filename limit
+    V_ScreenShot("HTIC%04i.%s");
+    if (gamestate == GS_LEVEL)
+        P_SetMessage(&players[consoleplayer], DEH_String("SCREEN SHOT"), false);
+    if (crispy->screenshot == 2)
+    {
+        R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
+    }
+    crispy->screenshot = 0;
+}
+
+
 /*
 ===============================================================================
 =
@@ -1440,6 +1464,7 @@ void G_Ticker(void)
 {
     int i, buf;
     ticcmd_t *cmd = NULL;
+    extern boolean automapactive;
 
 //
 // do player reborns if needed
@@ -1473,7 +1498,17 @@ void G_Ticker(void)
                 G_DoPlayDemo();
                 break;
             case ga_screenshot:
-                V_ScreenShot("HTIC%02i.%s");
+                if (gamestate == GS_LEVEL)
+                {
+                    if (crispy->screenshot == 2 && (!automapactive || crispy->automapoverlay))
+                    {
+                        R_SetViewSize(11, detailLevel);
+                        R_ExecuteSetViewSize();
+                    }
+                }
+                // [crispy] screenshot always after drawing is done
+                crispy->post_rendering_hook = G_CrispyScreenShot;
+                BorderNeedRefresh = true;
                 gameaction = ga_nothing;
                 break;
             case ga_completed:
@@ -2153,8 +2188,12 @@ void G_DoLoadGame(void)
     {                           // Missing savegame termination marker
         I_Error("Bad savegame");
     }
-}
 
+    // [crispy] read more extended savegame data
+    P_ReadExtendedSaveGameData();
+
+    SV_Close();
+}
 
 /*
 ====================
@@ -2196,9 +2235,14 @@ void G_InitNew(skill_t skill, int episode, int map)
 {
     int i;
     int speed;
-    static const char *skyLumpNames[5] = {
-        "SKY1", "SKY2", "SKY3", "SKY1", "SKY3"
+    // [crispy] Support for sky textures from H+H IWAD.
+    static const char *skyLumpNames[2][5] = {
+        { "SKY1", "SKY2", "SKY3", "SKY1", "SKY3" },
+        { "SKY1", "SKY2", "SKY3", "SKY4", "SKY5" }
     };
+    const boolean RemasterSky = (R_CheckTextureNumForName(DEH_String("SKY4")) != -1)
+                             && (R_CheckTextureNumForName(DEH_String("SKY5")) != -1);
+    const char *ep6Sky = DEH_String(RemasterSky ? "SKY6" : "SKY1");
 
     if (paused)
     {
@@ -2261,11 +2305,11 @@ void G_InitNew(skill_t skill, int episode, int map)
     // Set the sky map
     if (episode > 5)
     {
-        skytexture = R_TextureNumForName(DEH_String("SKY1"));
+        skytexture = R_TextureNumForName(ep6Sky);
     }
     else
     {
-        skytexture = R_TextureNumForName(DEH_String(skyLumpNames[episode - 1]));
+        skytexture = R_TextureNumForName(DEH_String(skyLumpNames[RemasterSky][episode - 1]));
     }
 
 //
@@ -2698,10 +2742,10 @@ static size_t WriteCmdLineLump(MEMFILE *stream)
     return mem_ftell(stream) - pos;
 }
 
-static void WriteFileInfo(const char *name, size_t size, MEMFILE *stream)
+static long WriteFileInfo(const char *name, size_t size, long filepos,
+                          MEMFILE *stream)
 {
     filelump_t fileinfo = { 0 };
-    static long filepos = sizeof(wadinfo_t);
 
     fileinfo.filepos = LONG(filepos);
     fileinfo.size = LONG(size);
@@ -2719,12 +2763,14 @@ static void WriteFileInfo(const char *name, size_t size, MEMFILE *stream)
     mem_fwrite(&fileinfo, 1, sizeof(fileinfo), stream);
 
     filepos += size;
+    return filepos;
 }
 
 static void G_AddDemoFooter(void)
 {
     byte *data;
     size_t size;
+    long filepos;
     char *project_string;
 
     MEMFILE *stream = mem_fopen_write();
@@ -2745,10 +2791,11 @@ static void G_AddDemoFooter(void)
     mem_fwrite(&header, 1, sizeof(header), stream);
     mem_fseek(stream, 0, MEM_SEEK_END);
 
-    WriteFileInfo("PORTNAME", strlen(project_string), stream);
-    WriteFileInfo(NULL, strlen(DEMO_FOOTER_SEPARATOR), stream);
-    WriteFileInfo("CMDLINE", size, stream);
-    WriteFileInfo(NULL, strlen(DEMO_FOOTER_SEPARATOR), stream);
+    filepos = sizeof(wadinfo_t);
+    filepos = WriteFileInfo("PORTNAME", strlen(project_string), filepos, stream);
+    filepos = WriteFileInfo(NULL, strlen(DEMO_FOOTER_SEPARATOR), filepos, stream);
+    filepos = WriteFileInfo("CMDLINE", size, filepos, stream);
+    WriteFileInfo(NULL, strlen(DEMO_FOOTER_SEPARATOR), filepos, stream);
 
     mem_get_buf(stream, (void **)&data, &size);
 
@@ -2878,7 +2925,10 @@ void G_DoSaveGame(void)
     P_ArchiveWorld();
     P_ArchiveThinkers();
     P_ArchiveSpecials();
-    SV_Close(filename);
+    SV_WriteSaveGameEOF();
+    // [crispy] write extended savegame data
+    P_WriteExtendedSaveGameData();
+    SV_Close();
 
     gameaction = ga_nothing;
     savedescription[0] = 0;

@@ -85,7 +85,8 @@ P_SetMobjState
 void P_ExplodeMissile (mobj_t* mo)
 {
     mo->momx = mo->momy = mo->momz = 0;
-
+    
+    mo->flags2 |= MF_TRANSLUCENT; // [crispy] translucent explosion
     P_SetMobjState (mo, mobjinfo[mo->type].deathstate);
 
     // villsa [STRIFE] removed tics randomization
@@ -661,6 +662,7 @@ P_SpawnMobj
     mobj->radius = info->radius;
     mobj->height = info->height;
     mobj->flags = info->flags;
+    mobj->flags2 = info->flags2;
     mobj->health = info->spawnhealth;
 
     // haleyjd 09/25/10: [STRIFE] Doesn't do this; messes up flamethrower
@@ -1198,6 +1200,7 @@ mobj_t *P_SubstNullMobj(mobj_t *mobj)
         dummy_mobj.y = 0;
         dummy_mobj.z = 0;
         dummy_mobj.flags = 0;
+        dummy_mobj.flags2 = 0;
 
         mobj = &dummy_mobj;
     }

@@ -558,9 +558,7 @@ static int ST_cheat_spechits()
     dummy.tag = 666;
     if (gamemode == commercial)
     {
-	if (gamemap == 7 ||
-	// [crispy] Master Levels in PC slot 7
-	(gamemission == pack_master && (gamemap == 14 || gamemap == 15 || gamemap == 16)))
+	if (P_CheckMapTag666())
 	{
 	    // Mancubi
 	    speciallines += EV_DoFloor(&dummy, lowerFloorToLowest);
@@ -1966,7 +1964,7 @@ void ST_Drawer (boolean fullscreen, boolean refresh)
         ST_createWidgets();
     }
 
-    if (crispy->cleanscreenshot == 2)
+    if (crispy->screenshot == 2)
         return;
 
     // [crispy] translucent HUD

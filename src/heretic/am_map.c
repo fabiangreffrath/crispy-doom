@@ -23,12 +23,14 @@
 #include "i_timer.h"
 #include "i_video.h"
 #include "m_controls.h"
+#include "m_cheat.h"
 #include "p_local.h"
 #include "am_map.h"
 #include "am_data.h"
 
 #include "doomkeys.h"
 #include "v_video.h"
+#include "m_misc.h" // [crispy]
 
 vertex_t KeyPoints[NUM_KEY_TYPES];
 
@@ -142,15 +144,40 @@ static int m_zoomin_mouse;
 static int m_zoomout_mouse;
 static boolean mousewheelzoom;
 
-//static patch_t *marknums[10]; // numbers used for marking by the automap
-//static mpoint_t markpoints[AM_NUMMARKPOINTS]; // where the points are
-//static int markpointnum = 0; // next point to be assigned
+// [crispy] restore mapmarker functionality
+static patch_t *marknums[10]; // numbers used for marking by the automap
+static mpoint_t markpoints[AM_NUMMARKPOINTS]; // where the points are
+static int markpointnum = 0; // next point to be assigned
 
 static int followplayer = 1;    // specifies whether to follow the player around
 
-static char cheat_amap[] = { 'r', 'a', 'v', 'm', 'a', 'p' };
+cheatseq_t cheat_amap_seq = CHEAT("ravmap", 0);
+cheatseq_t cheat_altamap_seq = CHEAT("iddt", 0);
+cheatseq_t cheat_secret_seq = CHEAT("iddst", 0);
+cheatseq_t cheat_item_seq = CHEAT("iddit", 0);
+cheatseq_t cheat_kill_seq = CHEAT("iddkt", 0);
 
-static byte cheatcount = 0;
+static void AM_CheatRevealMap(void);
+static void AM_CheatRevealSecret(void);
+static void AM_CheatRevealItem(void);
+static void AM_CheatRevealKill(void);
+
+typedef struct Cheat_s
+{
+    void (*func) (void);
+    cheatseq_t *seq;
+} Cheat_t;
+
+static Cheat_t cheats[] = {
+    {AM_CheatRevealMap,    &cheat_amap_seq},
+    // [crispy] new cheats
+    {AM_CheatRevealMap,    &cheat_altamap_seq},
+    {AM_CheatRevealSecret, &cheat_secret_seq},
+    {AM_CheatRevealItem,   &cheat_item_seq},
+    {AM_CheatRevealKill,   &cheat_kill_seq},
+    {NULL,               NULL}
+};
+
 
 // [crispy] gradient table for map normal mode
 static byte antialias_normal[NUMALIAS][8] = {
@@ -185,6 +212,7 @@ static short next_mapxstart, next_mapystart; // [crispy] for interpolation
 // [crispy] automap rotate
 void AM_rotate(fixed_t* x, fixed_t* y, angle_t a);
 static void AM_rotatePoint(mpoint_t *pt);
+static void AM_drawCrosshair(int color, boolean force); // [crispy] restore crosshair
 static mpoint_t mapcenter;
 static angle_t mapangle;
 
@@ -225,8 +253,8 @@ void AM_activateNewScale(void)
     m_y -= m_h / 2;
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
-    next_m_x = m_x; // [crispy]
-    next_m_y = m_y; // [crispy]
+    next_m_x = prev_m_x = m_x; // [crispy]
+    next_m_y = prev_m_y = m_y; // [crispy]
 }
 
 void AM_saveScaleAndLoc(void)
@@ -254,8 +282,8 @@ void AM_restoreScaleAndLoc(void)
     }
     m_x2 = m_x + m_w;
     m_y2 = m_y + m_h;
-    next_m_x = m_x; // [crispy]
-    next_m_y = m_y; // [crispy]
+    next_m_x = prev_m_x = m_x; // [crispy]
+    next_m_y = prev_m_y = m_y; // [crispy]
 
     // Change the scaling multipliers
     scale_mtof = FixedDiv(f_w << FRACBITS, m_w);
@@ -264,15 +292,24 @@ void AM_restoreScaleAndLoc(void)
 
 // adds a marker at the current location
 
-/*
+// [crispy] restore mapmarker functionality
 void AM_addMark(void)
 {
-  markpoints[markpointnum].x = m_x + m_w/2;
-  markpoints[markpointnum].y = m_y + m_h/2;
-  markpointnum = (markpointnum + 1) % AM_NUMMARKPOINTS;
-
+    // [crispy] keep the map static in overlay mode
+    // if not following the player
+    if (!(!followplayer && crispy->automapoverlay))
+    {
+        markpoints[markpointnum].x = m_x + m_w/2;
+        markpoints[markpointnum].y = m_y + m_h/2;
+    }
+    else
+    {
+        markpoints[markpointnum].x = plr->mo->x >> FRACTOMAPBITS;
+        markpoints[markpointnum].y = plr->mo->y >> FRACTOMAPBITS;
+    }
+    markpointnum = (markpointnum + 1) % AM_NUMMARKPOINTS;
 }
-*/
+
 void AM_findMinMaxBoundaries(void)
 {
     int i;
@@ -426,6 +463,134 @@ void AM_changeWindowLoc(void)
     m_y2 = m_y + m_h;
 }
 
+// [crispy] center automap on point
+static void AM_SetMapCenter(fixed_t px, fixed_t py)
+{
+    // [crispy] FTOM(MTOF()) is needed to fix map line jitter in follow mode.
+    if (crispy->hires)
+    {
+        m_x = (px >> FRACTOMAPBITS) - m_w/2;
+        m_y = (py >> FRACTOMAPBITS) - m_h/2;
+    }
+    else
+    {
+        m_x = FTOM(MTOF(px >> FRACTOMAPBITS)) - m_w/2;
+        m_y = FTOM(MTOF(py >> FRACTOMAPBITS)) - m_h/2;
+    }
+    next_m_x = m_x;
+    next_m_y = m_y;
+    m_x2 = m_x + m_w;
+    m_y2 = m_y + m_h;
+}
+
+
+static void AM_CheatRevealMap(void)
+{
+    cheating = (cheating + 1) % 3;
+}
+
+
+// [woof] center the automap around the lowest numbered unfound secret sector
+static void AM_CheatRevealSecret(void)
+{
+    static int last_secret = -1;
+
+    if (automapactive)
+    {
+        int i, start_i;
+
+        i = last_secret + 1;
+        if (i >= numsectors)
+            i = 0;
+        start_i = i;
+
+        do
+        {
+            sector_t *sec = &sectors[i];
+
+            if (sec->special == 9)
+            {
+                followplayer = false;
+
+                // This is probably not necessary
+                if (sec->lines && sec->lines[0] && sec->lines[0]->v1)
+                {
+                    AM_SetMapCenter(sec->lines[0]->v1->x, sec->lines[0]->v1->y);
+                    last_secret = i;
+                    break;
+                }
+            }
+
+            i++;
+            if (i >= numsectors)
+                i = 0;
+        } while (i != start_i);
+    }
+}
+
+// [woof] auxiliary function for "reveal item" and "reveal kill" cheats
+static void AM_CycleMobj(mobj_t **last_mobj, int *last_count, int flags, int alive)
+{
+    thinker_t *th, *start_th;
+
+    // If the thinkers have been wiped, addresses are invalid
+    if (*last_count != init_thinkers_count)
+    {
+        *last_count = init_thinkers_count;
+        *last_mobj = NULL;
+    }
+
+    if (*last_mobj)
+        th = &(*last_mobj)->thinker;
+    else
+        th = &thinkercap;
+
+    start_th = th;
+
+    do
+    {
+        th = th->next;
+        if (th->function == P_MobjThinker)
+        {
+            mobj_t *mobj;
+
+            mobj = (mobj_t *) th;
+
+            if ((!alive || mobj->health > 0) && mobj->flags & flags)
+            {
+                followplayer = false;
+                AM_SetMapCenter(mobj->x, mobj->y);
+                *last_mobj = mobj;
+                break;
+            }
+        }
+    } while (th != start_th);
+}
+
+// [woof] center the automap around the lowest numbered alive monster that counts towards the kill percentage
+static void AM_CheatRevealKill(void)
+{
+    if (automapactive)
+    {
+        static int last_count;
+        static mobj_t *last_mobj;
+
+        AM_CycleMobj(&last_mobj, &last_count, MF_COUNTKILL, true);
+    }
+}
+
+// [woof] center the automap around the lowest numbered uncollected item that counts towards the item percentage
+static void AM_CheatRevealItem(void)
+{
+    if (automapactive)
+    {
+        static int last_count;
+        static mobj_t *last_mobj;
+
+        AM_CycleMobj(&last_mobj, &last_count, MF_COUNTITEM, false);
+    }
+}
+
 void AM_initVariables(void)
 {
     int pnum;
@@ -504,33 +669,42 @@ void AM_initVariables(void)
 //c  ST_Responder(&st_notify);
 }
 
+// [crispy] restore mapmarker functionality
 void AM_loadPics(void)
 {
-    //int i;
-    //char namebuf[9];
-/*  for (i=0;i<10;i++)
-  {
-    M_snprintf(namebuf, sizeof(namebuf), "AMMNUM%d", i);
-    marknums[i] = W_CacheLumpName(namebuf, PU_STATIC);
-  }*/
+    int i;
+    char namebuf[9];
+    for (i=0;i<10;i++)
+    {
+        M_snprintf(namebuf, sizeof(namebuf), "SMALLIN%d", i);
+        marknums[i] = W_CacheLumpName(namebuf, PU_STATIC);
+    }
     maplump = W_CacheLumpName(DEH_String("AUTOPAGE"), PU_STATIC);
 }
 
+// [crispy] small numbers have to remain PU_STATIC, never release
 /*void AM_unloadPics(void)
 {
-  int i;
-  for (i=0;i<10;i++) Z_ChangeTag(marknums[i], PU_CACHE);
-
+    int i;
+    char namebuf[9];
+  
+    for (i=0;i<10;i++)
+    {
+        M_snprintf(namebuf, 9, "SMALLIN%d", i);
+        W_ReleaseLumpName(namebuf);
+    }
 }*/
 
-/*
+// [crispy] restore mapmarker functionality
 void AM_clearMarks(void)
 {
-  int i;
-  for (i=0;i<AM_NUMMARKPOINTS;i++) markpoints[i].x = -1; // means empty
-  markpointnum = 0;
+    int i;
+
+    for (i=0;i<AM_NUMMARKPOINTS;i++) 
+        markpoints[i].x = -1; // means empty
+    markpointnum = 0;
 }
-*/
+
 
 // should be called at the start of every level
 // right now, i figure it out myself
@@ -546,9 +720,11 @@ void AM_LevelInit(boolean reinit)
     f_w = finit_width;
     f_h = finit_height;
     next_mapxstart = next_mapystart = mapxstart = mapystart = 0;
+    fb = I_VideoBuffer; // [crispy] to consider highres toggle
 
-
-//  AM_clearMarks();
+    // [crispy] restore mapmarker functionality
+    if (!reinit)
+        AM_clearMarks();
 
     AM_findMinMaxBoundaries();
 
@@ -556,6 +732,7 @@ void AM_LevelInit(boolean reinit)
     if (reinit && f_h_old)
     {
         scale_mtof = scale_mtof * f_h / f_h_old;
+        AM_drawCrosshair(XHAIRCOLORS, true);
     }
     else
     {
@@ -585,10 +762,10 @@ void AM_Stop(void)
     BorderNeedRefresh = true;
 }
 
+// [crispy] moved here for extended savegames
+static int lastlevel = -1, lastepisode = -1;
 void AM_Start(void)
 {
-    static int lastlevel = -1, lastepisode = -1;
-
     if (!stopped)
         AM_Stop();
     stopped = false;
@@ -630,6 +807,7 @@ boolean AM_Responder(event_t * ev)
     int key;
     static int bigstate = 0;
     static int joywait = 0;
+    static char buffer[20]; // [crispy] to store mapmarkers
     extern boolean speedkeydown (void);
 
     // [crispy] toggleable pan/zoom speed
@@ -801,20 +979,19 @@ boolean AM_Responder(event_t * ev)
                          grid ? AMSTR_GRIDON : AMSTR_GRIDOFF,
                          true);
         }
-        /*
+        // [crispy] restore mapmarker functionality
         else if (key == key_map_mark)
         {
             M_snprintf(buffer, sizeof(buffer), "%s %d",
                        AMSTR_MARKEDSPOT, markpointnum);
-            plr->message = buffer;
+            P_SetMessage(plr, buffer, true);
             AM_addMark();
         }
         else if (key == key_map_clearmark)
         {
             AM_clearMarks();
-            plr->message = AMSTR_MARKSCLEARED;
+            P_SetMessage(plr, AMSTR_MARKSCLEARED, true);
         }
-        */
         else if (key == key_map_overlay)
         {
             // [crispy] force redraw status bar
@@ -846,15 +1023,12 @@ boolean AM_Responder(event_t * ev)
             rc = false;
         }
 
-        if (cheat_amap[cheatcount] == ev->data1 && !netgame)
-            cheatcount++;
-        else
-            cheatcount = 0;
-        if (cheatcount == 6)
+        for (int i = 0; cheats[i].func != NULL; i++)
         {
-            cheatcount = 0;
-            rc = false;
-            cheating = (cheating + 1) % 3;
+            if (cht_CheckCheat(cheats[i].seq, key))
+            {
+                cheats[i].func();
+            }
         }
     }
 
@@ -918,21 +1092,7 @@ void AM_changeWindowScale(void)
 
 void AM_doFollowPlayer(void)
 {
-    // [crispy] FTOM(MTOF()) is needed to fix map line jitter in follow mode.
-    if (crispy->hires)
-    {
-        m_x = (viewx >> FRACTOMAPBITS) - m_w/2;
-        m_y = (viewy >> FRACTOMAPBITS) - m_h/2;
-    }
-    else
-    {
-        m_x = FTOM(MTOF(viewx >> FRACTOMAPBITS)) - m_w/2;
-        m_y = FTOM(MTOF(viewy >> FRACTOMAPBITS)) - m_h/2;
-    }
-    next_m_x = m_x;
-    next_m_y = m_y;
-    m_x2 = m_x + m_w;
-    m_y2 = m_y + m_h;
+	AM_SetMapCenter(viewx, viewy);
 
         // do the parallax parchment scrolling.
 /*
@@ -1866,25 +2026,34 @@ void AM_drawThings(int colors, int colorrange)
     }
 }
 
-/*
+// [crispy] restore mapmarker functionality
 void AM_drawMarks(void)
 {
-  int i, fx, fy, w, h;
+    int i, fx, fy, w, h;
+    mpoint_t pt;
 
-  for (i=0;i<AM_NUMMARKPOINTS;i++)
-  {
-    if (markpoints[i].x != -1)
+    for (i=0;i<AM_NUMMARKPOINTS;i++)
     {
-      w = SHORT(marknums[i]->width);
-      h = SHORT(marknums[i]->height);
-      fx = CXMTOF(markpoints[i].x);
-      fy = CYMTOF(markpoints[i].y);
-      if (fx >= f_x && fx <= f_w - w && fy >= f_y && fy <= f_h - h)
-  			V_DrawPatch(fx, fy, marknums[i]);
+        if (markpoints[i].x != -1)
+        {
+            //   w = SHORT(marknums[i]->width);
+            //   h = SHORT(marknums[i]->height);
+            w = 6; // [crispy] based on doom +1 for increased size
+            h = 7; // [crispy] based on doom +1 for increased size
+            // [crispy] center marks around player
+            pt.x = markpoints[i].x;
+            pt.y = markpoints[i].y;
+            if (crispy->automaprotate)
+            {
+                AM_rotatePoint(&pt);
+            }
+            fx = (CXMTOF(pt.x) >> crispy->hires) - 1;
+            fy = (CYMTOF(pt.y) >> crispy->hires) - 2;
+            if (fx >= f_x && fx <= (f_w >> crispy->hires) - w && fy >= f_y && fy <= (f_h >> crispy->hires) - h)
+                V_DrawPatch(fx - WIDESCREENDELTA, fy, marknums[i]);
+        }
     }
-  }
 }
-*/
 
 void AM_drawkeys(void)
 {
@@ -1925,9 +2094,34 @@ void AM_drawkeys(void)
     }
 }
 
-void AM_drawCrosshair(int color)
+static void AM_drawCrosshair(int color, boolean force)
 {
-    fb[(f_w * (f_h + 1)) / 2] = color;  // single point for now
+    // [crispy] draw an actual crosshair
+    if (!followplayer || force)
+    {
+        static fline_t h, v;
+
+        if (!h.a.x || force)
+        {
+            h.a.x = h.b.x = v.a.x = v.b.x = f_x + f_w / 2;
+            h.a.y = h.b.y = v.a.y = v.b.y = f_y + f_h / 2;
+            h.a.x -= 2; h.b.x += 2;
+            v.a.y -= 2; v.b.y += 2;
+        }
+
+        AM_drawFline(&h, color);
+        AM_drawFline(&v, color);
+    }
+// [crispy] do not draw the useless dot on the player arrow
+/*
+    else
+#ifndef CRISPY_TRUECOLOR
+    fb[(f_w*(f_h+1))/2] = color; // single point for now
+#else
+    fb[(f_w*(f_h+1))/2] = pal_color[color]; // single point for now
+#endif
+*/
+
 }
 
 void AM_Drawer(void)
@@ -1971,12 +2165,12 @@ void AM_Drawer(void)
     if (grid)
         AM_drawGrid(GRIDCOLORS);
     AM_drawWalls();
+    AM_drawMarks(); // [crispy] restore mapmarker functionality
     AM_drawPlayers();
     if (cheating == 2)
         AM_drawThings(THINGCOLORS, THINGRANGE);
-//  AM_drawCrosshair(XHAIRCOLORS);
+    AM_drawCrosshair(XHAIRCOLORS, false);
 
-//  AM_drawMarks();
     if (gameskill == sk_baby || crispy->keysloc)
     {
         AM_drawkeys();
@@ -1991,11 +2185,54 @@ void AM_Drawer(void)
         numepisodes = 3;
     }
 
+    if (crispy->screenshot == 2)
+    {
+        return;
+    }
+    // [crispy] check for translucent HUD
+    SB_Translucent(TRANSLUCENT_HUD && (!automapactive || crispy->automapoverlay));
     if (gameepisode <= numepisodes && gamemap < 10)
     {
         level_name = LevelNames[(gameepisode - 1) * 9 + gamemap - 1];
         MN_DrTextA(DEH_String(level_name), 20, 145);
     }
+    SB_Translucent(false);
 //  I_Update();
 //  V_MarkRect(f_x, f_y, f_w, f_h);
+}
+
+// [crispy] extended savegames
+void AM_GetMarkPoints (int *n, long *p)
+{
+    int i;
+
+    *n = markpointnum;
+    *p = -1L;
+
+    // [crispy] prevent saving markpoints from previous map
+    if (lastlevel == gamemap && lastepisode == gameepisode)
+    {
+        for (i = 0; i < AM_NUMMARKPOINTS; i++)
+        {
+            *p++ = (long)markpoints[i].x;
+            *p++ = (markpoints[i].x == -1) ? 0L : (long)markpoints[i].y;
+        }
+    }
+}
+
+void AM_SetMarkPoints (int n, long *p)
+{
+    int i;
+
+    AM_LevelInit(false);
+    lastlevel = gamemap;
+    lastepisode = gameepisode;
+
+    markpointnum = n;
+
+    for (i = 0; i < AM_NUMMARKPOINTS; i++)
+    {
+        markpoints[i].x = (int64_t)*p++;
+        markpoints[i].y = (int64_t)*p++;
+    }
 }

@@ -440,6 +440,7 @@ enum
 
     crispness_sep_visual,
     crispness_smoothlight,
+    crispness_translucency,
     crispness_sep_visual_,
 
     crispness1_next,
@@ -459,6 +460,7 @@ static menuitem_t Crispness1Menu[] =
     {-1, "", 0, '\0'},
     {-1, "", 0, '\0'},
     {2, "", M_CrispyToggleSmoothLighting, 's'},
+    {3, "", M_CrispyToggleTranslucency, 't'},
     {-1, "", 0, '\0'},
     {1, "", M_CrispnessNext, 'n'},
     {1, "", M_CrispnessPrev, 'p'},
@@ -1512,13 +1514,14 @@ static void M_DrawCrispness1(void)
     M_DrawCrispnessSeparator(crispness_sep_rendering, "Rendering");
     M_DrawCrispnessItem(crispness_hires, "High Resolution Rendering", crispy->hires, true);
     M_DrawCrispnessMultiItem(crispness_widescreen, "Aspect Ratio", multiitem_widescreen, crispy->widescreen, aspect_ratio_correct == 1);
-    M_DrawCrispnessItem(crispness_smoothscaling, "Smooth Pixel Scaling", crispy->smoothscaling, !force_software_renderer);
+    M_DrawCrispnessItem(crispness_smoothscaling, "Smooth Pixel Scaling", smooth_pixel_scaling, !force_software_renderer);
     M_DrawCrispnessItem(crispness_uncapped, "Uncapped Framerate", crispy->uncapped, true);
     M_DrawCrispnessNumericItem(crispness_fpslimit, "Framerate Limit", crispy->fpslimit, "None", crispy->uncapped, "35");
     M_DrawCrispnessItem(crispness_vsync, "Enable VSync", crispy->vsync, !force_software_renderer);
 
     M_DrawCrispnessSeparator(crispness_sep_visual, "Visual");
     M_DrawCrispnessItem(crispness_smoothlight, "Smooth Diminishing Lighting", crispy->smoothlight, true);
+    M_DrawCrispnessMultiItem(crispness_translucency, "Translucency", multiitem_translucency, crispy->translucency, true);
 
     M_DrawCrispnessGoto(crispness1_next, "Next Page >");
     M_DrawCrispnessGoto(crispness1_prev, "< Last Page");
@@ -2621,11 +2624,19 @@ boolean M_Responder (event_t* ev)
     }
     */
 
-    // [crispy] clean screenshot
-    if (key != 0 && key == key_menu_cleanscreenshot)
+    if (key != 0 && (key == key_menu_screenshot || key == key_menu_cleanscreenshot))
     {
-        crispy->cleanscreenshot = (screenblocks > 10) ? 2 : 1;
-        G_ScreenShot();
+        if (key == key_menu_cleanscreenshot)
+        {
+            // [crispy] take screen shot without weapons and HUD
+            crispy->screenshot = 2;
+        }
+        else
+        {
+            // [crispy] take a normal screenshot
+            crispy->screenshot = 1;
+        }
+        G_ScreenShot ();
         return true;
     }
 
@@ -2754,7 +2765,10 @@ boolean M_Responder (event_t* ev)
                 M_QuickLoad();
             }
             else
+            {
+                crispy->screenshot = 1;
                 G_ScreenShot();
+            }
             return true;
         }
         else if (key == key_menu_quit)     // Quit DOOM
@@ -2783,11 +2797,7 @@ boolean M_Responder (event_t* ev)
         else if(gameversion == exe_strife_1_31 && key == key_spy)
         {
             // haleyjd 20130301: 1.31 moved screenshots to F12.
-            G_ScreenShot();
-            return true;
-        }
-        else if (key != 0 && key == key_menu_screenshot)
-        {
+            crispy->screenshot = 1;
             G_ScreenShot();
             return true;
         }

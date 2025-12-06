@@ -66,6 +66,8 @@
 
 #include "v_trans.h" // [crispy] colored "invert mouse" message
 
+#include "d_pwad.h" // [crispy] kex secret level
+
 //
 // defaulted values
 //
@@ -1569,7 +1571,7 @@ static void M_DrawCrispness1(void)
     M_DrawCrispnessItem(crispness_uncapped, "Uncapped Framerate", crispy->uncapped, true);
     M_DrawCrispnessNumericItem(crispness_fpslimit, "Framerate Limit", crispy->fpslimit, "None", crispy->uncapped, "35");
     M_DrawCrispnessItem(crispness_vsync, "Enable VSync", crispy->vsync, !force_software_renderer);
-    M_DrawCrispnessItem(crispness_smoothscaling, "Smooth Pixel Scaling", crispy->smoothscaling, !force_software_renderer);
+    M_DrawCrispnessItem(crispness_smoothscaling, "Smooth Pixel Scaling", smooth_pixel_scaling, !force_software_renderer);
 
     M_DrawCrispnessSeparator(crispness_sep_visual, "Visual");
     M_DrawCrispnessMultiItem(crispness_coloredhud, "Colorize HUD Elements", multiitem_coloredhud, crispy->coloredhud, true);
@@ -2229,6 +2231,14 @@ static int G_GotoNextLevel(void)
         doom2_next[1] = 3;
         doom2_next[14] = 16;
         doom2_next[20] = 1;
+        if (D_CheckMasterlevelKex())
+        {
+            // [crispy] kex secret detour
+            doom2_next[17] = 21;
+            doom2_next[20] = 19;
+            doom2_next[18] = 20;
+            doom2_next[19] = 1;
+        }
       }
     }
     else
@@ -2676,17 +2686,21 @@ boolean M_Responder (event_t* ev)
 	return true;
     }
 
-    // [crispy] take screen shot without weapons and HUD
-    if (key != 0 && key == key_menu_cleanscreenshot)
-    {
-	crispy->cleanscreenshot = (screenblocks > 10) ? 2 : 1;
-    }
-
     if ((devparm && key == key_menu_help) ||
         (key != 0 && (key == key_menu_screenshot || key == key_menu_cleanscreenshot)))
     {
-	G_ScreenShot ();
-	return true;
+        if (key == key_menu_cleanscreenshot)
+        {
+            // [crispy] take screen shot without weapons and HUD
+            crispy->screenshot = 2;
+        }
+        else
+        {
+            // [crispy] take a normal screenshot
+            crispy->screenshot = 1;
+        }
+        G_ScreenShot ();
+        return true;
     }
 
     // F-Keys

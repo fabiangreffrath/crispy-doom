@@ -27,6 +27,7 @@
 #include "m_misc.h"
 #include "p_local.h"
 #include "p_saveg.h"
+#include "a11y.h" // [crispy] A11Y
 
 // State.
 #include "doomstat.h"
@@ -383,6 +384,9 @@ static void saveg_read_mobj_t(mobj_t *str)
 
     // int flags;
     str->flags = saveg_read32();
+
+    // init flags2
+    str->flags2 = 0;
 
     // int health;
     str->health = saveg_read32();
@@ -1526,6 +1530,9 @@ static void saveg_read_lightflash_t(lightflash_t *str)
 
     // int mintime;
     str->mintime = saveg_read32();
+
+    if (!a11y_sector_lighting)
+        str->sector->rlightlevel = str->maxlight;
 }
 
 static void saveg_write_lightflash_t(lightflash_t *str)
@@ -1581,6 +1588,10 @@ static void saveg_read_strobe_t(strobe_t *str)
 
     // int brighttime;
     str->brighttime = saveg_read32();
+
+    // [crispy] Ensure maxlight among competing thinkers. 
+    if (!a11y_sector_lighting && str->sector->rlightlevel < str->maxlight)
+        str->sector->rlightlevel = str->maxlight;
 }
 
 static void saveg_write_strobe_t(strobe_t *str)
@@ -1630,6 +1641,9 @@ static void saveg_read_glow_t(glow_t *str)
 
     // int direction;
     str->direction = saveg_read32();
+
+    if (!a11y_sector_lighting)
+        str->sector->rlightlevel = str->maxlight;
 }
 
 static void saveg_write_glow_t(glow_t *str)
@@ -1883,6 +1897,7 @@ void P_UnArchiveWorld (void)
         sec->floorpic = saveg_read16();
         //sec->ceilingpic = saveg_read16(); [STRIFE] not saved
         sec->lightlevel = saveg_read16();
+        sec->rlightlevel = sec->lightlevel; // [crispy] A11Y
         sec->special = saveg_read16();          // needed?
         //sec->tag = saveg_read16();              // needed? [STRIFE] not saved
         sec->specialdata = 0;

@@ -77,6 +77,7 @@ typedef enum
     MENU_MOUSE,
     MENU_CRISPNESS1,
     MENU_CRISPNESS2,
+    MENU_CRISPNESS3,
     MENU_NONE
 } MenuType_t;
 
@@ -133,6 +134,8 @@ static boolean CrispySmoothing(int option);
 static boolean CrispyBrightmaps(int option);
 static boolean CrispySmoothLighting(int option);
 static boolean CrispySoundMono(int option);
+static boolean CrispyLvlWpnSnd(int option);
+static boolean CrispyTranslucency(int option);
 static boolean CrispySndChannels(int option);
 static boolean CrispyAutomapStats(int option);
 static boolean CrispyLevelTime(int option);
@@ -143,6 +146,9 @@ static boolean CrispyMouselook(int option);
 static boolean CrispyBobfactor(int option);
 static boolean CrispyCenterWeapon(int option);
 static boolean CrispyDefaultskill(int option);
+static boolean CrispyCrosshair(int option);
+static boolean CrispyCrosshairShape(int option);
+static boolean CrispyCrosshairColor(int option);
 static boolean CrispyUncapped(int option);
 static boolean CrispyFpsLimit(int option);
 static boolean CrispyVsync(int option);
@@ -163,6 +169,7 @@ static void DrawMouseMenu(void);
 static void DrawCrispness(void);
 static void DrawCrispness1(void);
 static void DrawCrispness2(void);
+static void DrawCrispness3(void);
 void MN_LoadSlotText(void);
 
 // External Functions
@@ -359,7 +366,7 @@ static Menu_t Options2Menu = {
 
 static int crispnessmenupage;
 
-#define NUM_CRISPNESS_MENUS 2
+#define NUM_CRISPNESS_MENUS 3
 
 static MenuItem_t Crispness1Items[] = {
     {ITT_LRFUNC2, "HIGH RESOLUTION RENDERING:", CrispyHires, 0, MENU_NONE},
@@ -372,42 +379,66 @@ static MenuItem_t Crispness1Items[] = {
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_LRFUNC2, "APPLY BRIGHTMAPS TO:", CrispyBrightmaps, 0, MENU_NONE},
     {ITT_LRFUNC2, "SMOOTH DIMINISHING LIGHTING:", CrispySmoothLighting, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_LRFUNC2, "MONO SFX:", CrispySoundMono, 0, MENU_NONE},
-    {ITT_LRFUNC2, "SOUND CHANNELS:", CrispySndChannels, 0, MENU_NONE},
+    {ITT_LRFUNC2, "ENABLE TRANSLUCENCY:", CrispyTranslucency, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EFUNC, "NEXT PAGE", CrispyNextPage, 0, MENU_NONE},
+    {ITT_EFUNC, "LAST PAGE", CrispyPrevPage, 0, MENU_NONE},
 };
 
 static Menu_t Crispness1Menu = {
     68, 35,
     DrawCrispness,
-    16, Crispness1Items,
+    14, Crispness1Items,
     0,
     MENU_OPTIONS
 };
 
 static MenuItem_t Crispness2Items[] = {
+    {ITT_LRFUNC2, "MONO SFX:", CrispySoundMono, 0, MENU_NONE},
+    {ITT_LRFUNC2, "SOUND CHANNELS:", CrispySndChannels, 0, MENU_NONE},
+    {ITT_LRFUNC2, "ALIGN WEAPON VOLUMES:", CrispyLvlWpnSnd, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_LRFUNC2, "SHOW LEVEL STATS:", CrispyAutomapStats, 0, MENU_NONE},
     {ITT_LRFUNC2, "SHOW LEVEL TIME:", CrispyLevelTime, 0, MENU_NONE},
     {ITT_LRFUNC2, "SHOW PLAYER COORDS:", CrispyPlayerCoords, 0, MENU_NONE},
     {ITT_LRFUNC2, "REPORT REVEALED SECRETS:", CrispySecretMessage, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
-    {ITT_LRFUNC2, "FREELOOK MODE:", CrispyFreelook, 0, MENU_NONE},
-    {ITT_LRFUNC2, "PERMANENT MOUSELOOK:", CrispyMouselook, 0, MENU_NONE},
-    {ITT_LRFUNC2, "PLAYER VIEW/WEAPON BOBBING:", CrispyBobfactor, 0, MENU_NONE},
-    {ITT_LRFUNC2, "WEAPON ATTACK ALIGNMENT:", CrispyCenterWeapon, 0, MENU_NONE},
-    {ITT_LRFUNC2, "DEFAULT DIFFICULTY:", CrispyDefaultskill, 0, MENU_NONE},
     {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EFUNC, "NEXT PAGE", CrispyNextPage, 0, MENU_NONE},
     {ITT_EFUNC, "PREV PAGE", CrispyPrevPage, 0, MENU_NONE},
 };
 
 static Menu_t Crispness2Menu = {
     68, 35,
     DrawCrispness,
-    13, Crispness2Items,
+    14, Crispness2Items,
+    0,
+    MENU_OPTIONS
+};
+
+static MenuItem_t Crispness3Items[] = {
+    {ITT_LRFUNC2, "FREELOOK MODE:", CrispyFreelook, 0, MENU_NONE},
+    {ITT_LRFUNC2, "PERMANENT MOUSELOOK:", CrispyMouselook, 0, MENU_NONE},
+    {ITT_LRFUNC2, "PLAYER VIEW/WEAPON BOBBING:", CrispyBobfactor, 0, MENU_NONE},
+    {ITT_LRFUNC2, "WEAPON ATTACK ALIGNMENT:", CrispyCenterWeapon, 0, MENU_NONE},
+    {ITT_LRFUNC2, "DEFAULT DIFFICULTY:", CrispyDefaultskill, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_LRFUNC2, "DRAW CROSSHAIR:", CrispyCrosshair, 0, MENU_NONE},
+    {ITT_LRFUNC2, "CROSSHAIR SHAPE:", CrispyCrosshairShape, 0, MENU_NONE},
+    {ITT_LRFUNC2, "CROSSHAIR COLOR:", CrispyCrosshairColor, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EMPTY, NULL, NULL, 0, MENU_NONE},
+    {ITT_EFUNC, "FIRST PAGE", CrispyNextPage, 0, MENU_NONE},
+    {ITT_EFUNC, "PREV PAGE", CrispyPrevPage, 0, MENU_NONE},
+};
+
+static Menu_t Crispness3Menu = {
+    68, 35,
+    DrawCrispness,
+    14, Crispness3Items,
     0,
     MENU_OPTIONS
 };
@@ -415,11 +446,13 @@ static Menu_t Crispness2Menu = {
 static void (*CrispnessMenuDrawers[])(void) = {
     &DrawCrispness1,
     &DrawCrispness2,
+    &DrawCrispness3,
 };
 
 static MenuType_t CrispnessMenus[] = {
     MENU_CRISPNESS1,
     MENU_CRISPNESS2,
+    MENU_CRISPNESS3,
 };
 
 static const multiitem_t multiitem_bobfactor[NUM_BOBFACTORS] =
@@ -483,6 +516,41 @@ static const multiitem_t multiitem_difficulties[NUM_SKILLS] =
     {SKILL_HNTR, "YELLOWBELLIES"},
 };
 
+multiitem_t multiitem_he_crosshair[NUM_HE_CROSSHAIRS] =
+{
+    {CROSSHAIR_HE_OFF, "off"},
+    {CROSSHAIR_HE_OPAQUE, "opaque"},
+    {CROSSHAIR_HE_TRANSLUCENT, "translucent"},
+};
+
+multiitem_t multiitem_he_crosshairtype[] =
+{
+    {-1, "none"},
+    {CROSSHAIRTYPE_HE_DOT, "dot"},
+    {CROSSHAIRTYPE_HE_CROSS1, "cross1"},
+    {CROSSHAIRTYPE_HE_CROSS2, "cross2"},
+};
+
+// [crispy] crosshair colors for heretic
+// gold: corresponding with normal hud / crispy hud font
+// white: corresponding with hud messages / providing high visibility
+// green: corresponding with vanilla fullscreen hud font
+multiitem_t multiitem_he_crosshaircolor[] =
+{
+    {-1, "none"},
+    {CROSSHAIRCOLOR_HE_GOLD, "gold"},
+    {CROSSHAIRCOLOR_HE_WHITE, "white"},
+    {CROSSHAIRCOLOR_HE_FSHUD, "green"},
+};
+
+multiitem_t multiitem_translucency[NUM_TRANSLUCENCY] =
+{
+    {TRANSLUCENCY_OFF, "OFF"},
+    {TRANSLUCENCY_MISSILE, "PROJECTILES"},
+    {TRANSLUCENCY_ITEM, "WEAPON FLASHES"},
+    {TRANSLUCENCY_BOTH, "BOTH"},
+};
+
 static const multiitem_t multiitem_sndchannels[3] =
 {
     {8, "8"},
@@ -502,6 +570,7 @@ static Menu_t *Menus[] = {
     &MouseMenu,
     &Crispness1Menu,
     &Crispness2Menu,
+    &Crispness3Menu,
 };
 
 // [crispy] gamma correction messages
@@ -667,7 +736,7 @@ void MN_DrTextA(const char *text, int x, int y)
         else
         {
             p = W_CacheLumpNum(FontABaseLump + c - 33, PU_CACHE);
-            V_DrawPatch(x, y, p);
+            V_DrawSBPatch(x, y, p);
             x += SHORT(p->width) - 1;
         }
     }
@@ -888,7 +957,7 @@ void MN_Drawer(void)
         y = CurrentMenu->y + (CurrentItPos * (ITEM_HEIGHT/2)) + SELECTOR_YOFFSET;
         selName = DEH_String(MenuTime & 8 ? "INVGEMR1" : "INVGEMR2");
         V_DrawPatch(x + (SELECTOR_XOFFSET/2), y,
-                    W_CacheLumpName(selName, PU_CACHE));
+                    W_CacheLumpName(selName, PU_STATIC));
         }
         else
         {
@@ -1125,7 +1194,7 @@ static void DrawOptionsMenu(void)
 
 static void DrawOptions2Menu(void)
 {
-    DrawSlider(&Options2Menu, 1, 9, screenblocks - 3);
+    DrawSlider(&Options2Menu, 1, 14, screenblocks - 3);
     DrawSlider(&Options2Menu, 3, 16, snd_MaxVolume);
     DrawSlider(&Options2Menu, 5, 16, snd_MusicVolume);
 }
@@ -1531,7 +1600,7 @@ static boolean SCScreenSize(int option)
 {
     if (option == RIGHT_DIR)
     {
-        if (screenblocks < 11)
+        if (screenblocks < 16)
         {
             screenblocks++;
         }
@@ -1540,7 +1609,7 @@ static boolean SCScreenSize(int option)
     {
         screenblocks--;
     }
-    R_SetViewSize(screenblocks, detailLevel);
+    R_SetViewSize(BETWEEN(3, 11, screenblocks), detailLevel);
     return true;
 }
 
@@ -1629,7 +1698,7 @@ static boolean CrispyToggleWidescreen(int option)
 }
 static boolean CrispySmoothing(int option)
 {
-    crispy->smoothscaling = !crispy->smoothscaling;
+    smooth_pixel_scaling = !smooth_pixel_scaling;
     return true;
 }
 
@@ -1735,6 +1804,18 @@ static boolean CrispySoundMono(int option)
     return true;
 }
 
+static boolean CrispyLvlWpnSnd(int option)
+{
+    crispy->lvlwpnsnd = !crispy->lvlwpnsnd;
+    return true;
+}
+
+static boolean CrispyTranslucency(int choice)
+{
+    ChangeSettingEnum(&crispy->translucency, choice, NUM_TRANSLUCENCY);
+    return true;
+}
+
 static boolean CrispySndChannels(int option)
 {
     S_UpdateSndChannels(option);
@@ -1800,6 +1881,34 @@ static boolean CrispyDefaultskill(int option)
 {
     ChangeSettingEnum(&crispy->defaultskill, option, NUM_SKILLS);
     SkillMenu.oldItPos = (crispy->defaultskill + SKILL_HMP) % NUM_SKILLS;
+    return true;
+}
+
+static boolean CrispyCrosshair(int option)
+{
+    ChangeSettingEnum(&crispy->crosshair, option, NUM_HE_CROSSHAIRS);
+    return true;
+}
+
+static boolean CrispyCrosshairShape(int option)
+{
+    if (!crispy->crosshair)
+    {
+	    return true;
+    }
+
+    ChangeSettingEnum(&crispy->crosshairtype, option, NUM_HE_CROSSHAIRTYPE);
+    return true;
+}
+
+static boolean CrispyCrosshairColor(int option)
+{
+    if (!crispy->crosshair)
+    {
+	    return true;
+    }
+
+    ChangeSettingEnum(&crispy->crosshaircolor, option, NUM_HE_CROSSHAIRCOLOR);
     return true;
 }
 
@@ -2083,8 +2192,18 @@ boolean MN_Responder(event_t * event)
     }
 
     if ((ravpic && key == KEY_F1) ||
-        (key != 0 && key == key_menu_screenshot))
+        (key != 0 && (key == key_menu_screenshot || key == key_menu_cleanscreenshot)))
     {
+        if (key == key_menu_cleanscreenshot)
+        {
+            // [crispy] take screen shot without weapons and HUD
+            crispy->screenshot = 2;
+        }
+        else
+        {
+            // [crispy] take a normal screenshot
+            crispy->screenshot = 1;
+        }
         G_ScreenShot();
         return (true);
     }
@@ -2980,7 +3099,7 @@ static void DrawCrispnessNumericItem(int item, int x, int y, const char *zero,
 
 static void DrawCrispness1(void)
 {
-    DrawCrispnessHeader("CRISPNESS 1/2");
+    DrawCrispnessHeader("CRISPNESS 1/3");
 
     DrawCrispnessSubheader("RENDERING", 25);
 
@@ -2991,7 +3110,7 @@ static void DrawCrispness1(void)
     DrawCrispnessMultiItem(crispy->widescreen, 164, 45, multiitem_widescreen, false);
 
     // Smooth pixel scaling
-    DrawCrispnessItem(crispy->smoothscaling, 216, 55);
+    DrawCrispnessItem(smooth_pixel_scaling, 216, 55);
 
     // Uncapped framerate
     DrawCrispnessItem(crispy->uncapped, 217, 65);
@@ -3010,47 +3129,69 @@ static void DrawCrispness1(void)
     // Smooth Diminishing Lighting
     DrawCrispnessItem(crispy->smoothlight, 257, 125);
 
-    DrawCrispnessSubheader("AUDIBLE", 145);
-
-    // Mono SFX
-    DrawCrispnessItem(crispy->soundmono, 137, 155);
-
-    // Sound Channels
-    DrawCrispnessMultiItem(snd_Channels >> 4, 181, 165, multiitem_sndchannels, false);
+    // Translucency
+    DrawCrispnessMultiItem(crispy->translucency, 218, 135, multiitem_translucency, false);
 }
 
 static void DrawCrispness2(void)
 {
-    DrawCrispnessHeader("CRISPNESS 2/2");
+    DrawCrispnessHeader("CRISPNESS 2/3");
 
-    DrawCrispnessSubheader("NAVIGATIONAL", 25);
+    DrawCrispnessSubheader("AUDIBLE", 25);
+
+    // Mono SFX
+    DrawCrispnessItem(crispy->soundmono, 137, 35);
+
+    // Sound Channels
+    DrawCrispnessMultiItem(snd_Channels >> 4, 181, 45, multiitem_sndchannels, false);
+
+    // Align weapon volumes
+    DrawCrispnessItem(crispy->lvlwpnsnd, 219, 55);
+
+    DrawCrispnessSubheader("NAVIGATIONAL", 75);
 
     // Show level stats
-    DrawCrispnessMultiItem(crispy->automapstats, 190, 35, multiitem_widgets, false);
+    DrawCrispnessMultiItem(crispy->automapstats, 190, 85, multiitem_widgets, false);
 
     // Show level time
-    DrawCrispnessMultiItem(crispy->leveltime, 179, 45, multiitem_widgets, false);
+    DrawCrispnessMultiItem(crispy->leveltime, 179, 95, multiitem_widgets, false);
     // Show player coords
-    DrawCrispnessMultiItem(crispy->playercoords, 211, 55, multiitem_widgets, false);
+    DrawCrispnessMultiItem(crispy->playercoords, 211, 105, multiitem_widgets, false);
 
     // Show secret message
-    DrawCrispnessMultiItem(crispy->secretmessage, 250, 65, multiitem_secretmessage, false);
+    DrawCrispnessMultiItem(crispy->secretmessage, 250, 115, multiitem_secretmessage, false);
+}
 
-    DrawCrispnessSubheader("TACTICAL", 85);
+static void DrawCrispness3(void)
+{
+    DrawCrispnessHeader("CRISPNESS 3/3");
+
+    DrawCrispnessSubheader("TACTICAL", 25);
 
     // Freelook
-    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 95, multiitem_freelook_hh, false);
+    DrawCrispnessMultiItem(crispy->freelook_hh, 175, 35, multiitem_freelook_hh, false);
 
     // Mouselook
-    DrawCrispnessItem(crispy->mouselook, 220, 105);
+    DrawCrispnessItem(crispy->mouselook, 220, 45);
 
     // Bobfactor
-    DrawCrispnessMultiItem(crispy->bobfactor, 265, 115, multiitem_bobfactor, false);
+    DrawCrispnessMultiItem(crispy->bobfactor, 265, 55, multiitem_bobfactor, false);
 
     // Weapon attack alignment
-    DrawCrispnessMultiItem(crispy->centerweapon, 245, 125, multiitem_centerweapon,
+    DrawCrispnessMultiItem(crispy->centerweapon, 245, 65, multiitem_centerweapon,
             crispy->bobfactor == BOBFACTOR_OFF);
 
     // Default difficulty
-    DrawCrispnessMultiItem(crispy->defaultskill, 200, 135, multiitem_difficulties, false);
+    DrawCrispnessMultiItem(crispy->defaultskill, 200, 75, multiitem_difficulties, false);
+
+    DrawCrispnessSubheader("CROSSHAIR", 95);
+
+    // Crosshair
+    DrawCrispnessMultiItem(crispy->crosshair, 180, 105, multiitem_he_crosshair, false);
+
+    // Crosshair Type
+    DrawCrispnessMultiItem(crispy->crosshairtype+1, 188, 115, multiitem_he_crosshairtype, !crispy->crosshair);
+
+    // Crosshair Color
+    DrawCrispnessMultiItem(crispy->crosshaircolor+1, 185, 125, multiitem_he_crosshaircolor, !crispy->crosshair);
 }

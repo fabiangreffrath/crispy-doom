@@ -465,6 +465,17 @@ R_DrawVisSprite
         colfunc = transcolfunc;
         dc_translation = translationtables - 256 + (translation >> (MF_TRANSSHIFT - 8));
     }
+    // [crispy] translucent sprites
+    else if (crispy->translucency && vis->mobjflags2 & MF_TRANSLUCENT)
+    {
+        if (crispy->translucency & TRANSLUCENCY_MISSILE)
+            {
+                colfunc = R_DrawMVisTLColumn;
+            }
+#ifdef CRISPY_TRUECOLOR
+            blendfunc = vis->blendfunc;
+#endif
+    }
 
     dc_iscale = abs(vis->xiscale)>>detailshift;
     dc_texturemid = vis->texturemid;
@@ -627,6 +638,7 @@ void R_ProjectSprite (mobj_t* thing)
     // store information in a vissprite
     vis = R_NewVisSprite ();
     vis->mobjflags = thing->flags;
+    vis->mobjflags2 = thing->flags2;
     vis->scale = xscale<<detailshift;
     vis->gx = interpx;
     vis->gy = interpy;
@@ -720,7 +732,7 @@ void R_AddSprites (sector_t* sec)
     // Well, now it will be done.
     sec->validcount = validcount;
 	
-    lightnum = (sec->lightlevel >> LIGHTSEGSHIFT)+(extralight * LIGHTBRIGHT); // [crispy] smooth diminishing lighting
+    lightnum = (sec->rlightlevel >> LIGHTSEGSHIFT)+(extralight * LIGHTBRIGHT); // [crispy] smooth diminishing lighting, A11Y
 
     if (lightnum < 0)		
 	spritelights = scalelight[0];
@@ -793,6 +805,7 @@ void R_DrawPSprite (pspdef_t* psp, psprnum_t psprnum) // [crispy] read psprnum
     // store information in a vissprite
     vis = &avis;
     vis->mobjflags = 0;
+    vis->mobjflags2 = 0;
     vis->x1 = x1 < 0 ? 0 : x1;
     vis->x2 = x2 >= viewwidth ? viewwidth-1 : x2;	
     vis->scale = pspritescale<<detailshift;
@@ -909,8 +922,8 @@ void R_DrawPlayerSprites (void)
     
     // get light level
     lightnum =
-	(viewplayer->mo->subsector->sector->lightlevel >> LIGHTSEGSHIFT) 
-	+(extralight * LIGHTBRIGHT); // [crispy] smooth diminishing lighting
+	(viewplayer->mo->subsector->sector->rlightlevel >> LIGHTSEGSHIFT) 
+	+(extralight * LIGHTBRIGHT); // [crispy] smooth diminishing lighting, A11Y
 
     if (lightnum < 0)		
 	spritelights = scalelight[0];
@@ -1139,7 +1152,7 @@ void R_DrawMasked (void)
 	    R_RenderMaskedSegRange (ds, ds->x1, ds->x2);
     
     // [crispy] don't draw player sprites for a fullscreen clean screenshot
-    if (crispy->cleanscreenshot == 2)
+    if (crispy->screenshot == 2)
         return;
 
     // draw the psprites on top of everything

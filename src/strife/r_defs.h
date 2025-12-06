@@ -159,6 +159,9 @@ typedef	struct
 
     // [crispy] Enable/disable sector interpolation.
     boolean interpolate;
+
+    // [crispy] A11Y light level used for rendering
+    short	rlightlevel;
 } sector_t;
 
 
@@ -406,7 +409,8 @@ typedef struct vissprite_s
     lighttable_t*	colormap;
    
     int			mobjflags;
-    
+    int			mobjflags2; // [crispy]
+
 #ifdef CRISPY_TRUECOLOR
     const pixel_t	(*blendfunc)(const pixel_t fg, const pixel_t bg);
 #endif

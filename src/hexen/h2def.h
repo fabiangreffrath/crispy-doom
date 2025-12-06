@@ -293,6 +293,7 @@ typedef struct
 //#define       MF_TRANSLATION  0xc000000       // if 0x4 0x8 or 0xc, use a translation
 #define	MF_TRANSLATION	0x1c000000      // use a translation table (>>MF_TRANSHIFT)
 #define	MF_TRANSSHIFT	26      // table for player colormaps
+#define MF_TRANSLUCENT  0x80000000 // [crispy] translucent sprite
 
 
 // --- mobj.flags2 ---
@@ -717,6 +718,8 @@ extern int testcontrols_mousespeed;
 
 extern int vanilla_savegame_limit;
 extern int vanilla_demo_limit;
+
+extern FILE *SavingFP; // [crispy] for usage in extsavg
 
 extern boolean usearti;
 

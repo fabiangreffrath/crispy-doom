@@ -24,8 +24,9 @@
 #include "m_misc.h"
 #include "p_local.h"
 #include "v_video.h"
+#include "a11y.h"
 
-static FILE *SaveGameFP;
+FILE *SaveGameFP;
 
 int vanilla_savegame_limit = 1;
 
@@ -77,11 +78,11 @@ void SV_OpenRead(char *filename)
 
 //==========================================================================
 //
-// SV_Close
+// SV_WriteSaveGameEOF
 //
 //==========================================================================
 
-void SV_Close(char *fileName)
+void SV_WriteSaveGameEOF(void)
 {
     SV_WriteByte(SAVE_GAME_TERMINATOR);
 
@@ -91,8 +92,21 @@ void SV_Close(char *fileName)
     {
         I_Error("Savegame buffer overrun");
     }
+}
 
-    fclose(SaveGameFP);
+//==========================================================================
+//
+// SV_Close
+//
+//==========================================================================
+
+void SV_Close(void)
+{
+    if (SaveGameFP)
+    {
+        fclose(SaveGameFP);
+        SaveGameFP = NULL;
+    }
 }
 
 //==========================================================================
@@ -1418,6 +1432,9 @@ static void saveg_read_lightflash_t(lightflash_t *str)
 
     // int mintime;
     str->mintime = SV_ReadLong();
+
+    if (!a11y_sector_lighting)
+        str->sector->rlightlevel = str->maxlight;
 }
 
 static void saveg_write_lightflash_t(lightflash_t *str)
@@ -1474,6 +1491,10 @@ static void saveg_read_strobe_t(strobe_t *str)
 
     // int brighttime;
     str->brighttime = SV_ReadLong();
+
+    if (!a11y_sector_lighting && 
+            str->sector->rlightlevel < str->maxlight) // [crispy] Ensure maxlight among competing thinkers. 
+        str->sector->rlightlevel = str->maxlight;
 }
 
 static void saveg_write_strobe_t(strobe_t *str)
@@ -1524,6 +1545,9 @@ static void saveg_read_glow_t(glow_t *str)
 
     // int direction;
     str->direction = SV_ReadLong();
+
+    if (!a11y_sector_lighting)
+        str->sector->rlightlevel = str->maxlight;
 }
 
 static void saveg_write_glow_t(glow_t *str)
@@ -1667,6 +1691,7 @@ void P_UnArchiveWorld(void)
         sec->floorpic = SV_ReadWord();
         sec->ceilingpic = SV_ReadWord();
         sec->lightlevel = SV_ReadWord();
+        sec->rlightlevel = sec->lightlevel; // [crispy] A11Y
         sec->special = SV_ReadWord();  // needed?
         sec->tag = SV_ReadWord();      // needed?
         sec->specialdata = 0;

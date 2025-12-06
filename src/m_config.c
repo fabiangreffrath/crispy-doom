@@ -508,7 +508,7 @@ static default_t	doom_defaults_list[] =
     CONFIG_VARIABLE_INT(mouseb_mouselook),
 
     //!
-    // @game doom
+    // @game doom heretic hexen strife
     //
     // Quick 180° reverse.
     //
@@ -795,6 +795,12 @@ static default_t extra_defaults_list[] =
     //
 
     CONFIG_VARIABLE_INT(aspect_ratio_correct),
+
+    //!
+    // If non-zero, the screen will have smooth scaling.
+    //
+
+    CONFIG_VARIABLE_INT(smooth_pixel_scaling),
 
     //!
     // If non-zero, forces integer scales for resolution-independent rendering.
@@ -1213,10 +1219,16 @@ static default_t extra_defaults_list[] =
 
     //!
     // If zero, this disables weapon flashes changing the ambient light
-    // level.
+    // level and flickering of torches.
     //
 
     CONFIG_VARIABLE_INT(a11y_weapon_flash),
+
+    //!
+    // If zero, this disables weapon palette changes 
+    //
+
+    CONFIG_VARIABLE_INT(a11y_weapon_palette),
 
     //!
     // If zero, this disables rendering of weapon flashes sprites.
@@ -2251,7 +2263,7 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_KEY(key_multi_msgplayer8),
 
     //!
-    // @game doom
+    // @game doom heretic hexen strife
     // Quick 180° reverse.
     //
 
@@ -2351,7 +2363,7 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(crispy_coloredhud),
 
     //!
-    // @game doom
+    // @game doom, heretic, hexen, strife
     //
     // Draw a crosshair.
     //
@@ -2359,7 +2371,7 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(crispy_crosshair),
 
     //!
-    // @game doom
+    // @game doom, strife
     //
     // Crosshair Color indicates Health.
     //
@@ -2375,12 +2387,20 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(crispy_crosshairtarget),
 
     //!
-    // @game doom
+    // @game doom, heretic, hexen
     //
     // Crosshair type.
     //
 
     CONFIG_VARIABLE_INT(crispy_crosshairtype),
+
+    //!
+    // @game heretic, hexen
+    //
+    // Crosshair color.
+    //
+
+    CONFIG_VARIABLE_INT(crispy_crosshaircolor),
 
     //!
     // @game doom heretic hexen
@@ -2583,6 +2603,14 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(crispy_soundmono),
 
     //!
+    // @game heretic
+    //
+    // Level Weapon Sounds
+    //
+
+    CONFIG_VARIABLE_INT(crispy_lvlwpnsnd),
+
+    //!
     // @game doom
     //
     // Level Stats Format.
@@ -2591,7 +2619,7 @@ static default_t extra_defaults_list[] =
     CONFIG_VARIABLE_INT(crispy_statsformat),
 
     //!
-    // @game doom
+    // @game doom heretic hexen strife
     //
     // Enable translucency.
     //
@@ -3377,4 +3405,3 @@ char *M_GetAutoloadDir(const char *iwadname, boolean makedir)
 
     return result;
 }
-

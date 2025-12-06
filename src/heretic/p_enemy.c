@@ -627,7 +627,6 @@ void A_Look(mobj_t *actor, player_t *player, pspdef_t *psp)
             goto seeyou;
     }
 
-
     if (!P_LookForPlayers(actor, false))
         return;
 

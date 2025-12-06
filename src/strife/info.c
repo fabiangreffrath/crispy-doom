@@ -3127,6 +3127,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_SHADOW,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_REAVER*/
@@ -3873,6 +3874,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_SB_SHOT*/
@@ -3900,6 +3902,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_C_SHOT*/
@@ -3927,6 +3930,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_SC_SHOT*/
@@ -3954,6 +3958,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_E_OFFSHOOT*/
@@ -3981,6 +3986,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_TRAIL*/
@@ -4008,6 +4014,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF,      //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_E_SHOT*/
@@ -4035,6 +4042,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_SE_SHOT*/
@@ -4062,6 +4070,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_A_ZAP_LEFT*/
@@ -4089,6 +4098,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_A_ZAP_RIGHT*/
@@ -4116,6 +4126,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_A_GROUND*/
@@ -4143,6 +4154,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_SHADOW,        //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_D_SHOT*/
@@ -4170,6 +4182,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SIGIL_SD_SHOT*/
@@ -4197,6 +4210,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE|MF_SPECTRAL,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SENTINEL*/
@@ -4443,6 +4457,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_C_MISSILE*/
@@ -4470,6 +4485,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SEEKMISSILE*/
@@ -4497,6 +4513,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_ELECARROW*/
@@ -4524,6 +4541,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_swish,      //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_POISARROW*/
@@ -4578,6 +4596,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_L_LASER*/
@@ -4605,6 +4624,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_HEGRENADE*/
@@ -4713,6 +4733,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP,      //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_TORPEDO*/
@@ -4740,6 +4761,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_TORPEDOSPREAD*/
@@ -4767,6 +4789,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_DROPOFF|MF_MISSILE,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SFIREBALL*/
@@ -4794,6 +4817,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_DROPOFF|MF_MISSILE,        //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_C_FLAME*/
@@ -4821,6 +4845,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_DROPOFF|MF_MISSILE,        //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_STRIFEPUFF3*/
@@ -4848,6 +4873,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY,     //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_STRIFEPUFF*/
@@ -4875,6 +4901,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY|MF_SHADOW,       //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_SPARKPUFF*/
@@ -4902,6 +4929,7 @@ mobjinfo_t mobjinfo[NUMMOBJTYPES] =
         sfx_None,       //activesound
         MF_NOBLOCKMAP|MF_NOGRAVITY,     //flags
         NULL,       //namepointer
+        MF_TRANSLUCENT,       //flags2
     },
 
     {       /*MT_BLOOD_DEATH*/

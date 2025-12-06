@@ -40,6 +40,7 @@
 #include "m_controls.h" // [crispy] key_*
 #include "m_misc.h" // [crispy] M_StringDuplicate()
 #include "m_random.h" // [crispy] Crispy_Random()
+#include "d_pwad.h" // [crispy] kex secret level
 
 typedef enum
 {
@@ -113,7 +114,7 @@ void	F_CastTicker (void);
 boolean F_CastResponder (event_t *ev);
 void	F_CastDrawer (void);
 
-extern void A_RandomJump();
+extern void A_RandomJump(void *, void *, void *);
 
 //
 // F_StartFinale
@@ -156,6 +157,12 @@ void F_StartFinale (void)
             finaletext = screen->text;
             finaleflat = screen->background;
         }
+    }
+
+    // Hack for kex masterlevels finale text
+    if (logical_gamemission == pack_master && D_CheckMasterlevelKex() && players[consoleplayer].didsecret)
+    {
+        finaletext = M2TEXT;
     }
 
     // Do dehacked substitutions of strings
@@ -207,6 +214,7 @@ void F_Ticker (void)
 	if (gamemission == pack_nerve && gamemap == 8)
 	  F_StartCast ();
 	else
+    // [crispy] kex lvl 20 (checked in G_WorldDone), psn/unity lvl 20 or 21
 	if (gamemission == pack_master && (gamemap == 20 || gamemap == 21))
 	  F_StartCast ();
 	else
@@ -327,8 +335,9 @@ void F_TextWrite (void)
 	    else
 	    break;
 	}
-	// [cispy] prevent text from being drawn off-screen vertically
-	if (cy + SHORT(hu_font[c]->height) > ORIGHEIGHT)
+	// [crispy] prevent text from being drawn off-screen vertically
+	if (cy + SHORT(hu_font[c]->height) - SHORT(hu_font[c]->topoffset) >
+	    ORIGHEIGHT)
 	{
 	    break;
 	}
@@ -561,7 +570,7 @@ void F_CastTicker (void)
 	    goto stopattack;	// Oh, gross hack!
 	*/
 	// [crispy] Allow A_RandomJump() in deaths in cast sequence
-	if (caststate->action.acp1 == A_RandomJump && Crispy_Random() < caststate->misc2)
+	if (caststate->action.acp3 == A_RandomJump && Crispy_Random() < caststate->misc2)
 	{
 	    st = caststate->misc1;
 	}
@@ -654,7 +663,7 @@ void F_CastTicker (void)
     if (casttics == -1)
     {
 	// [crispy] Allow A_RandomJump() in deaths in cast sequence
-	if (caststate->action.acp1 == A_RandomJump)
+	if (caststate->action.acp3 == A_RandomJump)
 	{
 	    if (Crispy_Random() < caststate->misc2)
 	    {
@@ -729,7 +738,7 @@ boolean F_CastResponder (event_t* ev)
     caststate = &states[mobjinfo[castorder[castnum].type].deathstate];
     casttics = caststate->tics;
     // [crispy] Allow A_RandomJump() in deaths in cast sequence
-    if (casttics == -1 && caststate->action.acp1 == A_RandomJump)
+    if (casttics == -1 && caststate->action.acp3 == A_RandomJump)
     {
         if (Crispy_Random() < caststate->misc2)
         {

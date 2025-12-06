@@ -299,7 +299,7 @@ R_RenderMaskedSegRange
 	    
 	    // draw the texture
 	    col = (column_t *)( 
-		(byte *)R_GetColumnMod(texnum,maskedtexturecol[dc_x]) -3);
+		(byte *)R_GetColumnMasked(texnum,maskedtexturecol[dc_x]) -3);
 			
 	    R_DrawMaskedColumn (col);
 	    maskedtexturecol[dc_x] = INT_MAX; // [crispy] 32-bit integer math
@@ -728,7 +728,7 @@ R_StoreWallRange
 			
 	if (worldlow != worldbottom 
 	    || backsector->floorpic != frontsector->floorpic
-	    || backsector->lightlevel != frontsector->lightlevel)
+	    || backsector->rlightlevel != frontsector->rlightlevel)
 	{
 	    markfloor = true;
 	}
@@ -741,7 +741,7 @@ R_StoreWallRange
 			
 	if (worldhigh != worldtop 
 	    || backsector->ceilingpic != frontsector->ceilingpic
-	    || backsector->lightlevel != frontsector->lightlevel)
+	    || backsector->rlightlevel != frontsector->rlightlevel)
 	{
 	    markceiling = true;
 	}
