@@ -47,6 +47,7 @@
 #include "m_cheat.h"
 #include "m_menu.h" // villsa [STRIFE]
 #include "m_misc.h"
+#include "a11y.h" // [crispy] A11Y
 
 #include "s_sound.h"
 
@@ -938,6 +939,12 @@ static void ST_doPaletteStuff(void)
         palette = 0;
 
     // haleyjd 08/31/10: Removed Chex Quest
+
+    // [crispy] A11Y
+    if (!a11y_palette_changes)
+    {
+        palette = 0;
+    }
 
     if (palette != st_palette)
     {

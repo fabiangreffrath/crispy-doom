@@ -35,6 +35,7 @@
 #include "m_random.h"
 #include "s_sound.h"
 #include "p_inter.h"
+#include "a11y.h" // [crispy] A11Y
 
 
 
@@ -630,7 +631,17 @@ void P_PlayerThink (player_t* player)
             player->fixedcolormap = 0;
     }
     else // Sigil shock:
-        player->fixedcolormap = INVERSECOLORMAP;
+    {
+        // [crispy] A11Y
+        if (a11y_weapon_palette)
+        {
+            player->fixedcolormap = INVERSECOLORMAP;
+        }
+        else
+        {
+            player->fixedcolormap = 0;
+        }
+    }
 }
 
 
