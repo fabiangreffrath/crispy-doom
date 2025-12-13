@@ -1572,7 +1572,8 @@ void D_IntroTick(void)
         // that without this one-time limitation, the sound is far too loud.
         if(!didsound)
         {
-            S_StartSound(NULL, sfx_psdtha);
+            if (graphical_startup) // [crispy]
+                S_StartSound(NULL, sfx_psdtha);
             didsound = true;
         }
     }
