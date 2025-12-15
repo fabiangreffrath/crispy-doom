@@ -91,7 +91,7 @@
 //       or into the frame buffer?
 
 // [crispy] Crispy HUD
-#define ST_WIDESCREENDELTA      (screenblocks == 13 ? WIDESCREENDELTA : 0)
+#define ST_WIDESCREENDELTA      ((screenblocks == 12) || (screenblocks == 14) || (screenblocks == 16) ? WIDESCREENDELTA : 0)
 #define ST_HEALTHX2             (15 - ST_WIDESCREENDELTA)
 #define ST_HEALTHY2             194
 #define ST_ARMORX               (45 - ST_WIDESCREENDELTA)
@@ -1225,7 +1225,7 @@ void ST_Drawer (boolean fullscreen, boolean refresh)
     st_firsttime = st_firsttime || refresh;
 
     // [crispy] Crispy HUD
-    st_crispyhud = screenblocks > 11 && (!automapactive || crispy->automapoverlay);
+    st_crispyhud = screenblocks > 12 && (!automapactive || crispy->automapoverlay);
 
     // If just after ST_Start(), refresh all
     ST_doRefresh();
@@ -1558,10 +1558,11 @@ boolean ST_DrawExternal(void)
     {
         ammotype_t ammo;
 
-        ST_drawNumFontY2(15, 194, plyr->health);
+
+        ST_drawNumFontY2(ST_HEALTHX2, 194, plyr->health);
         ammo = weaponinfo[plyr->readyweapon].ammo;
         if (ammo != am_noammo)
-            ST_drawNumFontY2(310, 194, plyr->ammo[ammo]);
+            ST_drawNumFontY2(ST_AMMOX2, 194, plyr->ammo[ammo]);
     }
 
     // [crispy] don't draw popups for a clean screenshot
