@@ -237,12 +237,20 @@ static const inline pixel_t drawxlatab (const pixel_t dest, const pixel_t source
 #else
 {return I_BlendOverXlatab(dest, pal_color[source]);}
 #endif
+// V_DrawXlaPatch (translucent patch, color-translated)
+static const inline pixel_t drawtrxlatab (const pixel_t dest, const pixel_t source)
+#ifndef CRISPY_TRUECOLOR
+{return xlatab[dest+(dp_translation[source]<<8)];}
+#else
+{return I_BlendOverXlatab(dest, pal_color[dp_translation[source]]);}
+#endif
 
 // [crispy] array of function pointers holding the different rendering functions
 typedef const pixel_t drawpatchpx_t (const pixel_t dest, const pixel_t source);
 static drawpatchpx_t *const drawpatchpx_a[2][2] = {{drawpatchpx11, drawpatchpx10}, {drawpatchpx01, drawpatchpx00}};
 static drawpatchpx_t *const drawtlpatchpx_a[2] = {drawtrtinttab, drawtinttab};
 static drawpatchpx_t *const drawalttlpatchpx_a[2] = {drawtralttinttab, drawalttinttab};
+static drawpatchpx_t *const drawxlatabpatchpx_a[2] = {drawtrxlatab, drawxlatab};
 
 static fixed_t dx, dxi, dy, dyi;
 
@@ -593,8 +601,8 @@ void V_DrawXlaPatch(int x, int y, patch_t * patch)
     byte *source;
     int w;
 
-    // [crispy] translucent patch, no coloring or color-translation are used
-    drawpatchpx_t *const drawpatchpx = drawxlatab;
+    // [crispy] translucent patch with optional color-translation used
+    drawpatchpx_t *const drawpatchpx = drawxlatabpatchpx_a[!dp_translation];
 
     y -= SHORT(patch->topoffset);
     x -= SHORT(patch->leftoffset);
