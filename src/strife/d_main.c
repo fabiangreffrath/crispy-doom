@@ -360,6 +360,7 @@ void D_Display (void)
             inhelpscreensstate = true;
         }
 
+        SB_Translucent(TRANSLUCENT_HUD && (!automapactive || crispy->automapoverlay));
         HU_Drawer ();
         if(ST_DrawExternal()) 
             popupactivestate = true;
@@ -368,6 +369,7 @@ void D_Display (void)
             popupactivestate = false;
             menuactivestate = 1;
         }
+        SB_Translucent(false);
     }
 
     // [crispy] draw neither pause pic nor menu when taking a clean screenshot

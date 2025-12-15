@@ -197,7 +197,7 @@ HUlib_drawTextLine
             w = SHORT(l->f[c - l->sc]->width);
             if (x+w > ORIGWIDTH + WIDESCREENDELTA)
                 break;
-            V_DrawPatchDirect(x, l->y, l->f[c - l->sc]);
+            V_DrawSBPatch(x, l->y, l->f[c - l->sc]);
             x += w;
         }
         else
@@ -212,7 +212,7 @@ HUlib_drawTextLine
     if (drawcursor
         && x + SHORT(l->f['_' - l->sc]->width) <= ORIGWIDTH + WIDESCREENDELTA)
     {
-        V_DrawPatchDirect(x, l->y, l->f['_' - l->sc]);
+        V_DrawSBPatch(x, l->y, l->f['_' - l->sc]);
     }
 }
 

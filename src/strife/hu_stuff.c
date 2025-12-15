@@ -47,6 +47,7 @@
 
 #include "v_video.h" // [crispy] V_DrawPatch() et al.
 #include "v_trans.h" // [crispy] color translation and color string tables
+#include "r_local.h" // [crispy] translucent HUD
 
 //
 // Locally used constants, shortcuts.
@@ -351,7 +352,7 @@ static void HU_DrawCrosshair (void)
                       SHORT(patch->height) / 2 + SHORT(patch->topoffset);
 
         dp_translation = R_CrosshairColor();
-        V_DrawPatch(x, y, patch);
+        V_DrawSBPatch(x, y, patch);
     }
 }
 

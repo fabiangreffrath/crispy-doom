@@ -91,7 +91,7 @@
 //       or into the frame buffer?
 
 // [crispy] Crispy HUD
-#define ST_WIDESCREENDELTA      ((screenblocks == 12) || (screenblocks == 14) || (screenblocks == 16) ? WIDESCREENDELTA : 0)
+#define ST_WIDESCREENDELTA      ((screenblocks == 12) || (screenblocks >= 15) ? WIDESCREENDELTA : 0)
 #define ST_HEALTHX2             (15 - ST_WIDESCREENDELTA)
 #define ST_HEALTHY2             194
 #define ST_ARMORX               (45 - ST_WIDESCREENDELTA)
@@ -299,6 +299,15 @@ cheatseq_t cheat_powerup[NUM_ST_PUMPUP] = // [STRIFE]
 //cheatseq_t cheat_choppers = CHEAT("idchoppers", 0); [STRIFE] no such thing
 
 void M_SizeDisplay(int choice); // villsa [STRIFE]
+
+// [crispy] for conditional drawing of status bar elements
+void (*V_DrawSBPatch)(int x, int y, patch_t *patch) = V_DrawPatch;
+
+// [crispy] on/off status bar translucency
+void SB_Translucent(boolean translucent)
+{
+    V_DrawSBPatch = translucent ? V_DrawXlaPatch : V_DrawPatch;
+}
 
 //
 // STATUS BAR CODE
@@ -975,11 +984,11 @@ void ST_drawWidgets(boolean refresh)
 void ST_drawNumFontY(int x, int y, int num)
 {
     if(!num)
-        V_DrawPatch(x, y, invfonty[0]);
+        V_DrawSBPatch(x, y, invfonty[0]);
     
     while(num)
     {
-        V_DrawPatch(x, y, invfonty[num % 10]);
+        V_DrawSBPatch(x, y, invfonty[num % 10]);
         x -= SHORT(invfonty[0]->width) + 1;
         num /= 10;
     }
@@ -994,14 +1003,14 @@ void ST_drawNumFontY(int x, int y, int num)
 void ST_drawNumFontY2(int x, int y, int num)
 {
     if(!num)
-        V_DrawPatch(x, y, invfonty[0]);
+        V_DrawSBPatch(x, y, invfonty[0]);
 
     if(num < 0)
         num = 0;
 
     while(num)
     {
-        V_DrawPatchDirect(x, y, invfonty[num % 10]);
+        V_DrawSBPatch(x, y, invfonty[num % 10]);
         x -= SHORT(invfonty[0]->width) + 1;
         num /= 10;
     }
@@ -1420,7 +1429,7 @@ static void ST_drawCrispyPair(int x, int y, patch_t *patch, int num)
     int xp = x + SHORT(patch->leftoffset) - SHORT(patch->width) / 2 - 3;
     int yp = y + SHORT(patch->topoffset) - SHORT(patch->height) - 2;
 
-    V_DrawPatch(xp, yp, patch);
+    V_DrawSBPatch(xp, yp, patch);
     ST_drawNumFontY(x, y, MAX(0, num));
 }
 
@@ -1471,6 +1480,7 @@ static void ST_drawCrispyHUD(void)
         ST_drawCrispyPair(ST_AMMOX2, ST_AMMOY2, patch, plyr->ammo[ammo]);
     }
 
+    SB_Translucent(false);
     // [crispy] inventory bar
     if (st_invtics > 0 && draw_inv)
     {
@@ -1488,7 +1498,7 @@ static void ST_drawCrispyHUD(void)
             firstinventory = 0;
 
         // [crispy] cursor
-        V_DrawPatch(ST_SLOTWIDTH * (plyr->inventorycursor - firstinventory) +
+        V_DrawSBPatch(ST_SLOTWIDTH * (plyr->inventorycursor - firstinventory) +
                     bar_min, 180, invcursor);
 
         // [crispy] inventory items
@@ -1515,10 +1525,11 @@ static void ST_drawCrispyHUD(void)
             else
                 patch = W_CacheLumpNum(lumpnum, PU_STATIC);
 
-            V_DrawPatch(icon_x, 182, patch);
+            V_DrawSBPatch(icon_x, 182, patch);
             ST_drawNumFontY2(icon_x + 20, 191, plyr->inventory[i].amount);
         }
     }
+    SB_Translucent(TRANSLUCENT_HUD);
 }
 
 //

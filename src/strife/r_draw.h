@@ -81,6 +81,10 @@ extern byte*		xlatab;            // haleyjd 08/26/10: [STRIFE]
 
 extern char *back_flat; // haleyjd 08/29/10: [STRIFE]
 
+extern void (*V_DrawSBPatch)(int x, int y, patch_t *patch); // [crispy] for conditional drawing of status bar elements
+
+void SB_Translucent(boolean translucent); // [crispy] on/off status bar translucency
+
 // Span blitting for rows, floor/ceiling.
 // No Sepctre effect needed.
 void 	R_DrawSpan (void);
@@ -98,8 +102,6 @@ R_InitBuffer
 // Initialize color translation tables,
 //  for player rendering etc.
 void	R_InitTranslationTables (void);
-
-
 
 // Rendering function.
 void R_FillBackScreen (void);

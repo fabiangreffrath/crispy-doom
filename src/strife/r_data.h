@@ -30,6 +30,7 @@
 #define LOOKDIRMIN	110
 #define LOOKDIRMAX	93
 #define LOOKDIRS	(LOOKDIRMIN+1+LOOKDIRMAX)
+#define TRANSLUCENT_HUD (screenblocks == 14 || screenblocks == 16) // [crispy] determine if translucent hud is selected
 
 extern int numflats;
 
