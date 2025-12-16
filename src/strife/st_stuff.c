@@ -984,11 +984,11 @@ void ST_drawWidgets(boolean refresh)
 void ST_drawNumFontY(int x, int y, int num)
 {
     if(!num)
-        V_DrawSBPatch(x, y, invfonty[0]);
+        V_DrawPatch(x, y, invfonty[0]);
     
     while(num)
     {
-        V_DrawSBPatch(x, y, invfonty[num % 10]);
+        V_DrawPatch(x, y, invfonty[num % 10]);
         x -= SHORT(invfonty[0]->width) + 1;
         num /= 10;
     }
@@ -1003,14 +1003,14 @@ void ST_drawNumFontY(int x, int y, int num)
 void ST_drawNumFontY2(int x, int y, int num)
 {
     if(!num)
-        V_DrawSBPatch(x, y, invfonty[0]);
+        V_DrawPatch(x, y, invfonty[0]);
 
     if(num < 0)
         num = 0;
 
     while(num)
     {
-        V_DrawSBPatch(x, y, invfonty[num % 10]);
+        V_DrawPatchDirect(x, y, invfonty[num % 10]);
         x -= SHORT(invfonty[0]->width) + 1;
         num /= 10;
     }
