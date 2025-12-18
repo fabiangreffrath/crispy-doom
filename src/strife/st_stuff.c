@@ -985,12 +985,29 @@ void ST_drawWidgets(boolean refresh)
 void ST_drawNumFontY(int x, int y, int num)
 {
     if(!num)
-        V_DrawSBPatch(x, y, invfonty[0]);
+        V_DrawPatch(x, y, invfonty[0]);
     
     while(num)
     {
-        V_DrawSBPatch(x, y, invfonty[num % 10]);
+        V_DrawPatch(x, y, invfonty[num % 10]);
         x -= SHORT(invfonty[0]->width) + 1;
+        num /= 10;
+    }
+}
+
+//
+// [crispy] ST_drawNumFontG
+//
+//
+void ST_drawNumFontG(int x, int y, int num)
+{
+    if(!num)
+        V_DrawPatch(x, y, invfontg[0]);
+    
+    while(num)
+    {
+        V_DrawPatch(x, y, invfontg[num % 10]);
+        x -= SHORT(invfontg[0]->width) + 1;
         num /= 10;
     }
 }
@@ -1004,14 +1021,14 @@ void ST_drawNumFontY(int x, int y, int num)
 void ST_drawNumFontY2(int x, int y, int num)
 {
     if(!num)
-        V_DrawSBPatch(x, y, invfonty[0]);
+        V_DrawPatch(x, y, invfonty[0]);
 
     if(num < 0)
         num = 0;
 
     while(num)
     {
-        V_DrawSBPatch(x, y, invfonty[num % 10]);
+        V_DrawPatchDirect(x, y, invfonty[num % 10]);
         x -= SHORT(invfonty[0]->width) + 1;
         num /= 10;
     }
@@ -1425,15 +1442,15 @@ static boolean ST_drawKeysPopup(void)
 }
 
 // [crispy] draw patch + number pair for Crispy HUD
-static void ST_drawCrispyPair(int x, int y, patch_t *patch, int num, boolean colorize)
+static void ST_drawCrispyPair(int x, int y, patch_t *patch, int num, void (*drawNumFunct)(int, int, int))
 {
     int xp = x + SHORT(patch->leftoffset) - SHORT(patch->width) / 2 - 3;
     int yp = y + SHORT(patch->topoffset) - SHORT(patch->height) - 2;
 
     V_DrawSBPatch(xp, yp, patch);
-    if (colorize)
-        dp_translation = cr[CR_ORANGE];
-    ST_drawNumFontY(x, y, MAX(0, num));
+    if (TRANSLUCENT_HUD)
+        dp_translation = cr[CR_DIMMED];
+    drawNumFunct(x, y, MAX(0, num));
     dp_translation = NULL;
 }
 
@@ -1448,13 +1465,13 @@ static void ST_drawCrispyHUD(void)
 
     // [crispy] health
     patch = W_CacheLumpName(DEH_String("I_MDKT"), PU_STATIC);
-    ST_drawCrispyPair(ST_HEALTHX2, ST_HEALTHY2, patch, plyr->health, TRANSLUCENT_HUD);
+    ST_drawCrispyPair(ST_HEALTHX2, ST_HEALTHY2, patch, plyr->health, ST_drawNumFontG);
 
     // [crispy] armor
     if (plyr->armortype)
     {
         patch = invarmor[plyr->armortype - 1];
-        ST_drawCrispyPair(ST_ARMORX, ST_ARMORY, patch, plyr->armorpoints, TRANSLUCENT_HUD);
+        ST_drawCrispyPair(ST_ARMORX, ST_ARMORY, patch, plyr->armorpoints, ST_drawNumFontY);
     }
 
     // [crispy] inventory item
@@ -1473,7 +1490,7 @@ static void ST_drawCrispyHUD(void)
         else
             patch = W_CacheLumpNum(lumpnum, PU_STATIC);
 
-        ST_drawCrispyPair(ST_INVX, ST_INVY, patch, inv->amount, TRANSLUCENT_HUD);
+        ST_drawCrispyPair(ST_INVX, ST_INVY, patch, inv->amount, ST_drawNumFontY);
     }
 
     // [crispy] ammo
@@ -1481,7 +1498,7 @@ static void ST_drawCrispyHUD(void)
     if (ammo != am_noammo)
     {
         patch = invammo[ammo];
-        ST_drawCrispyPair(ST_AMMOX2, ST_AMMOY2, patch, plyr->ammo[ammo], TRANSLUCENT_HUD);
+        ST_drawCrispyPair(ST_AMMOX2, ST_AMMOY2, patch, plyr->ammo[ammo], ST_drawNumFontG);
     }
 
     SB_Translucent(false);

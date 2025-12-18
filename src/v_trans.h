@@ -44,7 +44,7 @@ enum
     CR_GOLD,
     CR_RED,
     CR_BLUE,
-    CR_ORANGE,
+    CR_DIMMED,
     CR_RED2BLUE,
     CR_RED2GREEN,
     CRMAX
