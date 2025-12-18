@@ -1498,7 +1498,7 @@ static void ST_drawCrispyHUD(void)
     if (ammo != am_noammo)
     {
         patch = invammo[ammo];
-        ST_drawCrispyPair(ST_AMMOX2, ST_AMMOY2, patch, plyr->ammo[ammo], ST_drawNumFontG);
+        ST_drawCrispyPair(ST_AMMOX2, ST_AMMOY2, patch, plyr->ammo[ammo], ST_drawNumFontY);
     }
 
     SB_Translucent(false);

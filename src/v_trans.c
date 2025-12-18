@@ -29,12 +29,12 @@
 static byte cr_none[256];
 // this one will be the ~50% darker matrix
 static byte cr_dark[256];
+static byte cr_dimmed[256];
 static byte cr_gray[256];
 static byte cr_green[256];
 static byte cr_gold[256];
 static byte cr_red[256];
 static byte cr_blue[256];
-static byte cr_dimmed[256];
 
 static const byte cr_red2blue[256] =
     {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,
@@ -76,12 +76,12 @@ byte *cr[] =
 {
     (byte *) &cr_none,
     (byte *) &cr_dark,
+    (byte *) &cr_dimmed,
     (byte *) &cr_gray,
     (byte *) &cr_green,
     (byte *) &cr_gold,
     (byte *) &cr_red,
     (byte *) &cr_blue,
-    (byte *) &cr_dimmed,
     (byte *) &cr_red2blue,
     (byte *) &cr_red2green
 };
@@ -276,6 +276,9 @@ byte V_Colorize (byte *playpal, int cr, byte source, boolean keepgray109)
     if (cr == CR_DARK)
 	hsv.z *= 0.5;
     else
+    if (cr == CR_DIMMED)
+	hsv.z = 0.65;
+    else
     if (cr == CR_GRAY)
 	hsv.y = 0;
     else
@@ -306,11 +309,6 @@ byte V_Colorize (byte *playpal, int cr, byte source, boolean keepgray109)
 	if (cr == CR_BLUE)
 	{
 	    hsv.x = 240./360.;
-	}
-	else
-	if (cr == CR_DIMMED)
-	{
-	    hsv.z = 0.65;
 	}
     }
 
