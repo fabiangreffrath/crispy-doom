@@ -1590,7 +1590,6 @@ boolean ST_DrawExternal(void)
     {
         ammotype_t ammo;
 
-
         ST_drawNumFontY2(ST_HEALTHX2, 194, plyr->health);
         ammo = weaponinfo[plyr->readyweapon].ammo;
         if (ammo != am_noammo)
