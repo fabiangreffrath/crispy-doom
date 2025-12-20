@@ -315,6 +315,12 @@ void HU_Start(void)
 // [crispy] crosshair color determined by health
 static byte *R_CrosshairColor (void)
 {
+    if (TRANSLUCENT_HUD)
+    {
+        // [crispy] only dimming, no colorization
+        return cr[CR_DIMMED];
+    }
+    else
     if (crispy->crosshairhealth)
     {
         const int health = players[consoleplayer].health;
@@ -352,7 +358,7 @@ static void HU_DrawCrosshair (void)
                       SHORT(patch->height) / 2 + SHORT(patch->topoffset);
 
         dp_translation = R_CrosshairColor();
-        V_DrawSBPatch(x, y, patch);
+        V_DrawPatch(x, y, patch);
     }
 }
 
