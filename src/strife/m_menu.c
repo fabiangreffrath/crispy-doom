@@ -1568,7 +1568,7 @@ static void M_DrawCrispness3(void)
 
     M_DrawCrispnessSeparator(crispness_sep_crosshair, "Crosshair");
     M_DrawCrispnessItem(crispness_crosshair, "Draw Crosshair", crispy->crosshair, true);
-    M_DrawCrispnessItem(crispness_crosshairhealth, "Color Indicates Health", crispy->crosshairhealth, crispy->crosshair);
+    M_DrawCrispnessItem(crispness_crosshairhealth, "Color Indicates Health", crispy->crosshairhealth, crispy->crosshair && !TRANSLUCENT_HUD);
 
     M_DrawCrispnessGoto(crispness3_next, "First Page >");
     M_DrawCrispnessGoto(crispness3_prev, "< Prev Page");
