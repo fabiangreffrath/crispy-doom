@@ -2138,24 +2138,26 @@ void G_DoCompleted (void)
         if (gameversion == exe_chex)
         {
             // [crispy] display tally screen after Chex Quest E1M5
-            /*
-            if (gamemap == 5)
+            // but ONLY if player wanted this to happen
+            if (gamemap == 5 && !crispy->bossleveltally)
             {
                 gameaction = ga_victory;
                 return;
             }
-            */
         }
         else
         {
             switch(gamemap)
             {
             // [crispy] display tally screen after ExM8
-            /*
+            
               case 8:
-                gameaction = ga_victory;
-                return;
-            */
+                // but ONLY if player wanted this to happen
+                if (!crispy->bossleveltally)
+                {
+                    gameaction = ga_victory;
+                    return;
+                }
               case 9: 
                 for (i=0 ; i<MAXPLAYERS ; i++) 
                     players[i].didsecret = true; 
@@ -2440,9 +2442,15 @@ void G_WorldDone (void)
     }
     // [crispy] display tally screen after ExM8
     else
-    if ( gamemap == 8 || (gameversion == exe_chex && gamemap == 5) )
     {
-	gameaction = ga_victory;
+        // but ONLY if player wanted this to happen
+        if (crispy->bossleveltally)
+        {
+            if ( gamemap == 8 || (gameversion == exe_chex && gamemap == 5) )
+            {
+                gameaction = ga_victory;
+            }
+        }
     }
 } 
  
