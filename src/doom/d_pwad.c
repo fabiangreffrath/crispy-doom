@@ -493,7 +493,16 @@ int D_CheckMasterlevelKex (void)
 		// loaded as PWAD
 		lumpnum = W_CheckNumForName("CWILV14");
 	}
-	patch = W_CacheLumpNum(lumpnum, PU_CACHE);
+	
+	if (lumpnum > -1)
+	{
+		patch = W_CacheLumpNum(lumpnum, PU_CACHE);		
+	}
+	else
+	{
+		// something's wrong
+		return masterlevels_kex = false;
+	}
 
 	// compare width of patches CWILV17 vs CWILV14
 	// kex: CWILV17:"The Express Elevator\nTo Hell" > CWILV14:"Vesperas"
