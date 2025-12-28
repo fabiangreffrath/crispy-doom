@@ -461,6 +461,12 @@ int D_CheckMasterlevelKex (void)
 		return masterlevels_kex;
 	}
 
+	// preconditions correct?
+	if (!(gamemission == pack_master || crispy->havemaster != NULL))
+	{
+		return masterlevels_kex = false;
+	}
+
 	// read width of patch CWILV17
 	lumpnum = W_CheckNumForName("MWILV17");
 	if (lumpnum == -1)
