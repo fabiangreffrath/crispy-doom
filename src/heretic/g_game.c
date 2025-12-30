@@ -2050,8 +2050,17 @@ void G_DoCompleted(void)
     }
     else if (gamemap == 8)
     {
-        // [crispy] track intermission at end of episode
-        finalintermission = true;
+        if (crispy->bossleveltally)
+        {
+            // [crispy] track intermission at end of episode
+            finalintermission = true;
+        }
+        else
+        {
+            // Skip intermission altogether
+            gameaction = ga_victory;
+            return;
+        }
     }
     else
     {
