@@ -2512,8 +2512,8 @@ boolean MN_Responder(event_t * event)
         }
         else if (!netgame && key != 0 && key == key_menu_nextlevel)
         {
-	    G_GotoNextLevel();
-	    return true;
+            G_GotoNextLevel();
+            return true;
         }
     }
 
