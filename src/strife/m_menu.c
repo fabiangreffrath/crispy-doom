@@ -2238,6 +2238,30 @@ static boolean IsNullKey(int key)
         || key == KEY_SCRLCK || key == KEY_NUMLOCK;
 }
 
+static int G_GotoNextLevel(void)
+{
+    byte strife_next[31] = {
+        2,  3,  4,  5,  6,  7,  8,  9, 10, 11,
+        12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+        22, 23, 24, 25, 26, 27, 28, 29, 30, 31,
+        1
+    };
+
+    int changed = false;
+
+    if (gamestate == GS_LEVEL)
+    {
+        int map;
+
+        map = strife_next[gamemap-1];
+
+        G_DeferedInitNew(gameskill, map);
+        changed = true;
+    }
+
+    return changed;
+}
+
 //
 // CONTROL PANEL
 //
@@ -2799,6 +2823,11 @@ boolean M_Responder (event_t* ev)
             // haleyjd 20130301: 1.31 moved screenshots to F12.
             crispy->screenshot = 1;
             G_ScreenShot();
+            return true;
+        }
+        else if (!netgame && key != 0 && key == key_menu_nextlevel)
+        {
+            G_GotoNextLevel();
             return true;
         }
     }
