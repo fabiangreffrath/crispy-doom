@@ -2238,6 +2238,24 @@ static boolean IsNullKey(int key)
         || key == KEY_SCRLCK || key == KEY_NUMLOCK;
 }
 
+static int G_ReloadLevel(void)
+{
+    int result = false;
+
+    if (gamestate == GS_LEVEL)
+    {
+        // [crispy] restart demos from the map they were started
+        if (demorecording)
+        {
+        gamemap = startmap;
+        }
+        G_DeferedInitNew(gameskill, gamemap);
+        result = true;
+    }
+
+    return result;
+}
+
 static int G_GotoNextLevel(void)
 {
     byte strife_next[31] = {
@@ -2823,6 +2841,11 @@ boolean M_Responder (event_t* ev)
             // haleyjd 20130301: 1.31 moved screenshots to F12.
             crispy->screenshot = 1;
             G_ScreenShot();
+            return true;
+        }
+        else if (!netgame && key != 0 && key == key_menu_reloadlevel)
+        {
+            G_ReloadLevel();
             return true;
         }
         else if (!netgame && key != 0 && key == key_menu_nextlevel)

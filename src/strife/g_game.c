@@ -131,6 +131,7 @@ int             levelstarttic;          // gametic at level start
 int             totalkills, /*totalitems,*/ totalsecret;    // for intermission 
  
 char           *demoname;
+static const char *orig_demoname = NULL; // [crispy] the name originally chosen for the demo, i.e. without "-00000"
 boolean         demorecording; 
 boolean         longtics;               // cph's doom 1.91 longtics hack
 boolean         lowres_turn;            // low resolution turning for longtics
@@ -2285,6 +2286,15 @@ void G_DeferedInitNew(skill_t skill, int map)
     d_skill = skill; 
     d_map = map; 
     gameaction = ga_newgame; 
+
+    // [crispy] if a new game is started during demo recording, start a new demo
+    if (demorecording)
+    {
+        G_CheckDemoStatus();
+        Z_Free(demoname);
+        G_RecordDemo(orig_demoname);
+        G_BeginRecording();
+    }
 } 
 
 //
@@ -2584,6 +2594,12 @@ void G_RecordDemo (const char* name)
     int             i;
     int             maxsize;
 
+    // [crispy] the name originally chosen for the demo, i.e. without "-00000"
+    if (!orig_demoname)
+    {
+        orig_demoname = name;
+    }
+
     usergame = false;
     demoname_size = strlen(name) + 5;
     demoname = Z_Malloc(demoname_size, PU_STATIC, NULL);
@@ -2853,7 +2869,15 @@ boolean G_CheckDemoStatus (void)
         M_WriteFile (demoname, demobuffer, demo_p - demobuffer); 
         Z_Free (demobuffer); 
         demorecording = false; 
-        I_Error ("Demo %s recorded", demoname); 
+        // [crispy] if a new game is started during demo recording, start a new demo
+        if (gameaction != ga_newgame)
+        {
+            I_Error("Demo %s recorded", demoname);
+        }
+        else
+        {
+            fprintf(stderr, "Demo %s recorded\n", demoname);
+        }
     } 
 
     return false; 
