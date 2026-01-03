@@ -97,6 +97,7 @@ int displayplayer;              // view being displayed
 int levelstarttic;              // gametic at level start
 
 char *demoname;
+static const char *orig_demoname = NULL; // [crispy] the name originally chosen for the demo, i.e. without "-00000"
 boolean demorecording;
 boolean longtics;               // specify high resolution turning in demos
 boolean lowres_turn;
@@ -2208,6 +2209,14 @@ void G_DeferedInitNew(skill_t skill, int episode, int map)
     TempEpisode = episode;
     TempMap = map;
     gameaction = ga_initnew;
+
+    // [crispy] if a new game is started during demo recording, start a new demo
+    if (demorecording)
+    {
+        G_CheckDemoStatus();
+        Z_Free(demoname);
+        G_RecordDemo(skill, 1, episode, map, orig_demoname);
+    }
 }
 
 void G_DoInitNew(void)
@@ -2426,6 +2435,12 @@ void G_RecordDemo(skill_t skill, int numplayers, int episode, int map,
     size_t demoname_size;
     int i;
     int maxsize;
+
+    // [crispy] the name originally chosen for the demo, i.e. without "-00000"
+    if (!orig_demoname)
+    {
+        orig_demoname = name;
+    }
 
     //!
     // @category demo
@@ -2681,7 +2696,15 @@ boolean G_CheckDemoStatus(void)
         M_WriteFile(demoname, demobuffer, demo_p - demobuffer);
         Z_Free(demobuffer);
         demorecording = false;
-        I_Error("Demo %s recorded", demoname);
+        // [crispy] if a new game is started during demo recording, start a new demo
+        if (gameaction != ga_initnew)
+        {
+            I_Error("Demo %s recorded", demoname);
+        }
+        else
+        {
+            fprintf(stderr, "Demo %s recorded\n", demoname);
+        }
     }
 
     return false;
