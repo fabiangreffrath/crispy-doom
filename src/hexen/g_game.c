@@ -2179,6 +2179,14 @@ void G_DeferredNewGame(skill_t skill)
 {
     TempSkill = skill;
     gameaction = ga_newgame;
+
+    // [crispy] if a new game is started during demo recording, start a new demo
+    if (demorecording)
+    {
+        G_CheckDemoStatus();
+        Z_Free(demoname);
+        G_RecordDemo(skill, 1, 1, 1, orig_demoname);
+    }
 }
 
 //==========================================================================
@@ -2708,7 +2716,7 @@ boolean G_CheckDemoStatus(void)
         Z_Free(demobuffer);
         demorecording = false;
         // [crispy] if a new game is started during demo recording, start a new demo
-        if (gameaction != ga_initnew)
+        if (gameaction != ga_initnew && gameaction != ga_newgame)
         {
             I_Error("Demo %s recorded", demoname);
         }
