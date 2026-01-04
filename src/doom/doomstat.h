@@ -48,6 +48,7 @@ extern  boolean	nomonsters;	// checkparm of -nomonsters
 extern  boolean	respawnparm;	// checkparm of -respawn
 extern  boolean	fastparm;	// checkparm of -fast
 extern  boolean	coop_spawns;	// [crispy] checkparm of -coop_spawns
+extern  boolean coop2;      // [crispy] checkparm of -coop2
 
 extern  boolean	devparm;	// DEBUG: launched with -devparm
 
