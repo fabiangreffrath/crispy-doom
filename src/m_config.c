@@ -2321,6 +2321,14 @@ static default_t extra_defaults_list[] =
     //
 
     CONFIG_VARIABLE_INT(crispy_bobfactor),
+    
+    //!
+    // @game doom heretic
+    //
+    // Show intermission tally after boss levels. On by default.
+    //
+    
+    CONFIG_VARIABLE_INT(crispy_bossleveltally),
 
     //!
     // @game doom
