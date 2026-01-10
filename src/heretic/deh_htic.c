@@ -24,6 +24,8 @@
 #include "deh_htic.h"
 #include "info.h"
 #include "m_argv.h"
+#include "w_wad.h" // [crispy]
+#include "z_zone.h" // [crispy]
 
 const char *deh_signatures[] =
 {
@@ -78,6 +80,18 @@ static void SetHHEVersionByName(const char *name)
     {
         fprintf(stderr, "\t%s\n", hhe_versions[i]);
     }
+}
+
+// [crispy] read an HHEVER lump if one exists
+// let SetHHEVersionByName figure out if it's vaild or not
+void SetHHEVersionFromLump(int lumpnum)
+{
+    char *data = NULL;
+
+    data = W_CacheLumpNum(lumpnum, PU_CACHE);
+    SetHHEVersionByName(data);
+
+    return;
 }
 
 // Initialize Heretic(HHE)-specific dehacked bits.
