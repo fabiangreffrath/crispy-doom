@@ -1599,7 +1599,7 @@ static void SetVideoMode(void)
     // and less than 16:10 in case of aspect_ratio_correct == 2 ) display with Aspect Ratio = Match Screen
 
     if ( ( aspect_ratio_correct && ! ( fullscreen && (crispy->widescreen == RATIO_MATCH_SCREEN) &&
-    ( w * (aspect_ratio_correct == 1 ? 3 : 10) < h * (aspect_ratio_correct == 1 ? 4 : 16) ) ) ) || integer_scaling )
+    ( w * (aspect_ratio_correct == 1 ? 3 : 10) <= h * (aspect_ratio_correct == 1 ? 4 : 16) ) ) ) || integer_scaling )
     {
         SDL_RenderSetLogicalSize(renderer,
                                  SCREENWIDTH,
@@ -2004,7 +2004,7 @@ void I_ReInitGraphics (int reinit)
 		// and less than 16:10 in case of aspect_ratio_correct == 2 ) display with Aspect Ratio = Match Screen
 
 		if ( ( aspect_ratio_correct && ! ( fullscreen && (crispy->widescreen == RATIO_MATCH_SCREEN) &&
-		( fullscreen_width * (aspect_ratio_correct == 1 ? 3 : 10) < fullscreen_height * (aspect_ratio_correct == 1 ? 4 : 16) ) ) ) || integer_scaling )
+		( fullscreen_width * (aspect_ratio_correct == 1 ? 3 : 10) <= fullscreen_height * (aspect_ratio_correct == 1 ? 4 : 16) ) ) ) || integer_scaling )
 		{
 			SDL_RenderSetLogicalSize(renderer,
 			                         SCREENWIDTH,
@@ -2042,7 +2042,7 @@ void I_RenderReadPixels(byte **data, int *w, int *h, int *p)
 	// and less than 16:10 in case of aspect_ratio_correct == 2 ) display with Aspect Ratio = Match Screen
 
 	if ( ( aspect_ratio_correct && ! ( fullscreen && (crispy->widescreen == RATIO_MATCH_SCREEN) &&
-	( fullscreen_width * (aspect_ratio_correct == 1 ? 3 : 10) < fullscreen_height * (aspect_ratio_correct == 1 ? 4 : 16) ) ) ) || integer_scaling )
+	( fullscreen_width * (aspect_ratio_correct == 1 ? 3 : 10) <= fullscreen_height * (aspect_ratio_correct == 1 ? 4 : 16) ) ) ) || integer_scaling )
 	{
 		if (integer_scaling)
 		{
