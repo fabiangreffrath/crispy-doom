@@ -171,7 +171,6 @@ extern  int	displayplayer;
 extern  int	totalkills;
 extern	int	totalitems;
 extern	int	totalsecret;
-extern	int	extrakills; // [crispy] count spawned monsters
 extern  int maxkilldiscount; // [crispy] discount icon-spawned monsters
 extern  int environmentkills; // [crispy] monster kills in netgame not attributed to any player
 

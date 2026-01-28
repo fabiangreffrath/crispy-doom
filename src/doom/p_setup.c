@@ -1074,7 +1074,6 @@ P_SetupLevel
 	
     totalkills = totalitems = totalsecret = wminfo.maxfrags = 0;
     // [crispy] count spawned monsters
-    extrakills = 0;
     maxkilldiscount = 0;
     environmentkills = 0;
     wminfo.partime = 180;

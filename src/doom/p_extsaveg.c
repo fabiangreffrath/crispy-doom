@@ -73,28 +73,6 @@ static void P_ReadWadFileName (const char *key)
 	}
 }
 
-// extrakills
-
-static void P_WriteExtraKills (const char *key)
-{
-	if (extrakills)
-	{
-		M_snprintf(line, MAX_LINE_LEN, "%s %d\n", key, extrakills);
-		fputs(line, save_stream);
-	}
-}
-
-static void P_ReadExtraKills (const char *key)
-{
-	int value;
-
-	if (sscanf(line, "%s %d", string, &value) == 2 &&
-	    !strncmp(string, key, MAX_STRING_LEN))
-	{
-		extrakills = value;
-	}
-}
-
 // maxkilldiscount
 
 static void P_WriteMaxKillDiscount (const char *key)
@@ -493,7 +471,6 @@ static const extsavegdata_t extsavegdata[] =
 	// [crispy] @FORKS: please change this if you are going to introduce incompatible changes!
 	{"crispy-doom", P_WritePackageTarname, NULL, 0},
 	{"wadfilename", P_WriteWadFileName, P_ReadWadFileName, 0},
-	{"extrakills", P_WriteExtraKills, P_ReadExtraKills, 1},
 	{"maxkilldiscount", P_WriteMaxKillDiscount, P_ReadMaxKillDiscount, 1},
 	{"environmentkills", P_WriteEnvironmentKills, P_ReadEnvironmentKills, 1},
 	{"totalleveltimes", P_WriteTotalLevelTimes, P_ReadTotalLevelTimes, 1},

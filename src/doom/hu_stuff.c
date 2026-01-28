@@ -999,35 +999,31 @@ void HU_Erase(void)
 
 }
 
-static void Crispy_Statsline_Ratio (char *str, int str_size, const char *prefix, int count, int total, int extra)
+static void Crispy_Statsline_Ratio (char *str, int str_size, const char *prefix, int count, int total)
 {
-	if (extra)
-	    M_snprintf(str, str_size, "%s%s%s%d/%d+%d ", cr_stat, prefix, crstr[CR_GRAY],
-	               count, total, extra);
-	else
-	    M_snprintf(str, str_size, "%s%s%s%d/%d ", cr_stat, prefix, crstr[CR_GRAY],
-	               count, total);
+	M_snprintf(str, str_size, "%s%s%s%d/%d ", cr_stat, prefix, crstr[CR_GRAY],
+	           count, total);
 }
 
-static void Crispy_Statsline_Remaining (char *str, int str_size, const char *prefix, int count, int total, int extra)
+static void Crispy_Statsline_Remaining (char *str, int str_size, const char *prefix, int count, int total)
 {
 	M_snprintf(str, str_size, "%s%s%s%d ", cr_stat, prefix, crstr[CR_GRAY],
 		   MAX(0, total - count));
 }
 
-static void Crispy_Statsline_Percent (char *str, int str_size, const char *prefix, int count, int total, int extra)
+static void Crispy_Statsline_Percent (char *str, int str_size, const char *prefix, int count, int total)
 {
 	M_snprintf(str, str_size, "%s%s%s%d%% ", cr_stat, prefix, crstr[CR_GRAY],
 		   count * 100 / (total ? total : 1));
 }
 
-static void Crispy_Statsline_Boolean (char *str, int str_size, const char *prefix, int count, int total, int extra)
+static void Crispy_Statsline_Boolean (char *str, int str_size, const char *prefix, int count, int total)
 {
 	M_snprintf(str, str_size, "%s%s%s%s ", cr_stat, prefix, crstr[CR_GRAY],
 		   count >= total ? "Yes" : "No");
 }
 
-typedef void (*crispy_statsline_func_t)(char *str, int str_size, const char *prefix, int count, int total, int extra);
+typedef void (*crispy_statsline_func_t)(char *str, int str_size, const char *prefix, int count, int total);
 
 static const crispy_statsline_func_t crispy_statslines[NUM_STATSFORMATS] =
 {
@@ -1173,18 +1169,18 @@ void HU_Ticker(void)
 
 	w_kills.y = HU_TITLEY;
 
-	crispy_statsline(str, sizeof(str), "K ", killsum - maxkilldiscount, totalkills, extrakills);
+	crispy_statsline(str, sizeof(str), "K ", killsum - maxkilldiscount, totalkills);
 	HUlib_clearTextLine(&w_kills);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_kills, *(s++));
 
-	crispy_statsline(str, sizeof(str), "I ", itemsum, totalitems, 0);
+	crispy_statsline(str, sizeof(str), "I ", itemsum, totalitems);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_kills, *(s++));
 
-	crispy_statsline(str, sizeof(str), "S ", secretsum, totalsecret, 0);
+	crispy_statsline(str, sizeof(str), "S ", secretsum, totalsecret);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_kills, *(s++));
@@ -1197,19 +1193,19 @@ void HU_Ticker(void)
 
 	w_kills.x = HU_TITLEX; // to handle switching from Status bar to Always and Automap kills line options
 
-	crispy_statsline(str, sizeof(str), kills, killsum - maxkilldiscount, totalkills, extrakills);
+	crispy_statsline(str, sizeof(str), kills, killsum - maxkilldiscount, totalkills);
 	HUlib_clearTextLine(&w_kills);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_kills, *(s++));
 
-	crispy_statsline(str, sizeof(str), "I\t", itemsum, totalitems, 0);
+	crispy_statsline(str, sizeof(str), "I\t", itemsum, totalitems);
 	HUlib_clearTextLine(&w_items);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_items, *(s++));
 
-	crispy_statsline(str, sizeof(str), "S\t", secretsum, totalsecret, 0);
+	crispy_statsline(str, sizeof(str), "S\t", secretsum, totalsecret);
 	HUlib_clearTextLine(&w_scrts);
 	s = str;
 	while (*s)

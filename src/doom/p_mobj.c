@@ -527,9 +527,6 @@ P_NightmareRespawn (mobj_t* mobj)
     mo->spawnpoint = mobj->spawnpoint;	
     mo->angle = ANG45 * (mthing->angle/45);
 
-    // [crispy] count respawned monsters
-    extrakills++;
-
     if (mthing->options & MTF_AMBUSH)
 	mo->flags |= MF_AMBUSH;
 

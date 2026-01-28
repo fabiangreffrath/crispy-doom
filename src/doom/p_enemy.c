@@ -1245,9 +1245,6 @@ void A_VileChase (mobj_t* actor)
 		    corpsehit->health = info->spawnhealth;
 		    corpsehit->target = NULL;
 
-		    // [crispy] count resurrected monsters
-		    extrakills++;
-
 		    // [crispy] inherit spawned flag
 		    if (actor->flags & MF_SPAWNED_BY_ICON)
 			    corpsehit->flags |= MF_SPAWNED_BY_ICON;
@@ -2140,9 +2137,6 @@ void A_SpawnFly (mobj_t* mo)
 	type = MT_BRUISER;		
 
     newmobj	= P_SpawnMobj (targ->x, targ->y, targ->z, type);
-
-    // [crispy] count spawned monsters
-    extrakills++;
 
     // [crispy] mark as spawned by icon
     newmobj->flags |= MF_SPAWNED_BY_ICON;
