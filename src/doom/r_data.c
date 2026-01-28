@@ -260,7 +260,9 @@ R_DrawColumnInCache
 
 void R_GenerateComposite (int texnum)
 {
-    byte*		block, *block2;
+    // [crispy] allocate texture composites as needed
+    byte		*block = texturecomposite[texnum],
+			*block2 = texturecomposite2[texnum];
     texture_t*		texture;
     texpatch_t*		patch;	
     patch_t*		realpatch;
@@ -276,13 +278,19 @@ void R_GenerateComposite (int texnum)
 	
     texture = textures[texnum];
 
+    if (!block)
+    {
     block = Z_Malloc (texturecompositesize[texnum],
-		      PU_STATIC, 
+		      PU_LEVEL,
 		      &texturecomposite[texnum]);	
+    }
     // [crispy] memory block for opaque textures
+    if (!block2)
+    {
     block2 = Z_Malloc (texture->width * texture->height,
-		      PU_STATIC,
+		      PU_LEVEL,
 		      &texturecomposite2[texnum]);
+    }
 
     collump = texturecolumnlump[texnum];
     colofs = texturecolumnofs[texnum];
@@ -395,10 +403,13 @@ void R_GenerateComposite (int texnum)
     free(source); // free temporary column
     free(marks); // free transparency marks
 
+    // [crispy] allocate texture composites with PU_LEVEL tag
+#if 0
     // Now that the texture has been built in column cache,
     //  it is purgable from zone memory.
     Z_ChangeTag (block, PU_CACHE);
     Z_ChangeTag (block2, PU_CACHE);
+#endif
 }
 
 
