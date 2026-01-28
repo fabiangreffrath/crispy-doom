@@ -1043,6 +1043,10 @@ void HU_Ticker(void)
     int i, rc;
     char c;
     char str[32], *s;
+    // [crispy] stat totals amon all players
+    int killsum = environmentkills;
+    int itemsum = 0;
+    int secretsum = 0;
 
     // tick down message counter if message is up
     if (message_counter && !--message_counter)
@@ -1151,6 +1155,16 @@ void HU_Ticker(void)
 	    w_title.y = HU_TITLEY;
     }
 
+    // [crispy] calculate kill count among all players
+    for (i = 0 ; i < MAXPLAYERS; i++)
+    {
+        if (!playeringame[i])
+            continue;
+        killsum += players[i].killcount;
+        itemsum += players[i].itemcount;
+        secretsum += players[i].secretcount;
+    }
+
     if (crispy->automapstats == WIDGETS_STBAR && (!automapactive || w_title.y != HU_TITLEY))
     {
 	crispy_statsline_func_t crispy_statsline = crispy_statslines[crispy->statsformat];
@@ -1159,18 +1173,18 @@ void HU_Ticker(void)
 
 	w_kills.y = HU_TITLEY;
 
-	crispy_statsline(str, sizeof(str), "K ", plr->killcount, totalkills, extrakills);
+	crispy_statsline(str, sizeof(str), "K ", killsum - maxkilldiscount, totalkills, extrakills);
 	HUlib_clearTextLine(&w_kills);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_kills, *(s++));
 
-	crispy_statsline(str, sizeof(str), "I ", plr->itemcount, totalitems, 0);
+	crispy_statsline(str, sizeof(str), "I ", itemsum, totalitems, 0);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_kills, *(s++));
 
-	crispy_statsline(str, sizeof(str), "S ", plr->secretcount, totalsecret, 0);
+	crispy_statsline(str, sizeof(str), "S ", secretsum, totalsecret, 0);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_kills, *(s++));
@@ -1183,19 +1197,19 @@ void HU_Ticker(void)
 
 	w_kills.x = HU_TITLEX; // to handle switching from Status bar to Always and Automap kills line options
 
-	crispy_statsline(str, sizeof(str), kills, plr->killcount, totalkills, extrakills);
+	crispy_statsline(str, sizeof(str), kills, killsum - maxkilldiscount, totalkills, extrakills);
 	HUlib_clearTextLine(&w_kills);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_kills, *(s++));
 
-	crispy_statsline(str, sizeof(str), "I\t", plr->itemcount, totalitems, 0);
+	crispy_statsline(str, sizeof(str), "I\t", itemsum, totalitems, 0);
 	HUlib_clearTextLine(&w_items);
 	s = str;
 	while (*s)
 	    HUlib_addCharToTextLine(&w_items, *(s++));
 
-	crispy_statsline(str, sizeof(str), "S\t", plr->secretcount, totalsecret, 0);
+	crispy_statsline(str, sizeof(str), "S\t", secretsum, totalsecret, 0);
 	HUlib_clearTextLine(&w_scrts);
 	s = str;
 	while (*s)

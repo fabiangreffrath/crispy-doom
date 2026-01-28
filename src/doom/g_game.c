@@ -136,6 +136,8 @@ int             displayplayer;          // view being displayed
 int             levelstarttic;          // gametic at level start 
 int             totalkills, totalitems, totalsecret;    // for intermission 
 int             extrakills;             // [crispy] count spawned monsters
+int             maxkilldiscount;        // [crispy] discount spawned and resurrected monsters
+int             environmentkills;       // [crispy] monster kills in netgame not attributed to any player
 int             totalleveltimes;        // [crispy] CPhipps - total time for all completed levels
 int             demostarttic;           // [crispy] fix revenant internal demo bug
  

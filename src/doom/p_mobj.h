@@ -186,6 +186,9 @@ typedef enum
     //  in death match mode (e.g. key cards).
     MF_NOTDMATCH    	= 0x2000000,
 
+    // [crispy] spawned by icon of sin
+    MF_SPAWNED_BY_ICON = 0x4000000,
+
     // Player sprites in multiplayer modes are modified
     //  using an internal color lookup table for re-indexing.
     // If 0x4 0x8 or 0xc,

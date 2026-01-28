@@ -1248,6 +1248,12 @@ void A_VileChase (mobj_t* actor)
 		    // [crispy] count resurrected monsters
 		    extrakills++;
 
+		    // [crispy] inherit spawned flag
+		    if (actor->flags & MF_SPAWNED_BY_ICON)
+			    corpsehit->flags |= MF_SPAWNED_BY_ICON;
+		    else
+			    maxkilldiscount++;
+
 		    // [crispy] resurrected pools of gore ("ghost monsters") are translucent
 		    if (corpsehit->height == 0 && corpsehit->radius == 0)
 		    {
@@ -2137,6 +2143,9 @@ void A_SpawnFly (mobj_t* mo)
 
     // [crispy] count spawned monsters
     extrakills++;
+
+    // [crispy] mark as spawned by icon
+    newmobj->flags |= MF_SPAWNED_BY_ICON;
 
     if (P_LookForPlayers (newmobj, true) )
 	P_SetMobjState (newmobj, newmobj->info->seestate);
