@@ -720,6 +720,11 @@ P_TouchSpecialThing
 	S_StartSoundOptional (NULL, sound, sfx_itemup); // [NS] Fallback to itemup.
 }
 
+// [crispy]
+static inline boolean CheckDiscountable(mobj_t* target)
+{
+    return target->flags & MF_SPAWNED_BY_ICON && !(gameskill == sk_nightmare || respawnparm);
+}
 
 //
 // KillMobj
@@ -746,7 +751,7 @@ P_KillMobj
 	if (target->flags & MF_COUNTKILL)
 	    source->player->killcount++;	
 	// [crispy] discount icon-spawned monsters
-	if (!target->player && target->flags & MF_SPAWNED_BY_ICON)
+	if (!target->player && CheckDiscountable(target))
 	    maxkilldiscount++;
 
 	if (target->player)
@@ -761,7 +766,7 @@ P_KillMobj
 	else
 	    environmentkills++;
 	// [crispy] discount icon-spawned monsters
-	if (target->flags & MF_SPAWNED_BY_ICON)
+	if (CheckDiscountable(target))
 	    maxkilldiscount++;
     }
     
