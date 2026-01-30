@@ -1039,7 +1039,7 @@ void HU_Ticker(void)
     int i, rc;
     char c;
     char str[32], *s;
-    // [crispy] stat totals amon all players
+    // [crispy] stat totals among all players
     int killsum = environmentkills;
     int itemsum = 0;
     int secretsum = 0;
