@@ -239,7 +239,7 @@ void R_GenerateComposite (int texnum)
     texture = textures[texnum];
 
     block = Z_Malloc (texturecompositesize[texnum],
-		      PU_STATIC, 
+		      PU_LEVEL, 
 		      &texturecomposite[texnum]);	
 
     collump = texturecolumnlump[texnum];
@@ -278,9 +278,12 @@ void R_GenerateComposite (int texnum)
 						
     }
 
+    // [crispy] allocate texture composites with PU_LEVEL tag
+#if 0
     // Now that the texture has been built in column cache,
     //  it is purgable from zone memory.
     Z_ChangeTag (block, PU_CACHE);
+#endif
 }
 
 
