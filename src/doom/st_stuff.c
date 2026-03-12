@@ -329,6 +329,9 @@ int		st_keyorskull[3];
 // a random number per tick
 static int	st_randomnumber;  
 
+// [crispy] moved so ST_createWidgets can also access it
+static int	largeammo = 1994; // means "n/a"
+
 cheatseq_t cheat_mus = CHEAT("idmus", 2);
 cheatseq_t cheat_god = CHEAT("iddqd", 0);
 cheatseq_t cheat_ammo = CHEAT("idkfa", 0);
@@ -1494,7 +1497,6 @@ void ST_updateFaceWidget(void)
 
 void ST_updateWidgets(void)
 {
-    static int	largeammo = 1994; // means "n/a"
     int		i;
 
     // must redirect the pointer if the ready weapon has changed.
@@ -2174,12 +2176,16 @@ void ST_createWidgets(void)
 		  ST_AMMOX,
 		  ST_AMMOY,
 		  tallnum,
-		  &plyr->ammo[weaponinfo[plyr->readyweapon].ammo],
+		  &largeammo, // [crispy] previously plyr->ammo, see below
 		  &st_statusbaron,
 		  ST_AMMOWIDTH );
 
     // the last weapon type
     w_ready.data = plyr->readyweapon; 
+
+    // [crispy] avoid out-of-bounds read when resizing status bar 
+    if (weaponinfo[plyr->readyweapon].ammo != am_noammo)
+        w_ready.num = &plyr->ammo[weaponinfo[plyr->readyweapon].ammo];
 
     // health percentage
     STlib_initPercent(&w_health,
