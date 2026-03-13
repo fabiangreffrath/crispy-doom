@@ -329,9 +329,6 @@ int		st_keyorskull[3];
 // a random number per tick
 static int	st_randomnumber;  
 
-// [crispy] moved so ST_createWidgets can also access it
-static int	largeammo = 1994; // means "n/a"
-
 cheatseq_t cheat_mus = CHEAT("idmus", 2);
 cheatseq_t cheat_god = CHEAT("iddqd", 0);
 cheatseq_t cheat_ammo = CHEAT("idkfa", 0);
@@ -1494,6 +1491,9 @@ void ST_updateFaceWidget(void)
     // [crispy] fix status bar face hysteresis
     st_faceindex = painoffset + faceindex;
 }
+
+// [crispy] moved so ST_createWidgets can also access it
+static int	largeammo = 1994; // means "n/a"
 
 void ST_updateWidgets(void)
 {
