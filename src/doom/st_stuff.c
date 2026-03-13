@@ -2176,16 +2176,18 @@ void ST_createWidgets(void)
 		  ST_AMMOX,
 		  ST_AMMOY,
 		  tallnum,
-		  &largeammo, // [crispy] previously plyr->ammo, see below
+		  &plyr->ammo[weaponinfo[plyr->readyweapon].ammo],
 		  &st_statusbaron,
 		  ST_AMMOWIDTH );
 
+    // [crispy] avoid out-of-bounds read when resizing status bar 
+    if (weaponinfo[plyr->readyweapon].ammo == am_noammo)
+	w_ready.num = &largeammo;
+    else
+	w_ready.num = &plyr->ammo[weaponinfo[plyr->readyweapon].ammo];
+
     // the last weapon type
     w_ready.data = plyr->readyweapon; 
-
-    // [crispy] avoid out-of-bounds read when resizing status bar 
-    if (weaponinfo[plyr->readyweapon].ammo != am_noammo)
-        w_ready.num = &plyr->ammo[weaponinfo[plyr->readyweapon].ammo];
 
     // health percentage
     STlib_initPercent(&w_health,
