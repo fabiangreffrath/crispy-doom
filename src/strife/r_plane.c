@@ -382,7 +382,7 @@ void R_DrawPlanes (void)
     int                 lumpnum;
 				
 #ifdef RANGECHECK
-    if (ds_p - drawsegs > MAXDRAWSEGS)
+    if (ds_p - drawsegs > numdrawsegs)
 	I_Error ("R_DrawPlanes: drawsegs overflow (%td)",
 		 ds_p - drawsegs);
     

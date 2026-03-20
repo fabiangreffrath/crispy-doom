@@ -411,7 +411,7 @@ void R_DrawPlanes(void)
     int angle2, smoothDelta1 = 0, smoothDelta2 = 0; // [crispy] smooth sky scrolling
 
 #ifdef RANGECHECK
-    if (ds_p - drawsegs > MAXDRAWSEGS)
+    if (ds_p - drawsegs > numdrawsegs)
     {
         I_Error("R_DrawPlanes: drawsegs overflow (%td)",
                 ds_p - drawsegs);

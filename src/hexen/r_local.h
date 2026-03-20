@@ -281,7 +281,7 @@ typedef struct drawseg_s
 #define SIL_TOP         2
 #define SIL_BOTH        3
 
-#define MAXDRAWSEGS             256*8
+#define MAXDRAWSEGS             256
 
 // A vissprite_t is a thing that will be drawn during a refresh
 typedef struct vissprite_s
@@ -481,7 +481,9 @@ extern boolean markfloor;       // false if the back side is the same plane
 extern boolean markceiling;
 extern boolean skymap;
 
-extern drawseg_t drawsegs[MAXDRAWSEGS], *ds_p;
+extern drawseg_t*	drawsegs;
+extern drawseg_t*	ds_p;
+extern int		numdrawsegs;
 
 extern lighttable_t **hscalelight, **vscalelight, **dscalelight;
 
