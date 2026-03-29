@@ -574,7 +574,7 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
     }
 
 #ifdef HAVE_LIBZ
-    if (compressed && output)
+    if (format.compressed && output)
     {
         Z_Free(output);
     }
