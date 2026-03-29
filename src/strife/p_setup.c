@@ -964,7 +964,10 @@ P_SetupLevel
 
     if (crispy_mapformat.bsp >= NFMT_XNOD)
     {
-	P_LoadNodes_ZDBSP (lumpnum+ML_NODES, crispy_mapformat);
+	int znode_num = (crispy_mapformat.bsp == NFMT_XNOD)
+		      ? lumpnum+ML_NODES
+		      : lumpnum+ML_SSECTORS;
+	P_LoadNodes_ZDBSP (znode_num, crispy_mapformat);
     }
     else if (crispy_mapformat.bsp == NFMT_DEEPBSPV4)
     {
