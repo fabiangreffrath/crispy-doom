@@ -22,6 +22,8 @@
 
 
 
+// [crispy] (re-)create BLOCKMAP if necessary
+void P_CreateBlockMap(void);
 
 // NOT called by W_Ticker. Fixme.
 // [STRIFE] Removed episode parameter

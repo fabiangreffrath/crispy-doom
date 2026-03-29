@@ -19,6 +19,7 @@
 #include "m_random.h"
 #include "h2def.h"
 #include "m_bbox.h"
+#include "p_mapformat.h"
 #include "r_local.h"
 #include "a11y.h" // [crispy] A11Y
 

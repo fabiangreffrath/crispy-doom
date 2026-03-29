@@ -26,6 +26,8 @@
 // State.
 #include "r_state.h"
 
+#include "p_mapformat.h" // [crispy] support extended node formats
+
 //
 // P_CheckSight
 //

@@ -23,6 +23,7 @@
 #include "i_system.h"
 #include "m_misc.h"
 #include "p_local.h"
+#include "p_mapformat.h"
 #include "v_video.h"
 #include "a11y.h"
 

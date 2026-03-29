@@ -17,6 +17,7 @@
 
 
 
+#include "p_mapformat.h"
 #include "z_zone.h"
 #include "doomdef.h"
 #include "deh_main.h"

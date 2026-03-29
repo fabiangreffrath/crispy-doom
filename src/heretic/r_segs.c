@@ -525,6 +525,9 @@ void R_StoreWallRange(int start, int stop)
     sidedef = curline->sidedef;
     linedef = curline->linedef;
 
+    if (!linedef)
+        return;
+
 // mark the segment as visible for auto map
     linedef->flags |= ML_MAPPED;
 

@@ -94,4 +94,7 @@ boolean W_IsIWADLump(const lumpinfo_t *lump);
 
 char **W_GetWADFileNames(void);
 
+boolean W_LumpExistsWithName(int lump, char *name);
+int W_LumpLengthWithName(int lump, char *name);
+
 #endif

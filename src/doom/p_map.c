@@ -31,6 +31,7 @@
 #include "m_misc.h"
 #include "p_local.h"
 
+#include "p_mapformat.h"
 #include "s_sound.h"
 
 // State.

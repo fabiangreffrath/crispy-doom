@@ -164,7 +164,7 @@ typedef struct line_s
     byte arg3;
     byte arg4;
     byte arg5;
-    short sidenum[2];
+    unsigned short sidenum[2]; // [crispy] extended nodes
     fixed_t bbox[4];
     slopetype_t slopetype;
     sector_t *frontsector;

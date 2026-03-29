@@ -25,6 +25,7 @@
 
 #include "i_system.h"
 
+#include "p_mapformat.h"
 #include "r_main.h"
 #include "r_plane.h"
 #include "r_things.h"
@@ -573,7 +574,8 @@ void R_Subsector (int num)
 
     while (count--)
     {
-	R_AddLine (line);
+	if (line->linedef)
+	    R_AddLine(line);
 	line++;
     }
 

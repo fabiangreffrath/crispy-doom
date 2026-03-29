@@ -24,6 +24,7 @@
 #include "p_local.h"
 
 // State.
+#include "p_mapformat.h"
 #include "r_state.h"
 
 //

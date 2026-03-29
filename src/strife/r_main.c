@@ -33,6 +33,7 @@
 #include "m_bbox.h"
 #include "m_menu.h"
 
+#include "p_mapformat.h"
 #include "r_local.h"
 #include "r_sky.h"
 #include "st_stuff.h" // [crispy]

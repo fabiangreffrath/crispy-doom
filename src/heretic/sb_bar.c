@@ -24,6 +24,7 @@
 #include "m_misc.h"
 #include "m_random.h"
 #include "p_local.h"
+#include "p_mapformat.h"
 #include "s_sound.h"
 #include "v_video.h"
 #include "am_map.h"

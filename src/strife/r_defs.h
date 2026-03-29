@@ -227,7 +227,7 @@ typedef struct line_s
 
     // Visual appearance: SideDefs.
     //  sidenum[1] will be -1 if one sided
-    short	sidenum[2];			
+    unsigned short sidenum[2]; // [crispy] extended nodes
 
     // Neat. Another bounding box, for the extent
     //  of the LineDef.

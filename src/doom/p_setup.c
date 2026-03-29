@@ -44,7 +44,7 @@
 
 #include "doomstat.h"
 
-#include "p_extnodes.h" // [crispy] support extended node formats
+#include "p_mapformat.h" // [crispy] support extended node formats
 
 void	P_SpawnMapThing (mapthing_t*	mthing);
 
@@ -552,6 +552,151 @@ void P_LoadThings (int lump)
     W_ReleaseLumpNum(lump);
 }
 
+// [crispy] allow loading of Hexen-format maps
+// adapted from chocolate-doom/src/hexen/p_setup.c:348-400
+void P_LoadThings_Hexen (int lump)
+{
+    byte *data;
+    int i;
+    mapthing_t spawnthing;
+    mapthing_hexen_t *mt;
+    int numthings;
+
+    data = W_CacheLumpNum(lump, PU_STATIC);
+    numthings = W_LumpLength(lump) / sizeof(mapthing_hexen_t);
+
+    mt = (mapthing_hexen_t *) data;
+    for (i = 0; i < numthings; i++, mt++)
+    {
+//	spawnthing.tid = SHORT(mt->tid);
+	spawnthing.x = SHORT(mt->x);
+	spawnthing.y = SHORT(mt->y);
+//	spawnthing.height = SHORT(mt->height);
+	spawnthing.angle = SHORT(mt->angle);
+	spawnthing.type = SHORT(mt->type);
+	spawnthing.options = SHORT(mt->options);
+
+//	spawnthing.special = mt->special;
+//	spawnthing.arg1 = mt->arg1;
+//	spawnthing.arg2 = mt->arg2;
+//	spawnthing.arg3 = mt->arg3;
+//	spawnthing.arg4 = mt->arg4;
+//	spawnthing.arg5 = mt->arg5;
+
+	P_SpawnMapThing(&spawnthing);
+    }
+
+    W_ReleaseLumpNum(lump);
+}
+
+// [crispy] allow loading of Hexen-format maps
+// adapted from chocolate-doom/src/hexen/p_setup.c:410-490
+void P_LoadLineDefs_Hexen (int lump)
+{
+    byte *data;
+    int i;
+    maplinedef_hexen_t *mld;
+    line_t *ld;
+    vertex_t *v1, *v2;
+    int warn; // [crispy] warn about unknown linedef types
+
+    numlines = W_LumpLength(lump) / sizeof(maplinedef_hexen_t);
+    lines = Z_Malloc(numlines * sizeof(line_t), PU_LEVEL, 0);
+    memset(lines, 0, numlines * sizeof(line_t));
+    data = W_CacheLumpNum(lump, PU_STATIC);
+
+    mld = (maplinedef_hexen_t *) data;
+    ld = lines;
+    warn = 0; // [crispy] warn about unknown linedef types
+    for (i = 0; i < numlines; i++, mld++, ld++)
+    {
+        ld->flags = (unsigned short)SHORT(mld->flags);
+
+        ld->special = mld->special;
+//      ld->arg1 = mld->arg1;
+//      ld->arg2 = mld->arg2;
+//      ld->arg3 = mld->arg3;
+//      ld->arg4 = mld->arg4;
+//      ld->arg5 = mld->arg5;
+
+        // [crispy] warn about unknown linedef types
+        if ((unsigned short) ld->special > 141)
+        {
+            fprintf(stderr, "P_LoadLineDefs: Unknown special %d at line %d\n", ld->special, i);
+            warn++;
+        }
+
+        v1 = ld->v1 = &vertexes[(unsigned short)SHORT(mld->v1)];
+        v2 = ld->v2 = &vertexes[(unsigned short)SHORT(mld->v2)];
+
+        ld->dx = v2->x - v1->x;
+        ld->dy = v2->y - v1->y;
+        if (!ld->dx)
+            ld->slopetype = ST_VERTICAL;
+        else if (!ld->dy)
+            ld->slopetype = ST_HORIZONTAL;
+        else
+        {
+            if (FixedDiv(ld->dy, ld->dx) > 0)
+                ld->slopetype = ST_POSITIVE;
+            else
+                ld->slopetype = ST_NEGATIVE;
+        }
+
+        if (v1->x < v2->x)
+        {
+            ld->bbox[BOXLEFT] = v1->x;
+            ld->bbox[BOXRIGHT] = v2->x;
+        }
+        else
+        {
+            ld->bbox[BOXLEFT] = v2->x;
+            ld->bbox[BOXRIGHT] = v1->x;
+        }
+        if (v1->y < v2->y)
+        {
+            ld->bbox[BOXBOTTOM] = v1->y;
+            ld->bbox[BOXTOP] = v2->y;
+        }
+        else
+        {
+            ld->bbox[BOXBOTTOM] = v2->y;
+            ld->bbox[BOXTOP] = v1->y;
+        }
+
+        // [crispy] calculate sound origin of line to be its midpoint
+        ld->soundorg.x = ld->bbox[BOXLEFT] / 2 + ld->bbox[BOXRIGHT] / 2;
+        ld->soundorg.y = ld->bbox[BOXTOP] / 2 + ld->bbox[BOXBOTTOM] / 2;
+
+        ld->sidenum[0] = SHORT(mld->sidenum[0]);
+        ld->sidenum[1] = SHORT(mld->sidenum[1]);
+
+        // [crispy] substitute dummy sidedef for missing right side
+        if (ld->sidenum[0] == NO_INDEX)
+        {
+            ld->sidenum[0] = 0;
+            fprintf(stderr, "P_LoadLineDefs: linedef %d without first sidedef!\n", i);
+        }
+
+        if (ld->sidenum[0] != NO_INDEX)
+            ld->frontsector = sides[ld->sidenum[0]].sector;
+        else
+            ld->frontsector = 0;
+        if (ld->sidenum[1] != NO_INDEX)
+            ld->backsector = sides[ld->sidenum[1]].sector;
+        else
+            ld->backsector = 0;
+    }
+
+    // [crispy] warn about unknown linedef types
+    if (warn)
+    {
+	fprintf(stderr, "P_LoadLineDefs: Found %d line%s with unknown linedef type.\n"
+	                "THIS MAP MAY NOT WORK AS EXPECTED!\n", warn, (warn > 1) ? "s" : "");
+    }
+
+    W_ReleaseLumpNum(lump);
+}
 
 //
 // P_LoadLineDefs
@@ -787,7 +932,6 @@ boolean P_LoadBlockMap (int lump)
     memset(blocklinks, 0, count);
 
     // [crispy] (re-)create BLOCKMAP if necessary
-    fprintf(stderr, ")\n");
     return true;
 }
 
@@ -934,6 +1078,10 @@ static void P_RemoveSlimeTrails(void)
     {
 	const line_t *l = segs[i].linedef;
 	vertex_t *v = segs[i].v1;
+	if (!l)
+	{
+	    continue;
+	}
 
 	// [crispy] ignore exactly vertical or horizontal linedefs
 	if (l->dx && l->dy)
@@ -1170,24 +1318,27 @@ P_SetupLevel
     P_LoadSectors (lumpnum+ML_SECTORS);
     P_LoadSideDefs (lumpnum+ML_SIDEDEFS);
 
-    if (crispy_mapformat & MFMT_HEXEN)
+    if (crispy_mapformat.hexen)
 	P_LoadLineDefs_Hexen (lumpnum+ML_LINEDEFS);
     else
     P_LoadLineDefs (lumpnum+ML_LINEDEFS);
+
     // [crispy] (re-)create BLOCKMAP if necessary
     if (!crispy_validblockmap)
     {
 	extern void P_CreateBlockMap (void);
 	P_CreateBlockMap();
     }
-    if (crispy_mapformat & (MFMT_ZDBSPX | MFMT_ZDBSPZ))
-	P_LoadNodes_ZDBSP (lumpnum+ML_NODES, crispy_mapformat & MFMT_ZDBSPZ);
-    else
-    if (crispy_mapformat & MFMT_DEEPBSP)
+
+    if (crispy_mapformat.bsp >= NFMT_XNOD)
     {
-	P_LoadSubsectors_DeePBSP (lumpnum+ML_SSECTORS);
-	P_LoadNodes_DeePBSP (lumpnum+ML_NODES);
-	P_LoadSegs_DeePBSP (lumpnum+ML_SEGS);
+	P_LoadNodes_ZDBSP (lumpnum+ML_NODES, crispy_mapformat);
+    }
+    else if (crispy_mapformat.bsp == NFMT_DEEPBSPV4)
+    {
+	P_LoadSubsectors_DeePBSPV4 (lumpnum+ML_SSECTORS);
+	P_LoadNodes_DeePBSPV4 (lumpnum+ML_NODES);
+	P_LoadSegs_DeePBSPV4 (lumpnum+ML_SEGS);
     }
     else
     {
@@ -1208,7 +1359,7 @@ P_SetupLevel
 
     bodyqueslot = 0;
     deathmatch_p = deathmatchstarts;
-    if (crispy_mapformat & MFMT_HEXEN)
+    if (crispy_mapformat.hexen)
 	P_LoadThings_Hexen (lumpnum+ML_THINGS);
     else
     P_LoadThings (lumpnum+ML_THINGS);
