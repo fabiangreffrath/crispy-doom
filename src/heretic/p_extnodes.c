@@ -183,9 +183,15 @@ static void P_LoadSegs_XNOD(byte *data)
         linedef = (unsigned short)SHORT(ml->linedef);
         ldef = &lines[linedef];
         li->linedef = ldef;
-        side = ml->side ? 1 : 0;
+        side = ml->side;
 
-        // e6y: check for wrong indexes
+        // Andrey Budko: fix wrong side index
+        if (side != 0 && side != 1)
+        {
+            side = 1;
+        }
+
+        // Andrey Budko: check for wrong indexes
         if ((unsigned)linedef >= (unsigned)numlines)
         {
                 I_Error("P_LoadSegs_XNOD: seg %d references a non-existent linedef %d",
