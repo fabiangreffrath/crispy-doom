@@ -261,8 +261,8 @@ typedef struct line_s
 typedef struct subsector_s
 {
     sector_t*	sector;
-    short	numlines;
-    short	firstline;
+    int	numlines; // [crispy] extended nodes
+    int	firstline; // [crispy] extended nodes
     
 } subsector_t;
 
@@ -311,7 +311,7 @@ typedef struct
     fixed_t	bbox[2][4];
 
     // If NF_SUBSECTOR its a subsector.
-    unsigned short children[2];
+    int children[2]; // [crispy] extended nodes
     
 } node_t;
 
