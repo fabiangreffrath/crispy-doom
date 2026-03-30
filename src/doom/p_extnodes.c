@@ -44,6 +44,7 @@ void P_LoadSegs_DeePBSPV4 (int lump)
 
     numsegs = W_LumpLength(lump) / sizeof(mapseg_deepbspv4_t);
     segs = Z_Malloc(numsegs * sizeof(seg_t), PU_LEVEL, 0);
+    memset (segs, 0, numsegs*sizeof(seg_t));
     data = (mapseg_deepbspv4_t *)W_CacheLumpNum(lump, PU_STATIC);
 
     for (i = 0; i < numsegs; i++)
