@@ -33,7 +33,7 @@
 
 fixed_t GetOffset(vertex_t *v1, vertex_t *v2);
 
-// [crispy] support maps with DeePBSP nodes
+// [crispy] support maps with DeePBSPV4 nodes
 void P_LoadSegs_DeePBSPV4 (int lump)
 {
     int i;
@@ -51,7 +51,7 @@ void P_LoadSegs_DeePBSPV4 (int lump)
         line_t *ldef;
         int vn1, vn2;
 
-        // [MB] 2020-04-30: Fix endianess for DeePBSP V4 nodes
+        // [MB] 2020-04-30: Fix endianess for DeePBSPV4 nodes
         vn1 = LONG(ml->v1);
         vn2 = LONG(ml->v2);
 
@@ -66,15 +66,15 @@ void P_LoadSegs_DeePBSPV4 (int lump)
         li->linedef = ldef;
         side = SHORT(ml->side);
 
-        // e6y: check for wrong indexes
+        // Andrey Budko: check for wrong indexes
         if ((unsigned)linedef >= (unsigned)numlines)
         {
-            I_Error("P_LoadSegs: seg %d references a non-existent linedef %d",
+            I_Error("P_LoadSegs_DeePBSPV4: seg %d references a non-existent linedef %d",
                 i, (unsigned)linedef);
         }
         if ((unsigned)ldef->sidenum[side] >= (unsigned)numsides)
         {
-            I_Error("P_LoadSegs: linedef %d for seg %d references a non-existent sidedef %d",
+            I_Error("P_LoadSegs_DeePBSPV4: linedef %d for seg %d references a non-existent sidedef %d",
                 linedef, i, (unsigned)ldef->sidenum[side]);
         }
 
@@ -83,7 +83,7 @@ void P_LoadSegs_DeePBSPV4 (int lump)
         // [crispy] recalculate
         li->offset = GetOffset(li->v1, (ml->side ? ldef->v2 : ldef->v1));
 
-        if (ldef->flags & ML_TWOSIDED)
+        if ((ldef->flags & ML_TWOSIDED) && (ldef->sidenum[side ^ 1] != NO_INDEX))
             li->backsector = sides[ldef->sidenum[side ^ 1]].sector;
         else
             li->backsector = 0;
@@ -92,7 +92,7 @@ void P_LoadSegs_DeePBSPV4 (int lump)
     W_ReleaseLumpNum(lump);
 }
 
-// [crispy] support maps with DeePBSP nodes
+// [crispy] support maps with DeePBSPV4 nodes
 // adapted from prboom-plus/src/p_setup.c:843-863
 void P_LoadSubsectors_DeePBSPV4 (int lump)
 {
@@ -105,18 +105,18 @@ void P_LoadSubsectors_DeePBSPV4 (int lump)
 
     // [crispy] fail on missing subsectors
     if (!data || !numsubsectors)
-        I_Error("P_LoadSubsectors: No subsectors in map!");
+        I_Error("P_LoadSubsectors_DeePBSPV4: No subsectors in map!");
 
     for (i = 0; i < numsubsectors; i++)
     {
-        // [MB] 2020-04-30: Fix endianess for DeePBSP V4 nodes
+        // [MB] 2020-04-30: Fix endianess for DeePBSPV4 nodes
         subsectors[i].numlines = (unsigned short)SHORT(data[i].numsegs);
         subsectors[i].firstline = LONG(data[i].firstseg);
     }
 
     W_ReleaseLumpNum(lump);
 }
-// [crispy] support maps with DeePBSP nodes
+// [crispy] support maps with DeePBSPV4 nodes
 // adapted from prboom-plus/src/p_setup.c:995-1038
 void P_LoadNodes_DeePBSPV4 (int lump)
 {
@@ -153,7 +153,7 @@ void P_LoadNodes_DeePBSPV4 (int lump)
         for (j = 0; j < 2; j++)
         {
             int k;
-            // [MB] 2020-04-30: Fix endianess for DeePBSP V4 nodes
+            // [MB] 2020-04-30: Fix endianess for DeePBSPV4 nodes
             no->children[j] = LONG(mn->children[j]);
 
             for (k = 0; k < 4; k++)
@@ -210,7 +210,7 @@ static void P_LoadSegs_XNOD(byte *data)
         li->angle = R_PointToAngle2(segs[i].v1->x, segs[i].v1->y, segs[i].v2->x, segs[i].v2->y);
         li->offset = GetOffset(li->v1, (ml->side ? ldef->v2 : ldef->v1));
 
-        if (ldef->flags & ML_TWOSIDED)
+        if ((ldef->flags & ML_TWOSIDED) && (ldef->sidenum[side ^ 1] != NO_INDEX))
             li->backsector = sides[ldef->sidenum[side ^ 1]].sector;
         else
             li->backsector = 0;
@@ -430,7 +430,7 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
         zstream->avail_out = outlen;
 
         if (inflateInit(zstream) != Z_OK)
-            I_Error("P_LoadNodes: Error during ZDBSP nodes decompression initialization!");
+            I_Error("P_LoadNodes_ZDBSP: Error during ZDBSP nodes decompression initialization!");
 
         // resize if output buffer runs full
         while ((err = inflate(zstream, Z_SYNC_FLUSH)) == Z_OK)
@@ -443,21 +443,21 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
         }
 
         if (err != Z_STREAM_END)
-            I_Error("P_LoadNodes: Error during ZDBSP nodes decompression!");
+            I_Error("P_LoadNodes_ZDBSP: Error during ZDBSP nodes decompression!");
 
-        fprintf(stderr, "P_LoadNodes: ZDBSP nodes compression ratio %.3f\n",
+        fprintf(stderr, "P_LoadNodes_ZDBSP: ZDBSP nodes compression ratio %.3f\n",
                 (float)zstream->total_out/zstream->total_in);
 
         data = output;
 
         if (inflateEnd(zstream) != Z_OK)
-            I_Error("P_LoadNodes: Error during ZDBSP nodes decompression shut-down!");
+            I_Error("P_LoadNodes_ZDBSP: Error during ZDBSP nodes decompression shut-down!");
 
         // release the original data lump
         W_ReleaseLumpNum(lump);
         free(zstream);
 #else
-        I_Error("P_LoadNodes: Compressed ZDBSP nodes are not supported!");
+        I_Error("P_LoadNodes_ZDBSP: Compressed ZDBSP nodes are not supported!");
 #endif
     }
     else
@@ -515,7 +515,7 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
     data += sizeof(numSubs);
 
     if (numSubs < 1)
-        I_Error("P_LoadNodes: No subsectors in map!");
+        I_Error("P_LoadNodes_ZDBSP: No subsectors in map!");
 
     numsubsectors = numSubs;
     subsectors = Z_Malloc(numsubsectors * sizeof(subsector_t), PU_LEVEL, 0);
@@ -539,7 +539,7 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
     // The number of stored segs should match the number of segs used by subsectors
     if (numSegs != currSeg)
     {
-        I_Error("P_LoadNodes: Incorrect number of segs in ZDBSP nodes!");
+        I_Error("P_LoadNodes_ZDBSP: Incorrect number of segs in ZDBSP nodes!");
     }
 
     numsegs = numSegs;
