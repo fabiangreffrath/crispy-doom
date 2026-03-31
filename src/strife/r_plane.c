@@ -43,11 +43,12 @@ planefunction_t		ceilingfunc;
 
 // Here comes the obnoxious "visplane".
 // haleyjd 08/29/10: [STRIFE] MAXVISPLANES increased to 200
-#define MAXVISPLANES	200*8
-visplane_t		visplanes[MAXVISPLANES];
+#define MAXVISPLANES	200
+visplane_t*		visplanes;
 visplane_t*		lastvisplane;
 visplane_t*		floorplane;
 visplane_t*		ceilingplane;
+static int		numvisplanes;
 
 // ?
 #define MAXOPENINGS	MAXWIDTH*64*4
@@ -185,6 +186,30 @@ R_MapPlane
     spanfunc ();	
 }
 
+// [crispy] remove MAXVISPLANES limit
+static void R_RaiseVisplanes (visplane_t** vp)
+{
+    if (lastvisplane - visplanes == numvisplanes)
+    {
+	int numvisplanes_old = numvisplanes;
+	visplane_t* visplanes_old = visplanes;
+
+	numvisplanes = numvisplanes ? 2 * numvisplanes : MAXVISPLANES;
+	visplanes = I_Realloc(visplanes, numvisplanes * sizeof(*visplanes));
+	memset(visplanes + numvisplanes_old, 0, (numvisplanes - numvisplanes_old) * sizeof(*visplanes));
+
+	lastvisplane = visplanes + numvisplanes_old;
+	floorplane = visplanes + (floorplane - visplanes_old);
+	ceilingplane = visplanes + (ceilingplane - visplanes_old);
+
+	if (numvisplanes_old)
+	    fprintf(stderr, "R_FindPlane: Hit MAXVISPLANES limit at %d, raised to %d.\n", numvisplanes_old, numvisplanes);
+
+	// keep the pointer passed as argument in relation to the visplanes pointer
+	if (vp)
+	    *vp = visplanes + (*vp - visplanes_old);
+    }
+}
 
 //
 // R_ClearPlanes
@@ -250,9 +275,8 @@ R_FindPlane
     if (check < lastvisplane)
 	return check;
 		
-    if (lastvisplane - visplanes == MAXVISPLANES)
-	I_Error ("R_FindPlane: no more visplanes");
-		
+
+    R_RaiseVisplanes(&check);
     lastvisplane++;
 
     check->height = height;
@@ -318,6 +342,7 @@ R_CheckPlane
     }
 	
     // make a new visplane
+    R_RaiseVisplanes(&pl);
     lastvisplane->height = pl->height;
     lastvisplane->picnum = pl->picnum;
     lastvisplane->lightlevel = pl->lightlevel;
@@ -386,7 +411,7 @@ void R_DrawPlanes (void)
 	I_Error ("R_DrawPlanes: drawsegs overflow (%td)",
 		 ds_p - drawsegs);
     
-    if (lastvisplane - visplanes > MAXVISPLANES)
+    if (lastvisplane - visplanes > numvisplanes)
 	I_Error ("R_DrawPlanes: visplane overflow (%td)",
 		 lastvisplane - visplanes);
     
