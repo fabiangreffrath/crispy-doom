@@ -20,6 +20,7 @@
 #include "m_bbox.h"
 #include "m_misc.h"
 #include "p_local.h"
+#include "p_mapformat.h"
 
 static mobj_t *RoughBlockCheck(mobj_t * mo, int index);
 
@@ -260,7 +261,7 @@ void P_LineOpening(line_t * linedef)
 {
     sector_t *front, *back;
 
-    if (linedef->sidenum[1] == -1)
+    if (linedef->sidenum[1] == NO_INDEX)
     {                           // single sided line
         openrange = 0;
         return;
@@ -426,7 +427,7 @@ If the function returns false, exit with false without checking anything else.
 boolean P_BlockLinesIterator(int x, int y, boolean(*func) (line_t *))
 {
     int offset;
-    short *list;
+    int32_t *list; // [crispy] BLOCKMAP limit
     line_t *ld;
 
     int i;

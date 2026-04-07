@@ -34,6 +34,7 @@
 #include "r_state.h"
 
 //#include "r_local.h"
+#include "p_mapformat.h" // [crispy] support extended node formats
 
 
 
@@ -580,7 +581,8 @@ void R_Subsector (int num)
 
     while (count--)
     {
-	R_AddLine (line);
+	if (line->linedef)
+	    R_AddLine(line);
 	line++;
     }
 

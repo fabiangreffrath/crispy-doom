@@ -34,6 +34,7 @@
 
 
 // State.
+#include "p_mapformat.h"
 #include "r_state.h"
 
 //
@@ -309,7 +310,7 @@ void P_LineOpening (line_t* linedef)
     sector_t*   front;
     sector_t*   back;
 
-    if (linedef->sidenum[1] == -1)
+    if (linedef->sidenum[1] == NO_INDEX) // [crispy] extended nodes
     {
         // single sided line
         openrange = 0;
@@ -489,7 +490,7 @@ P_BlockLinesIterator
   boolean(*func)(line_t*) )
 {
     int         offset;
-    short*      list;
+    int32_t*		list; // [crispy] BLOCKMAP limit
     line_t*     ld;
 
     if (x<0

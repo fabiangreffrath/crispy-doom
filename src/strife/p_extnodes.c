@@ -17,7 +17,7 @@
 //        [crispy] extended BSP tree formats
 //
 
-#include "m_bbox.h"
+#include "doomdef.h"
 #include "p_local.h"
 #include "i_swap.h"
 #include "i_system.h"
@@ -120,6 +120,7 @@ void P_LoadSubsectors_DeePBSPV4(int lump)
 
     W_ReleaseLumpNum(lump);
 }
+
 // [crispy] support maps with DeePBSPV4 nodes
 // adapted from prboom-plus/src/p_setup.c:995-1038
 void P_LoadNodes_DeePBSPV4(int lump)

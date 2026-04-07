@@ -18,6 +18,7 @@
 #include "h2def.h"
 #include "i_system.h"
 #include "m_bbox.h"
+#include "p_mapformat.h"
 #include "r_local.h"
 
 seg_t *curline;
@@ -502,7 +503,8 @@ void R_Subsector(int num)
     }
     while (count--)
     {
-        R_AddLine(line);
+        if (line->linedef)
+            R_AddLine(line);
         line++;
     }
 

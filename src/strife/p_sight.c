@@ -24,6 +24,7 @@
 #include "p_local.h"
 
 // State.
+#include "p_mapformat.h"
 #include "r_state.h"
 
 //
@@ -165,6 +166,8 @@ boolean P_CrossSubsector (int num)
     for ( ; count ; seg++, count--)
     {
         line = seg->linedef;
+	if (!line) // figgi -- skip minisegs
+	    continue;
 
         // allready checked other side?
         if (line->validcount == validcount)

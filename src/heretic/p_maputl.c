@@ -23,6 +23,7 @@
 #include "m_bbox.h"
 #include "m_misc.h"
 #include "p_local.h"
+#include "p_mapformat.h"
 
 
 /*

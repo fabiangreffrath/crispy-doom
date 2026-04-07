@@ -17,8 +17,9 @@
 //        [crispy] extended BSP tree formats
 //
 
-#include "m_bbox.h"
+#include "h2def.h"
 #include "p_local.h"
+#include "xddefs.h"
 #include "i_swap.h"
 #include "i_system.h"
 #include "p_mapformat.h"
@@ -70,13 +71,12 @@ void P_LoadSegs_DeePBSPV4(int lump)
         // Andrey Budko: check for wrong indexes
         if ((unsigned) linedef >= (unsigned) numlines)
         {
-            I_Error("P_LoadSegs_DeePBSPV4: seg %d references a non-existent "
-                    "linedef %d",
+            I_Error("P_LoadSegs: seg %d references a non-existent linedef %d",
                     i, (unsigned) linedef);
         }
         if ((unsigned) ldef->sidenum[side] >= (unsigned) numsides)
         {
-            I_Error("P_LoadSegs_DeePBSPV4: linedef %d for seg %d references a "
+            I_Error("P_LoadSegs: linedef %d for seg %d references a "
                     "non-existent sidedef %d",
                     linedef, i, (unsigned) ldef->sidenum[side]);
         }
@@ -109,7 +109,7 @@ void P_LoadSubsectors_DeePBSPV4(int lump)
 
     // [crispy] fail on missing subsectors
     if (!data || !numsubsectors)
-        I_Error("P_LoadSubsectors_DeePBSPV4: No subsectors in map!");
+        I_Error("P_LoadSubsectors: No subsectors in map!");
 
     for (i = 0; i < numsubsectors; i++)
     {

@@ -40,6 +40,7 @@ m_menu.c           m_menu.h     \
 m_crispy.c         m_crispy.h   \
 m_random.c         m_random.h   \
 m_saves.c          m_saves.h    \
+p_blockmap.c                    \
 p_ceilng.c                      \
 p_dialog.c         p_dialog.h   \
 p_doors.c                       \
@@ -54,6 +55,7 @@ p_mobj.c           p_mobj.h     \
 p_plats.c                       \
 p_pspr.c           p_pspr.h     \
 p_saveg.c          p_saveg.h    \
+p_extnodes.c                    \
 p_extsaveg.c       p_extsaveg.h \
 p_setup.c          p_setup.h    \
 p_sight.c                       \

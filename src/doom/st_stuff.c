@@ -26,6 +26,7 @@
 #include "i_swap.h" // [crispy] SHORT()
 #include "i_system.h"
 #include "i_video.h"
+#include "p_mapformat.h"
 #include "z_zone.h"
 #include "m_argv.h" // [crispy] M_ParmExists()
 #include "m_misc.h"

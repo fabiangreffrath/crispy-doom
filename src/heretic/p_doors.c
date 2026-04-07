@@ -19,6 +19,7 @@
 #include "doomdef.h"
 #include "deh_str.h"
 #include "p_local.h"
+#include "p_mapformat.h"
 #include "s_sound.h"
 #include "v_video.h"
 

@@ -22,6 +22,7 @@
 #include "m_bbox.h"
 #include "m_random.h"
 #include "p_local.h"
+#include "p_mapformat.h"
 #include "s_sound.h"
 
 /*

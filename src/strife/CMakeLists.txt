@@ -30,10 +30,12 @@ set(STRIFE_SOURCES
     m_menu.c        m_menu.h
     m_random.c      m_random.h
     m_saves.c       m_saves.h
+    p_blockmap.c
     p_ceilng.c
     p_dialog.c      p_dialog.h
     p_doors.c
     p_enemy.c
+    p_extnodes.c
     p_floor.c
     p_inter.c       p_inter.h
     p_lights.c

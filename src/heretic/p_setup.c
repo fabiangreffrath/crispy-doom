@@ -27,7 +27,7 @@
 #include "p_local.h"
 #include "p_rejectpad.h"
 #include "s_sound.h"
-#include "p_extnodes.h"
+#include "p_mapformat.h"
 
 void P_SpawnMapThing(mapthing_t * mthing);
 
@@ -755,6 +755,10 @@ static void P_RemoveSlimeTrails(void)
     {
 	const line_t *l = segs[i].linedef;
 	vertex_t *v = segs[i].v1;
+	if (!l)
+	{
+	    continue;
+	}
 
 	// [crispy] ignore exactly vertical or horizontal linedefs
 	if (l->dx && l->dy)
@@ -868,15 +872,18 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
         P_CreateBlockMap();
     }
 
-    if (crispy_mapformat & (MFMT_ZDBSPX | MFMT_ZDBSPZ))
+    if (crispy_mapformat.bsp >= NFMT_XNOD)
     {
-        P_LoadNodes_ZDBSP(lumpnum + ML_NODES, crispy_mapformat & MFMT_ZDBSPZ);
+	int znode_num = (crispy_mapformat.bsp == NFMT_XNOD)
+		      ? lumpnum+ML_NODES
+		      : lumpnum+ML_SSECTORS;
+	P_LoadNodes_ZDBSP (znode_num, crispy_mapformat);
     }
-    else if (crispy_mapformat & MFMT_DEEPBSP)
+    else if (crispy_mapformat.bsp == NFMT_DEEPBSPV4)
     {
-        P_LoadSubsectors_DeePBSP(lumpnum + ML_SSECTORS);
-        P_LoadNodes_DeePBSP(lumpnum + ML_NODES);
-        P_LoadSegs_DeePBSP(lumpnum + ML_SEGS);
+        P_LoadNodes_DeePBSPV4(lumpnum + ML_NODES);
+        P_LoadSubsectors_DeePBSPV4(lumpnum + ML_SSECTORS);
+        P_LoadSegs_DeePBSPV4(lumpnum + ML_SEGS);
     }
     else
     {

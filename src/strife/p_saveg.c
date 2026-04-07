@@ -23,6 +23,7 @@
 #include "dstrings.h"
 #include "deh_main.h"
 #include "i_system.h"
+#include "p_mapformat.h"
 #include "z_zone.h"
 #include "m_misc.h"
 #include "p_local.h"
@@ -1861,7 +1862,7 @@ void P_ArchiveWorld (void)
         //saveg_write16(li->tag); [STRIFE] not saved.
         for (j=0 ; j<2 ; j++)
         {
-            if (li->sidenum[j] == -1)
+            if (li->sidenum[j] == NO_INDEX) // [crispy] extended nodes
                 continue;
 
             si = &sides[li->sidenum[j]];
@@ -1912,7 +1913,7 @@ void P_UnArchiveWorld (void)
         //li->tag = saveg_read16(); [STRIFE] not saved
         for (j=0 ; j<2 ; j++)
         {
-            if (li->sidenum[j] == -1)
+            if (li->sidenum[j] == NO_INDEX) // [crispy] extended nodes
                 continue;
             si = &sides[li->sidenum[j]];
             // [STRIFE] offsets not saved.

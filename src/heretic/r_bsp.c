@@ -20,6 +20,7 @@
 #include "m_bbox.h"
 #include "i_system.h"
 #include "r_local.h"
+#include "p_mapformat.h" // [crispy] support extended node formats
 
 seg_t *curline;
 side_t *sidedef;
@@ -489,7 +490,8 @@ void R_Subsector(int num)
 
     while (count--)
     {
-        R_AddLine(line);
+        if (line->linedef)
+            R_AddLine(line);
         line++;
     }
 

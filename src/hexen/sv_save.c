@@ -23,6 +23,7 @@
 #include "i_swap.h"
 #include "p_local.h"
 #include "a11y.h"
+#include "p_mapformat.h"
 #include "sv_extsaveg.h" // [crispy] for extended savegame information
 
 // MACROS ------------------------------------------------------------------
@@ -2568,7 +2569,7 @@ static void ArchiveWorld(void)
         SV_WriteByte(li->arg5);
         for (j = 0; j < 2; j++)
         {
-            if (li->sidenum[j] == -1)
+            if (li->sidenum[j] == NO_INDEX)
             {
                 continue;
             }
@@ -2622,7 +2623,7 @@ static void UnarchiveWorld(void)
         li->arg5 = SV_ReadByte();
         for (j = 0; j < 2; j++)
         {
-            if (li->sidenum[j] == -1)
+            if (li->sidenum[j] == NO_INDEX)
             {
                 continue;
             }

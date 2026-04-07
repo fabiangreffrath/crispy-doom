@@ -23,6 +23,7 @@
 #include "dstrings.h"
 #include "deh_main.h"
 #include "i_system.h"
+#include "p_mapformat.h"
 #include "z_zone.h"
 #include "p_local.h"
 #include "p_saveg.h"

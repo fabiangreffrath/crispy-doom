@@ -40,6 +40,7 @@
 #include "st_stuff.h" // [crispy] ST_refreshBackground()
 #include "a11y.h" // [crispy] A11Y
 
+#include "p_mapformat.h" // [crispy] support extended node formats
 
 
 

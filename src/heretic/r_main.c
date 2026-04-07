@@ -23,6 +23,7 @@
 #include "tables.h"
 #include "v_video.h" // [crispy] V_DrawFilledBox for HOM detector
 #include "a11y.h" // [crispy] A11Y
+#include "p_mapformat.h" // [crispy] support extended node formats
 
 int viewangleoffset;
 
