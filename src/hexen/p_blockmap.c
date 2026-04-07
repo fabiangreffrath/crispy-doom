@@ -94,18 +94,29 @@ void P_CreateBlockMap(void)
             y = (lines[i].v1->y >> FRACBITS) - miny;
 
             // x-y deltas
-            adx = lines[i].dx >> FRACBITS, dx = adx < 0 ? -1 : 1;
-            ady = lines[i].dy >> FRACBITS, dy = ady < 0 ? -1 : 1;
+            adx = lines[i].dx >> FRACBITS;
+            ady = lines[i].dy >> FRACBITS;
+            dx = adx < 0 ? -1 : 1;
+            dy = ady < 0 ? -1 : 1;
 
             // difference in preferring to move across y (>0) instead of x (<0)
-            diff = !adx   ? 1
-                   : !ady ? -1
-                          : (((x >> MAPBTOFRAC) << MAPBTOFRAC) +
-                             (dx > 0 ? MAPBLOCKUNITS - 1 : 0) - x) *
-                                    (ady = abs(ady)) * dx -
-                                (((y >> MAPBTOFRAC) << MAPBTOFRAC) +
-                                 (dy > 0 ? MAPBLOCKUNITS - 1 : 0) - y) *
-                                    (adx = abs(adx)) * dy;
+            if (!adx)
+            {
+                diff = 1;
+            }
+            else if (!ady)
+            {
+                diff = -1;
+            }
+            else
+            {
+                diff = (((x >> MAPBTOFRAC) << MAPBTOFRAC) +
+                        (dx > 0 ? MAPBLOCKUNITS - 1 : 0) - x) *
+                           (ady = abs(ady)) * dx -
+                       (((y >> MAPBTOFRAC) << MAPBTOFRAC) +
+                        (dy > 0 ? MAPBLOCKUNITS - 1 : 0) - y) *
+                           (adx = abs(adx)) * dy;
+            }
 
             // starting block, and pointer to its blocklist structure
             b = (y >> MAPBTOFRAC) * bmapwidth + (x >> MAPBTOFRAC);
@@ -127,11 +138,11 @@ void P_CreateBlockMap(void)
             {
                 // Increase size of allocated list if necessary
                 if (bmap[b].n >= bmap[b].nalloc)
+                {
+                    bmap[b].nalloc = bmap[b].nalloc ? bmap[b].nalloc * 2 : 8;
                     bmap[b].list = I_Realloc(
-                        bmap[b].list,
-                        (bmap[b].nalloc =
-                             bmap[b].nalloc ? bmap[b].nalloc * 2 : 8) *
-                            sizeof *bmap->list);
+                        bmap[b].list, bmap[b].nalloc * sizeof(*bmap->list));
+                }
 
                 // Add linedef to end of list
                 bmap[b].list[bmap[b].n++] = i;
@@ -142,9 +153,15 @@ void P_CreateBlockMap(void)
 
                 // Move in either the x or y direction to the next block
                 if (diff < 0)
-                    diff += ady, b += dx;
+                {
+                    diff += ady;
+                    b += dx;
+                }
                 else
-                    diff -= adx, b += dy;
+                {
+                    diff -= adx;
+                    b += dy;
+                }
             }
         }
 
@@ -156,13 +173,13 @@ void P_CreateBlockMap(void)
         // 4 words, unused if this routine is called, are reserved at the start.
 
         {
-            int count =
-                tot + 6; // we need at least 1 word per block, plus reserved's
+            // we need at least 1 word per block, plus reserved's
+            int count = tot + 6;
 
             for (i = 0; i < tot; i++)
                 if (bmap[i].n)
-                    count += bmap[i].n +
-                             2; // 1 header word + 1 trailer word + blocklist
+                    // 1 header word + 1 trailer word + blocklist
+                    count += bmap[i].n + 2;
 
             // Allocate blockmap lump with computed count
             blockmaplump = Z_Malloc(sizeof(*blockmaplump) * count, PU_LEVEL, 0);
@@ -177,19 +194,25 @@ void P_CreateBlockMap(void)
             blockmaplump[ndx++] = -1; // (Used for compression)
 
             for (i = 4; i < tot; i++, bp++)
+            {
                 if (bp->n) // Non-empty blocklist
                 {
-                    blockmaplump[blockmaplump[i] = ndx++] =
-                        0; // Store index & header
+                    // Store index & header
+                    blockmaplump[blockmaplump[i] = ndx++] = 0;
                     do
-                        blockmaplump[ndx++] =
-                            bp->list[--bp->n]; // Copy linedef list
-                    while (bp->n);
+                    {
+                        // Copy linedef list
+                        blockmaplump[ndx++] = bp->list[--bp->n];
+                    } while (bp->n);
                     blockmaplump[ndx++] = -1; // Store trailer
                     free(bp->list);           // Free linedef list
                 }
-                else // Empty blocklist: point to reserved empty blocklist
+                else
+                {
+                    // Empty blocklist: point to reserved empty blocklist
                     blockmaplump[i] = tot;
+                }
+            }
 
             free(bmap); // Free uncompressed blockmap
         }
@@ -203,5 +226,5 @@ void P_CreateBlockMap(void)
         blockmap = blockmaplump + 4;
     }
 
-    printf("P_CreateBlockMap: BLOCKMAP recreated.\n");
+    fprintf(stderr, "P_CreateBlockMap: BLOCKMAP recreated.\n");
 }
