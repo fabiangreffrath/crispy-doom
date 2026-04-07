@@ -48,7 +48,8 @@ boolean DoubleSky;
 planefunction_t floorfunc, ceilingfunc;
 
 // Opening
-visplane_t visplanes[MAXVISPLANES], *lastvisplane;
+visplane_t *visplanes = NULL, *lastvisplane;
+static int		numvisplanes;
 visplane_t *floorplane, *ceilingplane;
 int openings[MAXOPENINGS], *lastopening; // [crispy] 32-bit integer math
 
@@ -236,6 +237,31 @@ void R_ClearPlanes(void)
     baseyscale = -FixedDiv(finesine[angle], centerxfrac);
 }
 
+// [crispy] remove MAXVISPLANES limit
+static void R_RaiseVisplanes (visplane_t** vp)
+{
+    if (lastvisplane - visplanes == numvisplanes)
+    {
+	int numvisplanes_old = numvisplanes;
+	visplane_t* visplanes_old = visplanes;
+
+	numvisplanes = numvisplanes ? 2 * numvisplanes : MAXVISPLANES;
+	visplanes = I_Realloc(visplanes, numvisplanes * sizeof(*visplanes));
+	memset(visplanes + numvisplanes_old, 0, (numvisplanes - numvisplanes_old) * sizeof(*visplanes));
+
+	lastvisplane = visplanes + numvisplanes_old;
+	floorplane = visplanes + (floorplane - visplanes_old);
+	ceilingplane = visplanes + (ceilingplane - visplanes_old);
+
+	if (numvisplanes_old)
+	    fprintf(stderr, "R_FindPlane: Hit MAXVISPLANES limit at %d, raised to %d.\n", numvisplanes_old, numvisplanes);
+
+	// keep the pointer passed as argument in relation to the visplanes pointer
+	if (vp)
+	    *vp = visplanes + (*vp - visplanes_old);
+    }
+}
+
 //==========================================================================
 //
 // R_FindPlane
@@ -271,11 +297,7 @@ visplane_t *R_FindPlane(fixed_t height, int picnum,
         return (check);
     }
 
-    if (lastvisplane - visplanes == MAXVISPLANES)
-    {
-        I_Error("R_FindPlane: no more visplanes");
-    }
-
+    R_RaiseVisplanes(&check);
     lastvisplane++;
     check->height = height;
     check->picnum = picnum;
@@ -336,6 +358,7 @@ visplane_t *R_CheckPlane(visplane_t * pl, int start, int stop)
     }
 
     // Make a new visplane
+    R_RaiseVisplanes(&pl);
     lastvisplane->height = pl->height;
     lastvisplane->picnum = pl->picnum;
     lastvisplane->lightlevel = pl->lightlevel;
@@ -416,7 +439,7 @@ void R_DrawPlanes(void)
         I_Error("R_DrawPlanes: drawsegs overflow (%td)",
                 ds_p - drawsegs);
     }
-    if (lastvisplane - visplanes > MAXVISPLANES)
+    if (lastvisplane - visplanes > numvisplanes)
     {
         I_Error("R_DrawPlanes: visplane overflow (%td)",
                 lastvisplane - visplanes);

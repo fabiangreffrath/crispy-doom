@@ -243,7 +243,7 @@ typedef struct
 
 typedef pixel_t lighttable_t;      // this could be wider for >8 bit display
 
-#define MAXVISPLANES    160*8
+#define MAXVISPLANES    160
 #define MAXOPENINGS             MAXWIDTH*64*4
 
 typedef struct
