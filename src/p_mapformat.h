@@ -25,8 +25,12 @@
 #define NF_SUBSECTOR_VANILLA 0x8000
 #define NF_SUBSECTOR         0x80000000
 
-#define	NO_INDEX	((unsigned short)-1) // [crispy] extended nodes
-#define FIX_NO_INDEX(x) if (x == 0xffff) { x = -1; }
+#define NO_INDEX ((unsigned short) -1) // [crispy] extended nodes
+#define FIX_NO_INDEX(x)                                                        \
+    if (x == 0xffff)                                                           \
+    {                                                                          \
+        x = -1;                                                                \
+    }
 
 typedef PACKED_STRUCT({
     // Partition line from (x,y) to x+dx,y+dy)

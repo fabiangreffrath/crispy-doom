@@ -35,15 +35,15 @@
 fixed_t GetOffset(vertex_t *v1, vertex_t *v2);
 
 // [crispy] support maps with DeePBSPV4 nodes
-void P_LoadSegs_DeePBSPV4 (int lump)
+void P_LoadSegs_DeePBSPV4(int lump)
 {
     int i;
     mapseg_deepbspv4_t *data;
 
     numsegs = W_LumpLength(lump) / sizeof(mapseg_deepbspv4_t);
     segs = Z_Malloc(numsegs * sizeof(seg_t), PU_LEVEL, 0);
-    memset (segs, 0, numsegs*sizeof(seg_t));
-    data = (mapseg_deepbspv4_t *)W_CacheLumpNum(lump, PU_STATIC);
+    memset(segs, 0, numsegs * sizeof(seg_t));
+    data = (mapseg_deepbspv4_t *) W_CacheLumpNum(lump, PU_STATIC);
 
     for (i = 0; i < numsegs; i++)
     {
@@ -60,24 +60,25 @@ void P_LoadSegs_DeePBSPV4 (int lump)
         li->v1 = &vertexes[vn1];
         li->v2 = &vertexes[vn2];
 
-        li->angle = (SHORT(ml->angle))<<FRACBITS;
+        li->angle = (SHORT(ml->angle)) << FRACBITS;
 
-    //  li->offset = (SHORT(ml->offset))<<FRACBITS; // [crispy] recalculated below
-        linedef = (unsigned short)SHORT(ml->linedef);
+        //  li->offset = (SHORT(ml->offset))<<FRACBITS; // [crispy] recalculated below
+        linedef = (unsigned short) SHORT(ml->linedef);
         ldef = &lines[linedef];
         li->linedef = ldef;
         side = SHORT(ml->side);
 
         // Andrey Budko: check for wrong indexes
-        if ((unsigned)linedef >= (unsigned)numlines)
+        if ((unsigned) linedef >= (unsigned) numlines)
         {
             I_Error("P_LoadSegs: seg %d references a non-existent linedef %d",
-                i, (unsigned)linedef);
+                    i, (unsigned) linedef);
         }
-        if ((unsigned)ldef->sidenum[side] >= (unsigned)numsides)
+        if ((unsigned) ldef->sidenum[side] >= (unsigned) numsides)
         {
-            I_Error("P_LoadSegs: linedef %d for seg %d references a non-existent sidedef %d",
-                linedef, i, (unsigned)ldef->sidenum[side]);
+            I_Error("P_LoadSegs: linedef %d for seg %d references a "
+                    "non-existent sidedef %d",
+                    linedef, i, (unsigned) ldef->sidenum[side]);
         }
 
         li->sidedef = &sides[ldef->sidenum[side]];
@@ -85,7 +86,8 @@ void P_LoadSegs_DeePBSPV4 (int lump)
         // [crispy] recalculate
         li->offset = GetOffset(li->v1, (ml->side ? ldef->v2 : ldef->v1));
 
-        if ((ldef->flags & ML_TWOSIDED) && (ldef->sidenum[side ^ 1] != NO_INDEX))
+        if ((ldef->flags & ML_TWOSIDED) &&
+            (ldef->sidenum[side ^ 1] != NO_INDEX))
             li->backsector = sides[ldef->sidenum[side ^ 1]].sector;
         else
             li->backsector = 0;
@@ -96,14 +98,14 @@ void P_LoadSegs_DeePBSPV4 (int lump)
 
 // [crispy] support maps with DeePBSPV4 nodes
 // adapted from prboom-plus/src/p_setup.c:843-863
-void P_LoadSubsectors_DeePBSPV4 (int lump)
+void P_LoadSubsectors_DeePBSPV4(int lump)
 {
     mapsubsector_deepbspv4_t *data;
     int i;
 
     numsubsectors = W_LumpLength(lump) / sizeof(mapsubsector_deepbspv4_t);
     subsectors = Z_Malloc(numsubsectors * sizeof(subsector_t), PU_LEVEL, 0);
-    data = (mapsubsector_deepbspv4_t *)W_CacheLumpNum(lump, PU_STATIC);
+    data = (mapsubsector_deepbspv4_t *) W_CacheLumpNum(lump, PU_STATIC);
 
     // [crispy] fail on missing subsectors
     if (!data || !numsubsectors)
@@ -112,7 +114,7 @@ void P_LoadSubsectors_DeePBSPV4 (int lump)
     for (i = 0; i < numsubsectors; i++)
     {
         // [MB] 2020-04-30: Fix endianess for DeePBSPV4 nodes
-        subsectors[i].numlines = (unsigned short)SHORT(data[i].numsegs);
+        subsectors[i].numlines = (unsigned short) SHORT(data[i].numsegs);
         subsectors[i].firstline = LONG(data[i].firstseg);
     }
 
@@ -120,20 +122,21 @@ void P_LoadSubsectors_DeePBSPV4 (int lump)
 }
 // [crispy] support maps with DeePBSPV4 nodes
 // adapted from prboom-plus/src/p_setup.c:995-1038
-void P_LoadNodes_DeePBSPV4 (int lump)
+void P_LoadNodes_DeePBSPV4(int lump)
 {
     const byte *data;
     int i;
 
-    numnodes = (W_LumpLength (lump) - 8) / sizeof(mapnode_deepbspv4_t);
+    numnodes = (W_LumpLength(lump) - 8) / sizeof(mapnode_deepbspv4_t);
     nodes = Z_Malloc(numnodes * sizeof(node_t), PU_LEVEL, 0);
-    data = W_CacheLumpNum (lump, PU_STATIC);
+    data = W_CacheLumpNum(lump, PU_STATIC);
 
     // [crispy] warn about missing nodes
     if (!data || !numnodes)
     {
         if (numsubsectors == 1)
-            fprintf(stderr, "P_LoadNodes_DeePBSPV4: No nodes in map, but only one subsector.\n");
+            fprintf(stderr, "P_LoadNodes_DeePBSPV4: No nodes in map, but only "
+                            "one subsector.\n");
         else
             I_Error("P_LoadNodes_DeePBSPV4: No nodes in map!");
     }
@@ -147,10 +150,10 @@ void P_LoadNodes_DeePBSPV4 (int lump)
         const mapnode_deepbspv4_t *mn = (const mapnode_deepbspv4_t *) data + i;
         int j;
 
-        no->x = SHORT(mn->x)<<FRACBITS;
-        no->y = SHORT(mn->y)<<FRACBITS;
-        no->dx = SHORT(mn->dx)<<FRACBITS;
-        no->dy = SHORT(mn->dy)<<FRACBITS;
+        no->x = SHORT(mn->x) << FRACBITS;
+        no->y = SHORT(mn->y) << FRACBITS;
+        no->dx = SHORT(mn->dx) << FRACBITS;
+        no->dy = SHORT(mn->dy) << FRACBITS;
 
         for (j = 0; j < 2; j++)
         {
@@ -159,11 +162,11 @@ void P_LoadNodes_DeePBSPV4 (int lump)
             no->children[j] = LONG(mn->children[j]);
 
             for (k = 0; k < 4; k++)
-                no->bbox[j][k] = SHORT(mn->bbox[j][k])<<FRACBITS;
+                no->bbox[j][k] = SHORT(mn->bbox[j][k]) << FRACBITS;
         }
     }
 
-  W_ReleaseLumpNum(lump);
+    W_ReleaseLumpNum(lump);
 }
 
 static void P_LoadSegs_XNOD(byte *data)
@@ -174,7 +177,7 @@ static void P_LoadSegs_XNOD(byte *data)
         unsigned int linedef;
         unsigned char side;
         seg_t *li = segs + i;
-        mapseg_xnod_t *ml = (mapseg_xnod_t *)data + i;
+        mapseg_xnod_t *ml = (mapseg_xnod_t *) data + i;
         unsigned int v1, v2;
 
         v1 = LONG(ml->v1);
@@ -182,7 +185,7 @@ static void P_LoadSegs_XNOD(byte *data)
         li->v1 = &vertexes[v1];
         li->v2 = &vertexes[v2];
 
-        linedef = (unsigned short)SHORT(ml->linedef);
+        linedef = (unsigned short) SHORT(ml->linedef);
         ldef = &lines[linedef];
         li->linedef = ldef;
         side = ml->side;
@@ -194,25 +197,29 @@ static void P_LoadSegs_XNOD(byte *data)
         }
 
         // Andrey Budko: check for wrong indexes
-        if ((unsigned)linedef >= (unsigned)numlines)
+        if ((unsigned) linedef >= (unsigned) numlines)
         {
-                I_Error("P_LoadSegs_XNOD: seg %d references a non-existent linedef %d",
-                        i, (unsigned)linedef);
+            I_Error(
+                "P_LoadSegs_XNOD: seg %d references a non-existent linedef %d",
+                i, (unsigned) linedef);
         }
-        if ((unsigned)ldef->sidenum[side] >= (unsigned)numsides)
+        if ((unsigned) ldef->sidenum[side] >= (unsigned) numsides)
         {
-                I_Error("P_LoadSegs_XNOD: linedef %d for seg %d references a non-existent sidedef %d",
-                        linedef, i, (unsigned)ldef->sidenum[side]);
+            I_Error("P_LoadSegs_XNOD: linedef %d for seg %d references a "
+                    "non-existent sidedef %d",
+                    linedef, i, (unsigned) ldef->sidenum[side]);
         }
 
         li->sidedef = &sides[ldef->sidenum[side]];
         li->frontsector = sides[ldef->sidenum[side]].sector;
 
         // seg angle and offset are not included
-        li->angle = R_PointToAngle2(segs[i].v1->x, segs[i].v1->y, segs[i].v2->x, segs[i].v2->y);
+        li->angle = R_PointToAngle2(segs[i].v1->x, segs[i].v1->y, segs[i].v2->x,
+                                    segs[i].v2->y);
         li->offset = GetOffset(li->v1, (ml->side ? ldef->v2 : ldef->v1));
 
-        if ((ldef->flags & ML_TWOSIDED) && (ldef->sidenum[side ^ 1] != NO_INDEX))
+        if ((ldef->flags & ML_TWOSIDED) &&
+            (ldef->sidenum[side ^ 1] != NO_INDEX))
             li->backsector = sides[ldef->sidenum[side ^ 1]].sector;
         else
             li->backsector = 0;
@@ -222,8 +229,8 @@ static void P_LoadSegs_XNOD(byte *data)
 static void P_LoadSegs_XGL(byte *data, bspformat_t format)
 {
     int i, j;
-    const mapseg_xgln_t *mln = (const mapseg_xgln_t *)data;
-    const mapseg_xgl2_t *ml2 = (const mapseg_xgl2_t *)data;
+    const mapseg_xgln_t *mln = (const mapseg_xgln_t *) data;
+    const mapseg_xgl2_t *ml2 = (const mapseg_xgl2_t *) data;
 
     for (i = 0; i < numsubsectors; ++i)
     {
@@ -239,7 +246,7 @@ static void P_LoadSegs_XGL(byte *data, bspformat_t format)
             {
                 v1 = LONG(mln->vertex);
                 // partner = LONG(mln->partner);
-                line = (unsigned short)SHORT(mln->linedef);
+                line = (unsigned short) SHORT(mln->linedef);
                 FIX_NO_INDEX(line);
                 side = mln->side;
                 mln++;
@@ -248,7 +255,7 @@ static void P_LoadSegs_XGL(byte *data, bspformat_t format)
             {
                 v1 = LONG(ml2->vertex);
                 // partner = LONG(ml2->partner);
-                line = (unsigned int)LONG(ml2->linedef);
+                line = (unsigned int) LONG(ml2->linedef);
                 side = ml2->side;
                 ml2++;
             }
@@ -269,10 +276,11 @@ static void P_LoadSegs_XGL(byte *data, bspformat_t format)
             {
                 line_t *ldef;
 
-                if ((unsigned int)line >= (unsigned int)numlines)
+                if ((unsigned int) line >= (unsigned int) numlines)
                 {
-                    I_Error("P_LoadSegs_XGL: seg %d, %d references a non-existent linedef %d",
-                            i, j, (unsigned int)line);
+                    I_Error("P_LoadSegs_XGL: seg %d, %d references a "
+                            "non-existent linedef %d",
+                            i, j, (unsigned int) line);
                 }
 
                 ldef = &lines[line];
@@ -280,14 +288,16 @@ static void P_LoadSegs_XGL(byte *data, bspformat_t format)
 
                 if (side != 0 && side != 1)
                 {
-                    I_Error("P_LoadSegs_XGL: seg %d, %d references a non-existent side %d",
-                            i, j, (unsigned int)side);
+                    I_Error("P_LoadSegs_XGL: seg %d, %d references a "
+                            "non-existent side %d",
+                            i, j, (unsigned int) side);
                 }
 
-                if ((unsigned)ldef->sidenum[side] >= (unsigned)numsides)
+                if ((unsigned) ldef->sidenum[side] >= (unsigned) numsides)
                 {
-                    I_Error("P_LoadSegs_XGL: linedef %d for seg %d, %d references a non-existent sidedef %d",
-                            line, i, j, (unsigned)ldef->sidenum[side]);
+                    I_Error("P_LoadSegs_XGL: linedef %d for seg %d, %d "
+                            "references a non-existent sidedef %d",
+                            line, i, j, (unsigned) ldef->sidenum[side]);
                 }
 
                 seg->sidedef = &sides[ldef->sidenum[side]];
@@ -302,10 +312,14 @@ static void P_LoadSegs_XGL(byte *data, bspformat_t format)
                 else
                 {
                     seg->frontsector = 0;
-                    fprintf(stderr, "P_LoadSegs_XGL: front of seg %d, %d has no sidedef", i, j);
+                    fprintf(
+                        stderr,
+                        "P_LoadSegs_XGL: front of seg %d, %d has no sidedef", i,
+                        j);
                 }
 
-                if ((ldef->flags & ML_TWOSIDED) && (ldef->sidenum[side ^ 1] != NO_INDEX))
+                if ((ldef->flags & ML_TWOSIDED) &&
+                    (ldef->sidenum[side ^ 1] != NO_INDEX))
                 {
                     seg->backsector = sides[ldef->sidenum[side ^ 1]].sector;
                 }
@@ -333,7 +347,8 @@ static void P_LoadSegs_XGL(byte *data, bspformat_t format)
             seg_t *seg = &segs[subsectors[i].firstline + j];
             if (seg->linedef)
             {
-                seg->angle = R_PointToAngle2(seg->v1->x, seg->v1->y, seg->v2->x, seg->v2->y);
+                seg->angle = R_PointToAngle2(seg->v1->x, seg->v1->y, seg->v2->x,
+                                             seg->v2->y);
             }
         }
     }
@@ -346,17 +361,17 @@ void P_LoadZNodes_XNOD(mapnode_xnod_t *data)
         node_t *no = nodes + i;
         mapnode_xnod_t *mn = data + i;
 
-        no->x = SHORT(mn->x)<<FRACBITS;
-        no->y = SHORT(mn->y)<<FRACBITS;
-        no->dx = SHORT(mn->dx)<<FRACBITS;
-        no->dy = SHORT(mn->dy)<<FRACBITS;
+        no->x = SHORT(mn->x) << FRACBITS;
+        no->y = SHORT(mn->y) << FRACBITS;
+        no->dx = SHORT(mn->dx) << FRACBITS;
+        no->dy = SHORT(mn->dy) << FRACBITS;
 
         for (int j = 0; j < 2; j++)
         {
             no->children[j] = LONG(mn->children[j]);
             for (int k = 0; k < 4; k++)
             {
-                no->bbox[j][k] = SHORT(mn->bbox[j][k])<<FRACBITS;
+                no->bbox[j][k] = SHORT(mn->bbox[j][k]) << FRACBITS;
             }
         }
     }
@@ -379,7 +394,7 @@ void P_LoadZNodes_XGL3(mapnode_xgl3_t *data)
             no->children[j] = LONG(mn->children[j]);
             for (int k = 0; k < 4; k++)
             {
-                no->bbox[j][k] = SHORT(mn->bbox[j][k])<<FRACBITS;
+                no->bbox[j][k] = SHORT(mn->bbox[j][k]) << FRACBITS;
             }
         }
     }
@@ -393,7 +408,7 @@ void P_LoadZNodes_XGL3(mapnode_xgl3_t *data)
 // - added support for compressed ZDBSP nodes
 // - added support for flipped levels
 // [MB] 2020-04-30: Fix endianess for ZDoom extended nodes
-void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
+void P_LoadNodes_ZDBSP(int lump, mapformat_t format)
 {
     byte *data;
     unsigned int i;
@@ -414,7 +429,7 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
     if (format.compressed)
     {
 #ifdef HAVE_LIBZ
-        const int len =  W_LumpLength(lump);
+        const int len = W_LumpLength(lump);
         int outlen, err;
         z_stream *zstream;
 
@@ -432,7 +447,8 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
         zstream->avail_out = outlen;
 
         if (inflateInit(zstream) != Z_OK)
-            I_Error("P_LoadNodes_ZDBSP: Error during ZDBSP nodes decompression initialization!");
+            I_Error("P_LoadNodes_ZDBSP: Error during ZDBSP nodes decompression "
+                    "initialization!");
 
         // resize if output buffer runs full
         while ((err = inflate(zstream, Z_SYNC_FLUSH)) == Z_OK)
@@ -445,15 +461,18 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
         }
 
         if (err != Z_STREAM_END)
-            I_Error("P_LoadNodes_ZDBSP: Error during ZDBSP nodes decompression!");
+            I_Error(
+                "P_LoadNodes_ZDBSP: Error during ZDBSP nodes decompression!");
 
-        fprintf(stderr, "P_LoadNodes_ZDBSP: ZDBSP nodes compression ratio %.3f\n",
-                (float)zstream->total_out/zstream->total_in);
+        fprintf(stderr,
+                "P_LoadNodes_ZDBSP: ZDBSP nodes compression ratio %.3f\n",
+                (float) zstream->total_out / zstream->total_in);
 
         data = output;
 
         if (inflateEnd(zstream) != Z_OK)
-            I_Error("P_LoadNodes_ZDBSP: Error during ZDBSP nodes decompression shut-down!");
+            I_Error("P_LoadNodes_ZDBSP: Error during ZDBSP nodes decompression "
+                    "shut-down!");
 
         // release the original data lump
         W_ReleaseLumpNum(lump);
@@ -470,37 +489,38 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
 
     // 1. Load new vertices added during node building
 
-    orgVerts = LONG(*((unsigned int*)data));
+    orgVerts = LONG(*((unsigned int *) data));
     data += sizeof(orgVerts);
 
-    newVerts = LONG(*((unsigned int*)data));
+    newVerts = LONG(*((unsigned int *) data));
     data += sizeof(newVerts);
 
-    if (orgVerts + newVerts == (unsigned int)numvertexes)
+    if (orgVerts + newVerts == (unsigned int) numvertexes)
     {
         newvertarray = vertexes;
     }
     else
     {
-        newvertarray = Z_Malloc((orgVerts + newVerts) * sizeof(vertex_t), PU_LEVEL, 0);
+        newvertarray =
+            Z_Malloc((orgVerts + newVerts) * sizeof(vertex_t), PU_LEVEL, 0);
         memcpy(newvertarray, vertexes, orgVerts * sizeof(vertex_t));
         memset(newvertarray + orgVerts, 0, newVerts * sizeof(vertex_t));
     }
 
     for (i = 0; i < newVerts; i++)
     {
-        newvertarray[i + orgVerts].r_x =
-        newvertarray[i + orgVerts].x = LONG(*((unsigned int*)data));
+        newvertarray[i + orgVerts].r_x = newvertarray[i + orgVerts].x =
+            LONG(*((unsigned int *) data));
         data += sizeof(newvertarray[0].x);
 
-        newvertarray[i + orgVerts].r_y =
-        newvertarray[i + orgVerts].y = LONG(*((unsigned int*)data));
+        newvertarray[i + orgVerts].r_y = newvertarray[i + orgVerts].y =
+            LONG(*((unsigned int *) data));
         data += sizeof(newvertarray[0].y);
     }
 
     if (vertexes != newvertarray)
     {
-        for (i = 0; i < (unsigned int)numlines; i++)
+        for (i = 0; i < (unsigned int) numlines; i++)
         {
             lines[i].v1 = lines[i].v1 - vertexes + newvertarray;
             lines[i].v2 = lines[i].v2 - vertexes + newvertarray;
@@ -513,7 +533,7 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
 
     // 2. Load subsectors
 
-    numSubs = LONG(*((unsigned int*)data));
+    numSubs = LONG(*((unsigned int *) data));
     data += sizeof(numSubs);
 
     if (numSubs < 1)
@@ -524,7 +544,7 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
 
     for (i = currSeg = 0; i < numsubsectors; i++)
     {
-        mapsubsector_xnod_t *mseg = (mapsubsector_xnod_t*) data + i;
+        mapsubsector_xnod_t *mseg = (mapsubsector_xnod_t *) data + i;
 
         subsectors[i].firstline = currSeg;
         subsectors[i].numlines = LONG(mseg->numsegs);
@@ -535,7 +555,7 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
 
     // 3. Load segs
 
-    numSegs = LONG(*((unsigned int*)data));
+    numSegs = LONG(*((unsigned int *) data));
     data += sizeof(numSegs);
 
     // The number of stored segs should match the number of segs used by subsectors
@@ -566,7 +586,7 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
 
     // 4. Load nodes
 
-    numNodes = LONG(*((unsigned int*)data));
+    numNodes = LONG(*((unsigned int *) data));
     data += sizeof(numNodes);
 
     numnodes = numNodes;
@@ -574,11 +594,11 @@ void P_LoadNodes_ZDBSP (int lump, mapformat_t format)
 
     if (format.bsp == NFMT_XGL3)
     {
-        P_LoadZNodes_XGL3((mapnode_xgl3_t *)data);
+        P_LoadZNodes_XGL3((mapnode_xgl3_t *) data);
     }
     else
     {
-        P_LoadZNodes_XNOD((mapnode_xnod_t *)data);
+        P_LoadZNodes_XNOD((mapnode_xnod_t *) data);
     }
 
 #ifdef HAVE_LIBZ

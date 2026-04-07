@@ -34,22 +34,19 @@ enum
     LL_SSECTORS, // SubSectors, list of LineSegs
     LL_NODES,    // BSP nodes
     LL_SECTORS,  // Sectors, from editing
-    LL_REJECT,   // LUT, sector-sector visibility	
+    LL_REJECT,   // LUT, sector-sector visibility
     LL_BLOCKMAP, // LUT, motion clipping, walls/grid element
     LL_BEHAVIOR, // ACS bytecode
 };
 
-static char* bsp_names[] = {
-    [NFMT_DOOMBSP] = "DoomBSP",
-    [NFMT_DEEPBSPV4] = "DeePBSPV4",
-    [NFMT_XNOD] = "XNOD",
-    [NFMT_XGLN] = "XGLN",
-    [NFMT_XGL2] = "XGL2",
-    [NFMT_XGL3] = "XGL3",
+static char *bsp_names[] = {
+    [NFMT_DOOMBSP] = "DoomBSP", [NFMT_DEEPBSPV4] = "DeePBSPV4",
+    [NFMT_XNOD] = "XNOD",       [NFMT_XGLN] = "XGLN",
+    [NFMT_XGL2] = "XGL2",       [NFMT_XGL3] = "XGL3",
 };
 
 // [crispy] check for extended BSP tree formats
-mapformat_t P_CheckMapFormat (int lumpnum)
+mapformat_t P_CheckMapFormat(int lumpnum)
 {
     byte *lump_data = NULL;
     int size_subs = 0, size_nodes = 0;
@@ -72,7 +69,7 @@ mapformat_t P_CheckMapFormat (int lumpnum)
 
     if (!M_CheckParm("-force_old_zdoom_nodes"))
     {
-    	// Check for XGL BSP tree in LL_SSECTORS
+        // Check for XGL BSP tree in LL_SSECTORS
         size_subs = W_LumpLengthWithName(lumpnum + LL_SSECTORS, "SSECTORS");
 
         if (size_subs >= sizeof(mapsubsector_t))
@@ -117,7 +114,7 @@ mapformat_t P_CheckMapFormat (int lumpnum)
 
     if (format.bsp == NFMT_DOOMBSP)
     {
-    	// Did not find XGL tree? Check other formats
+        // Did not find XGL tree? Check other formats
         size_nodes = W_LumpLengthWithName(lumpnum + LL_NODES, "NODES");
 
         if (size_nodes >= sizeof(mapnode_t))
@@ -147,11 +144,8 @@ mapformat_t P_CheckMapFormat (int lumpnum)
     }
 
     fprintf(stderr, "P_CheckMapFormat: [%s] %s map format - %s%s node format\n",
-            lumpinfo[lumpnum]->name,
-            format.hexen ? "Hexen" : "Doom",
-            format.compressed ? "compressed " : "",
-            bsp_names[format.bsp]
-            );
+            lumpinfo[lumpnum]->name, format.hexen ? "Hexen" : "Doom",
+            format.compressed ? "compressed " : "", bsp_names[format.bsp]);
 
     return format;
 }
