@@ -299,6 +299,31 @@ void P_XYMovement (mobj_t* mo)
 	mo->momx = FixedMul (mo->momx, FRICTION);
 	mo->momy = FixedMul (mo->momy, FRICTION);
     }
+
+    if (critical->overunder && (mo->flags & MF_SHOOTABLE))
+    {
+        P_UpdateMobjHeights(mo);
+        P_ResyncAboveThings(mo);
+    }
+}
+
+
+void P_ResyncAboveThings(mobj_t *supporter);
+//
+// P_IsZMovementLegal
+//
+boolean P_IsZMovementLegal (mobj_t* mo) {
+    if (critical->overunder && (!(mo->flags & MF_SOLID) || (mo->flags & (MF_SPECIAL|MF_PICKUP|MF_CORPSE)))) {
+        return true;
+    }
+
+    P_UpdateMobjHeights(mo);
+
+    if (mo->z+mo->height > mo->ceilingz)
+        return false;
+
+    P_ResyncAboveThings(mo);
+    return true;
 }
 
 //
@@ -474,6 +499,8 @@ void P_ZMovement (mobj_t* mo)
 	    return;
 	}
     }
+    if (critical->overunder)
+        P_ResyncAboveThings(mo);
 } 
 
 
@@ -579,6 +606,11 @@ void P_MobjThinker (mobj_t* mobj)
         mobj->oldangle = mobj->angle;
     }
 
+    if (critical->overunder && (mobj->flags & MF_SHOOTABLE))
+    {
+        P_UpdateMobjHeights(mobj);
+    }
+
     // momentum movement
     if (mobj->momx
 	|| mobj->momy
@@ -590,6 +622,7 @@ void P_MobjThinker (mobj_t* mobj)
 	if (mobj->thinker.function.acv == (actionf_v) (-1))
 	    return;		// mobj was removed
     }
+
     if ( (mobj->z != mobj->floorz)
 	 || mobj->momz )
     {
@@ -734,6 +767,11 @@ P_SpawnMobjSafe
     mobj->thinker.function.acp1 = (actionf_p1)P_MobjThinker;
 	
     P_AddThinker (&mobj->thinker);
+    if (critical->overunder && (mobj->flags & MF_SHOOTABLE))
+    {
+        P_UpdateMobjHeights(mobj);
+        P_IsZMovementLegal(mobj);
+    }
 
     return mobj;
 }
