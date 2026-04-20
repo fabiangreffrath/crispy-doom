@@ -33,6 +33,7 @@
 // MACROS ------------------------------------------------------------------
 
 #define MAPINFO_SCRIPT_NAME "MAPINFO"
+#define MAPINFO_SIZE 99
 #define MCMD_SKY1 1
 #define MCMD_SKY2 2
 #define MCMD_LIGHTNING 3
@@ -115,7 +116,7 @@ byte *rejectmatrix;             // for fast sight rejection
 
 // PRIVATE DATA DEFINITIONS ------------------------------------------------
 
-static mapInfo_t MapInfo[99];
+static mapInfo_t MapInfo[MAPINFO_SIZE];
 static const char *MapCmdNames[] = {
     "SKY1",
     "SKY2",
@@ -803,6 +804,26 @@ static void P_LoadReject(int lumpnum)
     }
 }
 
+// [crispy] factor out map lump name and number finding into a separate function
+int P_GetNumForMap (int episode, int map, boolean critical)
+{
+    char lumpname[9];
+
+    // find map name
+	if (map<10)
+        M_snprintf(lumpname, 9, "map0%i", map);
+	else
+        M_snprintf(lumpname, 9, "map%i", map);
+
+    // [crispy] Deathknights
+    if (crispy->havedeathknights && episode == 2 && map >= 33 && map <= 38)
+    {
+        strcat(lumpname, "D");
+    }
+
+    return critical ? W_GetNumForName(lumpname) : W_CheckNumForName(lumpname);
+}
+
 //=============================================================================
 
 lumpinfo_t *maplumpinfo;
@@ -846,8 +867,9 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     leveltime = 0;
     oldleveltime = 0;  // [crispy] Track if game is running
 
-    M_snprintf(lumpname, sizeof(lumpname), "MAP%02d", map);
-    lumpnum = W_GetNumForName(lumpname);
+    // M_snprintf(lumpname, sizeof(lumpname), "MAP%02d", map);
+    // lumpnum = W_GetNumForName(lumpname);
+    lumpnum = P_GetNumForMap(gameepisode, map, true);
 
     crispy_mapformat = P_CheckMapFormat(lumpnum);
     maplumpinfo = lumpinfo[lumpnum];
@@ -982,13 +1004,14 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 //
 //==========================================================================
 
-static void InitMapInfo(void)
+void InitMapInfo(void)
 {
     int map;
     int mapMax;
     int mcmdValue;
     mapInfo_t *info;
     char songMulch[10];
+    char lumpname[9];
     const char *default_sky_name = DEFAULT_SKY_NAME;
 
     mapMax = 1;
@@ -998,23 +1021,52 @@ static void InitMapInfo(void)
 	default_sky_name = "SKY2";
     }
 
-    // Put defaults into MapInfo[0]
+    // // Put defaults into MapInfo[0]
+    // info = MapInfo;
+    // info->cluster = 0;
+    // info->warpTrans = 0;
+    // info->nextMap = 1;          // Always go to map 1 if not specified
+    // info->cdTrack = 1;
+    // info->sky1Texture = R_TextureNumForName(default_sky_name);
+    // info->sky2Texture = info->sky1Texture;
+    // info->sky1ScrollDelta = 0;
+    // info->sky2ScrollDelta = 0;
+    // info->doubleSky = false;
+    // info->lightning = false;
+    // info->fadetable = W_GetNumForName(DEFAULT_FADE_TABLE);
+    // M_StringCopy(info->name, UNKNOWN_MAP_NAME, sizeof(info->name));
+
+    // [crispy] Set all MapInfo Entries to Default for Episode Selection
+    for(int i = 0; i < MAPINFO_SIZE; i++)
+    {
+        // Put defaults into MapInfo[0]
+        info = &MapInfo[i];
+        info->cluster = 0;
+        info->warpTrans = 0;
+        info->nextMap = 1;          // Always go to map 1 if not specified
+        info->cdTrack = 1;
+        info->sky1Texture = R_TextureNumForName(default_sky_name);
+        info->sky2Texture = info->sky1Texture;
+        info->sky1ScrollDelta = 0;
+        info->sky2ScrollDelta = 0;
+        info->doubleSky = false;
+        info->lightning = false;
+        info->fadetable = W_GetNumForName(DEFAULT_FADE_TABLE);
+        M_StringCopy(info->name, UNKNOWN_MAP_NAME, sizeof(info->name));
+    }
+
     info = MapInfo;
-    info->cluster = 0;
-    info->warpTrans = 0;
-    info->nextMap = 1;          // Always go to map 1 if not specified
-    info->cdTrack = 1;
-    info->sky1Texture = R_TextureNumForName(default_sky_name);
-    info->sky2Texture = info->sky1Texture;
-    info->sky1ScrollDelta = 0;
-    info->sky2ScrollDelta = 0;
-    info->doubleSky = false;
-    info->lightning = false;
-    info->fadetable = W_GetNumForName(DEFAULT_FADE_TABLE);
-    M_StringCopy(info->name, UNKNOWN_MAP_NAME, sizeof(info->name));
 
 //    M_StringCopy(info->songLump, DEFAULT_SONG_LUMP, sizeof(info->songLump));
-    SC_Open(MAPINFO_SCRIPT_NAME);
+
+    M_snprintf(lumpname, sizeof(lumpname), MAPINFO_SCRIPT_NAME);
+    // [crispy] Check for DODC
+    if (crispy->havedeathknights && gameepisode == 2)
+    {
+        strcat(lumpname, "D");
+    }
+
+    SC_Open(lumpname);
     while (SC_GetString())
     {
         if (SC_Compare("MAP") == false)

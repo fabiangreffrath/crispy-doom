@@ -24,7 +24,7 @@
 typedef struct
 {
     const char *name;
-    const char new_name[8];
+    const char new_name[9];
 } lump_rename_t;
 
 boolean W_ParseCommandLine(void);

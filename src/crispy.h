@@ -115,6 +115,7 @@ typedef struct
 	char *havemaster;
 	char *havesigil;
 	char *havesigil2;
+    char *havedeathknights;
 
 	const char *sdlversion;
 	const char *platform;

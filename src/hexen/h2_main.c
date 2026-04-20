@@ -27,6 +27,7 @@
 #include "h2def.h"
 #include "ct_chat.h"
 #include "d_iwad.h"
+#include "d_pwad.h" // [crispy] D_LoadHexDD()
 #include "d_mode.h"
 #include "m_misc.h"
 #include "s_sound.h"
@@ -582,6 +583,17 @@ void D_DoomMain(void)
     //
 
     crispy->autohealth = M_ParmExists("-autohealth");
+
+    //!
+    // @category mod
+    //
+    // Disable automatic loading of Deathknights 
+    //
+    if (!M_ParmExists("-nosideload") && gamemode != shareware &&
+        !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))
+    {
+        D_LoadHexDD();
+    }
 
     //!
     // @category mod

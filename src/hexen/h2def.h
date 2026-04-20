@@ -905,6 +905,7 @@ void P_Ticker(void);
 void P_CreateBlockMap(void);
 
 void P_SetupLevel(int episode, int map, int playermask, skill_t skill);
+void InitMapInfo(void); 
 // called by W_Ticker
 
 void P_Init(void);
