@@ -114,6 +114,7 @@ extern void I_ReInitGraphics(int reinit); // [crispy]
 extern void R_ExecuteSetViewSize(void); // [crispy]
 extern void AM_LevelInit(boolean reinit); // [crispy]
 extern void AM_initVariables(void); // [crispy]
+extern void S_InitScript(void); // [crispy]
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -1580,6 +1581,7 @@ static void SCEpisode(int option)
     startepisode = option;
     gameepisode = startepisode;
 
+    S_InitScript();
     InitMapInfo();
     SetMenu(MENU_CLASS);
 }

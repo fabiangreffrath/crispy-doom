@@ -2128,7 +2128,7 @@ void SV_LoadGame(int slot)
 
     AssertSegment(ASEG_GAME_HEADER);
 
-    gameepisode = 1;
+    gameepisode = 2;
     gamemap = SV_ReadByte();
     gameskill = SV_ReadByte();
 

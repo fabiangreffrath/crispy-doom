@@ -840,7 +840,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 {
     int i;
     int parm;
-    char lumpname[9];
+    // char lumpname[9];
     int lumpnum;
     mobj_t *mobj;
     boolean crispy_validblockmap;
