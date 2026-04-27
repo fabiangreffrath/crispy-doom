@@ -39,6 +39,7 @@
 // External functions
 
 extern void R_ExecuteSetViewSize(void); // [crispy] for clean screenshot
+extern void S_InitScript(void); // [crispy]
 
 // Functions
 
@@ -1923,7 +1924,7 @@ void G_StartNewGame(skill_t skill)
     {
         realMap = 1;
     }
-    G_InitNew(TempSkill, 1, realMap);
+    G_InitNew(TempSkill, gameepisode, realMap);
 }
 
 //==========================================================================
@@ -2097,6 +2098,7 @@ void G_DoWorldDone(void)
 void G_DoSingleReborn(void)
 {
     gameaction = ga_nothing;
+    // TODO: Reinit Episode related data here?
     SV_LoadGame(SV_GetRebornSlot());
     SB_SetClassData();
 }
@@ -2134,6 +2136,9 @@ void G_DoLoadGame(void)
     {                           // Copy the base slot to the reborn slot
         SV_UpdateRebornSlot();
     }
+    startepisode = gameepisode;
+    S_InitScript();
+    InitMapInfo();
     SB_SetClassData();
 }
 
@@ -2185,7 +2190,7 @@ void G_DeferredNewGame(skill_t skill)
     {
         G_CheckDemoStatus();
         Z_Free(demoname);
-        G_RecordDemo(skill, 1, 1, 1, orig_demoname);
+        G_RecordDemo(skill, 1, gameepisode, 1, orig_demoname);
     }
 }
 

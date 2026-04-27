@@ -82,6 +82,28 @@ static void SV_ReadMarkPoints (const char *key)
     }
 }
 
+// gameepisode
+
+static void SV_WriteEpisode (const char *key)
+{
+    if (gameepisode)
+    {
+        M_snprintf(line, MAX_LINE_LEN, "%s %d\n", key, gameepisode);
+        fputs(line, SavingFP);
+    }
+}
+
+static void SV_ReadEpisode (const char *key)
+{
+	int value;
+
+	if (sscanf(line, "%s %d", string, &value) == 2 &&
+	    !strncmp(string, key, MAX_STRING_LEN))
+	{
+		gameepisode = value;
+	}
+}
+
 typedef struct
 {
     const char *key;
@@ -99,6 +121,7 @@ static const extsavegdata_t extsavegdata[] =
     // MAP:
     {"markpoints", SV_WriteMarkPoints, SV_ReadMarkPoints, EXTSAVEG_MAP, 1},
     // GAME:
+    {"episode", SV_WriteEpisode, SV_ReadEpisode, EXTSAVEG_GAME, 1}
 };
 
 void SV_WriteExtendedSaveGameData (savetarget_t location)
