@@ -840,7 +840,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 {
     int i;
     int parm;
-    // char lumpname[9];
     int lumpnum;
     mobj_t *mobj;
     boolean crispy_validblockmap;
@@ -867,8 +866,6 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     leveltime = 0;
     oldleveltime = 0;  // [crispy] Track if game is running
 
-    // M_snprintf(lumpname, sizeof(lumpname), "MAP%02d", map);
-    // lumpnum = W_GetNumForName(lumpname);
     lumpnum = P_GetNumForMap(gameepisode, map, true);
 
     crispy_mapformat = P_CheckMapFormat(lumpnum);
@@ -1020,21 +1017,6 @@ void InitMapInfo(void)
     {
 	default_sky_name = "SKY2";
     }
-
-    // // Put defaults into MapInfo[0]
-    // info = MapInfo;
-    // info->cluster = 0;
-    // info->warpTrans = 0;
-    // info->nextMap = 1;          // Always go to map 1 if not specified
-    // info->cdTrack = 1;
-    // info->sky1Texture = R_TextureNumForName(default_sky_name);
-    // info->sky2Texture = info->sky1Texture;
-    // info->sky1ScrollDelta = 0;
-    // info->sky2ScrollDelta = 0;
-    // info->doubleSky = false;
-    // info->lightning = false;
-    // info->fadetable = W_GetNumForName(DEFAULT_FADE_TABLE);
-    // M_StringCopy(info->name, UNKNOWN_MAP_NAME, sizeof(info->name));
 
     // [crispy] Set all MapInfo Entries to Default for Episode Selection
     for(int i = 0; i < MAPINFO_SIZE; i++)

@@ -195,7 +195,6 @@ static void InitStats(void)
                     M_snprintf(msgLumpName, sizeof(msgLumpName), "CLUS%dMSD", oldCluster);
                 else
                     M_snprintf(msgLumpName, sizeof(msgLumpName), "CLUS%dMSG", oldCluster);
-                // msgLumpName = ClusMsgLumpNames[oldCluster - 1];
                 msgLump = W_GetNumForName(msgLumpName);
                 msgSize = W_LumpLength(msgLump);
                 if (msgSize >= MAX_INTRMSN_MESSAGE_SIZE)

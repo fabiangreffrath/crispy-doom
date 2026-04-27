@@ -117,18 +117,6 @@ static void CheckLoadHexDD (void)
 	{
 		char lumpname[9];
 
-		// M_snprintf(lumpname, 9, "CWILV%2.2d", i);
-		// j = W_GetNumForName(lumpname);
-		// if (!strcasecmp(W_WadNameForLump(lumpinfo[j]), master_basename))
-		// {
-		// 	lumpinfo[j]->name[0] = 'M';
-		// }
-		// else
-		// {
-		// 	// [crispy] indicate this is not the complete MASTERLEVELS.WAD
-		// 	crispy->havemaster = (char *)-1;
-		// }
-
 		M_snprintf(lumpname, 9, "MAP%02d", i);
 		j = W_GetNumForName(lumpname);
 		strcat(lumpinfo[j]->name, "D");
@@ -146,17 +134,6 @@ static void CheckLoadHexDD (void)
         }
     }
 
-	// // [crispy] if MASTERLEVELS.WAD contains TITLEPIC and INTERPIC, rename them
-	// for (i = 0; i < arrlen(master_lumps); i++)
-	// {
-	// 	j = W_CheckNumForName(master_lumps[i].name);
-
-	// 	if (j != -1 && !strcasecmp(W_WadNameForLump(lumpinfo[j]), master_basename))
-	// 	{
-	// 		memcpy(lumpinfo[j]->name, master_lumps[i].new_name, 8);
-	// 	}
-	// }
-
 	// [crispy] load WAD and DEH files from autoload directories
 	if (!M_ParmExists("-noautoload"))
 	{
@@ -167,8 +144,6 @@ static void CheckLoadHexDD (void)
 			free(autoload_dir);
 		}
 	}
-
-	// Consider also remaining points (see screenshot)
 
 	// [crispy] regenerate the hashtable
 	W_GenerateHashTable();
