@@ -67,6 +67,7 @@ static const lump_rename_t dd_lumps [] = {
 	{"WIN2MSG",   "WIN2MSGD"},
 	{"WIN3MSG",   "WIN3MSGD"},
 	{"SNDINFO",   "SNDINFOD"},
+	{"M_HTIC",   "M_HTICD"},
 };
 
 // [crispy] auto-load HEXDD.WAD if available
