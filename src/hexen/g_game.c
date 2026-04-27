@@ -2098,8 +2098,10 @@ void G_DoWorldDone(void)
 void G_DoSingleReborn(void)
 {
     gameaction = ga_nothing;
-    // TODO: Reinit Episode related data here?
     SV_LoadGame(SV_GetRebornSlot());
+    startepisode = gameepisode;
+    S_InitScript();
+    InitMapInfo();
     SB_SetClassData();
 }
 
