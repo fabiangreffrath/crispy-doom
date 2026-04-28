@@ -815,8 +815,8 @@ int P_GetNumForMap (int episode, int map, boolean critical)
 	else
         M_snprintf(lumpname, 9, "map%i", map);
 
-    // [crispy] Deathknights
-    if (crispy->havedeathknights && episode == 2 && map >= 33 && map <= 38)
+    // [crispy] Deathkings
+    if (crispy->havedeathkings && episode == 2 && map >= 33 && map <= 38)
     {
         strcat(lumpname, "D");
     }
@@ -1042,8 +1042,8 @@ void InitMapInfo(void)
 //    M_StringCopy(info->songLump, DEFAULT_SONG_LUMP, sizeof(info->songLump));
 
     M_snprintf(lumpname, sizeof(lumpname), MAPINFO_SCRIPT_NAME);
-    // [crispy] Check for DODC
-    if (crispy->havedeathknights && gameepisode == 2)
+    // [crispy] Check for Deathkings
+    if (crispy->havedeathkings && gameepisode == 2)
     {
         strcat(lumpname, "D");
     }

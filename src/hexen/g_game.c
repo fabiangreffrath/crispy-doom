@@ -39,7 +39,7 @@
 // External functions
 
 extern void R_ExecuteSetViewSize(void); // [crispy] for clean screenshot
-extern void S_InitScript(void); // [crispy]
+extern void S_InitScript(void); // [crispy] support multiple episodes
 
 // Functions
 
@@ -2099,6 +2099,7 @@ void G_DoSingleReborn(void)
 {
     gameaction = ga_nothing;
     SV_LoadGame(SV_GetRebornSlot());
+    // [crispy] support multiple episodes
     startepisode = gameepisode;
     S_InitScript();
     InitMapInfo();
@@ -2138,6 +2139,7 @@ void G_DoLoadGame(void)
     {                           // Copy the base slot to the reborn slot
         SV_UpdateRebornSlot();
     }
+    // [crispy] support multiple episodes
     startepisode = gameepisode;
     S_InitScript();
     InitMapInfo();

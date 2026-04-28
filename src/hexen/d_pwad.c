@@ -2,6 +2,7 @@
 // Copyright(C) 1993-1996 Id Software, Inc.
 // Copyright(C) 1993-2008 Raven Software
 // Copyright(C) 2005-2014 Simon Howard
+// Copyright(C) 2026 Michael Balling
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,7 +46,6 @@ static boolean CheckHexDDLoaded (void)
 		!strcasecmp(P_GetMapName(i), "RUINED VILLAGE") &&
 	    !strcasecmp(P_GetMapName(j), "DARK CITADEL"))
 	{
-		// gamemission = pack_nerve;
 		return true;
 	}
 
@@ -53,21 +53,22 @@ static boolean CheckHexDDLoaded (void)
 }
 
 static const lump_rename_t dd_lumps [] = {
-	{"TITLE", "TITLED"},
-	{"CREDIT", "CREDITD"},
-	{"HELP1",   "HELP1D"},
-	{"HELP2",   "HELP2D"},
+	{"TITLE", 	 "TITLED"},
+	{"HELP1",    "HELP1D"},
+	{"HELP2",    "HELP2D"},
 	{"DEMO1",    "DEMO1D"},
 	{"DEMO2",    "DEMO2D"},
 	{"DEMO3",    "DEMO3D"},
-	{"MAPINFO",   "MAPINFOD"},
-	{"CLUS1MSG",  "CLUS1MSD"},
-	{"CLUS2MSG",  "CLUS2MSD"},
-	{"WIN1MSG",   "WIN1MSGD"},
-	{"WIN2MSG",   "WIN2MSGD"},
-	{"WIN3MSG",   "WIN3MSGD"},
-	{"SNDINFO",   "SNDINFOD"},
 	{"M_HTIC",   "M_HTICD"},
+	{"CREDIT",   "CREDITD"},
+	{"MAPINFO",  "MAPINFOD"},
+	{"CLUS1MSG", "CLUS1MSD"},
+	{"CLUS2MSG", "CLUS2MSD"},
+	{"WIN1MSG",  "WIN1MSGD"},
+	{"WIN2MSG",  "WIN2MSGD"},
+	{"WIN3MSG",  "WIN3MSGD"},
+	{"SNDINFO",  "SNDINFOD"},
+
 };
 
 // [crispy] auto-load HEXDD.WAD if available
@@ -88,29 +89,28 @@ static void CheckLoadHexDD (void)
 	{
 		char *dir;
 		dir = M_DirName(iwadfile);
-		crispy->havedeathknights = M_StringJoin(dir, DIR_SEPARATOR_S, "HEXDD.WAD", NULL);
+		crispy->havedeathkings = M_StringJoin(dir, DIR_SEPARATOR_S, "HEXDD.WAD", NULL);
 		free(dir);
 	}
 	else
 	{
-		crispy->havedeathknights = M_StringDuplicate("HEXDD.WAD");
+		crispy->havedeathkings = M_StringDuplicate("HEXDD.WAD");
 	}
 
-	if (!M_FileExists(crispy->havedeathknights))
+	if (!M_FileExists(crispy->havedeathkings))
 	{
-		free(crispy->havedeathknights);
-		crispy->havedeathknights = D_FindWADByName("HEXDD.WAD");
-		//crispy->havedeathknights = NULL;
+		free(crispy->havedeathkings);
+		crispy->havedeathkings = D_FindWADByName("HEXDD.WAD");
 	}
 
-	if (crispy->havedeathknights == NULL)
+	if (crispy->havedeathkings == NULL)
 	{
 		return;
 	}
 
-	printf(" [Deathknights] adding %s\n", crispy->havedeathknights);
-	W_AddFile(crispy->havedeathknights);
-	dd_basename = M_BaseName(crispy->havedeathknights);
+	printf(" [Deathkings] adding %s\n", crispy->havedeathkings);
+	W_AddFile(crispy->havedeathkings);
+	dd_basename = M_BaseName(crispy->havedeathkings);
 
 	// [crispy] add indicators to level
 	for (i = 33; i <= 38; i++)

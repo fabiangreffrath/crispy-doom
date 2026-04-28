@@ -587,7 +587,7 @@ void D_DoomMain(void)
     //!
     // @category mod
     //
-    // Disable automatic loading of Deathknights 
+    // Disable automatic loading of Deathkings 
     //
     if (!M_ParmExists("-nosideload") && gamemode != shareware &&
         !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))

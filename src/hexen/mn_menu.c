@@ -1366,7 +1366,7 @@ static boolean SCNetCheck(int option)
 static void SCNetCheck2(int option)
 {
     SCNetCheck(option);
-    if (crispy->havedeathknights)
+    if (crispy->havedeathkings)
         SetMenu(MENU_EPISODE);
     else
         SetMenu(MENU_CLASS);
