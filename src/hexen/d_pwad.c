@@ -28,8 +28,6 @@
 #include "m_config.h"
 #include "m_misc.h"
 #include "w_main.h"
-#include "w_wad.h"
-#include "w_merge.h" // [crispy] W_MergeFile()
 
 extern char *iwadfile;
 
