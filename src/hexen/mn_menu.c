@@ -66,7 +66,7 @@ typedef enum
 typedef enum
 {
     MENU_MAIN,
-    MENU_EPISODE, // [crispy] Hexen / DD selection
+    MENU_EPISODE, // [crispy] Hexen / DKDC selection
     MENU_CLASS,
     MENU_SKILL,
     MENU_OPTIONS,
@@ -242,12 +242,12 @@ static Menu_t MainMenu = {
 };
 
 static MenuItem_t EpisodeItems[] = {
-    {ITT_EFUNC, "HEXEN", SCEpisode, 1, MENU_NONE},
-    {ITT_EFUNC, "DKDC", SCEpisode, 2, MENU_NONE}
+    {ITT_EFUNC, "HEXEN: BEYOND HERETIC", SCEpisode, 1, MENU_NONE},
+    {ITT_EFUNC, "DEATHKINGS OF THE DARK CITADEL", SCEpisode, 2, MENU_NONE}
 };
 
 static Menu_t EpisodeMenu = {
-    110, 56,
+    33, 66,
     DrawEpisodeMenu,
     2, EpisodeItems,
     0,
@@ -621,7 +621,6 @@ static int G_ReloadLevel(void)
         if (demorecording)
         {
         gamemap = startmap;
-        gameepisode = startepisode;
         }
         G_DeferedInitNew(gameskill, gameepisode, gamemap);
         result = true;
@@ -1578,11 +1577,11 @@ static void SCEpisode(int option)
     }
 
     // Execude Episode Selection
-    startepisode = option;
-    gameepisode = startepisode;
+    gameepisode = option;
 
     S_InitScript();
     InitMapInfo();
+    
     SetMenu(MENU_CLASS);
 }
 

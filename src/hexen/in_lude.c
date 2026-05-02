@@ -178,9 +178,9 @@ static void InitStats(void)
     int slaughtercount;
     int playercount;
     // const char *msgLumpName;
+    char msgLumpName[9]; // [crispy]
     int msgSize;
     int msgLump;
-    char msgLumpName[9];
 
     if (!deathmatch)
     {

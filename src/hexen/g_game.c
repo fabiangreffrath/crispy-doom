@@ -2099,10 +2099,11 @@ void G_DoSingleReborn(void)
 {
     gameaction = ga_nothing;
     SV_LoadGame(SV_GetRebornSlot());
-    // [crispy] support multiple episodes
-    startepisode = gameepisode;
+
+    // [crispy] re-init scripts and mapinfo to support multiple episodes
     S_InitScript();
     InitMapInfo();
+
     SB_SetClassData();
 }
 
@@ -2139,10 +2140,11 @@ void G_DoLoadGame(void)
     {                           // Copy the base slot to the reborn slot
         SV_UpdateRebornSlot();
     }
-    // [crispy] support multiple episodes
-    startepisode = gameepisode;
+
+    // [crispy] re-init scripts and mapinfo to support multiple episodes
     S_InitScript();
     InitMapInfo();
+
     SB_SetClassData();
 }
 

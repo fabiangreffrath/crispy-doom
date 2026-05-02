@@ -33,7 +33,7 @@
 // MACROS ------------------------------------------------------------------
 
 #define MAPINFO_SCRIPT_NAME "MAPINFO"
-#define MAPINFO_SIZE 99
+#define MAPINFO_SIZE 99 // [crispy]
 #define MCMD_SKY1 1
 #define MCMD_SKY2 2
 #define MCMD_LIGHTNING 3
@@ -840,6 +840,7 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
 {
     int i;
     int parm;
+    // char lumpname[9];
     int lumpnum;
     mobj_t *mobj;
     boolean crispy_validblockmap;
@@ -866,6 +867,8 @@ void P_SetupLevel(int episode, int map, int playermask, skill_t skill)
     leveltime = 0;
     oldleveltime = 0;  // [crispy] Track if game is running
 
+    // M_snprintf(lumpname, sizeof(lumpname), "MAP%02d", map);
+    // [crispy] P_GetNumForMap instead of W_GetNumForName(lumpname)
     lumpnum = P_GetNumForMap(gameepisode, map, true);
 
     crispy_mapformat = P_CheckMapFormat(lumpnum);
