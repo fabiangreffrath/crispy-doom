@@ -64,6 +64,15 @@ static int *all_joystick_buttons[NUM_VIRTUAL_BUTTONS] =
     &joybflyup,
     &joybflydown,
     &joybflycenter,
+    &joybusehealth,
+    &joybinvquery,
+    &joybmission,
+    &joybinvpop,
+    &joybinvkey,
+    &joybinvhome,
+    &joybinvend,
+    &joybinvuse,
+    &joybinvdrop,
 };
 
 // For indirection so that we're not dependent on item ordering in the

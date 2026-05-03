@@ -240,6 +240,16 @@ int joybflyup = -1;
 int joybflydown = -1;
 int joybflycenter = -1;
 
+int joybusehealth = -1;
+int joybinvquery = -1;
+int joybmission = -1;
+int joybinvpop = -1;
+int joybinvkey = -1;
+int joybinvhome = -1;
+int joybinvend = -1;
+int joybinvuse = -1;
+int joybinvdrop = -1;
+
 // Control whether if a mouse button is double clicked, it acts like 
 // "use" has been pressed
 
@@ -394,6 +404,18 @@ void M_BindStrifeControls(void)
     M_BindIntVariable("key_invEnd",         &key_invend);
     M_BindIntVariable("key_invUse",         &key_invuse);
     M_BindIntVariable("key_invDrop",        &key_invdrop);
+
+    M_BindIntVariable("joyb_invleft",       &joybinvleft);
+    M_BindIntVariable("joyb_invright",      &joybinvright);
+    M_BindIntVariable("joyb_useHealth",     &joybusehealth);
+    M_BindIntVariable("joyb_invquery",      &joybinvquery);
+    M_BindIntVariable("joyb_mission",       &joybmission);
+    M_BindIntVariable("joyb_invPop",        &joybinvpop);
+    M_BindIntVariable("joyb_invKey",        &joybinvkey);
+    M_BindIntVariable("joyb_invHome",       &joybinvhome);
+    M_BindIntVariable("joyb_invEnd",        &joybinvend);
+    M_BindIntVariable("joyb_invUse",        &joybinvuse);
+    M_BindIntVariable("joyb_invDrop",       &joybinvdrop);
 
     // Strife also supports jump on mouse and joystick, and in the exact same
     // manner as Hexen!

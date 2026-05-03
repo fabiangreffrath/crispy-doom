@@ -199,6 +199,16 @@ extern int joybflyup;
 extern int joybflydown;
 extern int joybflycenter;
 
+extern int joybusehealth;
+extern int joybinvquery;
+extern int joybmission;
+extern int joybinvpop;
+extern int joybinvkey;
+extern int joybinvhome;
+extern int joybinvend;
+extern int joybinvuse;
+extern int joybinvdrop;
+
 extern int dclick_use;
 
 void M_BindBaseControls(void);

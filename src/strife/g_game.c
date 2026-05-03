@@ -485,7 +485,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 
     // villsa [STRIFE] inventory use key
     // [crispy] mouse inventory use
-    if(gamekeydown[key_invuse] || mousebuttons[mousebinvuse])
+    if(gamekeydown[key_invuse] || mousebuttons[mousebinvuse] || joybuttons[joybinvuse])
     {
         if(player->numinventory > 0)
         {
@@ -499,7 +499,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     }
 
     // villsa [STRIFE] inventory drop key
-    if(gamekeydown[key_invdrop])
+    if(gamekeydown[key_invdrop] || joybuttons[joybinvdrop])
     {
         if(player->numinventory > 0)
         {
@@ -513,7 +513,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     }
 
     // villsa [STRIFE] use medkit
-    if(gamekeydown[key_usehealth])
+    if(gamekeydown[key_usehealth] || joybuttons[joybusehealth])
         cmd->buttons2 |= BT2_HEALTH;
 
 
@@ -1012,6 +1012,7 @@ void G_DoLoadLevel (void)
 static void SetJoyButtons(unsigned int buttons_mask)
 {
     int i;
+    player_t *const player = &players[consoleplayer]; // [crispy]
 
     for (i=0; i<MAX_JOY_BUTTONS; ++i)
     {
@@ -1030,6 +1031,31 @@ static void SetJoyButtons(unsigned int buttons_mask)
             else if (i == joybnextweapon)
             {
                 next_weapon = 1;
+            }
+            else if (i == joybinvleft) // [crispy] mouse inventory left
+            {
+                if (player->inventorycursor > 0)
+                    player->inventorycursor--;
+                st_invtics = 5 * 35; // [crispy] Crispy HUD
+            }
+            else if (i == joybinvright) // [crispy] mouse inventory right
+            {
+                if (player->inventorycursor < player->numinventory - 1)
+                    player->inventorycursor++;
+                st_invtics = 5 * 35; // [crispy] Crispy HUD
+            }
+            else if (i == joybinvhome)
+            {
+                player->inventorycursor = 0;
+                st_invtics = 5 * 35; // [crispy] Crispy HUD
+            }
+            else if (i == joybinvend)
+            {
+                if (player->numinventory)
+                    player->inventorycursor = player->numinventory - 1;
+                else
+                    player->inventorycursor = 0;
+                st_invtics = 5 * 35; // [crispy] Crispy HUD
             }
         }
 

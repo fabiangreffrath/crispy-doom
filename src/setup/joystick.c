@@ -100,7 +100,8 @@ int joystick_look_sensitivity = 10;
 
 // Virtual to physical mapping.
 int joystick_physical_buttons[NUM_VIRTUAL_BUTTONS] = {
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+    21, 22, 23, 24, 25
 };
 
 static txt_button_t *joystick_button;
@@ -170,6 +171,15 @@ static const joystick_config_t empty_defaults[] =
     {"joyb_flyup",                 -1},
     {"joyb_flydown",               -1},
     {"joyb_flycenter",             -1},
+    {"joyb_useHealth",             -1},
+    {"joyb_invquery",              -1},
+    {"joyb_mission",               -1},
+    {"joyb_invPop",                -1},
+    {"joyb_invKey",                -1},
+    {"joyb_invHome",               -1},
+    {"joyb_invEnd",                -1},
+    {"joyb_invUse",                -1},
+    {"joyb_invDrop",               -1},
     {"joystick_physical_button0",  0},
     {"joystick_physical_button1",  1},
     {"joystick_physical_button2",  2},
@@ -187,6 +197,15 @@ static const joystick_config_t empty_defaults[] =
     {"joystick_physical_button14",  14},
     {"joystick_physical_button15",  15},
     {"joystick_physical_button16",  16},
+    {"joystick_physical_button17",  17},
+    {"joystick_physical_button18",  18},
+    {"joystick_physical_button19",  19},
+    {"joystick_physical_button20",  20},
+    {"joystick_physical_button21",  21},
+    {"joystick_physical_button22",  22},
+    {"joystick_physical_button23",  23},
+    {"joystick_physical_button24",  24},
+    {"joystick_physical_button25",  25},
     {NULL, 0},
 };
 
@@ -1191,12 +1210,29 @@ static void MoreControls(TXT_UNCAST_ARG(widget), TXT_UNCAST_ARG(unused))
     TXT_SetTableColumns(window, 6);
     TXT_SetColumnWidths(window, 18, 10, 1, 18, 10, 0);
 
-    AddJoystickControl(window, "Use artifact", &joybuseartifact);
-    AddJoystickControl(window, "Inventory left", &joybinvleft);
-    AddJoystickControl(window, "Inventory right", &joybinvright);
-    AddJoystickControl(window, "Fly up", &joybflyup);
-    AddJoystickControl(window, "Fly down", &joybflydown);
-    AddJoystickControl(window, "Fly center", &joybflycenter);
+    if (gamemission == heretic || gamemission == hexen)
+    {
+        AddJoystickControl(window, "Use artifact", &joybuseartifact);
+        AddJoystickControl(window, "Inventory left", &joybinvleft);
+        AddJoystickControl(window, "Inventory right", &joybinvright);
+        AddJoystickControl(window, "Fly up", &joybflyup);
+        AddJoystickControl(window, "Fly down", &joybflydown);
+        AddJoystickControl(window, "Fly center", &joybflycenter);
+    }
+    else if (gamemission == strife)
+    {
+        AddJoystickControl(window, "Use", &joybinvuse);
+        AddJoystickControl(window, "Drop", &joybinvdrop);
+        AddJoystickControl(window, "Inventory left", &joybinvleft);
+        AddJoystickControl(window, "Inventory right", &joybinvright);
+        AddJoystickControl(window, "Home", &joybinvhome);
+        AddJoystickControl(window, "End", &joybinvend);
+        AddJoystickControl(window, "Use health", &joybusehealth);
+        AddJoystickControl(window, "Query", &joybinvquery);
+        AddJoystickControl(window, "Show mission", &joybmission);
+        AddJoystickControl(window, "Show weapons", &joybinvpop);
+        AddJoystickControl(window, "Show keys", &joybinvkey);
+    }
 
     TXT_SetWindowAction(window, TXT_HORIZ_LEFT, NULL);
     TXT_SetWindowAction(window, TXT_HORIZ_CENTER,
@@ -1307,7 +1343,7 @@ void ConfigJoystick(TXT_UNCAST_ARG(widget), void *user_data)
 
     AddJoystickControl(window, "Toggle Automap", &joybautomap);
 
-    if (gamemission == heretic || gamemission == hexen)
+    if (gamemission == heretic || gamemission == hexen || gamemission == strife)
     {
         TXT_AddWidget(window,
                        TXT_NewButton2("More controls...", MoreControls, NULL));

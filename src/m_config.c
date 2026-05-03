@@ -745,6 +745,79 @@ static default_t	doom_defaults_list[] =
     //
 
     CONFIG_VARIABLE_INT(comport),
+
+    //!
+    // @game strife
+    //
+    // Joystick virtual button to use health.
+    //
+
+    CONFIG_VARIABLE_INT(joyb_useHealth),
+
+    //!
+    // @game strife
+    //
+    // Joystick virtual button to query inventory.
+    //
+
+    CONFIG_VARIABLE_INT(joyb_invquery),
+
+    //!
+    // @game strife
+    //
+    // Joystick virtual button to display mission objective.
+    //
+
+    CONFIG_VARIABLE_INT(joyb_mission),
+
+    //!
+    // @game strife
+    //
+    // Joystick virtual button to display inventory popup.
+    //
+
+    CONFIG_VARIABLE_INT(joyb_invPop),
+
+    //!
+    // @game strife
+    //
+    // Joystick virtual button to display keys popup.
+    //
+
+    CONFIG_VARIABLE_INT(joyb_invKey),
+
+    //!
+    // @game strife
+    //
+    // Joystick virtual button to jump to start of inventory.
+    //
+
+    CONFIG_VARIABLE_INT(joyb_invHome),
+
+    //!
+    // @game strife
+    //
+    // Joystick virtual button to jump to end of inventory.
+    //
+
+    CONFIG_VARIABLE_INT(joyb_invEnd),
+
+    //!
+    // @game strife
+    //
+    // Joystick virtual button to use inventory item.
+    //
+
+    CONFIG_VARIABLE_INT(joyb_invUse),
+
+    //!
+    // @game strife
+    //
+    // Joystick virtual button to drop an inventory item.
+    //
+
+    CONFIG_VARIABLE_INT(joyb_invDrop),
+
 };
 
 static default_collection_t doom_defaults =
@@ -1582,6 +1655,69 @@ static default_t extra_defaults_list[] =
     //
 
     CONFIG_VARIABLE_INT(joystick_physical_button16),
+
+    //!
+    // The physical joystick button that corresponds to joystick
+    // virtual button #17.
+    //
+
+    CONFIG_VARIABLE_INT(joystick_physical_button17),
+
+    //!
+    // The physical joystick button that corresponds to joystick
+    // virtual button #18.
+    //
+
+    CONFIG_VARIABLE_INT(joystick_physical_button18),
+
+    //!
+    // The physical joystick button that corresponds to joystick
+    // virtual button #19.
+    //
+
+    CONFIG_VARIABLE_INT(joystick_physical_button19),
+
+    //!
+    // The physical joystick button that corresponds to joystick
+    // virtual button #20.
+    //
+
+    CONFIG_VARIABLE_INT(joystick_physical_button20),
+
+    //!
+    // The physical joystick button that corresponds to joystick
+    // virtual button #21.
+    //
+
+    CONFIG_VARIABLE_INT(joystick_physical_button21),
+
+    //!
+    // The physical joystick button that corresponds to joystick
+    // virtual button #22.
+    //
+
+    CONFIG_VARIABLE_INT(joystick_physical_button22),
+
+    //!
+    // The physical joystick button that corresponds to joystick
+    // virtual button #23.
+    //
+
+    CONFIG_VARIABLE_INT(joystick_physical_button23),
+
+    //!
+    // The physical joystick button that corresponds to joystick
+    // virtual button #24.
+    //
+
+    CONFIG_VARIABLE_INT(joystick_physical_button24),
+
+    //!
+    // The physical joystick button that corresponds to joystick
+    // virtual button #25.
+    //
+
+    CONFIG_VARIABLE_INT(joystick_physical_button25),
 
     //!
     // If non-zero, use the SDL_GameController interface instead of the
