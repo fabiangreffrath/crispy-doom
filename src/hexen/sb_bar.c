@@ -2197,6 +2197,16 @@ static void CheatWarpFunc(player_t * player, Cheat_t * cheat)
         P_SetMessage(player, TXT_CHEATNOMAP, true);
         return;
     }
+    // [crispy] restrict warping when DKDC is sideloaded
+    if (crispy->havedeathkings)
+    {
+        if ((gameepisode == 1 && map > 40) ||
+             gameepisode == 2 && map < 33)
+        {
+            P_SetMessage(player, TXT_CHEATBADINPUT, true);
+            return;
+        }
+    }
     if (map == gamemap)
     {                           // Don't try to teleport to current map
         P_SetMessage(player, TXT_CHEATBADINPUT, true);
