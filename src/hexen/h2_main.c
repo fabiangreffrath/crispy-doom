@@ -587,17 +587,6 @@ void D_DoomMain(void)
     //!
     // @category mod
     //
-    // Disable automatic loading of Deathkings 
-    //
-    if (!M_ParmExists("-nosideload") && gamemode != shareware &&
-        !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))
-    {
-        D_LoadHexDD();
-    }
-
-    //!
-    // @category mod
-    //
     // Disable auto-loading of .wad files.
     //
     if (!M_ParmExists("-noautoload") && gamemode != shareware)
@@ -616,6 +605,17 @@ void D_DoomMain(void)
 
     // Generate the WAD hash table.  Speed things up a bit.
     W_GenerateHashTable();
+
+    //!
+    // @category mod
+    //
+    // Disable automatic loading of Deathkings 
+    //
+    if (!M_ParmExists("-nosideload") && gamemode != shareware &&
+        !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))
+    {
+        D_LoadHexDD();
+    }
 
     I_PrintStartupBanner(gamedescription);
 
