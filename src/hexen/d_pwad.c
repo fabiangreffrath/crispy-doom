@@ -76,9 +76,9 @@ static void CheckLoadHexDD (void)
 	char *autoload_dir;
 	int i, j;
 
-	// [crispy] don't load if another PWAD already provides MAP01 / MAP41
+	// [crispy] don't load if another PWAD already provides MAP01 / MAPINFO
 	i = W_CheckNumForName("MAP01");
-	j = W_CheckNumForName("MAP41");
+	j = W_CheckNumForName("MAPINFO");
 	if ((i != -1 && !W_IsIWADLump(lumpinfo[i])) || 
 			( j != -1 && !W_IsIWADLump(lumpinfo[j])))
 	{
