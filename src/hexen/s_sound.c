@@ -964,7 +964,7 @@ void S_InitScript(void)
 {
     int i;
 
-    if (gameepisode == 2)
+    if (crispy->havedeathkings && gameepisode == 2)
         SC_OpenLump("sndinfod");
     else
         SC_OpenLump("sndinfo");

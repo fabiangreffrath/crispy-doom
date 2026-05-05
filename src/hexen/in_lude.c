@@ -191,7 +191,7 @@ static void InitStats(void)
         {
             if (oldCluster >= 1 && oldCluster <= 5)
             {
-                if (oldCluster <= 2 && gameepisode == 2)
+                if (oldCluster <= 2 && crispy->havedeathkings && gameepisode == 2)
                     M_snprintf(msgLumpName, sizeof(msgLumpName), "CLUS%dMSD", oldCluster);
                 else
                     M_snprintf(msgLumpName, sizeof(msgLumpName), "CLUS%dMSG", oldCluster);

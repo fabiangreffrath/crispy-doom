@@ -44,6 +44,7 @@ static boolean CheckHexDDLoaded (void)
 		!strcasecmp(P_GetMapName(i), "RUINED VILLAGE") &&
 	    !strcasecmp(P_GetMapName(j), "DARK CITADEL"))
 	{
+		gameepisode = 2;
 		return true;
 	}
 

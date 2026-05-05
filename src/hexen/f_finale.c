@@ -418,7 +418,7 @@ static char *GetFinaleText(int sequence)
         "win3msg"
     };
 */
-    if (gameepisode == 2)
+    if (crispy->havedeathkings && gameepisode == 2)
         M_snprintf(winMsgLumpNames, sizeof(winMsgLumpNames), "WIN%dMSGD", sequence + 1);
     else
         M_snprintf(winMsgLumpNames, sizeof(winMsgLumpNames), "WIN%dMSG", sequence + 1);
