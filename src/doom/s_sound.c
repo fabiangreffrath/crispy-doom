@@ -259,7 +259,7 @@ void S_Init(int sfxVolume, int musicVolume)
         I_SetOPLDriverVer(opl_doom_1_9);
     }
 
-    I_PrecacheSounds(S_sfx, NUMSFX);
+    I_PrecacheSounds(S_sfx, NUMSFX_ORIG);
 
     S_SetSfxVolume(sfxVolume);
     S_SetMusicVolume(musicVolume);
@@ -284,6 +284,15 @@ void S_Init(int sfxVolume, int musicVolume)
     for (i=1 ; i<NUMSFX ; i++)
     {
         S_sfx[i].lumpnum = S_sfx[i].usefulness = -1;
+    }
+
+    // [crispy] DEHEXTRA
+    for (i = sfx_fre000; i < NUMSFX; i++)
+    {
+        M_snprintf(S_sfx[i].name, 7, "fre%.3i", i - sfx_fre000);
+        S_sfx[i].priority = 127;
+        S_sfx[i].pitch = -1;
+        S_sfx[i].volume = -1;
     }
 
     // Doom defaults to pitch-shifting off.

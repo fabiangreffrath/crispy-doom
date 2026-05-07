@@ -312,7 +312,10 @@ typedef enum
     sfx_intnex,
     sfx_intnet,
     sfx_intdms,
-    NUMSFX
+    NUMSFX_ORIG,
+    // [crispy] DEHEXTRA
+    sfx_fre000 = 500,
+    NUMSFX = 700
 } sfxenum_t;
 
 #endif
