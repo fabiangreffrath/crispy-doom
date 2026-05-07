@@ -16,6 +16,7 @@
 
 
 // HEADER FILES ------------------------------------------------------------
+
 #include "m_misc.h" // [crispy] M_snprintf
 #include "h2def.h"
 #include "i_system.h"
@@ -405,10 +406,10 @@ void F_Drawer(void)
 
 static char *GetFinaleText(int sequence)
 {
-    const char *msgLumpName;
+    // const char *msgLumpName;
+    char msgLumpName[9]; // [crispy]
     int msgSize;
     int msgLump;
-    char winMsgLumpNames[9];
 
 // [crispy] construct the name instead
 /*
@@ -419,10 +420,9 @@ static char *GetFinaleText(int sequence)
     };
 */
     if (crispy->havedeathkings && gameepisode == 2)
-        M_snprintf(winMsgLumpNames, sizeof(winMsgLumpNames), "WIN%dMSGD", sequence + 1);
+        M_snprintf(msgLumpName, sizeof(msgLumpName), "WIN%dMSGD", sequence + 1);
     else
-        M_snprintf(winMsgLumpNames, sizeof(winMsgLumpNames), "WIN%dMSG", sequence + 1);
-    msgLumpName = winMsgLumpNames;
+        M_snprintf(msgLumpName, sizeof(msgLumpName), "WIN%dMSG", sequence + 1);
     msgLump = W_GetNumForName(msgLumpName);
     msgSize = W_LumpLength(msgLump);
     if (msgSize >= MAX_INTRMSN_MESSAGE_SIZE)

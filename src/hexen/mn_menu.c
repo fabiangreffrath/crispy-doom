@@ -621,6 +621,8 @@ static int G_ReloadLevel(void)
         if (demorecording)
         {
         gamemap = startmap;
+        // [crispy] might not be startepisode, due to support for multiple episodes
+        // gameepisode = startepisode;
         }
         G_DeferedInitNew(gameskill, gameepisode, gamemap);
         result = true;
