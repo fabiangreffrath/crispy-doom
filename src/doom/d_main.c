@@ -108,6 +108,7 @@ boolean         nomonsters;	// checkparm of -nomonsters
 boolean         respawnparm;	// checkparm of -respawn
 boolean         fastparm;	// checkparm of -fast
 boolean         coop_spawns = false;	// [crispy] checkparm of -coop_spawns
+boolean         coop2 = false;	// [crispy] checkparm of -coop2
 
 
 
@@ -1590,6 +1591,21 @@ void D_DoomMain (void)
     if (M_CheckParm ("-dm3"))
 	deathmatch = 3;
 
+    //!
+    // @arg <n>
+    // @category net
+    //
+    // [crispy] Start a coop game.
+    // Spawn mp monsters. Don't spawn other mp things.
+    //
+
+    p = M_ParmExists("-coop2");
+
+    if (p)
+    {
+        coop2 = true;
+    }
+    
     if (devparm)
 	DEH_printf(D_DEVSTR);
     
