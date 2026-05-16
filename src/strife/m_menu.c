@@ -2391,7 +2391,10 @@ boolean M_Responder (event_t* ev)
                 key = key_menu_forward;
             }
             joywait = I_GetTime() + 5;
+            if (menuindialog || menuactive) // [crispy] fix joystick fire delay
+            {
             joystick_fire_countdown = 5;
+            }
         }
         if (JOY_BUTTON_PRESSED(joybuse))
         {
