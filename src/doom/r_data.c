@@ -1263,7 +1263,7 @@ static void R_InitHSVColors(void)
 	{
 	    for (j = 0; j < 256; j++)
 	    {
-		cr[i][j] = V_Colorize(playpal, i, j, keepgray);
+		cr[i][j] = V_Colorize(playpal, i, j, i == CR_DARK ? false : keepgray);
 	    }
 
 	    M_snprintf(c, sizeof(c), "%c%c", cr_esc, '0' + i);
