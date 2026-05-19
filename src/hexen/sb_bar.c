@@ -2201,7 +2201,7 @@ static void CheatWarpFunc(player_t * player, Cheat_t * cheat)
     if (crispy->havedeathkings)
     {
         if ((gameepisode == 1 && map > 40) ||
-             gameepisode == 2 && map < 33)
+             (gameepisode == 2 && map < 33))
         {
             P_SetMessage(player, TXT_CHEATBADINPUT, true);
             return;
