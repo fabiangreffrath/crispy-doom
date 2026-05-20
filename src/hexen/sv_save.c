@@ -89,6 +89,7 @@ typedef struct
 
 // EXTERNAL FUNCTION PROTOTYPES --------------------------------------------
 
+extern void S_InitScript(void); // [crispy] support multiple episodes
 void P_SpawnPlayer(mapthing_t * mthing);
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
@@ -2151,6 +2152,10 @@ void SV_LoadGame(int slot)
 
     // [crispy] read more extended savegame data for game
     SV_ReadExtendedSaveGameData(EXTSAVEG_GAME);
+
+    // [crispy] re-init scripts and mapinfo to support multiple episodes
+    S_InitScript();
+    InitMapInfo();
 
     // Save player structs
     for (i = 0; i < maxplayers; i++)
