@@ -419,6 +419,7 @@ static char *GetFinaleText(int sequence)
         "win3msg"
     };
 */
+    // [crispy] add suffix for Deathkings
     if (crispy->havedeathkings && gameepisode == 2)
         M_snprintf(msgLumpName, sizeof(msgLumpName), "WIN%dMSGD", sequence + 1);
     else

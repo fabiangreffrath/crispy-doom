@@ -964,6 +964,7 @@ void S_InitScript(void)
 {
     int i;
 
+    // [crispy] add suffix for Deathkings
     if (crispy->havedeathkings && gameepisode == 2)
         SC_OpenLump("sndinfod");
     else

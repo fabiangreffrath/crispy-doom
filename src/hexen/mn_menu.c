@@ -66,7 +66,7 @@ typedef enum
 typedef enum
 {
     MENU_MAIN,
-    MENU_EPISODE, // [crispy] Hexen / DKDC selection
+    MENU_EPISODE, // [crispy] Hexen / Deathkings selection
     MENU_CLASS,
     MENU_SKILL,
     MENU_OPTIONS,
@@ -1367,6 +1367,7 @@ static boolean SCNetCheck(int option)
 static void SCNetCheck2(int option)
 {
     SCNetCheck(option);
+    // [crispy] go to episode selection if Deathkings is sideloaded
     if (crispy->havedeathkings)
         SetMenu(MENU_EPISODE);
     else

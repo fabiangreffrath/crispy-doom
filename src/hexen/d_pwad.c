@@ -32,14 +32,14 @@
 extern char *iwadfile;
 
 // [crispy] check if HEXDD.WAD is already loaded as a PWAD
-static boolean CheckHexDDLoaded (void)
+static boolean CheckHEXDDLoaded (void)
 {
 	int i, j;
 
 	i = P_TranslateMap(1);
 	j = P_TranslateMap(20);
 
-	// Check if HexDD is already loaded by checking MapInfo Mapnames for warptarget 1 and 20
+	// Check if HEXDD.WAD is already loaded by checking MapInfo Mapnames for warptarget 1 and 20
 	if (i >= 0 && j >= 0 &&
 		!strcasecmp(P_GetMapName(i), "RUINED VILLAGE") &&
 	    !strcasecmp(P_GetMapName(j), "DARK CITADEL"))
@@ -51,7 +51,7 @@ static boolean CheckHexDDLoaded (void)
 	return false;
 }
 
-static const lump_rename_t dd_lumps [] = {
+static const lump_rename_t hexdd_lumps [] = {
 	{"TITLE", 	 "TITLED"},
 	{"HELP1",    "HELP1D"},
 	{"HELP2",    "HELP2D"},
@@ -67,11 +67,10 @@ static const lump_rename_t dd_lumps [] = {
 	{"WIN2MSG",  "WIN2MSGD"},
 	{"WIN3MSG",  "WIN3MSGD"},
 	{"SNDINFO",  "SNDINFOD"},
-
 };
 
 // [crispy] auto-load HEXDD.WAD if available
-static void CheckLoadHexDD (void)
+static void CheckLoadHEXDD (void)
 {
 	const char *dd_basename;
 	char *autoload_dir;
@@ -80,8 +79,8 @@ static void CheckLoadHexDD (void)
 	// [crispy] don't load if another PWAD already provides MAP01 / MAPINFO
 	i = W_CheckNumForName("MAP01");
 	j = W_CheckNumForName("MAPINFO");
-	if ((i != -1 && !W_IsIWADLump(lumpinfo[i])) || 
-			( j != -1 && !W_IsIWADLump(lumpinfo[j])))
+	if ((i != -1 && !W_IsIWADLump(lumpinfo[i])) ||
+		(j != -1 && !W_IsIWADLump(lumpinfo[j])))
 	{
 		return;
 	}
@@ -123,15 +122,15 @@ static void CheckLoadHexDD (void)
 		strcat(lumpinfo[j]->name, "D");
 	}
 
-    // [crispy] rename intrusive DKDC graphics, demos and music lumps out
+    // [crispy] rename intrusive Deathkings graphics, demos and music lumps out
     // of the way
-    for (i = 0; i < arrlen(dd_lumps); i++)
+    for (i = 0; i < arrlen(hexdd_lumps); i++)
     {
-        j = W_CheckNumForName(dd_lumps[i].name);
+        j = W_CheckNumForName(hexdd_lumps[i].name);
 
         if (j != -1 && !strcasecmp(W_WadNameForLump(lumpinfo[j]), dd_basename))
         {
-            memcpy(lumpinfo[j]->name, dd_lumps[i].new_name, 8);
+            memcpy(lumpinfo[j]->name, hexdd_lumps[i].new_name, 8);
         }
     }
 
@@ -140,7 +139,7 @@ static void CheckLoadHexDD (void)
 	{
 		if ((autoload_dir = M_GetAutoloadDir(dd_basename, false)))
 		{
-			W_AutoLoadWADsRename(autoload_dir, dd_lumps, arrlen(dd_lumps));
+			W_AutoLoadWADsRename(autoload_dir, hexdd_lumps, arrlen(hexdd_lumps));
 			//DEH_AutoLoadPatches(autoload_dir);
 			free(autoload_dir);
 		}
@@ -152,12 +151,12 @@ static void CheckLoadHexDD (void)
 	return;
 }
 
-void D_LoadHexDD()
+void D_LoadHEXDD()
 {
-		// [crispy] check if HEXDD.WAD is already loaded as a PWAD
-	if (!CheckHexDDLoaded())
+	// [crispy] check if HEXDD.WAD is already loaded as a PWAD
+	if (!CheckHEXDDLoaded())
 	{
 		// [crispy] else auto-load HEXDD.WAD if available
-		CheckLoadHexDD();
+		CheckLoadHEXDD();
 	}
 }

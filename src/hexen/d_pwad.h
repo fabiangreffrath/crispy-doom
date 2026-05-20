@@ -22,7 +22,7 @@
 #ifndef __D_PWAD__
 #define __D_PWAD__
 
-void D_LoadHexDD(void);
+void D_LoadHEXDD(void);
 
 #endif
 
