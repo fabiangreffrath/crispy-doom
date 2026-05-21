@@ -2185,7 +2185,7 @@ void G_DeferredNewGame(skill_t skill)
     {
         G_CheckDemoStatus();
         Z_Free(demoname);
-        G_RecordDemo(skill, 1, gameepisode, 1, orig_demoname);
+        G_RecordDemo(skill, 1, gameepisode, startmap, orig_demoname);
     }
 }
 
