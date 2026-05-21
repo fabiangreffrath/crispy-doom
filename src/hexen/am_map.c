@@ -2049,6 +2049,7 @@ static void DrawWorldTimer(void)
     int minutes;
     int seconds;
     int worldTimer;
+    int offset_h = right_widget_h; // [crispy]
     char timeBuffer[15];
     char dayBuffer[20];
 
@@ -2063,9 +2064,18 @@ static void DrawWorldTimer(void)
     worldTimer -= minutes * 60;
     seconds = worldTimer;
 
+    // [crispy] 30px spacing on active powers to avoid
+    // overlapping with the world timer
+    if (!offset_h &&
+        (players[consoleplayer].powers[pw_invulnerability] ||
+         players[consoleplayer].powers[pw_minotaur]))
+    {
+        offset_h = 30;
+    }
+
     M_snprintf(timeBuffer, sizeof(timeBuffer),
                "%.2d : %.2d : %.2d", hours, minutes, seconds);
-    MN_DrTextA(timeBuffer, 240 + WIDESCREENDELTA, 8 + right_widget_h);
+    MN_DrTextA(timeBuffer, 240 + WIDESCREENDELTA, 8 + offset_h);
 
     if (days)
     {
@@ -2077,10 +2087,10 @@ static void DrawWorldTimer(void)
         {
             M_snprintf(dayBuffer, sizeof(dayBuffer), "%.2d DAYS", days);
         }
-        MN_DrTextA(dayBuffer, 240 + WIDESCREENDELTA, 20 + right_widget_h);
+        MN_DrTextA(dayBuffer, 240 + WIDESCREENDELTA, 20 + offset_h);
         if (days >= 5)
         {
-            MN_DrTextA("YOU FREAK!!!", 230, 35 + right_widget_h);
+            MN_DrTextA("YOU FREAK!!!", 230, 35 + offset_h);
         }
     }
 }
