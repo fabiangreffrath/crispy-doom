@@ -2070,7 +2070,7 @@ static void DrawWorldTimer(void)
         (players[consoleplayer].powers[pw_invulnerability] ||
          players[consoleplayer].powers[pw_minotaur]))
     {
-        offset_h = 30;
+        offset_h = 26;
     }
 
     M_snprintf(timeBuffer, sizeof(timeBuffer),
