@@ -220,12 +220,14 @@ int             mousex;
 int             mousey;         
 
 // [crispy] for rounding error
+// [cronopio] f64 -> f32: CronoVM translator rejects double. Mouse input is
+// always 0 on this console, so float precision is behaviour-preserving here.
 typedef struct carry_s
 {
-    double angle;
-    double pitch;
-    double side;
-    double vert;
+    float angle;
+    float pitch;
+    float side;
+    float vert;
 } carry_t;
 
 static carry_t prevcarry;
@@ -274,7 +276,7 @@ int G_CmdChecksum (ticcmd_t* cmd)
     return sum; 
 } 
 
-static boolean WeaponSelectable(weapontype_t weapon)
+static CRON_NOINLINE boolean WeaponSelectable(weapontype_t weapon)
 {
     // Can't select the super shotgun in Doom 1.
 
@@ -311,7 +313,7 @@ static boolean WeaponSelectable(weapontype_t weapon)
     return true;
 }
 
-static int G_NextWeapon(int direction)
+static CRON_NOINLINE int G_NextWeapon(int direction)
 {
     weapontype_t weapon;
     int start_i, i;
@@ -362,18 +364,23 @@ boolean speedkeydown (void)
 }
 
 // [crispy] for carrying rounding error
-static int CarryError(double value, const double *prevcarry, double *carry)
+// [cronopio] f64 -> f32 throughout (translator rejects double).
+static CRON_NOINLINE int CarryError(float value, const float *prevcarry, float *carry)
 {
-    const double desired = value + *prevcarry;
-    const int actual = lround(desired);
+    const float desired = value + *prevcarry;
+    const int actual = CVM_LRoundF(desired);
     *carry = desired - actual;
 
     return actual;
 }
 
-static short CarryAngle(double angle)
+static short CarryAngle(float angle)
 {
-    if (lowres_turn && abs(angle + prevcarry.angle) < 128)
+    // [cronopio] clang lowers fabsf() to the llvm.fabs.f32 intrinsic, which the
+    // translator does not yet lower. Use an explicit branch instead.
+    float carry_sum = angle + prevcarry.angle;
+    float carry_abs = CVM_FAbsF(carry_sum);
+    if (lowres_turn && carry_abs < 128.0f)
     {
         carry.angle = angle + prevcarry.angle;
         return 0;
@@ -384,44 +391,44 @@ static short CarryAngle(double angle)
     }
 }
 
-static short CarryPitch(double pitch)
+static short CarryPitch(float pitch)
 {
     return CarryError(pitch, &prevcarry.pitch, &carry.pitch);
 }
 
-static int CarryMouseVert(double vert)
+static CRON_NOINLINE int CarryMouseVert(float vert)
 {
     return CarryError(vert, &prevcarry.vert, &carry.vert);
 }
 
-static int CarryMouseSide(double side)
+static CRON_NOINLINE int CarryMouseSide(float side)
 {
-    const double desired = side + prevcarry.side;
-    const int actual = lround(side * 0.5) * 2; // Even values only.
+    const float desired = side + prevcarry.side;
+    const int actual = CVM_LRoundF(side * 0.5f) * 2; // Even values only.
     carry.side = desired - actual;
     return actual;
 }
 
-static double CalcMouseAngle(int mousex)
+static float CalcMouseAngle(int mousex)
 {
     if (!mouseSensitivity)
-        return 0.0;
+        return 0.0f;
 
     return (I_AccelerateMouse(mousex) * (mouseSensitivity + 5) * 8 / 10);
 }
 
-static double CalcMouseSide(int mousex)
+static float CalcMouseSide(int mousex)
 {
     if (!mouseSensitivity_x2)
-        return 0.0;
+        return 0.0f;
 
     return (I_AccelerateMouse(mousex) * (mouseSensitivity_x2 + 5) * 2 / 10);
 }
 
-static double CalcMouseVert(int mousey)
+static float CalcMouseVert(int mousey)
 {
     if (!mouseSensitivity_y)
-        return 0.0;
+        return 0.0f;
 
     return (I_AccelerateMouseY(mousey) * (mouseSensitivity_y + 5) / 10);
 }
@@ -432,11 +439,310 @@ static double CalcMouseVert(int mousey)
 // or reads it from the demo buffer. 
 // If recording a demo, write it out 
 // 
+// [cronopio] Extracted from G_BuildTiccmd to reduce its register
+// pressure (the translator allocator has no spill path). These
+// always-run / novert / IDMYPOS toggle blocks use only `player`.
+static CRON_NOINLINE void G_BuildTiccmd_Toggles (player_t *player)
+{
+    static char playermessage[48];
+    // [crispy] toggle "always run"
+    if (gamekeydown[key_toggleautorun])
+    {
+        static int joybspeed_old = 2;
+
+        if (joybspeed >= MAX_JOY_BUTTONS)
+        {
+            joybspeed = joybspeed_old;
+        }
+        else
+        {
+            joybspeed_old = joybspeed;
+            joybspeed = MAX_JOY_BUTTONS;
+        }
+
+        M_snprintf(playermessage, sizeof(playermessage), "ALWAYS RUN %s%s",
+            crstr[CR_GREEN],
+            (joybspeed >= MAX_JOY_BUTTONS) ? "ON" : "OFF");
+        player->message = playermessage;
+        S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
+
+        gamekeydown[key_toggleautorun] = false;
+    }
+
+    // [crispy] Toggle vertical mouse movement
+    if (gamekeydown[key_togglenovert])
+    {
+        novert = !novert;
+
+        M_snprintf(playermessage, sizeof(playermessage),
+            "vertical mouse movement %s%s",
+            crstr[CR_GREEN],
+            !novert ? "ON" : "OFF");
+        player->message = playermessage;
+        S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
+
+        gamekeydown[key_togglenovert] = false;
+    }
+
+    // [crispy] extra high precision IDMYPOS variant, updates for 10 seconds
+    if (player->powers[pw_mapcoords])
+    {
+        // [cronopio] integer coords (no float varargs -> no f64 promotion)
+        M_snprintf(playermessage, sizeof(playermessage),
+            "X=%d.%03d Y=%d.%03d A=%d",
+            player->mo->x >> FRACBITS,
+            (int)(((player->mo->x & (FRACUNIT-1)) * 1000) >> FRACBITS),
+            player->mo->y >> FRACBITS,
+            (int)(((player->mo->y & (FRACUNIT-1)) * 1000) >> FRACBITS),
+            player->mo->angle >> 24);
+        player->message = playermessage;
+
+        player->powers[pw_mapcoords]--;
+
+        // [crispy] discard instead of going static
+        if (!player->powers[pw_mapcoords])
+        {
+            player->message = "";
+        }
+    }
+}
+
+// [cronopio] Mouse/strafe double-click "use" detection extracted from
+// G_BuildTiccmd to reduce its register pressure.
+static CRON_NOINLINE void G_BuildTiccmd_DClick (ticcmd_t *cmd)
+{
+    boolean bstrafe;
+    if (dclick_use)
+    {
+        // forward double click
+        if (mousebuttons[mousebforward] != dclickstate && dclicktime > 1 ) 
+        { 
+            dclickstate = mousebuttons[mousebforward]; 
+            if (dclickstate) 
+                dclicks++; 
+            if (dclicks == 2) 
+            { 
+                cmd->buttons |= BT_USE; 
+                dclicks = 0; 
+            } 
+            else 
+                dclicktime = 0; 
+        } 
+        else 
+        { 
+            dclicktime += ticdup; 
+            if (dclicktime > 20) 
+            { 
+                dclicks = 0; 
+                dclickstate = 0; 
+            } 
+        }
+        
+        // strafe double click
+        bstrafe =
+            mousebuttons[mousebstrafe] 
+            || joybuttons[joybstrafe]; 
+        if (bstrafe != dclickstate2 && dclicktime2 > 1 ) 
+        { 
+            dclickstate2 = bstrafe; 
+            if (dclickstate2) 
+                dclicks2++; 
+            if (dclicks2 == 2) 
+            { 
+                cmd->buttons |= BT_USE; 
+                dclicks2 = 0; 
+            } 
+            else 
+                dclicktime2 = 0; 
+        } 
+        else 
+        { 
+            dclicktime2 += ticdup; 
+            if (dclicktime2 > 20) 
+            { 
+                dclicks2 = 0; 
+                dclickstate2 = 0; 
+            } 
+        } 
+    }
+}
+
+// [cronopio] Keyboard/joystick movement accumulation extracted from
+// G_BuildTiccmd to keep it within the translator register budget.
+// forward/side/look/angle are read-modify-write, passed by pointer.
+static CRON_NOINLINE void G_BuildTiccmd_Movement (ticcmd_t *cmd,
+        int strafe, int speed, int tspeed, int lspeed,
+        int *forward, int *side, int *look, int *angle)
+{
+    // let movement keys cancel each other out
+    if (strafe) 
+    { 
+        if (!cmd->angleturn)
+        {
+            if (gamekeydown[key_right] || mousebuttons[mousebturnright])
+            {
+                // fprintf(stderr, "strafe right\n");
+                (*side) += sidemove[speed];
+            }
+            if (gamekeydown[key_left] || mousebuttons[mousebturnleft])
+            {
+                //	fprintf(stderr, "strafe left\n");
+                (*side) -= sidemove[speed];
+            }
+            if (use_analog && joyxmove)
+            {
+                joyxmove = joyxmove * joystick_move_sensitivity / 10;
+                joyxmove = BETWEEN(-FRACUNIT, FRACUNIT, joyxmove);
+                (*side) += FixedMul(sidemove[speed], joyxmove);
+            }
+            else if (joystick_move_sensitivity)
+            {
+                if (joyxmove > 0)
+                    (*side) += sidemove[speed];
+                if (joyxmove < 0)
+                    (*side) -= sidemove[speed];
+            }
+        }
+    } 
+    else 
+    { 
+	if (gamekeydown[key_right] || mousebuttons[mousebturnright])
+	    (*angle) -= angleturn[tspeed];
+	if (gamekeydown[key_left] || mousebuttons[mousebturnleft])
+	    (*angle) += angleturn[tspeed];
+        if (use_analog && joyxmove)
+        {
+            // Cubic response curve allows for finer control when stick
+            // deflection is small.
+            joyxmove = FixedMul(FixedMul(joyxmove, joyxmove), joyxmove);
+            joyxmove = joyxmove * joystick_turn_sensitivity / 10;
+            (*angle) -= FixedMul(angleturn[1], joyxmove);
+        }
+        else if (joystick_turn_sensitivity)
+        {
+            if (joyxmove > 0)
+                (*angle) -= angleturn[tspeed];
+            if (joyxmove < 0)
+                (*angle) += angleturn[tspeed];
+        }
+    } 
+ 
+    if (gamekeydown[key_up] || gamekeydown[key_alt_up]) // [crispy] add key_alt_*
+    {
+	// fprintf(stderr, "up\n");
+	(*forward) += forwardmove[speed]; 
+    }
+    if (gamekeydown[key_down] || gamekeydown[key_alt_down]) // [crispy] add key_alt_*
+    {
+	// fprintf(stderr, "down\n");
+	(*forward) -= forwardmove[speed]; 
+    }
+
+    if (use_analog && joyymove)
+    {
+        joyymove = joyymove * joystick_move_sensitivity / 10;
+        joyymove = BETWEEN(-FRACUNIT, FRACUNIT, joyymove);
+        (*forward) -= FixedMul(forwardmove[speed], joyymove);
+    }
+    else if (joystick_move_sensitivity)
+    {
+        if (joyymove < 0)
+            (*forward) += forwardmove[speed];
+        if (joyymove > 0)
+            (*forward) -= forwardmove[speed];
+    }
+
+    if (gamekeydown[key_strafeleft] || gamekeydown[key_alt_strafeleft] // [crispy] add key_alt_*
+     || joybuttons[joybstrafeleft]
+     || mousebuttons[mousebstrafeleft])
+    {
+        (*side) -= sidemove[speed];
+    }
+
+    if (gamekeydown[key_straferight] || gamekeydown[key_alt_straferight] // [crispy] add key_alt_*
+     || joybuttons[joybstraferight]
+     || mousebuttons[mousebstraferight])
+    {
+        (*side) += sidemove[speed]; 
+    }
+
+    if (use_analog && joystrafemove)
+    {
+        joystrafemove = joystrafemove * joystick_move_sensitivity / 10;
+        joystrafemove = BETWEEN(-FRACUNIT, FRACUNIT, joystrafemove);
+        (*side) += FixedMul(sidemove[speed], joystrafemove);
+    }
+    else if (joystick_move_sensitivity)
+    {
+        if (joystrafemove < 0)
+            (*side) -= sidemove[speed];
+        if (joystrafemove > 0)
+            (*side) += sidemove[speed];
+    }
+
+    // [crispy] (*look) up/down/center keys
+    if (crispy->freelook)
+    {
+        static unsigned int kbdlookctrl = 0;
+
+        if (gamekeydown[key_lookup])
+        {
+            (*look) = lspeed;
+            kbdlookctrl += ticdup;
+        }
+        else
+        if (gamekeydown[key_lookdown])
+        {
+            (*look) = -lspeed;
+            kbdlookctrl += ticdup;
+        }
+        else
+        if (joylook && joystick_look_sensitivity)
+        {
+            if (use_analog)
+            {
+                joylook = joylook * joystick_look_sensitivity / 10;
+                joylook = BETWEEN(-FRACUNIT, FRACUNIT, joylook);
+                (*look) = -FixedMul(2, joylook);
+            }
+            else
+            {
+                if (joylook < 0)
+                {
+                    (*look) = lspeed;
+                }
+
+                if (joylook > 0)
+                {
+                    (*look) = -lspeed;
+                }
+            }
+            kbdlookctrl += ticdup;
+        }
+        else
+        // [crispy] keyboard lookspring
+        if (gamekeydown[key_lookcenter] || (crispy->freelook == FREELOOK_SPRING && kbdlookctrl))
+        {
+            (*look) = TOCENTER;
+            kbdlookctrl = 0;
+        }
+    }
+
+    // [crispy] jump keys
+    if (critical->jump)
+    {
+        if (gamekeydown[key_jump] || mousebuttons[mousebjump]
+            || joybuttons[joybjump])
+        {
+            cmd->arti |= AFLAG_JUMP;
+        }
+    }
+}
+
 void G_BuildTiccmd (ticcmd_t* cmd, int maketic) 
 { 
-    int		i; 
+    int		i;
     boolean	strafe;
-    boolean	bstrafe; 
     int		speed;
     int		tspeed; 
     int		lspeed;
@@ -446,7 +752,6 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
     int		side;
     int		look;
     player_t *const player = &players[consoleplayer];
-    static char playermessage[48];
 
     // [crispy] For fast polling.
     G_PrepTiccmd();
@@ -513,227 +818,9 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
         mousebuttons[mousebreverse] = false;
     }
 
-    // [crispy] toggle "always run"
-    if (gamekeydown[key_toggleautorun])
-    {
-        static int joybspeed_old = 2;
+    G_BuildTiccmd_Toggles(player);
 
-        if (joybspeed >= MAX_JOY_BUTTONS)
-        {
-            joybspeed = joybspeed_old;
-        }
-        else
-        {
-            joybspeed_old = joybspeed;
-            joybspeed = MAX_JOY_BUTTONS;
-        }
-
-        M_snprintf(playermessage, sizeof(playermessage), "ALWAYS RUN %s%s",
-            crstr[CR_GREEN],
-            (joybspeed >= MAX_JOY_BUTTONS) ? "ON" : "OFF");
-        player->message = playermessage;
-        S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
-
-        gamekeydown[key_toggleautorun] = false;
-    }
-
-    // [crispy] Toggle vertical mouse movement
-    if (gamekeydown[key_togglenovert])
-    {
-        novert = !novert;
-
-        M_snprintf(playermessage, sizeof(playermessage),
-            "vertical mouse movement %s%s",
-            crstr[CR_GREEN],
-            !novert ? "ON" : "OFF");
-        player->message = playermessage;
-        S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
-
-        gamekeydown[key_togglenovert] = false;
-    }
-
-    // [crispy] extra high precision IDMYPOS variant, updates for 10 seconds
-    if (player->powers[pw_mapcoords])
-    {
-        M_snprintf(playermessage, sizeof(playermessage),
-            "X=%.10f Y=%.10f A=%d",
-            (double)player->mo->x/FRACUNIT,
-            (double)player->mo->y/FRACUNIT,
-            player->mo->angle >> 24);
-        player->message = playermessage;
-
-        player->powers[pw_mapcoords]--;
-
-        // [crispy] discard instead of going static
-        if (!player->powers[pw_mapcoords])
-        {
-            player->message = "";
-        }
-    }
-
-    // let movement keys cancel each other out
-    if (strafe) 
-    { 
-        if (!cmd->angleturn)
-        {
-            if (gamekeydown[key_right] || mousebuttons[mousebturnright])
-            {
-                // fprintf(stderr, "strafe right\n");
-                side += sidemove[speed];
-            }
-            if (gamekeydown[key_left] || mousebuttons[mousebturnleft])
-            {
-                //	fprintf(stderr, "strafe left\n");
-                side -= sidemove[speed];
-            }
-            if (use_analog && joyxmove)
-            {
-                joyxmove = joyxmove * joystick_move_sensitivity / 10;
-                joyxmove = BETWEEN(-FRACUNIT, FRACUNIT, joyxmove);
-                side += FixedMul(sidemove[speed], joyxmove);
-            }
-            else if (joystick_move_sensitivity)
-            {
-                if (joyxmove > 0)
-                    side += sidemove[speed];
-                if (joyxmove < 0)
-                    side -= sidemove[speed];
-            }
-        }
-    } 
-    else 
-    { 
-	if (gamekeydown[key_right] || mousebuttons[mousebturnright])
-	    angle -= angleturn[tspeed];
-	if (gamekeydown[key_left] || mousebuttons[mousebturnleft])
-	    angle += angleturn[tspeed];
-        if (use_analog && joyxmove)
-        {
-            // Cubic response curve allows for finer control when stick
-            // deflection is small.
-            joyxmove = FixedMul(FixedMul(joyxmove, joyxmove), joyxmove);
-            joyxmove = joyxmove * joystick_turn_sensitivity / 10;
-            angle -= FixedMul(angleturn[1], joyxmove);
-        }
-        else if (joystick_turn_sensitivity)
-        {
-            if (joyxmove > 0)
-                angle -= angleturn[tspeed];
-            if (joyxmove < 0)
-                angle += angleturn[tspeed];
-        }
-    } 
- 
-    if (gamekeydown[key_up] || gamekeydown[key_alt_up]) // [crispy] add key_alt_*
-    {
-	// fprintf(stderr, "up\n");
-	forward += forwardmove[speed]; 
-    }
-    if (gamekeydown[key_down] || gamekeydown[key_alt_down]) // [crispy] add key_alt_*
-    {
-	// fprintf(stderr, "down\n");
-	forward -= forwardmove[speed]; 
-    }
-
-    if (use_analog && joyymove)
-    {
-        joyymove = joyymove * joystick_move_sensitivity / 10;
-        joyymove = BETWEEN(-FRACUNIT, FRACUNIT, joyymove);
-        forward -= FixedMul(forwardmove[speed], joyymove);
-    }
-    else if (joystick_move_sensitivity)
-    {
-        if (joyymove < 0)
-            forward += forwardmove[speed];
-        if (joyymove > 0)
-            forward -= forwardmove[speed];
-    }
-
-    if (gamekeydown[key_strafeleft] || gamekeydown[key_alt_strafeleft] // [crispy] add key_alt_*
-     || joybuttons[joybstrafeleft]
-     || mousebuttons[mousebstrafeleft])
-    {
-        side -= sidemove[speed];
-    }
-
-    if (gamekeydown[key_straferight] || gamekeydown[key_alt_straferight] // [crispy] add key_alt_*
-     || joybuttons[joybstraferight]
-     || mousebuttons[mousebstraferight])
-    {
-        side += sidemove[speed]; 
-    }
-
-    if (use_analog && joystrafemove)
-    {
-        joystrafemove = joystrafemove * joystick_move_sensitivity / 10;
-        joystrafemove = BETWEEN(-FRACUNIT, FRACUNIT, joystrafemove);
-        side += FixedMul(sidemove[speed], joystrafemove);
-    }
-    else if (joystick_move_sensitivity)
-    {
-        if (joystrafemove < 0)
-            side -= sidemove[speed];
-        if (joystrafemove > 0)
-            side += sidemove[speed];
-    }
-
-    // [crispy] look up/down/center keys
-    if (crispy->freelook)
-    {
-        static unsigned int kbdlookctrl = 0;
-
-        if (gamekeydown[key_lookup])
-        {
-            look = lspeed;
-            kbdlookctrl += ticdup;
-        }
-        else
-        if (gamekeydown[key_lookdown])
-        {
-            look = -lspeed;
-            kbdlookctrl += ticdup;
-        }
-        else
-        if (joylook && joystick_look_sensitivity)
-        {
-            if (use_analog)
-            {
-                joylook = joylook * joystick_look_sensitivity / 10;
-                joylook = BETWEEN(-FRACUNIT, FRACUNIT, joylook);
-                look = -FixedMul(2, joylook);
-            }
-            else
-            {
-                if (joylook < 0)
-                {
-                    look = lspeed;
-                }
-
-                if (joylook > 0)
-                {
-                    look = -lspeed;
-                }
-            }
-            kbdlookctrl += ticdup;
-        }
-        else
-        // [crispy] keyboard lookspring
-        if (gamekeydown[key_lookcenter] || (crispy->freelook == FREELOOK_SPRING && kbdlookctrl))
-        {
-            look = TOCENTER;
-            kbdlookctrl = 0;
-        }
-    }
-
-    // [crispy] jump keys
-    if (critical->jump)
-    {
-        if (gamekeydown[key_jump] || mousebuttons[mousebjump]
-            || joybuttons[joybjump])
-        {
-            cmd->arti |= AFLAG_JUMP;
-        }
-    }
+    G_BuildTiccmd_Movement(cmd, strafe, speed, tspeed, lspeed, &forward, &side, &look, &angle);
 
     // buttons
     cmd->chatchar = HU_dequeueChatChar(); 
@@ -790,65 +877,13 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
         forward -= forwardmove[speed];
     }
 
-    if (dclick_use)
-    {
-        // forward double click
-        if (mousebuttons[mousebforward] != dclickstate && dclicktime > 1 ) 
-        { 
-            dclickstate = mousebuttons[mousebforward]; 
-            if (dclickstate) 
-                dclicks++; 
-            if (dclicks == 2) 
-            { 
-                cmd->buttons |= BT_USE; 
-                dclicks = 0; 
-            } 
-            else 
-                dclicktime = 0; 
-        } 
-        else 
-        { 
-            dclicktime += ticdup; 
-            if (dclicktime > 20) 
-            { 
-                dclicks = 0; 
-                dclickstate = 0; 
-            } 
-        }
-        
-        // strafe double click
-        bstrafe =
-            mousebuttons[mousebstrafe] 
-            || joybuttons[joybstrafe]; 
-        if (bstrafe != dclickstate2 && dclicktime2 > 1 ) 
-        { 
-            dclickstate2 = bstrafe; 
-            if (dclickstate2) 
-                dclicks2++; 
-            if (dclicks2 == 2) 
-            { 
-                cmd->buttons |= BT_USE; 
-                dclicks2 = 0; 
-            } 
-            else 
-                dclicktime2 = 0; 
-        } 
-        else 
-        { 
-            dclicktime2 += ticdup; 
-            if (dclicktime2 > 20) 
-            { 
-                dclicks2 = 0; 
-                dclickstate2 = 0; 
-            } 
-        } 
-    }
+    G_BuildTiccmd_DClick(cmd);
 
     // [crispy] mouse look
     if ((crispy->freelook && mousebuttons[mousebmouselook]) ||
          crispy->mouselook)
     {
-        const double vert = CalcMouseVert(mousey);
+        const float vert = CalcMouseVert(mousey);
         cmd->lookdir += mouse_y_invert ? CarryPitch(-vert) : CarryPitch(vert);
     }
     else
@@ -915,7 +950,7 @@ void G_BuildTiccmd (ticcmd_t* cmd, int maketic)
 
     // [crispy]
     localview.angle = 0;
-    localview.rawangle = 0.0;
+    localview.rawangle = 0.0f;
     prevcarry = carry;
 
     // [crispy] lookdir delta is stored in the lower 4 bits of the lookfly variable
@@ -1170,7 +1205,7 @@ void G_DoLoadLevel (void)
     }
 } 
 
-static void SetJoyButtons(unsigned int buttons_mask)
+static CRON_NOINLINE void SetJoyButtons(unsigned int buttons_mask)
 {
     int i;
 
@@ -1198,7 +1233,7 @@ static void SetJoyButtons(unsigned int buttons_mask)
     }
 }
 
-static void SetMouseButtons(unsigned int buttons_mask)
+static CRON_NOINLINE void SetMouseButtons(unsigned int buttons_mask)
 {
     int i;
 
@@ -1406,7 +1441,7 @@ void G_PrepTiccmd (void)
 
     if (mousey && crispy->mouselook)
     {
-        const double vert = CalcMouseVert(mousey);
+        const float vert = CalcMouseVert(mousey);
         basecmd.lookdir += mouse_y_invert ?
                             CarryPitch(-vert): CarryPitch(vert);
         mousey = 0;
@@ -1414,7 +1449,7 @@ void G_PrepTiccmd (void)
 }
 
 // [crispy] re-read game parameters from command line
-static void G_ReadGameParms (void)
+static CRON_NOINLINE void G_ReadGameParms (void)
 {
     respawnparm = M_CheckParm ("-respawn");
     fastparm = M_CheckParm ("-fast");
@@ -1422,7 +1457,7 @@ static void G_ReadGameParms (void)
 }
  
 // [crispy] take a screenshot after rendering the next frame
-static void G_CrispyScreenShot()
+static CRON_NOINLINE void G_CrispyScreenShot()
 {
 	// [crispy] increase screenshot filename limit
 	V_ScreenShot("DOOM%04i.%s");
@@ -2016,31 +2051,31 @@ void G_SecretExitLevel (void)
 
 // [crispy] format time for level statistics
 #define TIMESTRSIZE 16
-static void G_FormatLevelStatTime(char *str, int tics)
+static CRON_NOINLINE void G_FormatLevelStatTime(char *str, int tics)
 {
-    int exitHours, exitMinutes;
-    float exitTime, exitSeconds;
-
-    exitTime = (float) tics / 35;
-    exitHours = exitTime / 3600;
-    exitTime -= exitHours * 3600;
-    exitMinutes = exitTime / 60;
-    exitTime -= exitMinutes * 60;
-    exitSeconds = exitTime;
+    // [cronopio] integer-only formatting (no float varargs -> no f64 promote).
+    // centiseconds = tics * 100 / 35, exact enough for the stat display.
+    int totalCenti = (tics * 100) / 35;
+    int exitSecondsW = totalCenti / 100;
+    int exitCenti    = totalCenti % 100;
+    int exitHours    = exitSecondsW / 3600;
+    int exitMinutes  = (exitSecondsW / 60) % 60;
+    int exitSeconds  = exitSecondsW % 60;
 
     if (exitHours)
     {
-        M_snprintf(str, TIMESTRSIZE, "%d:%02d:%05.2f",
-                    exitHours, exitMinutes, exitSeconds);
+        M_snprintf(str, TIMESTRSIZE, "%d:%02d:%02d.%02d",
+                    exitHours, exitMinutes, exitSeconds, exitCenti);
     }
     else
     {
-        M_snprintf(str, TIMESTRSIZE, "%01d:%05.2f", exitMinutes, exitSeconds);
+        M_snprintf(str, TIMESTRSIZE, "%01d:%02d.%02d",
+                    exitMinutes, exitSeconds, exitCenti);
     }
 }
 
 // [crispy] Write level statistics upon exit
-static void G_WriteLevelStat(void)
+static CRON_NOINLINE void G_WriteLevelStat(void)
 {
     FILE *fstream;
 
@@ -3018,7 +3053,7 @@ void G_ReadDemoTiccmd (ticcmd_t* cmd)
 
 // Increase the size of the demo buffer to allow unlimited demos
 
-static void IncreaseDemoBuffer(void)
+static CRON_NOINLINE void IncreaseDemoBuffer(void)
 {
     int current_length;
     byte *new_demobuffer;
@@ -3252,6 +3287,8 @@ static const char *DemoVersionDescription(int version)
             return "v1.8";
         case 109:
             return "v1.9";
+        case 110: // [cronopio] fill gap so the switch.table has no poison hole
+            return "v1.91 hack demo?";
         case 111:
             return "v1.91 hack demo?";
         default:
@@ -3487,17 +3524,24 @@ static size_t WriteCmdLineLump(MEMFILE *stream)
         }
     }
 
+    // [cronopio] Filled the gap enum values (1.5/1.7/1.8/hacx) with explicit
+    // cases so clang lowers this to a *dense* string-pointer switch.table with
+    // no `ptr poison` holes; the translator can't serialize poison entries.
     switch (gameversion)
     {
         case exe_doom_1_2:
             mem_fputs(" -complevel 0", stream);
             break;
+        case exe_doom_1_5:   mem_fputs(" -complevel 0", stream); break;
         case exe_doom_1_666:
             mem_fputs(" -complevel 1", stream);
             break;
+        case exe_doom_1_7:   mem_fputs(" -complevel 1", stream); break;
+        case exe_doom_1_8:   mem_fputs(" -complevel 1", stream); break;
         case exe_doom_1_9:
             mem_fputs(" -complevel 2", stream);
             break;
+        case exe_hacx:       mem_fputs(" -complevel 2", stream); break;
         case exe_ultimate:
             mem_fputs(" -complevel 3", stream);
             break;
@@ -3540,7 +3584,7 @@ static long WriteFileInfo(const char *name, size_t size, long filepos,
     return filepos;
 }
 
-static void G_AddDemoFooter(void)
+static CRON_NOINLINE void G_AddDemoFooter(void)
 {
     byte *data;
     size_t size;
@@ -3599,21 +3643,21 @@ boolean G_CheckDemoStatus (void)
     ticcmd_t* cmd = last_cmd;
     last_cmd = NULL;
 
-    if (timingdemo) 
-    { 
-        float fps;
+    if (timingdemo)
+    {
+        int fps_x100; // [cronopio] integer fps*100 (no float varargs -> no f64)
         int realtics;
 
-	endtime = I_GetTime (); 
+	endtime = I_GetTime ();
         realtics = endtime - starttime;
-        fps = ((float) gametic * TICRATE) / realtics;
+        fps_x100 = realtics ? (gametic * TICRATE * 100) / realtics : 0;
 
         // Prevent recursive calls
         timingdemo = false;
         demoplayback = false;
 
-	I_Error ("timed %i gametics in %i realtics (%f fps)",
-                 gametic, realtics, fps);
+	I_Error ("timed %i gametics in %i realtics (%i.%02i fps)",
+                 gametic, realtics, fps_x100 / 100, fps_x100 % 100);
     } 
 	 
     if (demoplayback) 

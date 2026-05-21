@@ -23,14 +23,21 @@
 
 #include "doomtype.h"
 
+// [cronopio] Route MIN/MAX/BETWEEN through opaque out-of-line helpers so clang
+// does not fold them into the llvm.smax/smin intrinsics, which the translator
+// cannot lower. All DOOM MIN/MAX operands are integers (coords/counts/fixed_t)
+// that fit in int. CVM_IMin/CVM_IMax are defined in m_fixed_cvm.c.
+int CVM_IMax(int a, int b);
+int CVM_IMin(int a, int b);
+int CVM_IAbs(int a);
 #ifndef MIN
-#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MIN(a,b) (CVM_IMin((a),(b)))
 #endif
 #ifndef MAX
-#define MAX(a,b) (((a)>(b))?(a):(b))
+#define MAX(a,b) (CVM_IMax((a),(b)))
 #endif
 #ifndef BETWEEN
-#define BETWEEN(l,u,x) (((l)>(x))?(l):((x)>(u))?(u):(x))
+#define BETWEEN(l,u,x) (CVM_IMin(CVM_IMax((l),(x)),(u)))
 #endif
 
 #define CRISPY_FPSLIMIT_MAX 500

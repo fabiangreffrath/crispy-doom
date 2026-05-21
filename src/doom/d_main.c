@@ -81,6 +81,9 @@
 
 #include "doom_icon.c"
 
+// [cronopio] CRON_NOINLINE (defined in doomtype.h) keeps large static helpers
+// out of D_DoomMain so it stays within the translator's ~254-register budget.
+
 //
 // D-DoomLoop()
 // Not a globally visible function,
@@ -91,6 +94,8 @@
 //  calls I_GetTime, I_StartFrame, and I_StartTic
 //
 void D_DoomLoop (void);
+void D_DoomInitLoop (void); // [cronopio] pre-loop setup, callable by binding
+void doom_tick (void);      // [cronopio] one D_RunFrame iteration
 
 static char *gamedescription;
 
@@ -374,6 +379,27 @@ void EnableLoadingDisk(void) // [crispy] un-static
 //
 
 
+// [cronopio] A static array of string-literal pointers can't be serialized by
+// the translator (pointer-global initializers are unsupported). Return each
+// default from a switch instead.
+static const char *chat_macro_default(int i)
+{
+    switch (i)
+    {
+        case 0:  return HUSTR_CHATMACRO0;
+        case 1:  return HUSTR_CHATMACRO1;
+        case 2:  return HUSTR_CHATMACRO2;
+        case 3:  return HUSTR_CHATMACRO3;
+        case 4:  return HUSTR_CHATMACRO4;
+        case 5:  return HUSTR_CHATMACRO5;
+        case 6:  return HUSTR_CHATMACRO6;
+        case 7:  return HUSTR_CHATMACRO7;
+        case 8:  return HUSTR_CHATMACRO8;
+        default: return HUSTR_CHATMACRO9;
+    }
+}
+
+#if 0
 static const char * const chat_macro_defaults[10] =
 {
     HUSTR_CHATMACRO0,
@@ -387,6 +413,7 @@ static const char * const chat_macro_defaults[10] =
     HUSTR_CHATMACRO8,
     HUSTR_CHATMACRO9
 };
+#endif
 
 
 void D_BindVariables(void)
@@ -440,7 +467,7 @@ void D_BindVariables(void)
     {
         char buf[12];
 
-        chat_macros[i] = M_StringDuplicate(chat_macro_defaults[i]);
+        chat_macros[i] = M_StringDuplicate(chat_macro_default(i));
         M_snprintf(buf, sizeof(buf), "chatmacro%i", i);
         M_BindStringVariable(buf, &chat_macros[i]);
     }
@@ -781,6 +808,56 @@ void D_StartTitle (void)
 // These are from the original source: some of them are perhaps
 // not used in any dehacked patches
 
+// [cronopio] string-literal pointer array -> indexable helper (translator
+// can't serialize this particular global initializer in the linked module).
+#define BANNERS_COUNT 9
+static const char *banner_at(int i)
+{
+    switch (i)
+    {
+    case 0: return // doom2.wad
+    "                         "
+    "DOOM 2: Hell on Earth v%i.%i"
+    "                           ";
+    case 1: return
+    "                         "
+    "DOOM 2: Hell on Earth v%i.%i66"
+    "                          ";
+    case 2: return
+    "                            "
+    "DOOM Shareware Startup v%i.%i"
+    "                           ";
+    case 3: return
+    "                            "
+    "DOOM Registered Startup v%i.%i"
+    "                           ";
+    case 4: return
+    "                          "
+    "DOOM System Startup v%i.%i"
+    "                          ";
+    case 5: return
+    "                          "
+    "DOOM System Startup v%i.%i66"
+    "                          "
+    "                         "
+    "The Ultimate DOOM Startup v%i.%i"
+    "                        ";
+    case 6: return
+    "                     "
+    "DOOM 2: TNT - Evilution v%i.%i"
+    "                           ";
+    case 7: return
+    "                   "
+    "DOOM 2: Plutonia Experiment v%i.%i"
+    "                           ";
+    default: return
+    "                         "
+    "The Ultimate DOOM Startup v%i.%i"
+    "                        ";
+    }
+}
+
+#if 0
 static const char *banners[] =
 {
     // doom2.wad
@@ -820,6 +897,7 @@ static const char *banners[] =
     "DOOM 2: Plutonia Experiment v%i.%i"
     "                           ",
 };
+#endif
 
 //
 // Get game name: if the startup banner has been replaced, use that.
@@ -830,14 +908,15 @@ static char *GetGameName(const char *gamename)
 {
     size_t i;
 
-    for (i=0; i<arrlen(banners); ++i)
+    for (i=0; i<BANNERS_COUNT; ++i)
     {
         const char *deh_sub;
+        const char *banner = banner_at((int)i);
         // Has the banner been replaced?
 
-        deh_sub = DEH_String(banners[i]);
+        deh_sub = DEH_String(banner);
 
-        if (deh_sub != banners[i])
+        if (deh_sub != banner)
         {
             size_t gamename_size;
             int version;
@@ -854,7 +933,7 @@ static char *GetGameName(const char *gamename)
                 I_Error("GetGameName: Failed to allocate new string");
             }
             version = G_VanillaVersionCode();
-            DEH_snprintf(deh_gamename, gamename_size, banners[i],
+            DEH_snprintf(deh_gamename, gamename_size, banner_at((int)i),
                          version / 100, version % 100);
 
             while (deh_gamename[0] != '\0' && isspace(deh_gamename[0]))
@@ -874,36 +953,18 @@ static char *GetGameName(const char *gamename)
     return M_StringDuplicate(gamename);
 }
 
-static void SetMissionForPackName(const char *pack_name)
+static void CRON_NOINLINE SetMissionForPackName(const char *pack_name)
 {
-    int i;
-    static const struct
+    // [cronopio] avoid a static struct array with char* members (the translator
+    // can't serialize pointer-relocation initializers in a linked module).
+    if (!strcasecmp(pack_name, "doom2"))         gamemission = doom2;
+    else if (!strcasecmp(pack_name, "tnt"))      gamemission = pack_tnt;
+    else if (!strcasecmp(pack_name, "plutonia")) gamemission = pack_plut;
+    else
     {
-        const char *name;
-        int mission;
-    } packs[] = {
-        { "doom2",    doom2 },
-        { "tnt",      pack_tnt },
-        { "plutonia", pack_plut },
-    };
-
-    for (i = 0; i < arrlen(packs); ++i)
-    {
-        if (!strcasecmp(pack_name, packs[i].name))
-        {
-            gamemission = packs[i].mission;
-            return;
-        }
+        printf("Valid mission packs are:\n\tdoom2\n\ttnt\n\tplutonia\n");
+        I_Error("Unknown mission pack name: %s", pack_name);
     }
-
-    printf("Valid mission packs are:\n");
-
-    for (i = 0; i < arrlen(packs); ++i)
-    {
-        printf("\t%s\n", packs[i].name);
-    }
-
-    I_Error("Unknown mission pack name: %s", pack_name);
 }
 
 //
@@ -994,7 +1055,7 @@ void D_IdentifyVersion(void)
 
 // Set the gamedescription string
 
-static void D_SetGameDescription(void)
+static void CRON_NOINLINE D_SetGameDescription(void)
 {
     if (logical_gamemission == doom)
     {
@@ -1022,6 +1083,12 @@ static void D_SetGameDescription(void)
     else
     {
         // Doom 2 of some kind.  But which mission?
+        // [cronopio] The original if/else chain over logical_gamemission was
+        // lowered by clang -O1 into a string-pointer switch.table with `poison`
+        // holes (for the unused mission enum values), which the translator's
+        // global-initializer serializer can't represent. Routing every case
+        // through GetGameName() (a real call) keeps the strings out of a
+        // constant pointer table.
 
         if (gamevariant == freedm)
         {
@@ -1031,25 +1098,35 @@ static void D_SetGameDescription(void)
         {
             gamedescription = GetGameName("Freedoom: Phase 2");
         }
-        else if (logical_gamemission == doom2)
+        // [cronopio] Every mission enum value below gets an explicit case so
+        // clang lowers this to a *dense* string-pointer switch.table with no
+        // `ptr poison` holes. The translator can serialize a dense pointer
+        // table but not one with poison entries.
+        else switch (logical_gamemission)
         {
+        case doom2:
             gamedescription = GetGameName("DOOM 2: Hell on Earth");
-        }
-        else if (logical_gamemission == pack_plut)
-        {
-            gamedescription = GetGameName("DOOM 2: Plutonia Experiment"); 
-        }
-        else if (logical_gamemission == pack_tnt)
-        {
+            break;
+        case pack_plut:
+            gamedescription = GetGameName("DOOM 2: Plutonia Experiment");
+            break;
+        case pack_tnt:
             gamedescription = GetGameName("DOOM 2: TNT - Evilution");
-        }
-        else if (logical_gamemission == pack_nerve)
-        {
+            break;
+        case pack_nerve:
             gamedescription = GetGameName("DOOM 2: No Rest For The Living");
-        }
-        else if (logical_gamemission == pack_master)
-        {
+            break;
+        case pack_master:
             gamedescription = GetGameName("Master Levels for DOOM 2");
+            break;
+        case pack_chex:  gamedescription = GetGameName("DOOM 2: Hell on Earth"); break;
+        case pack_hacx:  gamedescription = GetGameName("DOOM 2: Hell on Earth"); break;
+        case heretic:    gamedescription = GetGameName("DOOM 2: Hell on Earth"); break;
+        case hexen:      gamedescription = GetGameName("DOOM 2: Hell on Earth"); break;
+        case strife:     gamedescription = GetGameName("DOOM 2: Hell on Earth"); break;
+        case doom2f:     gamedescription = GetGameName("DOOM 2: Hell on Earth"); break;
+        default:
+            break;
         }
     }
 
@@ -1076,24 +1153,31 @@ static boolean D_AddFile(char *filename)
 // Some dehacked mods replace these.  These are only displayed if they are 
 // replaced by dehacked.
 
-static const char *copyright_banners[] =
+// [cronopio] string-literal pointer arrays can't be serialized as globals by
+// the translator; return each banner from a switch instead.
+static const char *copyright_banner(int i)
 {
+    switch (i)
+    {
+        case 0: return
     "===========================================================================\n"
     "ATTENTION:  This version of DOOM has been modified.  If you would like to\n"
     "get a copy of the original game, call 1-800-IDGAMES or see the readme file.\n"
     "        You will not receive technical support for modified games.\n"
     "                      press enter to continue\n"
-    "===========================================================================\n",
-
+    "===========================================================================\n";
+        case 1: return
     "===========================================================================\n"
     "                 Commercial product - do not distribute!\n"
     "         Please report software piracy to the SPA: 1-800-388-PIR8\n"
-    "===========================================================================\n",
-
+    "===========================================================================\n";
+        default: return
     "===========================================================================\n"
     "                                Shareware!\n"
-    "===========================================================================\n"
-};
+    "===========================================================================\n";
+    }
+}
+#define COPYRIGHT_BANNERS_COUNT 3
 
 // Prints a message only if it has been modified by dehacked.
 
@@ -1101,13 +1185,14 @@ void PrintDehackedBanners(void)
 {
     size_t i;
 
-    for (i=0; i<arrlen(copyright_banners); ++i)
+    for (i=0; i<COPYRIGHT_BANNERS_COUNT; ++i)
     {
         const char *deh_s;
+        const char *banner = copyright_banner((int)i);
 
-        deh_s = DEH_String(copyright_banners[i]);
+        deh_s = DEH_String(banner);
 
-        if (deh_s != copyright_banners[i])
+        if (deh_s != banner)
         {
             printf("%s", deh_s);
 
@@ -1122,29 +1207,33 @@ void PrintDehackedBanners(void)
     }
 }
 
-static const struct
+// [cronopio] A struct array with embedded char* members can't be serialized
+// as a global by the translator. Expose the same data via accessor functions.
+typedef struct { const char *description; const char *cmdline; GameVersion_t version; } gameversion_entry_t;
+#define GAMEVERSIONS_COUNT 11
+static gameversion_entry_t gameversion_get(int i)
 {
-    const char *description;
-    const char *cmdline;
-    GameVersion_t version;
-} gameversions[] = {
-    {"Doom 1.2",             "1.2",        exe_doom_1_2},
-    {"Doom 1.5",             "1.5",        exe_doom_1_5},
-    {"Doom 1.666",           "1.666",      exe_doom_1_666},
-    {"Doom 1.7/1.7a",        "1.7",        exe_doom_1_7},
-    {"Doom 1.8",             "1.8",        exe_doom_1_8},
-    {"Doom 1.9",             "1.9",        exe_doom_1_9},
-    {"Hacx",                 "hacx",       exe_hacx},
-    {"Ultimate Doom",        "ultimate",   exe_ultimate},
-    {"Final Doom",           "final",      exe_final},
-    {"Final Doom (alt)",     "final2",     exe_final2},
-    {"Chex Quest",           "chex",       exe_chex},
-    { NULL,                  NULL,         0},
-};
+    gameversion_entry_t e;
+    switch (i)
+    {
+    case 0:  e.description="Doom 1.2";         e.cmdline="1.2";      e.version=exe_doom_1_2;   break;
+    case 1:  e.description="Doom 1.5";         e.cmdline="1.5";      e.version=exe_doom_1_5;   break;
+    case 2:  e.description="Doom 1.666";       e.cmdline="1.666";    e.version=exe_doom_1_666; break;
+    case 3:  e.description="Doom 1.7/1.7a";    e.cmdline="1.7";      e.version=exe_doom_1_7;   break;
+    case 4:  e.description="Doom 1.8";         e.cmdline="1.8";      e.version=exe_doom_1_8;   break;
+    case 5:  e.description="Doom 1.9";         e.cmdline="1.9";      e.version=exe_doom_1_9;   break;
+    case 6:  e.description="Hacx";             e.cmdline="hacx";     e.version=exe_hacx;       break;
+    case 7:  e.description="Ultimate Doom";    e.cmdline="ultimate"; e.version=exe_ultimate;   break;
+    case 8:  e.description="Final Doom";       e.cmdline="final";    e.version=exe_final;      break;
+    case 9:  e.description="Final Doom (alt)"; e.cmdline="final2";   e.version=exe_final2;     break;
+    default: e.description="Chex Quest";       e.cmdline="chex";     e.version=exe_chex;       break;
+    }
+    return e;
+}
 
 // Initialize the game version
 
-static void InitGameVersion(void)
+static void CRON_NOINLINE InitGameVersion(void)
 {
     byte *demolump;
     char demolumpname[6];
@@ -1166,23 +1255,23 @@ static void InitGameVersion(void)
 
     if (p)
     {
-        for (i=0; gameversions[i].description != NULL; ++i)
+        for (i=0; i < GAMEVERSIONS_COUNT; ++i)
         {
-            if (!strcmp(myargv[p+1], gameversions[i].cmdline))
+            if (!strcmp(myargv[p+1], gameversion_get(i).cmdline))
             {
-                gameversion = gameversions[i].version;
+                gameversion = gameversion_get(i).version;
                 break;
             }
         }
 
-        if (gameversions[i].description == NULL)
+        if (i == GAMEVERSIONS_COUNT)
         {
             printf("Supported game versions:\n");
 
-            for (i=0; gameversions[i].description != NULL; ++i)
+            for (i=0; i < GAMEVERSIONS_COUNT; ++i)
             {
-                printf("\t%s (%s)\n", gameversions[i].cmdline,
-                        gameversions[i].description);
+                gameversion_entry_t e = gameversion_get(i);
+                printf("\t%s (%s)\n", e.cmdline, e.description);
             }
 
             I_Error("Unknown game version '%s'", myargv[p+1]);
@@ -1294,12 +1383,12 @@ void PrintGameVersion(void)
 {
     int i;
 
-    for (i=0; gameversions[i].description != NULL; ++i)
+    for (i=0; i < GAMEVERSIONS_COUNT; ++i)
     {
-        if (gameversions[i].version == gameversion)
+        if (gameversion_get(i).version == gameversion)
         {
             printf("Emulating the behavior of the "
-                   "'%s' executable.\n", gameversions[i].description);
+                   "'%s' executable.\n", gameversion_get(i).description);
             break;
         }
     }
@@ -1307,7 +1396,7 @@ void PrintGameVersion(void)
 
 // Function called at exit to display the ENDOOM screen
 
-static void D_Endoom(void)
+static void CRON_NOINLINE D_Endoom(void)
 {
     byte *endoom;
 
@@ -1335,7 +1424,7 @@ boolean IsFrenchIWAD(void)
 }
 
 // Load dehacked patches needed for certain IWADs.
-static void LoadIwadDeh(void)
+static void CRON_NOINLINE LoadIwadDeh(void)
 {
     // The Freedoom IWADs have DEHACKED lumps that must be loaded.
     if (gamevariant == freedoom || gamevariant == freedm)
@@ -1441,16 +1530,18 @@ static void G_CheckDemoStatusAtExit (void)
     G_CheckDemoStatus();
 }
 
-static const char *const loadparms[] = {"-file", "-merge", NULL};
+// [cronopio] pointer array -> accessor (translator can't serialize the global)
+static const char *loadparm(int i) { return i == 0 ? "-file" : (i == 1 ? "-merge" : (const char *)0); }
 
-//
-// D_DoomMain
-//
-void D_DoomMain (void)
+// [cronopio] The first ~360 lines of D_DoomMain (banner, command-line option
+// parsing, config load, W_Init / IWAD identification, autoload + DEH parsing)
+// were extracted into this noinline helper. D_DoomMain alone exceeded the
+// translator's ~254-register budget (no spill path); splitting it keeps each
+// frame within budget. The helper uses only a transient local `p`, so no
+// caller state crosses the boundary.
+static void CRON_NOINLINE D_DoomMain_LoadAndConfig (void)
 {
     int p;
-    char file[256];
-    char demolumpname[9] = {0};
 
     // [crispy] unconditionally initialize DEH tables
     DEH_Init();
@@ -1659,16 +1750,16 @@ void D_DoomMain (void)
     // Save configuration at exit.
     I_AtExit(M_SaveDefaults, true); // [crispy] always save configuration at exit
 
-    // Find main IWAD file and load it.
-    iwadfile = D_FindIWAD(IWAD_MASK_DOOM, &gamemission);
-
-    // None found?
-
-    if (iwadfile == NULL)
-    {
-        I_Error("Game mode indeterminate.  No IWAD file was found.  Try\n"
-                "specifying one with the '-iwad' command line parameter.\n");
-    }
+    // [cronopio] No filesystem: the IWAD is baked into the cartridge ROM and
+    // served by w_file_rom.c regardless of path. Skip D_FindIWAD's directory
+    // search; D_IdentifyVersion() below auto-detects DOOM 1 vs 2 from lumps
+    // (gamemission == none triggers the MAP01/E1M1 content scan).
+    // The name MUST end in ".wad": W_AddFile keys off the filename extension
+    // to choose between the WAD-directory parser and the single-lump path
+    // (w_wad.c:143). With a non-".wad" name the ROM would be ingested as one
+    // opaque lump named "ROM" and D_IdentifyVersion would find no maps.
+    iwadfile = "ROM.wad";
+    gamemission = none;
 
     modifiedgame = false;
 
@@ -1816,307 +1907,16 @@ void D_DoomMain (void)
 
     // Load PWAD files.
     modifiedgame = W_ParseCommandLine();
+}
 
-    //!
-    // @arg <file>
-    // @category mod
-    //
-    // [crispy] experimental feature: in conjunction with -merge <files>
-    // merges PWADs into the main IWAD and writes the merged data into <file>
-    //
-
-    p = M_CheckParm("-mergedump");
-
-    if (p)
-    {
-	p = M_CheckParmWithArgs("-mergedump", 1);
-
-	if (p)
-	{
-	    int merged;
-
-	    if (M_StringEndsWith(myargv[p+1], ".wad"))
-	    {
-		M_StringCopy(file, myargv[p+1], sizeof(file));
-	    }
-	    else
-	    {
-		DEH_snprintf(file, sizeof(file), "%s.wad", myargv[p+1]);
-	    }
-
-	    merged = W_MergeDump(file);
-	    I_Error("W_MergeDump: Merged %d lumps into file '%s'.", merged, file);
-	}
-	else
-	{
-	    I_Error("W_MergeDump: The '-mergedump' parameter requires an argument.");
-	}
-    }
-
-    //!
-    // @arg <file>
-    // @category mod
-    //
-    // [crispy] experimental feature: dump lump data into a new LMP file <file>
-    //
-
-    p = M_CheckParm("-lumpdump");
-
-    if (p)
-    {
-	p = M_CheckParmWithArgs("-lumpdump", 1);
-
-	if (p)
-	{
-	    int dumped;
-
-	    M_StringCopy(file, myargv[p+1], sizeof(file));
-
-	    dumped = W_LumpDump(file);
-
-	    if (dumped < 0)
-	    {
-		I_Error("W_LumpDump: Failed to write lump '%s'.", file);
-	    }
-	    else
-	    {
-		I_Error("W_LumpDump: Dumped lump into file '%s.lmp'.", file);
-	    }
-	}
-	else
-	{
-	    I_Error("W_LumpDump: The '-lumpdump' parameter requires an argument.");
-	}
-    }
-
-    // Debug:
-//    W_PrintDirectory();
-
-    // [crispy] add wad files from autoload PWAD directories
-
-    if (!M_ParmExists("-noautoload") && gamemode != shareware)
-    {
-        int i;
-
-        for (i = 0; loadparms[i]; i++)
-        {
-            int p;
-            p = M_CheckParmWithArgs(loadparms[i], 1);
-            if (p)
-            {
-                while (++p != myargc && myargv[p][0] != '-')
-                {
-                    char *autoload_dir;
-                    if ((autoload_dir = M_GetAutoloadDir(M_BaseName(myargv[p]), false)))
-                    {
-                        W_AutoLoadWADs(autoload_dir);
-                        free(autoload_dir);
-                    }
-                }
-            }
-        }
-    }
-
-    //!
-    // @arg <demo>
-    // @category demo
-    // @vanilla
-    //
-    // Play back the demo named demo.lmp.
-    //
-
-    p = M_CheckParmWithArgs ("-playdemo", 1);
-
-    if (!p)
-    {
-        //!
-        // @arg <demo>
-        // @category demo
-        // @vanilla
-        //
-        // Play back the demo named demo.lmp, determining the framerate
-        // of the screen.
-        //
-	p = M_CheckParmWithArgs("-timedemo", 1);
-
-    }
-
-    if (p)
-    {
-        char *uc_filename = strdup(myargv[p + 1]);
-        M_ForceUppercase(uc_filename);
-
-        // With Vanilla you have to specify the file without extension,
-        // but make that optional.
-        if (M_StringEndsWith(uc_filename, ".LMP"))
-        {
-            M_StringCopy(file, myargv[p + 1], sizeof(file));
-        }
-        else
-        {
-            DEH_snprintf(file, sizeof(file), "%s.lmp", myargv[p+1]);
-        }
-
-        free(uc_filename);
-
-        if (D_AddFile(file))
-        {
-	    int i;
-	    // [crispy] check if the demo file name gets truncated to a lump name that is already present
-	    if ((i = W_CheckNumForNameFromTo(lumpinfo[numlumps - 1]->name, numlumps - 2, 0)) != -1)
-	    {
-		printf("Demo lump name collision detected with lump \'%.8s\' from %s.\n",
-		        lumpinfo[i]->name, W_WadNameForLump(lumpinfo[i]));
-		// [FG] the DEMO1 lump is almost certainly always a demo lump
-		M_StringCopy(lumpinfo[numlumps - 1]->name, "DEMO1", 6);
-	    }
-
-            M_StringCopy(demolumpname, lumpinfo[numlumps - 1]->name,
-                         sizeof(demolumpname));
-        }
-        else
-        {
-            // If file failed to load, still continue trying to play
-            // the demo in the same way as Vanilla Doom.  This makes
-            // tricks like "-playdemo demo1" possible.
-
-            M_StringCopy(demolumpname, myargv[p + 1], sizeof(demolumpname));
-        }
-
-        printf("Playing demo %s.\n", file);
-    }
-
-    I_AtExit(G_CheckDemoStatusAtExit, true);
-
-    // Generate the WAD hash table.  Speed things up a bit.
-    W_GenerateHashTable();
-
-    // [crispy] allow overriding of special-casing
-
-    //!
-    // @category mod
-    //
-    // Disable automatic loading of Master Levels, No Rest for the Living and
-    // Sigil.
-    //
-    if (!M_ParmExists("-nosideload") && gamemode != shareware &&
-        !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))
-    {
-	if (gamemode == retail &&
-	    gameversion == exe_ultimate &&
-	    gamevariant != freedoom &&
-	    strncasecmp(M_BaseName(iwadfile), "rekkr", 5))
-	{
-		D_LoadSigilWads();
-	}
-
-	if (gamemission == doom2)
-	{
-		D_LoadNerveWad();
-		D_LoadMasterlevelsWad();
-	}
-    }
-
-    // Load DEHACKED lumps from WAD files - but only if we give the right
-    // command line parameter.
-
-    // [crispy] load DEHACKED lumps by default, but allow overriding
-
-    //!
-    // @category mod
-    //
-    // Disable automatic loading of embedded DEHACKED lumps in wad files.
-    //
-    if (!M_ParmExists("-nodehlump") && !M_ParmExists("-nodeh"))
-    {
-        int i, loaded = 0;
-        int numiwadlumps = numlumps;
-
-        while (!W_IsIWADLump(lumpinfo[numiwadlumps - 1]))
-        {
-            numiwadlumps--;
-        }
-
-        for (i = numiwadlumps; i < numlumps; ++i)
-        {
-            if (!strncmp(lumpinfo[i]->name, "DEHACKED", 8))
-            {
-                DEH_LoadLump(i, true, true); // [crispy] allow long, allow error
-                loaded++;
-            }
-        }
-
-        printf("  loaded %i DEHACKED lumps from PWAD files.\n", loaded);
-    }
-
-    // [crispy] process .deh files from PWADs autoload directories
-
-    if (!M_ParmExists("-noautoload") && gamemode != shareware)
-    {
-        int i;
-
-        for (i = 0; loadparms[i]; i++)
-        {
-            int p;
-            p = M_CheckParmWithArgs(loadparms[i], 1);
-            if (p)
-            {
-                while (++p != myargc && myargv[p][0] != '-')
-                {
-                    char *autoload_dir;
-                    if ((autoload_dir = M_GetAutoloadDir(M_BaseName(myargv[p]), false)))
-                    {
-                        DEH_AutoLoadPatches(autoload_dir);
-                        free(autoload_dir);
-                    }
-                }
-            }
-        }
-    }
-
-    // Set the gamedescription string. This is only possible now that
-    // we've finished loading Dehacked patches.
-    D_SetGameDescription();
-
-    savegamedir = M_GetSaveGameDir(D_SaveGameIWADName(gamemission, gamevariant));
-
-    // Check for -file in shareware
-    if (modifiedgame && (gamevariant != freedoom))
-    {
-	// These are the lumps that will be checked in IWAD,
-	// if any one is not present, execution will be aborted.
-	char name[23][8]=
-	{
-	    "e2m1","e2m2","e2m3","e2m4","e2m5","e2m6","e2m7","e2m8","e2m9",
-	    "e3m1","e3m3","e3m3","e3m4","e3m5","e3m6","e3m7","e3m8","e3m9",
-	    "dphoof","bfgga0","heada1","cybra1","spida1d1"
-	};
-	int i;
-	
-	if ( gamemode == shareware)
-	    I_Error(DEH_String("\nYou cannot -file with the shareware "
-			       "version. Register!"));
-
-	// Check for fake IWAD with right name,
-	// but w/o all the lumps of the registered version. 
-	if (gamemode == registered)
-	    for (i = 0;i < 23; i++)
-		if (W_CheckNumForName(name[i])<0)
-		    I_Error(DEH_String("\nThis is not the registered version."));
-    }
-
-// [crispy] disable meaningless warning, we always use "-merge" anyway
-#if 0
-    if (W_CheckNumForName("SS_START") >= 0
-     || W_CheckNumForName("FF_END") >= 0)
-    {
-        I_PrintDivider();
-        printf(" WARNING: The loaded WAD file contains modified sprites or\n"
-               " floor textures.  You may want to use the '-merge' command\n"
-               " line option instead of '-file'.\n");
-    }
-#endif
-
+//
+// D_DoomMain
+//
+// [cronopio] Subsystem init + skill/episode/warp/coop parsing extracted
+// from D_DoomMain to stay within the translator register budget.
+static void CRON_NOINLINE D_DoomMain_InitSubsystems (void)
+{
+    int p; (void)p;
     I_PrintStartupBanner(gamedescription);
     PrintDehackedBanners();
 
@@ -2396,6 +2196,318 @@ void D_DoomMain (void)
     {
         coop_spawns = true;
     }
+}
+
+void D_DoomMain (void)
+{
+    int p;
+    char file[256];
+    char demolumpname[9] = {0};
+
+    // [cronopio] front half extracted to keep within the register budget.
+    D_DoomMain_LoadAndConfig();
+
+    //!
+    // @arg <file>
+    // @category mod
+    //
+    // [crispy] experimental feature: in conjunction with -merge <files>
+    // merges PWADs into the main IWAD and writes the merged data into <file>
+    //
+
+    p = M_CheckParm("-mergedump");
+
+    if (p)
+    {
+	p = M_CheckParmWithArgs("-mergedump", 1);
+
+	if (p)
+	{
+	    int merged;
+
+	    if (M_StringEndsWith(myargv[p+1], ".wad"))
+	    {
+		M_StringCopy(file, myargv[p+1], sizeof(file));
+	    }
+	    else
+	    {
+		DEH_snprintf(file, sizeof(file), "%s.wad", myargv[p+1]);
+	    }
+
+	    merged = W_MergeDump(file);
+	    I_Error("W_MergeDump: Merged %d lumps into file '%s'.", merged, file);
+	}
+	else
+	{
+	    I_Error("W_MergeDump: The '-mergedump' parameter requires an argument.");
+	}
+    }
+
+    //!
+    // @arg <file>
+    // @category mod
+    //
+    // [crispy] experimental feature: dump lump data into a new LMP file <file>
+    //
+
+    p = M_CheckParm("-lumpdump");
+
+    if (p)
+    {
+	p = M_CheckParmWithArgs("-lumpdump", 1);
+
+	if (p)
+	{
+	    int dumped;
+
+	    M_StringCopy(file, myargv[p+1], sizeof(file));
+
+	    dumped = W_LumpDump(file);
+
+	    if (dumped < 0)
+	    {
+		I_Error("W_LumpDump: Failed to write lump '%s'.", file);
+	    }
+	    else
+	    {
+		I_Error("W_LumpDump: Dumped lump into file '%s.lmp'.", file);
+	    }
+	}
+	else
+	{
+	    I_Error("W_LumpDump: The '-lumpdump' parameter requires an argument.");
+	}
+    }
+
+    // Debug:
+//    W_PrintDirectory();
+
+    // [crispy] add wad files from autoload PWAD directories
+
+    if (!M_ParmExists("-noautoload") && gamemode != shareware)
+    {
+        int i;
+
+        for (i = 0; loadparm(i); i++)
+        {
+            int p;
+            p = M_CheckParmWithArgs(loadparm(i), 1);
+            if (p)
+            {
+                while (++p != myargc && myargv[p][0] != '-')
+                {
+                    char *autoload_dir;
+                    if ((autoload_dir = M_GetAutoloadDir(M_BaseName(myargv[p]), false)))
+                    {
+                        W_AutoLoadWADs(autoload_dir);
+                        free(autoload_dir);
+                    }
+                }
+            }
+        }
+    }
+
+    //!
+    // @arg <demo>
+    // @category demo
+    // @vanilla
+    //
+    // Play back the demo named demo.lmp.
+    //
+
+    p = M_CheckParmWithArgs ("-playdemo", 1);
+
+    if (!p)
+    {
+        //!
+        // @arg <demo>
+        // @category demo
+        // @vanilla
+        //
+        // Play back the demo named demo.lmp, determining the framerate
+        // of the screen.
+        //
+	p = M_CheckParmWithArgs("-timedemo", 1);
+
+    }
+
+    if (p)
+    {
+        char *uc_filename = strdup(myargv[p + 1]);
+        M_ForceUppercase(uc_filename);
+
+        // With Vanilla you have to specify the file without extension,
+        // but make that optional.
+        if (M_StringEndsWith(uc_filename, ".LMP"))
+        {
+            M_StringCopy(file, myargv[p + 1], sizeof(file));
+        }
+        else
+        {
+            DEH_snprintf(file, sizeof(file), "%s.lmp", myargv[p+1]);
+        }
+
+        free(uc_filename);
+
+        if (D_AddFile(file))
+        {
+	    int i;
+	    // [crispy] check if the demo file name gets truncated to a lump name that is already present
+	    if ((i = W_CheckNumForNameFromTo(lumpinfo[numlumps - 1]->name, numlumps - 2, 0)) != -1)
+	    {
+		printf("Demo lump name collision detected with lump \'%.8s\' from %s.\n",
+		        lumpinfo[i]->name, W_WadNameForLump(lumpinfo[i]));
+		// [FG] the DEMO1 lump is almost certainly always a demo lump
+		M_StringCopy(lumpinfo[numlumps - 1]->name, "DEMO1", 6);
+	    }
+
+            M_StringCopy(demolumpname, lumpinfo[numlumps - 1]->name,
+                         sizeof(demolumpname));
+        }
+        else
+        {
+            // If file failed to load, still continue trying to play
+            // the demo in the same way as Vanilla Doom.  This makes
+            // tricks like "-playdemo demo1" possible.
+
+            M_StringCopy(demolumpname, myargv[p + 1], sizeof(demolumpname));
+        }
+
+        printf("Playing demo %s.\n", file);
+    }
+
+    I_AtExit(G_CheckDemoStatusAtExit, true);
+
+    // Generate the WAD hash table.  Speed things up a bit.
+    W_GenerateHashTable();
+
+    // [crispy] allow overriding of special-casing
+
+    //!
+    // @category mod
+    //
+    // Disable automatic loading of Master Levels, No Rest for the Living and
+    // Sigil.
+    //
+    if (!M_ParmExists("-nosideload") && gamemode != shareware &&
+        !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))
+    {
+	if (gamemode == retail &&
+	    gameversion == exe_ultimate &&
+	    gamevariant != freedoom &&
+	    strncasecmp(M_BaseName(iwadfile), "rekkr", 5))
+	{
+		D_LoadSigilWads();
+	}
+
+	if (gamemission == doom2)
+	{
+		D_LoadNerveWad();
+		D_LoadMasterlevelsWad();
+	}
+    }
+
+    // Load DEHACKED lumps from WAD files - but only if we give the right
+    // command line parameter.
+
+    // [crispy] load DEHACKED lumps by default, but allow overriding
+
+    //!
+    // @category mod
+    //
+    // Disable automatic loading of embedded DEHACKED lumps in wad files.
+    //
+    if (!M_ParmExists("-nodehlump") && !M_ParmExists("-nodeh"))
+    {
+        int i, loaded = 0;
+        int numiwadlumps = numlumps;
+
+        while (!W_IsIWADLump(lumpinfo[numiwadlumps - 1]))
+        {
+            numiwadlumps--;
+        }
+
+        for (i = numiwadlumps; i < numlumps; ++i)
+        {
+            if (!strncmp(lumpinfo[i]->name, "DEHACKED", 8))
+            {
+                DEH_LoadLump(i, true, true); // [crispy] allow long, allow error
+                loaded++;
+            }
+        }
+
+        printf("  loaded %i DEHACKED lumps from PWAD files.\n", loaded);
+    }
+
+    // [crispy] process .deh files from PWADs autoload directories
+
+    if (!M_ParmExists("-noautoload") && gamemode != shareware)
+    {
+        int i;
+
+        for (i = 0; loadparm(i); i++)
+        {
+            int p;
+            p = M_CheckParmWithArgs(loadparm(i), 1);
+            if (p)
+            {
+                while (++p != myargc && myargv[p][0] != '-')
+                {
+                    char *autoload_dir;
+                    if ((autoload_dir = M_GetAutoloadDir(M_BaseName(myargv[p]), false)))
+                    {
+                        DEH_AutoLoadPatches(autoload_dir);
+                        free(autoload_dir);
+                    }
+                }
+            }
+        }
+    }
+
+    // Set the gamedescription string. This is only possible now that
+    // we've finished loading Dehacked patches.
+    D_SetGameDescription();
+
+    savegamedir = M_GetSaveGameDir(D_SaveGameIWADName(gamemission, gamevariant));
+
+    // Check for -file in shareware
+    if (modifiedgame && (gamevariant != freedoom))
+    {
+	// These are the lumps that will be checked in IWAD,
+	// if any one is not present, execution will be aborted.
+	char name[23][8]=
+	{
+	    "e2m1","e2m2","e2m3","e2m4","e2m5","e2m6","e2m7","e2m8","e2m9",
+	    "e3m1","e3m3","e3m3","e3m4","e3m5","e3m6","e3m7","e3m8","e3m9",
+	    "dphoof","bfgga0","heada1","cybra1","spida1d1"
+	};
+	int i;
+	
+	if ( gamemode == shareware)
+	    I_Error(DEH_String("\nYou cannot -file with the shareware "
+			       "version. Register!"));
+
+	// Check for fake IWAD with right name,
+	// but w/o all the lumps of the registered version. 
+	if (gamemode == registered)
+	    for (i = 0;i < 23; i++)
+		if (W_CheckNumForName(name[i])<0)
+		    I_Error(DEH_String("\nThis is not the registered version."));
+    }
+
+// [crispy] disable meaningless warning, we always use "-merge" anyway
+#if 0
+    if (W_CheckNumForName("SS_START") >= 0
+     || W_CheckNumForName("FF_END") >= 0)
+    {
+        I_PrintDivider();
+        printf(" WARNING: The loaded WAD file contains modified sprites or\n"
+               " floor textures.  You may want to use the '-merge' command\n"
+               " line option instead of '-file'.\n");
+    }
+#endif
+
+    D_DoomMain_InitSubsystems();
 
     //!
     // @arg <x>
@@ -2418,7 +2530,11 @@ void D_DoomMain (void)
     {
 	singledemo = true;              // quit after one demo
 	G_DeferedPlayDemo (demolumpname);
-	D_DoomLoop ();  // never returns
+	// [cronopio] D_DoomLoop's while(1) makes clang infer noreturn and emit
+	// an `unreachable` (no translator codegen). Use the frame-callback model:
+	// run one-time loop init and return; engine_tick() drives D_RunFrame.
+	D_DoomInitLoop ();
+	return;
     }
     crispy->demowarp = 0; // [crispy] we don't play a demo, so don't skip maps
 	
@@ -2426,7 +2542,9 @@ void D_DoomMain (void)
     if (p)
     {
 	G_TimeDemo (demolumpname);
-	D_DoomLoop ();  // never returns
+	// [cronopio] see -playdemo above: avoid the infinite-loop D_DoomLoop.
+	D_DoomInitLoop ();
+	return;
     }
 	
     if (startloadgame >= 0)
@@ -2443,6 +2561,53 @@ void D_DoomMain (void)
 	    D_StartTitle ();                // start up intro loop
     }
 
-    D_DoomLoop ();  // never returns
+    // [cronopio] A 60Hz frame-callback console cannot block in D_DoomLoop's
+    // infinite while(1). Run the loop's one-time setup and RETURN to the
+    // engine binding (engine_init); the binding then calls D_RunFrame() once
+    // per frame from engine_tick(). See doom_tick() below.
+    D_DoomInitLoop();
+    return;
+}
+
+// [cronopio] The pre-loop body of D_DoomLoop (everything before its while(1)),
+// hoisted into a callable function so the engine binding can run init without
+// entering the infinite loop. Kept byte-for-byte equivalent to D_DoomLoop.
+void D_DoomInitLoop (void)
+{
+    if (gamevariant == bfgedition &&
+        (demorecording || (gameaction == ga_playdemo) || netgame))
+    {
+        printf(" WARNING: BFG Edition IWAD in use.\n");
+    }
+
+    if (demorecording && gameaction != ga_playdemo)
+	G_BeginRecording ();
+
+    main_loop_started = true;
+
+    I_SetWindowTitle(gamedescription);
+    I_GraphicsCheckCommandLine();
+    I_SetGrabMouseCallback(D_GrabMouseCallback);
+    I_RegisterWindowIcon(doom_icon_data, doom_icon_w, doom_icon_h);
+    I_InitGraphics();
+    EnableLoadingDisk();
+
+    TryRunTics();
+
+    V_RestoreBuffer();
+    R_ExecuteSetViewSize();
+
+    D_StartGameLoop();
+
+    if (testcontrols)
+    {
+        wipegamestate = gamestate;
+    }
+}
+
+// [cronopio] One iteration of the game loop, called by engine_tick().
+void doom_tick (void)
+{
+    D_RunFrame();
 }
 

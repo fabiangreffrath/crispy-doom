@@ -2805,8 +2805,18 @@ static void SaveDefaultCollection(default_collection_t *collection)
                 break;
 
             case DEFAULT_FLOAT:
-                fprintf(f, "%f", *defaults[i].location.f);
+            {
+                // [cronopio] no float varargs (would promote to f64). Print
+                // integer + 6 fractional digits manually. (No filesystem on
+                // this console, so config saving is a no-op anyway.)
+                float fv = *defaults[i].location.f;
+                int neg = fv < 0.0f;
+                if (neg) fv = -fv;
+                int ip = (int)fv;
+                int fp = (int)((fv - (float)ip) * 1000000.0f);
+                fprintf(f, "%s%i.%06i", neg ? "-" : "", ip, fp);
                 break;
+            }
 
             case DEFAULT_STRING:
 	        fprintf(f,"\"%s\"", *defaults[i].location.s);
@@ -2903,7 +2913,23 @@ static void SetVariable(default_t *def, const char *value)
                 }
             }
 
-            *def->location.f = (float) atof(str);
+            /* [cronopio] atof returns double (f64, rejected by translator).
+             * Parse a float locally instead. */
+            {
+                const char *p = str;
+                float sign = 1.0f, val = 0.0f, frac = 0.1f;
+                int seen_dot = 0;
+                if (*p == '-') { sign = -1.0f; ++p; }
+                else if (*p == '+') { ++p; }
+                for (; *p; ++p)
+                {
+                    if (*p == '.') { seen_dot = 1; continue; }
+                    if (*p < '0' || *p > '9') break;
+                    if (!seen_dot) { val = val * 10.0f + (float)(*p - '0'); }
+                    else { val += (float)(*p - '0') * frac; frac *= 0.1f; }
+                }
+                *def->location.f = sign * val;
+            }
             free(str);
         }
             break;

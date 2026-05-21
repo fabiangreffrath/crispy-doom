@@ -101,7 +101,7 @@ typedef struct localview_s
     angle_t oldticangle;
     angle_t ticangle;
     short ticangleturn;
-    double rawangle;
+    float rawangle; // [cronopio] f64 -> f32 (translator rejects double)
     angle_t angle;
 } localview_t;
 

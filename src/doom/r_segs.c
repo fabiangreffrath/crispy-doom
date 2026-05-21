@@ -33,6 +33,8 @@
 #include "r_sky.h"
 #include "r_bmaps.h" // [crispy] brightmaps
 
+#include "cvm_intrin.h" // [cronopio] cvm_qmul_16_16 for the i64-free WiggleFix
+
 
 // OPTIMIZE: closed two sided lines as single sided
 
@@ -72,15 +74,15 @@ int		worldbottom;
 int		worldhigh;
 int		worldlow;
 
-int64_t		pixhigh; // [crispy] WiggleFix
-int64_t		pixlow; // [crispy] WiggleFix
+fixed_t		pixhigh; // [cronopio] i64 -> i32 (cvm_qmul_16_16)
+fixed_t		pixlow;
 fixed_t		pixhighstep;
 fixed_t		pixlowstep;
 
-int64_t		topfrac; // [crispy] WiggleFix
+fixed_t		topfrac; // [cronopio] i64 -> i32 (cvm_qmul_16_16)
 fixed_t		topstep;
 
-int64_t		bottomfrac; // [crispy] WiggleFix
+fixed_t		bottomfrac; // [cronopio] i64 -> i32 (cvm_qmul_16_16)
 fixed_t		bottomstep;
 
 
@@ -282,17 +284,19 @@ R_RenderMaskedSegRange
 	    // mapping to screen coordinates is totally out of range:
 
 	    {
-		int64_t t = ((int64_t) centeryfrac << FRACBITS) -
-		             (int64_t) dc_texturemid * spryscale;
+		// [cronopio] 32-bit reformulation of the WiggleFix range check
+		// (no i64). cvm_qmul_16_16(a,b) == (int64_t)a*b >> 16, computed via
+		// MUL+MULH, so these are bit-exact 32-bit-truncated equivalents.
+		int top = centeryfrac - cvm_qmul_16_16(dc_texturemid, spryscale);
+		int botoff = cvm_qmul_16_16(textureheight[texnum], spryscale);
 
-		if (t + (int64_t) textureheight[texnum] * spryscale < 0 ||
-		    t > (int64_t) SCREENHEIGHT << FRACBITS*2)
+		if (top + botoff < 0 || top > (SCREENHEIGHT << FRACBITS))
 		{
 			spryscale += rw_scalestep; // [crispy] MBF had this in the for-loop iterator
 			continue; // skip if the texture is out of screen's range
 		}
 
-		sprtopscreen = (int64_t)(t >> FRACBITS); // [crispy] WiggleFix
+		sprtopscreen = top; // [crispy] WiggleFix
 	    }
 
 	    dc_iscale = 0xffffffffu / (unsigned)spryscale;
@@ -536,7 +540,7 @@ R_StoreWallRange
 {
     fixed_t		vtop;
     int			lightnum;
-    int64_t		dx, dy, dx1, dy1, dist; // [crispy] fix long wall wobble
+    int			dx, dy, dx1, dy1, dist; // [cronopio] i64 -> i32 + CVM_CrossDiv
     const uint32_t	len = curline->length;
 
     // [crispy] remove MAXDRAWSEGS Vanilla limit
@@ -576,12 +580,14 @@ R_StoreWallRange
     // thank you very much Linguica, e6y and kb1
     // http://www.doomworld.com/vb/post/1340718
     // shift right to avoid possibility of int64 overflow in rw_distance calculation
-    dx = ((int64_t)curline->v2->r_x - curline->v1->r_x) >> 1;
-    dy = ((int64_t)curline->v2->r_y - curline->v1->r_y) >> 1;
-    dx1 = ((int64_t)viewx - curline->v1->r_x) >> 1;
-    dy1 = ((int64_t)viewy - curline->v1->r_y) >> 1;
-    dist = ((dy * dx1 - dx * dy1) / len) << 1;
-    rw_distance = (fixed_t)BETWEEN(INT_MIN, INT_MAX, dist);
+    // [cronopio] operands are pre-halved (>>1) to bound the cross product;
+    // CVM_CrossDiv computes (int64)(dy*dx1 - dx*dy1)/len without i64 SSA.
+    dx = (curline->v2->r_x - curline->v1->r_x) >> 1;
+    dy = (curline->v2->r_y - curline->v1->r_y) >> 1;
+    dx1 = (viewx - curline->v1->r_x) >> 1;
+    dy1 = (viewy - curline->v1->r_y) >> 1;
+    dist = CVM_CrossDiv(dy, dx1, dx, dy1, (int)len) << 1;
+    rw_distance = (fixed_t)dist;
 		
 	
     ds_p->x1 = rw_x = start;
@@ -866,10 +872,10 @@ R_StoreWallRange
     worldbottom >>= invhgtbits;
 	
     topstep = -FixedMul (rw_scalestep, worldtop);
-    topfrac = ((int64_t)centeryfrac>>invhgtbits) - (((int64_t)worldtop * rw_scale)>>FRACBITS); // [crispy] WiggleFix
+    topfrac = (centeryfrac>>invhgtbits) - cvm_qmul_16_16(worldtop, rw_scale); // [cronopio] WiggleFix i32
 
     bottomstep = -FixedMul (rw_scalestep,worldbottom);
-    bottomfrac = ((int64_t)centeryfrac>>invhgtbits) - (((int64_t)worldbottom * rw_scale)>>FRACBITS); // [crispy] WiggleFix
+    bottomfrac = (centeryfrac>>invhgtbits) - cvm_qmul_16_16(worldbottom, rw_scale); // [cronopio]
 	
     if (backsector)
     {	
@@ -878,13 +884,13 @@ R_StoreWallRange
 
 	if (worldhigh < worldtop)
 	{
-	    pixhigh = ((int64_t)centeryfrac>>invhgtbits) - (((int64_t)worldhigh * rw_scale)>>FRACBITS); // [crispy] WiggleFix
+	    pixhigh = (centeryfrac>>invhgtbits) - cvm_qmul_16_16(worldhigh, rw_scale); // [cronopio]
 	    pixhighstep = -FixedMul (rw_scalestep,worldhigh);
 	}
 	
 	if (worldlow > worldbottom)
 	{
-	    pixlow = ((int64_t)centeryfrac>>invhgtbits) - (((int64_t)worldlow * rw_scale)>>FRACBITS); // [crispy] WiggleFix
+	    pixlow = (centeryfrac>>invhgtbits) - cvm_qmul_16_16(worldlow, rw_scale); // [cronopio]
 	    pixlowstep = -FixedMul (rw_scalestep,worldlow);
 	}
     }

@@ -1458,7 +1458,10 @@ void V_DrawMouseSpeedBox(int speed)
 
     // If acceleration is used, draw a box that helps to calibrate the
     // threshold point.
-    if (mouse_threshold > 0 && fabs(mouse_acceleration - 1) > 0.01)
+    // [cronopio] fabs() folds to the unsupported llvm.fabs intrinsic; use the
+    // opaque out-of-line helper (declared in m_fixed.h) and stay in float.
+    extern float CVM_FAbsF(float v);
+    if (mouse_threshold > 0 && CVM_FAbsF(mouse_acceleration - 1.0f) > 0.01f)
     {
         DrawAcceleratingBox(speed);
     }

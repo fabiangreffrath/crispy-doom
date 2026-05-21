@@ -407,12 +407,12 @@ int*		mfloorclip; // [crispy] 32-bit integer math
 int*		mceilingclip; // [crispy] 32-bit integer math
 
 fixed_t		spryscale;
-int64_t		sprtopscreen; // [crispy] WiggleFix
+fixed_t		sprtopscreen; // [cronopio] i64 -> i32
 
 void R_DrawMaskedColumn (column_t* column)
 {
-    int64_t	topscreen; // [crispy] WiggleFix
-    int64_t 	bottomscreen; // [crispy] WiggleFix
+    fixed_t	topscreen; // [cronopio] i64 -> i32
+    fixed_t 	bottomscreen; // [cronopio] i64 -> i32
     fixed_t	basetexturemid;
     int		top = -1;
 	
@@ -713,7 +713,7 @@ void R_ProjectSprite (mobj_t* thing)
     // [JN] killough 4/9/98: clip things which are out of view due to height
     gzt = interpz + spritetopoffset[lump];
     if (interpz > viewz + FixedDiv(viewheight << FRACBITS, xscale) ||
-        gzt < (int64_t)viewz - FixedDiv((viewheight << FRACBITS)-viewheight, xscale))
+        gzt < viewz - FixedDiv((viewheight << FRACBITS)-viewheight, xscale)) // [cronopio] i64 cast removed
     {
 	return;
     }

@@ -1115,7 +1115,7 @@ static void R_InitTranMap()
 		    // Colour matching in RGB space doesn't work very well with the blues
 		    // in Doom's palette. Rather than do any colour conversions, just
 		    // emphasize the blues when building the translucency table.
-		    btmp = fg[b] * 1.666 < (fg[r] + fg[g]) ? 0 : 50;
+		    btmp = fg[b] * 1666 < (fg[r] + fg[g]) * 1000 ? 0 : 50; // [cronopio] f64 -> int
 		    blend[r] = (tran_filter_pct * fg[r] + (100 - tran_filter_pct) * bg[r]) / (100 + btmp);
 		    blend[g] = (tran_filter_pct * fg[g] + (100 - tran_filter_pct) * bg[g]) / (100 + btmp);
 		    blend[b] = (tran_filter_pct * fg[b] + (100 - tran_filter_pct) * bg[b]) / 100;
@@ -1187,10 +1187,11 @@ void R_InitColormaps (void)
 		// [crispy] Invulnerability (c == COLORMAPS)
 		for (i = 0; i < 256; i++)
 		{
+			// [cronopio] integer luminance (no double): 0.299/0.587/0.114 *1000
 			const byte gray = 0xff -
-			     (byte) (0.299 * playpal[3 * i + 0] +
-			             0.587 * playpal[3 * i + 1] +
-			             0.114 * playpal[3 * i + 2]);
+			     (byte) ((299 * playpal[3 * i + 0] +
+			              587 * playpal[3 * i + 1] +
+			              114 * playpal[3 * i + 2]) / 1000);
 			r = g = b = gamma2table[crispy->gamma][gray];
 
 			colormaps[j++] = 0xff000000 | (r << 16) | (g << 8) | b;

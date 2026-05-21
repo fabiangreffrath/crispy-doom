@@ -298,14 +298,14 @@ void P_SegLengths (boolean contrast_only)
     for (i = 0; i < numsegs; i++)
     {
 	seg_t *const li = &segs[i];
-	int64_t dx, dy;
+	int dx, dy; // [cronopio] i64 -> i32 (float math below widens for the product)
 
 	dx = li->v2->r_x - li->v1->r_x;
 	dy = li->v2->r_y - li->v1->r_y;
 
 	if (!contrast_only)
 	{
-		li->length = (uint32_t)(sqrt((double)dx*dx + (double)dy*dy)/2);
+		li->length = (uint32_t)(sqrt((float)dx*dx + (float)dy*dy)/2); // [cronopio] f64 -> f32
 
 		// [crispy] re-calculate angle used for rendering
 		viewx = li->v1->r_x;
@@ -949,14 +949,17 @@ static void P_RemoveSlimeTrails(void)
 		    {
 			// [crispy] move the vertex towards the linedef
 			// by projecting it using the law of cosines
-			int64_t dx2 = (l->dx >> FRACBITS) * (l->dx >> FRACBITS);
-			int64_t dy2 = (l->dy >> FRACBITS) * (l->dy >> FRACBITS);
-			int64_t dxy = (l->dx >> FRACBITS) * (l->dy >> FRACBITS);
-			int64_t s = dx2 + dy2;
+			// [cronopio] the projection numerators (dx2*v->x etc.) are
+			// genuinely 64-bit. CVM_ProjDiv computes
+			// (a1*b1 + a2*b2 + a3*b3)/s in 64-bit without i64 SSA.
+			int dx2 = (l->dx >> FRACBITS) * (l->dx >> FRACBITS);
+			int dy2 = (l->dy >> FRACBITS) * (l->dy >> FRACBITS);
+			int dxy = (l->dx >> FRACBITS) * (l->dy >> FRACBITS);
+			int s = dx2 + dy2;
 
 			// [crispy] MBF actually overrides v->x and v->y here
-			v->r_x = (fixed_t)((dx2 * v->x + dy2 * l->v1->x + dxy * (v->y - l->v1->y)) / s);
-			v->r_y = (fixed_t)((dy2 * v->y + dx2 * l->v1->y + dxy * (v->x - l->v1->x)) / s);
+			v->r_x = (fixed_t)CVM_ProjDiv(dx2, v->x, dy2, l->v1->x, dxy, (v->y - l->v1->y), s);
+			v->r_y = (fixed_t)CVM_ProjDiv(dy2, v->y, dx2, l->v1->y, dxy, (v->x - l->v1->x), s);
 
 			// [crispy] wait a minute... moved more than 8 map units?
 			// maybe that's a linguortal then, back to the original coordinates

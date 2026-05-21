@@ -1738,16 +1738,19 @@ boolean P_CheckMapTag666 (void)
     {
         if (gamemission == pack_master)
         {
-            if (D_CheckMasterlevelKex())
+            // [cronopio] match via a loop over a table: an ||-chain or switch
+            // gets folded by clang into a bit-test (1<<gamemap mask), which
+            // yields an odd-width integer (i21) the translator rejects. A
+            // runtime loop over a table prevents that fold.
+            static const int kex_maps[]  = { 13, 19, 20 };
+            static const int unity_maps[] = { 14, 15, 16 };
+            const int *maps = D_CheckMasterlevelKex() ? kex_maps : unity_maps;
+            for (int mi = 0; mi < 3; ++mi)
             {
-                // kex materlevels.wad
-                return (gamemap == 13 || gamemap == 19 || gamemap == 20);
+                if (gamemap == maps[mi])
+                    return true;
             }
-            else
-            {
-                // psn/unity masterlevels.wad
-                return (gamemap == 14 || gamemap == 15 || gamemap == 16);
-            }
+            return false;
         }
         else
         {

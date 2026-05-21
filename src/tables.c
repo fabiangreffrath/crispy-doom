@@ -70,7 +70,15 @@ int SlopeDivCrispy(unsigned int num, unsigned int den)
     }
     else
     {
-	uint64_t ans = ((uint64_t) num << 3) / (den >> 8);
+	// [cronopio] 32-bit reformulation of ((uint64_t)num<<3)/(den>>8) (no i64).
+	// The result is clamped to SLOPERANGE, so if num<<3 would overflow 32
+	// bits the answer is necessarily >= SLOPERANGE -> just clamp.
+	unsigned int d = den >> 8;          // den >= 512 -> d >= 2
+	if (num > (0xFFFFFFFFu >> 3))
+	{
+	    return SLOPERANGE;
+	}
+	unsigned int ans = (num << 3) / d;
 
 	if (ans <= SLOPERANGE)
 	{

@@ -126,7 +126,7 @@ R_ClipSolidWallSegment
 	    
 	    while (next != start)
 	    {
-		*next = *(next-1);
+		    next->first = (next-1)->first; next->last = (next-1)->last; /* [cronopio] field-wise (avoid i64 struct copy) */
 		next--;
 	    }
 	    next->first = first;
@@ -178,7 +178,10 @@ R_ClipSolidWallSegment
     while (next++ != newend)
     {
 	// Remove a post.
-	*++start = *next;
+	// [cronopio] field-wise copy (avoid i64 struct copy)
+	++start;
+	start->first = next->first;
+	start->last  = next->last;
     }
 
     newend = start+1;

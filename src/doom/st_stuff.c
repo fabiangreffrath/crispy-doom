@@ -673,7 +673,8 @@ ST_Responder (event_t* ev)
 
 	    mt.x = plyr->mo->x >> FRACBITS;
 	    mt.y = plyr->mo->y >> FRACBITS;
-	    mt.angle = (plyr->mo->angle + ANG45/2)*(uint64_t)45/ANG45;
+	    // [cronopio] i64-free: reduce by >>16 before scaling to avoid overflow
+	    mt.angle = (((plyr->mo->angle + ANG45/2) >> 16) * 45) / (ANG45 >> 16);
 	    mt.type = consoleplayer + 1;
 	    P_SpawnPlayer(&mt);
 
@@ -2382,11 +2383,12 @@ void ST_DrawDemoTimer (const int time)
 {
 	char buffer[16];
 	const int mins = time / (60 * TICRATE);
-	const float secs = (float)(time % (60 * TICRATE)) / TICRATE;
+	// [cronopio] integer centiseconds (no float varargs -> no f64)
+	const int centi = ((time % (60 * TICRATE)) * 100) / TICRATE;
 	const int w = shortnum[0]->width;
 	int n, x;
 
-	n = M_snprintf(buffer, sizeof(buffer), "%02i %05.02f", mins, secs);
+	n = M_snprintf(buffer, sizeof(buffer), "%02i %02i.%02i", mins, centi / 100, centi % 100);
 
 	x = (viewwindowx >> crispy->hires) + (scaledviewwidth >> crispy->hires) - WIDESCREENDELTA;
 

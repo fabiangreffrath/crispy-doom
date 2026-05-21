@@ -1219,11 +1219,12 @@ void HU_Ticker(void)
     if (crispy->btusetimer && plr->btuse_tics)
     {
 	const int mins = plr->btuse / (60 * TICRATE);
-	const float secs = (float)(plr->btuse % (60 * TICRATE)) / TICRATE;
+	// [cronopio] integer centiseconds (no float varargs -> no f64)
+	const int centi = ((plr->btuse % (60 * TICRATE)) * 100) / TICRATE;
 
 	plr->btuse_tics--;
 
-	M_snprintf(str, sizeof(str), "%sU\t%02i:%05.02f", crstr[CR_GRAY], mins, secs);
+	M_snprintf(str, sizeof(str), "%sU\t%02i:%02i.%02i", crstr[CR_GRAY], mins, centi / 100, centi % 100);
 	HUlib_clearTextLine(&w_ltime);
 	s = str;
 	while (*s)

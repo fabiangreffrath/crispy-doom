@@ -67,7 +67,12 @@
 
 #define PRINTF_ATTR(fmt, first) __attribute__((format(printf, fmt, first)))
 #define PRINTF_ARG_ATTR(x) __attribute__((format_arg(x)))
-#define NORETURN __attribute__((noreturn))
+// [cronopio] The CronoVM translator has no codegen for the LLVM `unreachable`
+// terminator, which clang emits after every call to a `noreturn` function
+// (I_Error/I_Quit). Dropping the noreturn attribute makes clang fall through
+// instead. I_Error itself ends in cron_exit + an infinite loop, so control
+// never actually returns at run time.
+#define NORETURN
 
 #else
 #if defined(_MSC_VER)
@@ -78,6 +83,14 @@
 #define PRINTF_ATTR(fmt, first)
 #define PRINTF_ARG_ATTR(x)
 #define NORETURN
+#endif
+
+// [cronopio] noinline marker used to keep individual functions within the
+// CronoVM translator's ~254-register budget (the allocator has no spill path).
+#if defined(__GNUC__) || defined(__clang__)
+#define CRON_NOINLINE __attribute__((noinline))
+#else
+#define CRON_NOINLINE
 #endif
 
 #ifdef __WATCOMC__

@@ -115,14 +115,18 @@ void A_Spawn(mobj_t *mo)
     }
 }
 
+// [cronopio] i64-free: (misc1<<32)/360 == misc1 * floor(2^32/360) = misc1*11930464.
+// misc1 is degrees; the uint32 product wraps exactly as the angle_t would.
+#define DEG_TO_ANGLE_T 11930464u
+
 void A_Turn(mobj_t *mo)
 {
-  mo->angle += (angle_t)(((uint64_t) mo->state->misc1 << 32) / 360);
+  mo->angle += (angle_t)((uint32_t) mo->state->misc1 * DEG_TO_ANGLE_T);
 }
 
 void A_Face(mobj_t *mo)
 {
-  mo->angle = (angle_t)(((uint64_t) mo->state->misc1 << 32) / 360);
+  mo->angle = (angle_t)((uint32_t) mo->state->misc1 * DEG_TO_ANGLE_T);
 }
 
 void A_Scratch(mobj_t *mo)

@@ -226,14 +226,14 @@ static void M_QuitDOOM(int choice);
 
 static void M_ChangeMessages(int choice);
 static void M_ChangeSensitivity(int choice);
-static void M_ChangeSensitivity_x2(int choice); // [crispy] mouse sensitivity menu
-static void M_ChangeSensitivity_y(int choice); // [crispy] mouse sensitivity menu
-static void M_MouseInvert(int choice); // [crispy] mouse sensitivity menu
+static CRON_NOINLINE void M_ChangeSensitivity_x2(int choice); // [crispy] mouse sensitivity menu
+static CRON_NOINLINE void M_ChangeSensitivity_y(int choice); // [crispy] mouse sensitivity menu
+static CRON_NOINLINE void M_MouseInvert(int choice); // [crispy] mouse sensitivity menu
 static void M_SfxVol(int choice);
 static void M_MusicVol(int choice);
 static void M_ChangeDetail(int choice);
 static void M_SizeDisplay(int choice);
-static void M_Mouse(int choice); // [crispy] mouse sensitivity menu
+static CRON_NOINLINE void M_Mouse(int choice); // [crispy] mouse sensitivity menu
 static void M_Sound(int choice);
 
 static void M_FinishReadThis(int choice);
@@ -249,7 +249,7 @@ static void M_DrawReadThis2(void);
 static void M_DrawNewGame(void);
 static void M_DrawEpisode(void);
 static void M_DrawOptions(void);
-static void M_DrawMouse(void); // [crispy] mouse sensitivity menu
+static CRON_NOINLINE void M_DrawMouse(void); // [crispy] mouse sensitivity menu
 static void M_DrawSound(void);
 static void M_DrawLoad(void);
 static void M_DrawSave(void);
@@ -854,7 +854,7 @@ void M_ReadSaveStrings(void)
 }
 
 // [FG] support up to 8 pages of savegames
-static void M_DrawSaveLoadBottomLine(void)
+static CRON_NOINLINE void M_DrawSaveLoadBottomLine(void)
 {
   char pagestr[16];
   const int y = 152;
@@ -1016,7 +1016,7 @@ void M_DoSave(int slot)
 // Generate a default save slot name when the user saves to
 // an empty slot via the joypad.
 //
-static void SetDefaultSaveName(int slot)
+static CRON_NOINLINE void SetDefaultSaveName(int slot)
 {
     // map from IWAD or PWAD?
     if (W_IsIWADLump(maplumpinfo) && strcmp(savegamedir, ""))
@@ -1044,7 +1044,7 @@ static void SetDefaultSaveName(int slot)
 }
 
 // [crispy] override savegame name if it already starts with a map identifier
-static boolean StartsWithMapIdentifier (char *str)
+static CRON_NOINLINE boolean StartsWithMapIdentifier (char *str)
 {
     M_ForceUppercase(str);
 
@@ -1443,7 +1443,7 @@ void M_DrawOptions(void)
 }
 
 // [crispy] mouse sensitivity menu
-static void M_DrawMouse(void)
+static CRON_NOINLINE void M_DrawMouse(void)
 {
     char mouse_menu_text[48];
 
@@ -1479,7 +1479,7 @@ static void M_DrawMouse(void)
 
 // [crispy] Crispness menu
 #include "m_background.h"
-static void M_DrawCrispnessBackground(void)
+static CRON_NOINLINE void M_DrawCrispnessBackground(void)
 {
 	const byte *src = crispness_background;
 	pixel_t *dest;
@@ -1499,21 +1499,21 @@ static void M_DrawCrispnessBackground(void)
 
 static char crispy_menu_text[48];
 
-static void M_DrawCrispnessHeader(const char *item)
+static CRON_NOINLINE void M_DrawCrispnessHeader(const char *item)
 {
     M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
                "%s%s", crstr[CR_GOLD], item);
     M_WriteText(ORIGWIDTH/2 - M_StringWidth(item) / 2, 6, crispy_menu_text);
 }
 
-static void M_DrawCrispnessSeparator(int y, const char *item)
+static CRON_NOINLINE void M_DrawCrispnessSeparator(int y, const char *item)
 {
     M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
                "%s%s", crstr[CR_GOLD], item);
     M_WriteText(currentMenu->x - 8, currentMenu->y + CRISPY_LINEHEIGHT * y, crispy_menu_text);
 }
 
-static void M_DrawCrispnessItem(int y, const char *item, int feat, boolean cond)
+static CRON_NOINLINE void M_DrawCrispnessItem(int y, const char *item, int feat, boolean cond)
 {
     M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
                "%s%s: %s%s", cond ? crstr[CR_NONE] : crstr[CR_DARK], item,
@@ -1522,7 +1522,7 @@ static void M_DrawCrispnessItem(int y, const char *item, int feat, boolean cond)
     M_WriteText(currentMenu->x, currentMenu->y + CRISPY_LINEHEIGHT * y, crispy_menu_text);
 }
 
-static void M_DrawCrispnessMultiItem(int y, const char *item, multiitem_t *multiitem, int feat, boolean cond)
+static CRON_NOINLINE void M_DrawCrispnessMultiItem(int y, const char *item, multiitem_t *multiitem, int feat, boolean cond)
 {
     M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
                "%s%s: %s%s", cond ? crstr[CR_NONE] : crstr[CR_DARK], item,
@@ -1531,7 +1531,7 @@ static void M_DrawCrispnessMultiItem(int y, const char *item, multiitem_t *multi
     M_WriteText(currentMenu->x, currentMenu->y + CRISPY_LINEHEIGHT * y, crispy_menu_text);
 }
 
-static void M_DrawCrispnessNumericItem(int y, const char *item, int feat, const char *zero, boolean cond, const char *disabled)
+static CRON_NOINLINE void M_DrawCrispnessNumericItem(int y, const char *item, int feat, const char *zero, boolean cond, const char *disabled)
 {
     char number[NUMERIC_ENTRY_NUMDIGITS + 2];
     const int size = NUMERIC_ENTRY_NUMDIGITS + 2;
@@ -1552,14 +1552,14 @@ static void M_DrawCrispnessNumericItem(int y, const char *item, int feat, const 
     M_WriteText(currentMenu->x, currentMenu->y + CRISPY_LINEHEIGHT * y, crispy_menu_text);
 }
 
-static void M_DrawCrispnessGoto(int y, const char *item)
+static CRON_NOINLINE void M_DrawCrispnessGoto(int y, const char *item)
 {
     M_snprintf(crispy_menu_text, sizeof(crispy_menu_text),
                "%s%s", crstr[CR_GOLD], item);
     M_WriteText(currentMenu->x, currentMenu->y + CRISPY_LINEHEIGHT * y, crispy_menu_text);
 }
 
-static void M_DrawCrispness1(void)
+static CRON_NOINLINE void M_DrawCrispness1(void)
 {
     M_DrawCrispnessBackground();
 
@@ -1587,7 +1587,7 @@ static void M_DrawCrispness1(void)
     dp_translation = NULL;
 }
 
-static void M_DrawCrispness2(void)
+static CRON_NOINLINE void M_DrawCrispness2(void)
 {
     M_DrawCrispnessBackground();
 
@@ -1614,7 +1614,7 @@ static void M_DrawCrispness2(void)
     dp_translation = NULL;
 }
 
-static void M_DrawCrispness3(void)
+static CRON_NOINLINE void M_DrawCrispness3(void)
 {
     M_DrawCrispnessBackground();
 
@@ -1643,7 +1643,7 @@ static void M_DrawCrispness3(void)
     dp_translation = NULL;
 }
 
-static void M_DrawCrispness4(void)
+static CRON_NOINLINE void M_DrawCrispness4(void)
 {
     M_DrawCrispnessBackground();
 
@@ -1674,7 +1674,7 @@ void M_Options(int choice)
 }
 
 // [crispy] correctly handle inverted y-axis
-static void M_Mouse(int choice)
+static CRON_NOINLINE void M_Mouse(int choice)
 {
     if (mouseSensitivity_y < 0)
     {
@@ -1691,12 +1691,12 @@ static void M_Mouse(int choice)
     M_SetupNextMenu(&MouseDef);
 }
 
-static void M_CrispnessCur(int choice)
+static CRON_NOINLINE void M_CrispnessCur(int choice)
 {
     M_SetupNextMenu(CrispnessMenus[crispness_cur]);
 }
 
-static void M_CrispnessNext(int choice)
+static CRON_NOINLINE void M_CrispnessNext(int choice)
 {
     if (++crispness_cur > arrlen(CrispnessMenus) - 1)
     {
@@ -1706,7 +1706,7 @@ static void M_CrispnessNext(int choice)
     M_CrispnessCur(0);
 }
 
-static void M_CrispnessPrev(int choice)
+static CRON_NOINLINE void M_CrispnessPrev(int choice)
 {
     if (--crispness_cur < 0)
     {
@@ -1849,7 +1849,7 @@ void M_QuitResponse(int key)
 }
 
 
-static const char *M_SelectEndMessage(void)
+static CRON_NOINLINE const char *M_SelectEndMessage(void)
 {
     const char **endmsg;
 
@@ -1915,7 +1915,7 @@ void M_ChangeSensitivity_x2(int choice)
     }
 }
 
-static void M_ChangeSensitivity_y(int choice)
+static CRON_NOINLINE void M_ChangeSensitivity_y(int choice)
 {
     switch(choice)
     {
@@ -1930,7 +1930,7 @@ static void M_ChangeSensitivity_y(int choice)
     }
 }
 
-static void M_MouseInvert(int choice)
+static CRON_NOINLINE void M_MouseInvert(int choice)
 {
     choice = 0;
     mouse_y_invert = !mouse_y_invert;
@@ -2164,7 +2164,7 @@ M_WriteText
 // These keys evaluate to a "null" key in Vanilla Doom that allows weird
 // jumping in the menus. Preserve this behavior for accuracy.
 
-static boolean IsNullKey(int key)
+static CRON_NOINLINE boolean IsNullKey(int key)
 {
     return key == KEY_PAUSE || key == KEY_CAPSLOCK
         || key == KEY_SCRLCK || key == KEY_NUMLOCK;
@@ -2172,7 +2172,7 @@ static boolean IsNullKey(int key)
 
 // [crispy] reload current level / go to next level
 // adapted from prboom-plus/src/e6y.c:369-449
-static int G_ReloadLevel(void)
+static CRON_NOINLINE int G_ReloadLevel(void)
 {
   int result = false;
 
@@ -2190,7 +2190,7 @@ static int G_ReloadLevel(void)
   return result;
 }
 
-static int G_GotoNextLevel(void)
+static CRON_NOINLINE int G_GotoNextLevel(void)
 {
   byte doom_next[6][9] = {
     {12, 13, 19, 15, 16, 17, 18, 21, 14},
@@ -2311,61 +2311,146 @@ static int G_GotoNextLevel(void)
 //
 // M_Responder
 //
-boolean M_Responder (event_t* ev)
+static CRON_NOINLINE void M_ResponderSaveString (event_t *ev, int key, int ch)
 {
-    int             ch;
-    int             key;
-    int             i;
-    static  int     mousewait = 0;
-    static  int     mousey = 0;
-    static  int     lasty = 0;
-    static  int     mousex = 0;
-    static  int     lastx = 0;
-    boolean mousextobutton = false;
-    int dir;
+    (void)ev; (void)ch;
+	switch(key)
+	{
+	  case KEY_BACKSPACE:
+	    if (saveCharIndex > 0)
+	    {
+		saveCharIndex--;
+		savegamestrings[saveSlot][saveCharIndex] = 0;
+	    }
+	    break;
 
-    // In testcontrols mode, none of the function keys should do anything
-    // - the only key is escape to quit.
+          case KEY_ESCAPE:
+            saveStringEnter = 0;
+            I_StopTextInput();
+            M_StringCopy(savegamestrings[saveSlot], saveOldString,
+                         SAVESTRINGSIZE);
+            break;
 
-    if (testcontrols)
-    {
-        if (ev->type == ev_quit
-         || (ev->type == ev_keydown
-          && (ev->data1 == key_menu_activate || ev->data1 == key_menu_quit)))
-        {
-            I_Quit();
-            return true;
-        }
+	  case KEY_ENTER:
+	    saveStringEnter = 0;
+            I_StopTextInput();
+	    if (savegamestrings[saveSlot][0])
+		M_DoSave(saveSlot);
+	    break;
 
-        return false;
-    }
+	  default:
+            // Savegame name entry. This is complicated.
+            // Vanilla has a bug where the shift key is ignored when entering
+            // a savegame name. If vanilla_keyboard_mapping is on, we want
+            // to emulate this bug by using ev->data1. But if it's turned off,
+            // it implies the user doesn't care about Vanilla emulation:
+            // instead, use ev->data3 which gives the fully-translated and
+            // modified key input.
 
-    // "close" button pressed on window?
-    if (ev->type == ev_quit)
-    {
-        // First click on close button = bring up quit confirm message.
-        // Second click on close button = confirm quit
+            if (ev->type != ev_keydown)
+            {
+                break;
+            }
+            if (vanilla_keyboard_mapping)
+            {
+                ch = ev->data1;
+            }
+            else
+            {
+                ch = ev->data3;
+            }
 
-        if (menuactive && messageToPrint && messageRoutine == M_QuitResponse)
-        {
-            M_QuitResponse(key_menu_confirm);
-        }
-        else
-        {
-            S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
-            M_QuitDOOM(0);
-        }
+            ch = toupper(ch);
 
-        return true;
-    }
+            if (ch != ' '
+             && (ch - HU_FONTSTART < 0 || ch - HU_FONTSTART >= HU_FONTSIZE))
+            {
+                break;
+            }
 
-    // key is the key pressed, ch is the actual character typed
-  
-    ch = 0;
-    key = -1;
-	
-    if (ev->type == ev_joystick)
-    {
+	    if (ch >= 32 && ch <= 127 &&
+		saveCharIndex < SAVESTRINGSIZE-1 &&
+		M_StringWidth(savegamestrings[saveSlot]) <
+		(SAVESTRINGSIZE-2)*8)
+	    {
+		savegamestrings[saveSlot][saveCharIndex++] = ch;
+		savegamestrings[saveSlot][saveCharIndex] = 0;
+	    }
+	    break;
+	}
+}
+
+static int menu_mousewait, menu_mousey, menu_lasty, menu_mousex, menu_lastx;
+static CRON_NOINLINE void M_ResponderMouse (event_t *ev, int *pkey, boolean *pmousextobutton)
+{
+    int key = *pkey;
+    boolean mousextobutton = *pmousextobutton;
+	    // [crispy] novert disables controlling the menus with the mouse
+	    if (!novert)
+	    {
+	    menu_mousey += ev->data3;
+	    }
+	    if (menu_mousey < menu_lasty-30)
+	    {
+		key = key_menu_down;
+		menu_mousewait = I_GetTime() + 5;
+		menu_mousey = menu_lasty -= 30;
+	    }
+	    else if (menu_mousey > menu_lasty+30)
+	    {
+		key = key_menu_up;
+		menu_mousewait = I_GetTime() + 5;
+		menu_mousey = menu_lasty += 30;
+	    }
+		
+	    menu_mousex += ev->data2;
+	    if (menu_mousex < menu_lastx-30)
+	    {
+		key = key_menu_left;
+		menu_mousewait = I_GetTime() + 5;
+		menu_mousex = menu_lastx -= 30;
+		mousextobutton = true;
+	    }
+	    else if (menu_mousex > menu_lastx+30)
+	    {
+		key = key_menu_right;
+		menu_mousewait = I_GetTime() + 5;
+		menu_mousex = menu_lastx += 30;
+		mousextobutton = true;
+	    }
+		
+	    if (ev->data1&1)
+	    {
+		key = key_menu_forward;
+		menu_mousewait = I_GetTime() + 5;
+	    }
+			
+	    if (ev->data1&2)
+	    {
+		key = key_menu_back;
+		menu_mousewait = I_GetTime() + 5;
+	    }
+
+	    // [crispy] scroll menus with mouse wheel
+	    if (mousebprevweapon >= 0 && ev->data1 & (1 << mousebprevweapon))
+	    {
+		key = key_menu_down;
+		menu_mousewait = I_GetTime() + 1;
+	    }
+	    else
+	    if (mousebnextweapon >= 0 && ev->data1 & (1 << mousebnextweapon))
+	    {
+		key = key_menu_up;
+		menu_mousewait = I_GetTime() + 1;
+	    }
+    *pkey = key;
+    *pmousextobutton = mousextobutton;
+}
+
+static CRON_NOINLINE int M_ResponderJoystick (event_t *ev)
+{
+    int key = -1;
+    int dir; (void)dir;
         // Simulate key presses from joystick events to interact with the menu.
 
         if (menuactive)
@@ -2454,156 +2539,187 @@ boolean M_Responder (event_t* ev)
             key = key_menu_activate;
             joywait = I_GetTime() + 5;
         }
-    }
-    else
-    {
-	if (ev->type == ev_mouse && mousewait < I_GetTime() && menuactive)
-	{
-	    // [crispy] novert disables controlling the menus with the mouse
-	    if (!novert)
-	    {
-	    mousey += ev->data3;
-	    }
-	    if (mousey < lasty-30)
-	    {
-		key = key_menu_down;
-		mousewait = I_GetTime() + 5;
-		mousey = lasty -= 30;
-	    }
-	    else if (mousey > lasty+30)
-	    {
-		key = key_menu_up;
-		mousewait = I_GetTime() + 5;
-		mousey = lasty += 30;
-	    }
-		
-	    mousex += ev->data2;
-	    if (mousex < lastx-30)
-	    {
-		key = key_menu_left;
-		mousewait = I_GetTime() + 5;
-		mousex = lastx -= 30;
-		mousextobutton = true;
-	    }
-	    else if (mousex > lastx+30)
-	    {
-		key = key_menu_right;
-		mousewait = I_GetTime() + 5;
-		mousex = lastx += 30;
-		mousextobutton = true;
-	    }
-		
-	    if (ev->data1&1)
-	    {
-		key = key_menu_forward;
-		mousewait = I_GetTime() + 5;
-	    }
-			
-	    if (ev->data1&2)
-	    {
-		key = key_menu_back;
-		mousewait = I_GetTime() + 5;
-	    }
+    return key;
+}
 
-	    // [crispy] scroll menus with mouse wheel
-	    if (mousebprevweapon >= 0 && ev->data1 & (1 << mousebprevweapon))
+static CRON_NOINLINE int M_ResponderShortcut (event_t *ev, int key, int ch)
+{
+    (void)ev; (void)ch;
+	if (key == key_menu_decscreen)      // Screen size down
+        {
+	    if (automapactive || chat_on)
+		return 0;
+	    M_SizeDisplay(0);
+	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
+	    return 1;
+	}
+        else if (key == key_menu_incscreen) // Screen size up
+        {
+	    if (automapactive || chat_on)
+		return 0;
+	    M_SizeDisplay(1);
+	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
+	    return 1;
+	}
+        else if (key == key_menu_help)     // Help key
+        {
+	    M_StartControlPanel ();
+
+	    if (gameversion >= exe_ultimate)
+	      currentMenu = &ReadDef2;
+	    else
+	      currentMenu = &ReadDef1;
+
+	    itemOn = 0;
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
+	    return 1;
+	}
+        else if (key == key_menu_save)     // Save
+        {
+	    M_StartControlPanel();
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
+	    M_SaveGame(0);
+	    return 1;
+        }
+        else if (key == key_menu_load)     // Load
+        {
+	    M_StartControlPanel();
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
+	    M_LoadGame(0);
+	    return 1;
+        }
+        else if (key == key_menu_volume)   // Sound Volume
+        {
+	    M_StartControlPanel ();
+	    currentMenu = &SoundDef;
+	    itemOn = currentMenu->lastOn; // [crispy] remember cursor position
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
+	    return 1;
+	}
+        else if (key == key_menu_detail)   // Detail toggle
+        {
+	    M_ChangeDetail(0);
+	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
+	    return 1;
+        }
+        else if (key == key_menu_qsave)    // Quicksave
+        {
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
+	    M_QuickSave();
+	    return 1;
+        }
+        else if (key == key_menu_endgame)  // End game
+        {
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
+	    M_EndGame(0);
+	    return 1;
+        }
+        else if (key == key_menu_messages) // Toggle messages
+        {
+	    M_ChangeMessages(0);
+	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
+	    return 1;
+        }
+        else if (key == key_menu_qload)    // Quickload
+        {
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
+	    M_QuickLoad();
+	    return 1;
+        }
+        else if (key == key_menu_quit)     // Quit DOOM
+        {
+	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
+	    M_QuitDOOM(0);
+	    return 1;
+        }
+        else if (key == key_menu_gamma)    // gamma toggle
+        {
+	    crispy->gamma++;
+	    if (crispy->gamma > 4+13) // [crispy] intermediate gamma levels
+		crispy->gamma = 0;
+	    players[consoleplayer].message = DEH_String(gammamsg[crispy->gamma]);
+#ifndef CRISPY_TRUECOLOR
+            I_SetPalette (W_CacheLumpName (DEH_String("PLAYPAL"),PU_CACHE));
+#else
+            {
+		I_SetPalette (0);
+		R_InitColormaps();
+		inhelpscreens = true;
+		R_FillBackScreen();
+		viewactive = false;
+            }
+#endif
+	    return 1;
+	}
+        // [crispy] those two can be considered as shortcuts for the IDCLEV cheat
+        // and should be treated as such, i.e. add "if (!netgame)"
+        // hovewer, allow while multiplayer demos
+        else if ((!netgame || netdemo) && key != 0 && key == key_menu_reloadlevel)
+        {
+	    if (demoplayback)         
 	    {
-		key = key_menu_down;
-		mousewait = I_GetTime() + 1;
+		if (crispy->demowarp)
+		{
+		// [crispy] enable screen render back before replaying
+		nodrawers = false;
+		singletics = false;
+		}
+		// [crispy] replay demo lump or file
+		G_DoPlayDemo();
+		return 1;
 	    }
 	    else
-	    if (mousebnextweapon >= 0 && ev->data1 & (1 << mousebnextweapon))
+	    if (G_ReloadLevel())
+		return 1;
+        }
+        else if ((!netgame || netdemo) && key != 0 && key == key_menu_nextlevel)
+        {
+	    if (demoplayback)
 	    {
-		key = key_menu_up;
-		mousewait = I_GetTime() + 1;
+		// [crispy] go to next level
+		demo_gotonextlvl = true;
+		G_DemoGotoNextLevel(true);
+		return 1;
 	    }
+	    else
+	    if (G_GotoNextLevel())
+		return 1;
+        }
+
+    return 2; // not handled; fall through
+}
+
+static CRON_NOINLINE int M_ResponderMessage (event_t *ev, int key, int ch)
+{
+    (void)ev; (void)ch;
+	if (messageNeedsInput)
+        {
+            if (key != ' ' && key != KEY_ESCAPE
+             && key != key_menu_confirm && key != key_menu_abort
+             // [crispy] allow to confirm nightmare, end game and quit by pressing Enter key
+             && key != key_menu_forward)
+            {
+                return 0;
+            }
 	}
-	else
+
+	menuactive = messageLastMenuActive;
+	if (messageRoutine)
+	    messageRoutine(key);
+
+	// [crispy] stay in menu
+	if (messageToPrint < 2)
 	{
-	    if (ev->type == ev_keydown)
-	    {
-		key = ev->data1;
-		ch = ev->data2;
-	    }
+	menuactive = false;
 	}
-    }
-    
-    if (key == -1)
-	return false;
+	messageToPrint = 0; // [crispy] moved here
+	S_StartSoundOptional(NULL, sfx_mnucls, sfx_swtchx); // [NS] Optional menu sounds.
+	return 1;
+}
 
-    // Save Game string input
-    if (saveStringEnter)
-    {
-	switch(key)
-	{
-	  case KEY_BACKSPACE:
-	    if (saveCharIndex > 0)
-	    {
-		saveCharIndex--;
-		savegamestrings[saveSlot][saveCharIndex] = 0;
-	    }
-	    break;
-
-          case KEY_ESCAPE:
-            saveStringEnter = 0;
-            I_StopTextInput();
-            M_StringCopy(savegamestrings[saveSlot], saveOldString,
-                         SAVESTRINGSIZE);
-            break;
-
-	  case KEY_ENTER:
-	    saveStringEnter = 0;
-            I_StopTextInput();
-	    if (savegamestrings[saveSlot][0])
-		M_DoSave(saveSlot);
-	    break;
-
-	  default:
-            // Savegame name entry. This is complicated.
-            // Vanilla has a bug where the shift key is ignored when entering
-            // a savegame name. If vanilla_keyboard_mapping is on, we want
-            // to emulate this bug by using ev->data1. But if it's turned off,
-            // it implies the user doesn't care about Vanilla emulation:
-            // instead, use ev->data3 which gives the fully-translated and
-            // modified key input.
-
-            if (ev->type != ev_keydown)
-            {
-                break;
-            }
-            if (vanilla_keyboard_mapping)
-            {
-                ch = ev->data1;
-            }
-            else
-            {
-                ch = ev->data3;
-            }
-
-            ch = toupper(ch);
-
-            if (ch != ' '
-             && (ch - HU_FONTSTART < 0 || ch - HU_FONTSTART >= HU_FONTSIZE))
-            {
-                break;
-            }
-
-	    if (ch >= 32 && ch <= 127 &&
-		saveCharIndex < SAVESTRINGSIZE-1 &&
-		M_StringWidth(savegamestrings[saveSlot]) <
-		(SAVESTRINGSIZE-2)*8)
-	    {
-		savegamestrings[saveSlot][saveCharIndex++] = ch;
-		savegamestrings[saveSlot][saveCharIndex] = 0;
-	    }
-	    break;
-	}
-	return true;
-    }
-
-    // [crispy] Enter numeric value
-    if (numeric_enter)
-    {
+static CRON_NOINLINE void M_ResponderNumeric (event_t *ev, int key, int ch)
+{
+    (void)ev; (void)key; (void)ch;
         switch(key)
         {
             case KEY_BACKSPACE:
@@ -2655,35 +2771,96 @@ boolean M_Responder (event_t* ev)
                     break;
                 }
         }
+}
+
+boolean M_Responder (event_t* ev)
+{
+    int             ch;
+    int             key;
+    int             i;
+    boolean mousextobutton = false;
+
+    // In testcontrols mode, none of the function keys should do anything
+    // - the only key is escape to quit.
+
+    if (testcontrols)
+    {
+        if (ev->type == ev_quit
+         || (ev->type == ev_keydown
+          && (ev->data1 == key_menu_activate || ev->data1 == key_menu_quit)))
+        {
+            I_Quit();
+            return true;
+        }
+
+        return false;
+    }
+
+    // "close" button pressed on window?
+    if (ev->type == ev_quit)
+    {
+        // First click on close button = bring up quit confirm message.
+        // Second click on close button = confirm quit
+
+        if (menuactive && messageToPrint && messageRoutine == M_QuitResponse)
+        {
+            M_QuitResponse(key_menu_confirm);
+        }
+        else
+        {
+            S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
+            M_QuitDOOM(0);
+        }
+
+        return true;
+    }
+
+    // key is the key pressed, ch is the actual character typed
+  
+    ch = 0;
+    key = -1;
+	
+    if (ev->type == ev_joystick)
+    {
+        key = M_ResponderJoystick(ev);
+    }
+    else
+    {
+	if (ev->type == ev_mouse && menu_mousewait < I_GetTime() && menuactive)
+	{
+	    M_ResponderMouse(ev, &key, &mousextobutton);
+	}
+	else
+	{
+	    if (ev->type == ev_keydown)
+	    {
+		key = ev->data1;
+		ch = ev->data2;
+	    }
+	}
+    }
+    
+    if (key == -1)
+	return false;
+
+    // Save Game string input
+    if (saveStringEnter)
+    {
+        M_ResponderSaveString(ev, key, ch);
+        return true;
+    }
+
+    // [crispy] Enter numeric value
+    if (numeric_enter)
+    {
+        M_ResponderNumeric(ev, key, ch);
         return true;
     }
 
     // Take care of any messages that need input
     if (messageToPrint)
     {
-	if (messageNeedsInput)
-        {
-            if (key != ' ' && key != KEY_ESCAPE
-             && key != key_menu_confirm && key != key_menu_abort
-             // [crispy] allow to confirm nightmare, end game and quit by pressing Enter key
-             && key != key_menu_forward)
-            {
-                return false;
-            }
-	}
-
-	menuactive = messageLastMenuActive;
-	if (messageRoutine)
-	    messageRoutine(key);
-
-	// [crispy] stay in menu
-	if (messageToPrint < 2)
-	{
-	menuactive = false;
-	}
-	messageToPrint = 0; // [crispy] moved here
-	S_StartSoundOptional(NULL, sfx_mnucls, sfx_swtchx); // [NS] Optional menu sounds.
-	return true;
+        return M_ResponderMessage(ev, key, ch) ? true : false;
     }
 
     // [crispy] take screen shot without weapons and HUD
@@ -2702,147 +2879,8 @@ boolean M_Responder (event_t* ev)
     // F-Keys
     if (!menuactive)
     {
-	if (key == key_menu_decscreen)      // Screen size down
-        {
-	    if (automapactive || chat_on)
-		return false;
-	    M_SizeDisplay(0);
-	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
-	    return true;
-	}
-        else if (key == key_menu_incscreen) // Screen size up
-        {
-	    if (automapactive || chat_on)
-		return false;
-	    M_SizeDisplay(1);
-	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_stnmov); // [NS] Optional menu sounds.
-	    return true;
-	}
-        else if (key == key_menu_help)     // Help key
-        {
-	    M_StartControlPanel ();
-
-	    if (gameversion >= exe_ultimate)
-	      currentMenu = &ReadDef2;
-	    else
-	      currentMenu = &ReadDef1;
-
-	    itemOn = 0;
-	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
-	    return true;
-	}
-        else if (key == key_menu_save)     // Save
-        {
-	    M_StartControlPanel();
-	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
-	    M_SaveGame(0);
-	    return true;
-        }
-        else if (key == key_menu_load)     // Load
-        {
-	    M_StartControlPanel();
-	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
-	    M_LoadGame(0);
-	    return true;
-        }
-        else if (key == key_menu_volume)   // Sound Volume
-        {
-	    M_StartControlPanel ();
-	    currentMenu = &SoundDef;
-	    itemOn = currentMenu->lastOn; // [crispy] remember cursor position
-	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
-	    return true;
-	}
-        else if (key == key_menu_detail)   // Detail toggle
-        {
-	    M_ChangeDetail(0);
-	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
-	    return true;
-        }
-        else if (key == key_menu_qsave)    // Quicksave
-        {
-	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
-	    M_QuickSave();
-	    return true;
-        }
-        else if (key == key_menu_endgame)  // End game
-        {
-	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
-	    M_EndGame(0);
-	    return true;
-        }
-        else if (key == key_menu_messages) // Toggle messages
-        {
-	    M_ChangeMessages(0);
-	    S_StartSoundOptional(NULL, sfx_mnusli, sfx_swtchn); // [NS] Optional menu sounds.
-	    return true;
-        }
-        else if (key == key_menu_qload)    // Quickload
-        {
-	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
-	    M_QuickLoad();
-	    return true;
-        }
-        else if (key == key_menu_quit)     // Quit DOOM
-        {
-	    S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
-	    M_QuitDOOM(0);
-	    return true;
-        }
-        else if (key == key_menu_gamma)    // gamma toggle
-        {
-	    crispy->gamma++;
-	    if (crispy->gamma > 4+13) // [crispy] intermediate gamma levels
-		crispy->gamma = 0;
-	    players[consoleplayer].message = DEH_String(gammamsg[crispy->gamma]);
-#ifndef CRISPY_TRUECOLOR
-            I_SetPalette (W_CacheLumpName (DEH_String("PLAYPAL"),PU_CACHE));
-#else
-            {
-		I_SetPalette (0);
-		R_InitColormaps();
-		inhelpscreens = true;
-		R_FillBackScreen();
-		viewactive = false;
-            }
-#endif
-	    return true;
-	}
-        // [crispy] those two can be considered as shortcuts for the IDCLEV cheat
-        // and should be treated as such, i.e. add "if (!netgame)"
-        // hovewer, allow while multiplayer demos
-        else if ((!netgame || netdemo) && key != 0 && key == key_menu_reloadlevel)
-        {
-	    if (demoplayback)         
-	    {
-		if (crispy->demowarp)
-		{
-		// [crispy] enable screen render back before replaying
-		nodrawers = false;
-		singletics = false;
-		}
-		// [crispy] replay demo lump or file
-		G_DoPlayDemo();
-		return true;
-	    }
-	    else
-	    if (G_ReloadLevel())
-		return true;
-        }
-        else if ((!netgame || netdemo) && key != 0 && key == key_menu_nextlevel)
-        {
-	    if (demoplayback)
-	    {
-		// [crispy] go to next level
-		demo_gotonextlvl = true;
-		G_DemoGotoNextLevel(true);
-		return true;
-	    }
-	    else
-	    if (G_GotoNextLevel())
-		return true;
-        }
-
+        int r = M_ResponderShortcut(ev, key, ch);
+        if (r != 2) return r;
     }
 
     // Pop-up menu?
@@ -3109,7 +3147,7 @@ void M_StartControlPanel (void)
 
 // Display OPL debug messages - hack for GENMIDI development.
 
-static void M_DrawOPLDev(void)
+static CRON_NOINLINE void M_DrawOPLDev(void)
 {
     char debug[1024];
     char *curr, *p;
@@ -3196,7 +3234,7 @@ void M_Drawer (void)
             }
 
 	    x = ORIGWIDTH/2 - M_StringWidth(string) / 2;
-	    M_WriteText(x > 0 ? x : 0, y, string); // [crispy] prevent negative x-coords
+	    M_WriteText(CVM_IMax(x, 0), y, string); // [crispy] prevent negative x-coords ([cronopio] avoid smax intrinsic)
 	    y += SHORT(hu_font[0]->height);
 	}
 
@@ -3527,7 +3565,7 @@ void M_Init (void)
 
 // [crispy] extended savegames
 static char *savegwarning;
-static void M_ForceLoadGameResponse(int key)
+static CRON_NOINLINE void M_ForceLoadGameResponse(int key)
 {
 	free(savegwarning);
 	free(savewadfilename);
@@ -3569,7 +3607,7 @@ void M_ForceLoadGame()
 	S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
 }
 
-static void M_ConfirmDeleteGameResponse (int key)
+static CRON_NOINLINE void M_ConfirmDeleteGameResponse (int key)
 {
 	free(savegwarning);
 

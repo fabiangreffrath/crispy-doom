@@ -392,17 +392,23 @@ R_PointToAngleCrispy
 ( fixed_t	x,
   fixed_t	y )
 {
-    // [crispy] fix overflows for very long distances
-    int64_t y_viewy = (int64_t)y - viewy;
-    int64_t x_viewx = (int64_t)x - viewx;
+    // [cronopio] 32-bit overflow detection for (y - viewy) / (x - viewx)
+    // without int64. A signed subtraction a-b overflows int32 iff a and b have
+    // different signs AND the result's sign differs from a's. When it would
+    // overflow we halve both distances (same as the original int64 path).
+    int xd = (int)((unsigned)x - (unsigned)viewx);
+    int yd = (int)((unsigned)y - (unsigned)viewy);
+    boolean x_ovf = ((x ^ viewx) & (x ^ xd)) < 0;
+    boolean y_ovf = ((y ^ viewy) & (y ^ yd)) < 0;
 
-    // [crispy] the worst that could happen is e.g. INT_MIN-INT_MAX = 2*INT_MIN
-    if (x_viewx < INT_MIN || x_viewx > INT_MAX ||
-        y_viewy < INT_MIN || y_viewy > INT_MAX)
+    if (x_ovf || y_ovf)
     {
 	// [crispy] preserving the angle by halfing the distance in both directions
-	x = x_viewx / 2 + viewx;
-	y = y_viewy / 2 + viewy;
+	// (x_viewx/2 + viewx); compute the wide half via (xd>>1) which is the
+	// arithmetic half of the true difference even when it overflowed i32,
+	// because xd holds the low 32 bits of the exact two's-complement diff.
+	x = (xd >> 1) + viewx;
+	y = (yd >> 1) + viewy;
     }
 
     return R_PointToAngleSlope (x, y, SlopeDivCrispy);
