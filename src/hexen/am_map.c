@@ -2049,9 +2049,9 @@ static void DrawWorldTimer(void)
     int minutes;
     int seconds;
     int worldTimer;
-    int offset_h = right_widget_h; // [crispy]
     char timeBuffer[15];
     char dayBuffer[20];
+    int offset_h = right_widget_h; // [crispy]
 
     worldTimer = players[consoleplayer].worldTimer;
 
