@@ -2064,8 +2064,8 @@ static void DrawWorldTimer(void)
     worldTimer -= minutes * 60;
     seconds = worldTimer;
 
-    // [crispy] 30px spacing on active powers to avoid
-    // overlapping with the world timer
+    // [crispy] move world timer by 26px to avoid 
+    // overlapping with the power widgets
     if (!offset_h &&
         (players[consoleplayer].powers[pw_invulnerability] ||
          players[consoleplayer].powers[pw_minotaur]))
