@@ -2320,6 +2320,13 @@ boolean MN_Responder(event_t * event)
                     I_SetPalette(0);
 #endif
                     H2_StartTitle();    // go to intro/demo mode.
+                    // [crispy] re-init episode 1 for correct demo reel
+                    if (gameepisode > 1)
+                    {
+                        gameepisode = 1;
+                        S_InitScript();
+                        InitMapInfo();
+                    }
                     return false;
                 case 3:
                     P_SetMessage(&players[consoleplayer],
