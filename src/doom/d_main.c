@@ -182,7 +182,7 @@ boolean D_Display (void)
     boolean			redrawsbar;
 		
     redrawsbar = false;
-    
+
     if (crispy->uncapped)
     {
         I_UpdateFracTic();
@@ -557,16 +557,21 @@ void D_RunFrame()
 
     if (wipe)
     {
-        do
+        // [cronopio] Frame-callback model: the vanilla wipe busy-waits
+        // `do { tics = I_GetTime()-wipestart; I_Sleep(1); } while (tics<=0)`,
+        // which would spin forever here — the virtual clock only advances
+        // BETWEEN frames, so I_GetTime never changes inside the loop. Instead
+        // advance the melt by however many tics really elapsed since the last
+        // frame; if none elapsed yet, just re-present this frame without
+        // stepping. The melt then completes over real time, one frame at a time.
+        nowtime = I_GetTime ();
+        tics = nowtime - wipestart;
+        if (tics > 0)
         {
-            nowtime = I_GetTime ();
-            tics = nowtime - wipestart;
-            I_Sleep(1);
-        } while (tics <= 0);
-
-        wipestart = nowtime;
-        wipe = !wipe_ScreenWipe(wipe_Melt
-                               , 0, 0, SCREENWIDTH, SCREENHEIGHT, tics);
+            wipestart = nowtime;
+            wipe = !wipe_ScreenWipe(wipe_Melt
+                                   , 0, 0, SCREENWIDTH, SCREENHEIGHT, tics);
+        }
         I_UpdateNoBlit ();
         M_Drawer ();                            // menu is drawn even on top of wipes
         I_FinishUpdate ();                      // page flip or blit buffer
