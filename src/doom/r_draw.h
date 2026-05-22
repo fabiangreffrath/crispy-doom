@@ -86,6 +86,8 @@ extern byte*		dc_translation;
 // Span blitting for rows, floor/ceiling.
 // No Sepctre effect needed.
 void 	R_DrawSpan (void);
+void 	R_DrawSpanCron (void);   // [cronopio] GPU-accelerated span (cron_tspan)
+void 	R_DrawColumnCron (void); // [cronopio] GPU-accelerated column (cron_tcol)
 
 // Low resolution mode, 160x200?
 void 	R_DrawSpanLow (void);

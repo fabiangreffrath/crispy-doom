@@ -85,8 +85,15 @@ extern boolean inhelpscreens; // [crispy] prevent palette changes
 #define ST_X				0
 #define ST_X2				104
 
+// [cronopio] The status bar's Y coordinates below are absolute, hard-coded for
+// a 200-line screen (bar at y=168..199). When the render height is taller
+// (accelerated layout: SCREENHEIGHT=232, bar stacked under a 320x200 view),
+// shift every status-bar Y down by ST_DY so the bar sits at the bottom and
+// STlib_drawNum's `n->y - ST_Y >= 0` invariant holds. Zero in mode B.
+#define ST_DY				(SCREENHEIGHT - ORIGHEIGHT)
+
 #define ST_FX  			143
-#define ST_FY  			169
+#define ST_FY  			(169 + ST_DY)
 
 // Number of status faces.
 #define ST_NUMPAINFACES		5
@@ -110,7 +117,7 @@ extern boolean inhelpscreens; // [crispy] prevent palette changes
 #define ST_DEADFACE			(ST_GODFACE+1)
 
 #define ST_FACESX			143
-#define ST_FACESY			168
+#define ST_FACESY			(168 + ST_DY)
 
 #define ST_EVILGRINCOUNT		(2*TICRATE)
 #define ST_STRAIGHTFACECOUNT	(TICRATE/2)
@@ -132,73 +139,73 @@ extern boolean inhelpscreens; // [crispy] prevent palette changes
 // AMMO number pos.
 #define ST_AMMOWIDTH		3	
 #define ST_AMMOX			(44 - ST_WIDESCREENDELTA)
-#define ST_AMMOY			171
+#define ST_AMMOY			(171 + ST_DY)
 
 // HEALTH number pos.
 #define ST_HEALTHWIDTH		3	
 #define ST_HEALTHX			(90 - ST_WIDESCREENDELTA)
-#define ST_HEALTHY			171
+#define ST_HEALTHY			(171 + ST_DY)
 
 // Weapon pos.
 #define ST_ARMSX			(111 - ST_WIDESCREENDELTA)
-#define ST_ARMSY			172
+#define ST_ARMSY			(172 + ST_DY)
 #define ST_ARMSBGX			(104 - ST_WIDESCREENDELTA)
-#define ST_ARMSBGY			168
+#define ST_ARMSBGY			(168 + ST_DY)
 #define ST_ARMSXSPACE		12
 #define ST_ARMSYSPACE		10
 
 // Frags pos.
 #define ST_FRAGSX			(138 - ST_WIDESCREENDELTA)
-#define ST_FRAGSY			171	
+#define ST_FRAGSY			(171 + ST_DY)	
 #define ST_FRAGSWIDTH		2
 
 // ARMOR number pos.
 #define ST_ARMORWIDTH		3
 #define ST_ARMORX			(221 + ST_WIDESCREENDELTA)
-#define ST_ARMORY			171
+#define ST_ARMORY			(171 + ST_DY)
 
 // Key icon positions.
 #define ST_KEY0WIDTH		8
 #define ST_KEY0HEIGHT		5
 #define ST_KEY0X			(239 + ST_WIDESCREENDELTA)
-#define ST_KEY0Y			171
+#define ST_KEY0Y			(171 + ST_DY)
 #define ST_KEY1WIDTH		ST_KEY0WIDTH
 #define ST_KEY1X			(239 + ST_WIDESCREENDELTA)
-#define ST_KEY1Y			181
+#define ST_KEY1Y			(181 + ST_DY)
 #define ST_KEY2WIDTH		ST_KEY0WIDTH
 #define ST_KEY2X			(239 + ST_WIDESCREENDELTA)
-#define ST_KEY2Y			191
+#define ST_KEY2Y			(191 + ST_DY)
 
 // Ammunition counter.
 #define ST_AMMO0WIDTH		3
 #define ST_AMMO0HEIGHT		6
 #define ST_AMMO0X			(288 + ST_WIDESCREENDELTA)
-#define ST_AMMO0Y			173
+#define ST_AMMO0Y			(173 + ST_DY)
 #define ST_AMMO1WIDTH		ST_AMMO0WIDTH
 #define ST_AMMO1X			(288 + ST_WIDESCREENDELTA)
-#define ST_AMMO1Y			179
+#define ST_AMMO1Y			(179 + ST_DY)
 #define ST_AMMO2WIDTH		ST_AMMO0WIDTH
 #define ST_AMMO2X			(288 + ST_WIDESCREENDELTA)
-#define ST_AMMO2Y			191
+#define ST_AMMO2Y			(191 + ST_DY)
 #define ST_AMMO3WIDTH		ST_AMMO0WIDTH
 #define ST_AMMO3X			(288 + ST_WIDESCREENDELTA)
-#define ST_AMMO3Y			185
+#define ST_AMMO3Y			(185 + ST_DY)
 
 // Indicate maximum ammunition.
 // Only needed because backpack exists.
 #define ST_MAXAMMO0WIDTH		3
 #define ST_MAXAMMO0HEIGHT		5
 #define ST_MAXAMMO0X		(314 + ST_WIDESCREENDELTA)
-#define ST_MAXAMMO0Y		173
+#define ST_MAXAMMO0Y		(173 + ST_DY)
 #define ST_MAXAMMO1WIDTH		ST_MAXAMMO0WIDTH
 #define ST_MAXAMMO1X		(314 + ST_WIDESCREENDELTA)
-#define ST_MAXAMMO1Y		179
+#define ST_MAXAMMO1Y		(179 + ST_DY)
 #define ST_MAXAMMO2WIDTH		ST_MAXAMMO0WIDTH
 #define ST_MAXAMMO2X		(314 + ST_WIDESCREENDELTA)
-#define ST_MAXAMMO2Y		191
+#define ST_MAXAMMO2Y		(191 + ST_DY)
 #define ST_MAXAMMO3WIDTH		ST_MAXAMMO0WIDTH
 #define ST_MAXAMMO3X		(314 + ST_WIDESCREENDELTA)
-#define ST_MAXAMMO3Y		185
+#define ST_MAXAMMO3Y		(185 + ST_DY)
 
 // Dimensions given in characters.
 #define ST_MSGWIDTH			52

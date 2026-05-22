@@ -38,6 +38,7 @@
 #include "r_local.h"
 #include "r_sky.h"
 #include "st_stuff.h" // [crispy] ST_refreshBackground()
+#include "platform.h" // [cronopio] CRON_ACCEL
 #include "a11y.h" // [crispy] A11Y
 
 
@@ -859,11 +860,17 @@ void R_ExecuteSetViewSize (void)
 
     if (!detailshift)
     {
+#ifdef CRON_ACCEL
+	// [cronopio] GPU-accelerated wall/sprite columns and floor/ceiling spans.
+	colfunc = basecolfunc = R_DrawColumnCron;
+	spanfunc = R_DrawSpanCron;
+#else
 	colfunc = basecolfunc = R_DrawColumn;
+	spanfunc = goobers_mode ? R_DrawSpanSolid : R_DrawSpan;
+#endif
 	fuzzcolfunc = R_DrawFuzzColumn;
 	transcolfunc = R_DrawTranslatedColumn;
 	tlcolfunc = R_DrawTLColumn;
-	spanfunc = goobers_mode ? R_DrawSpanSolid : R_DrawSpan;
     }
     else
     {

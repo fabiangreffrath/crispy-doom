@@ -29,6 +29,7 @@
 #include "i_system.h"
 
 #include "doomtype.h"
+#include "platform.h"   // [cronopio] CRON_ACCEL
 
 #include "deh_str.h"
 #include "i_input.h"
@@ -1008,6 +1009,13 @@ void V_Init (void)
         dy = (SCREENHEIGHT << FRACBITS) / ORIGHEIGHT;
         dyi = (ORIGHEIGHT << FRACBITS) / SCREENHEIGHT;
     }
+#ifdef CRON_ACCEL
+    /* [cronopio] Accelerated layout draws patches (HUD, menus, title) at x1 so
+     * the status bar is undeformed: SCREENHEIGHT=232 would otherwise scale them
+     * x1.16. The bar lands at the bottom because ST_Y is reanchored to
+     * SCREENHEIGHT-ST_HEIGHT (st_stuff.h), not via dy scaling. */
+    dx = dxi = dy = dyi = FRACUNIT;
+#endif
     // no-op!
     // There used to be separate screens that could be drawn to; these are
     // now handled in the upper layers.

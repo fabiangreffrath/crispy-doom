@@ -37,6 +37,9 @@
 // State.
 #include "doomstat.h"
 
+#include "platform.h"   // [cronopio] CRON_ACCEL + GPU accelerators (cronopio.h)
+#include <stddef.h>     // ptrdiff_t
+
 
 // ?
 //#define MAXWIDTH			1120
@@ -850,12 +853,68 @@ void R_DrawSpan (void)
 }
 
 
+#ifdef CRON_ACCEL
+// [cronopio] GPU-accelerated horizontal span (floors/ceilings). Replaces the
+// interpreted inner loop with the native cron_tspan rasteriser, which samples
+// the 64x64 flat ds_source at (u,v) stepping by (du,dv) and writes
+// cmap[texel] straight into CRON_FB. Screen coordinates are derived from the
+// destination pointer, so the centered render offset is handled automatically.
+// Brightmaps are ignored (cron uses a single active colormap) — a minor visual
+// feature, not vanilla. Assumes fliplevels off (the default), so the span is a
+// contiguous run of screen columns.
+void R_DrawSpanCron (void)
+{
+    pixel_t  *dest = ylookup[ds_y] + columnofs[ds_x1];
+    ptrdiff_t off  = (const uint8_t *)dest - (const uint8_t *)CRON_FB;
+    int       sx   = (int)(off % CRON_SCREEN_W);
+    int       sy   = (int)(off / CRON_SCREEN_W);
+
+    cron_cmap((const uint8_t *)ds_colormap[0]);
+    cron_tspan(sy, sx, sx + (ds_x2 - ds_x1), (const uint8_t *)ds_source,
+               ds_xfrac, ds_yfrac, ds_xstep, ds_ystep);
+}
+
+// [cronopio] GPU-accelerated vertical column (walls, sprites, weapon) via
+// cron_tcol. Handles the common power-of-two texture-height case; non-pow2
+// (Tutti-Frutti) textures fall back to the C path's modulo wrap. Brightmaps
+// ignored (single active colormap). Screen coords derived from the dest
+// pointer (handles the centered render offset). Masked sprite columns call
+// this once per opaque post, so the inter-post transparency is preserved.
+void R_DrawColumnCron (void)
+{
+    int count = dc_yh - dc_yl;
+    if (count < 0)
+        return;
+
+    int heightmask = dc_texheight - 1;
+    if (dc_texheight == 0 || (dc_texheight & heightmask))
+    {
+        // dc_texheight==0 marks a masked column (sprites, weapon): no texture
+        // wrap, and vanilla uses an arithmetic frac>>FRACBITS that cron_tcol's
+        // unsigned-shift-plus-mask model doesn't reproduce. Non-power-of-two
+        // wall textures need the modulo wrap. Both go to the C path.
+        R_DrawColumn();
+        return;
+    }
+
+    pixel_t  *dest = ylookup[dc_yl] + columnofs[dc_x];
+    ptrdiff_t off  = (const uint8_t *)dest - (const uint8_t *)CRON_FB;
+    int       sx   = (int)(off % CRON_SCREEN_W);
+    int       sy   = (int)(off / CRON_SCREEN_W);
+    fixed_t   frac = dc_texturemid + (dc_yl - centery) * dc_iscale;
+
+    cron_cmap((const uint8_t *)dc_colormap[0]);
+    cron_tcol(sx, sy, sy + count, (const uint8_t *)dc_source,
+              heightmask, frac, dc_iscale);
+}
+#endif
+
 
 // UNUSED.
 // Loop unrolled by 4.
 #if 0
-void R_DrawSpan (void) 
-{ 
+void R_DrawSpan (void)
+{
     unsigned	position, step;
 
     byte*	source;

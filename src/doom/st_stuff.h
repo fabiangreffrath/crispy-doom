@@ -29,7 +29,11 @@
 // Now sensitive for scaling.
 #define ST_HEIGHT	32
 #define ST_WIDTH	ORIGWIDTH
-#define ST_Y		(ORIGHEIGHT - ST_HEIGHT)
+// [cronopio] Anchor the status bar to the bottom of the actual render height
+// (SCREENHEIGHT), not the vanilla 200. Identical to (ORIGHEIGHT-ST_HEIGHT) when
+// SCREENHEIGHT==200 (mode B), but in the accelerated layout SCREENHEIGHT==232 so
+// the bar sits at rows 200..231 (below the 320x200 view) at x1.
+#define ST_Y		(SCREENHEIGHT - ST_HEIGHT)
 
 // [crispy] in non-widescreen mode WIDESCREENDELTA is 0 anyway
 #define ST_WIDESCREENDELTA ((screenblocks >= CRISPY_HUD + 3 && (!automapactive || crispy->automapoverlay)) ? WIDESCREENDELTA : 0)
