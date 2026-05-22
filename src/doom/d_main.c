@@ -1738,6 +1738,12 @@ static void CRON_NOINLINE D_DoomMain_LoadAndConfig (void)
     }
     
     // init subsystems
+    // [cronopio] Establish the screen geometry BEFORE V_Init: V_Init computes
+    // the resolution-agnostic patch-scaling factors (dx/dy/dxi/dyi) only when
+    // NONWIDEWIDTH && SCREENHEIGHT are nonzero. Our I_InitGraphics sets those,
+    // but it runs much later (D_DoomInitLoop), so without this call V_Init
+    // leaves dx/dy = 0 and every V_DrawPatch draws nothing (blank title/HUD).
+    I_GetScreenDimensions();
     DEH_printf("V_Init: allocate screens.\n");
     V_Init ();
 
