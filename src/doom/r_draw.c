@@ -887,13 +887,9 @@ void R_DrawColumnCron (void)
         return;
 
     int heightmask = dc_texheight - 1;
-    if (dc_texheight == 0 || (dc_texheight & heightmask))
+    if (dc_texheight != 0 && (dc_texheight & heightmask))
     {
-        // dc_texheight==0 marks a masked column (sprites, weapon): no texture
-        // wrap, and vanilla uses an arithmetic frac>>FRACBITS that cron_tcol's
-        // unsigned-shift-plus-mask model doesn't reproduce. Non-power-of-two
-        // wall textures need the modulo wrap. Both go to the C path.
-        R_DrawColumn();
+        R_DrawColumn();   // non-power-of-two wall texture: needs the modulo wrap
         return;
     }
 
@@ -904,8 +900,19 @@ void R_DrawColumnCron (void)
     fixed_t   frac = dc_texturemid + (dc_yl - centery) * dc_iscale;
 
     cron_cmap((const uint8_t *)dc_colormap[0]);
-    cron_tcol(sx, sy, sy + count, (const uint8_t *)dc_source,
-              heightmask, frac, dc_iscale);
+    if (dc_texheight == 0)
+    {
+        // Masked column (sprites, weapon): no texture wrap, addressed linearly.
+        // cron_tcol's 32-bit mask would be 0xFFFFFFFF here and the host's
+        // source-bounds guard (src+mask+1 > mem_size) would reject the draw.
+        cron_tcolm(sx, sy, sy + count, (const uint8_t *)dc_source,
+                   frac, dc_iscale);
+    }
+    else
+    {
+        cron_tcol(sx, sy, sy + count, (const uint8_t *)dc_source,
+                  heightmask, frac, dc_iscale);
+    }
 }
 #endif
 
