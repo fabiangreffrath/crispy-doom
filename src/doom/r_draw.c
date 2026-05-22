@@ -854,6 +854,22 @@ void R_DrawSpan (void)
 
 
 #ifdef CRON_ACCEL
+// [cronopio] Set the GPU light/colormap only when it actually changes. The host
+// cron_cmap just stores an offset, but each call is a VM->host syscall; runs of
+// adjacent columns/spans at the same light level share a colormap, so caching
+// the last pointer cuts the syscall count roughly in half. Safe because nothing
+// but these drawers touches the GPU cmap state after cart init (begin_frame
+// does not reset it), so the cache always mirrors the GPU state.
+static const uint8_t *cron_cmap_cur = (const uint8_t *)0;
+static inline void cron_cmap_cached(const uint8_t *cm)
+{
+    if (cm != cron_cmap_cur)
+    {
+        cron_cmap(cm);
+        cron_cmap_cur = cm;
+    }
+}
+
 // [cronopio] GPU-accelerated horizontal span (floors/ceilings). Replaces the
 // interpreted inner loop with the native cron_tspan rasteriser, which samples
 // the 64x64 flat ds_source at (u,v) stepping by (du,dv) and writes
@@ -869,7 +885,7 @@ void R_DrawSpanCron (void)
     int       sx   = (int)(off % CRON_SCREEN_W);
     int       sy   = (int)(off / CRON_SCREEN_W);
 
-    cron_cmap((const uint8_t *)ds_colormap[0]);
+    cron_cmap_cached((const uint8_t *)ds_colormap[0]);
     cron_tspan(sy, sx, sx + (ds_x2 - ds_x1), (const uint8_t *)ds_source,
                ds_xfrac, ds_yfrac, ds_xstep, ds_ystep);
 }
@@ -899,7 +915,7 @@ void R_DrawColumnCron (void)
     int       sy   = (int)(off / CRON_SCREEN_W);
     fixed_t   frac = dc_texturemid + (dc_yl - centery) * dc_iscale;
 
-    cron_cmap((const uint8_t *)dc_colormap[0]);
+    cron_cmap_cached((const uint8_t *)dc_colormap[0]);
     if (dc_texheight == 0)
     {
         // Masked column (sprites, weapon): no texture wrap, addressed linearly.
