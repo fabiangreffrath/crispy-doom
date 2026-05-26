@@ -2215,19 +2215,21 @@ void G_DeferedInitNew(skill_t skill, int episode, int map)
     d_episode = episode;
     d_map = map;
     gameaction = ga_newgame;
+}
 
+void G_DoNewGame(void)
+{
     // [crispy] if a new game is started during demo recording, start a new demo
     if (demorecording)
     {
 	G_CheckDemoStatus();
 	Z_Free(demoname);
-	G_RecordDemo(skill, 1, episode, map, orig_demoname);
+	G_RecordDemo(d_skill, 1, d_episode, d_map, orig_demoname);
     }
-}
-
-void G_DoNewGame(void)
-{
-    G_InitNew(d_skill, d_episode, d_map);
+    else
+    {
+	G_InitNew(d_skill, d_episode, d_map);
+    }
     gameaction = ga_nothing;
 }
 
