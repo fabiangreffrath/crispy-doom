@@ -1928,7 +1928,7 @@ void G_StartNewGame(skill_t skill)
     {
         G_CheckDemoStatus();
         Z_Free(demoname);
-        G_RecordDemo(TempSkill, 1, TempEpisode, TempMap, orig_demoname);
+        G_RecordDemo(TempSkill, 1, gameepisode, realMap, orig_demoname);
     }
     else
     {
