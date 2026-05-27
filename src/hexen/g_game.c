@@ -39,6 +39,7 @@
 // External functions
 
 extern void R_ExecuteSetViewSize(void); // [crispy] for clean screenshot
+extern void S_InitScript(void); // [crispy] support multiple episodes
 
 // Functions
 
@@ -1918,6 +1919,9 @@ void G_StartNewGame(skill_t skill)
     int realMap;
 
     G_StartNewInit();
+    // [crispy] support multiple episodes
+    S_InitScript();
+    InitMapInfo();
     realMap = P_TranslateMap(1);
     if (realMap == -1)
     {
@@ -2287,6 +2291,10 @@ void G_InitNew(skill_t skill, int episode, int map)
     gameskill = skill;
     BorderNeedRefresh = true;
 
+    // [crispy] support multiple episodes
+    S_InitScript();
+    InitMapInfo();
+
     // Initialize the sky
     R_InitSky(map);
 
@@ -2606,6 +2614,10 @@ void G_DoPlayDemo(void)
 
     // Initialize world info, etc.
     G_StartNewInit();
+
+    // [crispy] support multiple episodes
+    S_InitScript();
+    InitMapInfo();
 
     precache = false;           // don't spend a lot of time in loadlevel
     G_InitNew(skill, episode, map);
