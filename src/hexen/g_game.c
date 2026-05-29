@@ -70,6 +70,7 @@ gameaction_t gameaction;
 gamestate_t gamestate;
 skill_t gameskill;
 //boolean         respawnmonsters;
+int prev_episode;               // [crispy] previous episode up until InitEpisode
 int gameepisode;
 int gamemap;
 int prevmap;
@@ -1920,8 +1921,7 @@ void G_StartNewGame(skill_t skill)
 
     G_StartNewInit();
     // [crispy] re-init scripts and mapinfo to support multiple episodes
-    S_InitScript();
-    InitMapInfo();
+    H2_InitEpisode(false);
     realMap = P_TranslateMap(1);
     if (realMap == -1)
     {
@@ -2732,4 +2732,35 @@ boolean G_CheckDemoStatus(void)
     }
 
     return false;
+}
+
+/*
+===============================================================================
+
+						[crispy] Additional Functions
+
+===============================================================================
+*/
+
+/*
+===================
+=
+= H2_InitEpisode
+=
+= (Re-)Init episode related MapInfo and Sound Scripts
+= to support multiple episodes in Hexen.
+===================
+*/
+
+void H2_InitEpisode(bool forceinit)
+{
+    if (!crispy->havedeathkings)
+        return;
+
+    if (forceinit || (prev_episode != gameepisode))
+    {
+        S_InitScript();
+        InitMapInfo();
+        prev_episode = gameepisode;
+    }
 }

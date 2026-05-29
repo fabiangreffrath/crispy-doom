@@ -677,6 +677,7 @@ extern int Sky2Texture;
 extern gamestate_t gamestate;
 extern skill_t gameskill;
 //extern        boolean         respawnmonsters;
+extern int prev_episode;        // [crispy]
 extern int gameepisode;
 extern int gamemap;
 extern int prevmap;
@@ -755,6 +756,7 @@ void H2_GameLoop(void);
 
 void H2_StartTitle(void);
 
+void H2_InitEpisode(bool forceinit); // [crispy]
 
 extern boolean artiskip;
 

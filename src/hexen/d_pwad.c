@@ -44,7 +44,7 @@ static boolean CheckHEXDDLoaded (void)
 		!strcasecmp(P_GetMapName(i), "RUINED VILLAGE") &&
 	    !strcasecmp(P_GetMapName(j), "DARK CITADEL"))
 	{
-		gameepisode = 2;
+		gameepisode = prev_episode = 2;
 		return true;
 	}
 
@@ -134,13 +134,13 @@ static void CheckLoadHEXDD (void)
         }
     }
 
-	// [crispy] load WAD and DEH files from autoload directories
+	// [crispy] load WAD from autoload directories
 	if (!M_ParmExists("-noautoload"))
 	{
 		if ((autoload_dir = M_GetAutoloadDir(dd_basename, false)))
 		{
 			W_AutoLoadWADsRename(autoload_dir, hexdd_lumps, arrlen(hexdd_lumps));
-			//DEH_AutoLoadPatches(autoload_dir);
+			// TODO? DEH_AutoLoadPatches(autoload_dir);
 			free(autoload_dir);
 		}
 	}

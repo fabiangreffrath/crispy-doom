@@ -484,6 +484,7 @@ void D_DoomMain(void)
 
     I_AtExit(D_HexenQuitMessage, false);
     startepisode = 1;
+    gameepisode = prev_episode = startepisode; // [crispy]
     autostart = false;
     startmap = 1;
     gamemode = commercial;
@@ -606,17 +607,6 @@ void D_DoomMain(void)
     // Generate the WAD hash table.  Speed things up a bit.
     W_GenerateHashTable();
 
-    //!
-    // @category mod
-    //
-    // Disable automatic loading of HEXDD.WAD (Deathkings)
-    //
-    if (!M_ParmExists("-nosideload") && gamemode != shareware &&
-        !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))
-    {
-        D_LoadHEXDD();
-    }
-
     I_PrintStartupBanner(gamedescription);
 
     ST_Message("MN_Init: Init menu system.\n");
@@ -659,6 +649,17 @@ void D_DoomMain(void)
 
     ST_Message("P_Init: Init Playloop state.\n");
     P_Init();
+
+    //!
+    // @category mod
+    //
+    // Disable automatic loading of HEXDD.WAD (Deathkings)
+    //
+    if (!M_ParmExists("-nosideload") && gamemode != shareware &&
+        !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))
+    {
+        D_LoadHEXDD();
+    }
 
     // Check for command line warping. Follows P_Init() because the
     // MAPINFO.TXT script must be already processed.
