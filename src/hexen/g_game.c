@@ -39,6 +39,7 @@
 // External functions
 
 extern void R_ExecuteSetViewSize(void); // [crispy] for clean screenshot
+extern void S_InitScript(void); // [crispy] multiple episodes
 
 // Functions
 
@@ -1918,6 +1919,9 @@ void G_StartNewGame(skill_t skill)
     int realMap;
 
     G_StartNewInit();
+    // [crispy] re-init scripts and mapinfo to support multiple episodes
+    S_InitScript();
+    InitMapInfo();
     realMap = P_TranslateMap(1);
     if (realMap == -1)
     {
@@ -2282,7 +2286,8 @@ void G_InitNew(skill_t skill, int episode, int map)
     }
     paused = false;
     viewactive = true;
-    gameepisode = episode;
+    // [crispy] not required
+    // gameepisode = episode;
     gamemap = map;
     gameskill = skill;
     BorderNeedRefresh = true;

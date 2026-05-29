@@ -1579,12 +1579,8 @@ static void SCEpisode(int option)
         demoextend = false;
     }
 
-    // Execude Episode Selection
+    // [crispy] Execude Episode Selection
     gameepisode = option;
-
-    S_InitScript();
-    InitMapInfo();
-    
     SetMenu(MENU_CLASS);
 }
 
