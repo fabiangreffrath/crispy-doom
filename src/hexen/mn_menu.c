@@ -2316,10 +2316,10 @@ boolean MN_Responder(event_t * event)
                     I_SetPalette(0);
 #endif
                     H2_StartTitle();    // go to intro/demo mode.
-                    // [crispy] re-init episode 1 for correct demo reel
-                    if (gameepisode > 1)
+                    // [crispy] re-init startepisode for correct demo reel
+                    if (crispy->havedeathkings && gameepisode != startepisode)
                     {
-                        gameepisode = prev_episode = 1;
+                        gameepisode = prev_episode = startepisode;
                         H2_InitEpisode(true);
                     }
                     return false;

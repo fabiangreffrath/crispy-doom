@@ -2286,7 +2286,7 @@ void G_InitNew(skill_t skill, int episode, int map)
     }
     paused = false;
     viewactive = true;
-    // [crispy] not required
+    // [crispy] don't let e. g. demo episode overwrite gameepisode
     // gameepisode = episode;
     gamemap = map;
     gameskill = skill;
