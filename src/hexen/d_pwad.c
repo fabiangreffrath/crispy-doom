@@ -36,13 +36,11 @@ static boolean CheckHEXDDLoaded (void)
 {
 	int i, j;
 
-	i = P_TranslateMap(1);
-	j = P_TranslateMap(20);
-
-	// Check if HEXDD.WAD is already loaded by checking MapInfo Mapnames for warptarget 1 and 20
-	if (i >= 0 && j >= 0 &&
-		!strcasecmp(P_GetMapName(i), "RUINED VILLAGE") &&
-	    !strcasecmp(P_GetMapName(j), "DARK CITADEL"))
+	// Check if HEXDD.WAD is already loaded
+	if ((i = W_CheckNumForName("MAP41")) != -1 &&
+	    (j = W_CheckNumForName("MAP60")) != -1 &&
+	    !strcasecmp(W_WadNameForLump(lumpinfo[i]), "HEXDD.WAD") &&
+	    !strcasecmp(W_WadNameForLump(lumpinfo[j]), "HEXDD.WAD"))
 	{
 		gameepisode = prev_episode = 2;
 		return true;
