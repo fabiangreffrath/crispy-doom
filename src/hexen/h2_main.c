@@ -484,6 +484,7 @@ void D_DoomMain(void)
 
     I_AtExit(D_HexenQuitMessage, false);
     startepisode = 1;
+    gameepisode = prev_episode = startepisode; // [crispy] init gameepisode
     autostart = false;
     startmap = 1;
     gamemode = commercial;

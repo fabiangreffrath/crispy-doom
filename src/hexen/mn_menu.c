@@ -114,7 +114,6 @@ extern void I_ReInitGraphics(int reinit); // [crispy]
 extern void R_ExecuteSetViewSize(void); // [crispy]
 extern void AM_LevelInit(boolean reinit); // [crispy]
 extern void AM_initVariables(void); // [crispy]
-extern void S_InitScript(void); // [crispy]
 
 // PUBLIC FUNCTION PROTOTYPES ----------------------------------------------
 
@@ -1579,12 +1578,9 @@ static void SCEpisode(int option)
         demoextend = false;
     }
 
-    // Execude Episode Selection
+    // [crispy] Execude Episode Selection
+    prev_episode = gameepisode;
     gameepisode = option;
-
-    S_InitScript();
-    InitMapInfo();
-    
     SetMenu(MENU_CLASS);
 }
 
@@ -2320,12 +2316,11 @@ boolean MN_Responder(event_t * event)
                     I_SetPalette(0);
 #endif
                     H2_StartTitle();    // go to intro/demo mode.
-                    // [crispy] re-init episode 1 for correct demo reel
-                    if (gameepisode > 1)
+                    // [crispy] re-init startepisode for correct demo reel
+                    if (crispy->havedeathkings && gameepisode != startepisode)
                     {
-                        gameepisode = 1;
-                        S_InitScript();
-                        InitMapInfo();
+                        gameepisode = prev_episode = startepisode;
+                        H2_InitEpisode(true);
                     }
                     return false;
                 case 3:
