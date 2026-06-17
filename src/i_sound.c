@@ -21,6 +21,8 @@
 #include "config.h"
 #include "doomtype.h"
 
+#include <string.h>
+
 #include "gusconf.h"
 #include "i_sound.h"
 #include "i_video.h"
@@ -30,6 +32,10 @@
 #ifndef DISABLE_SDL2MIXER
 
 #include "SDL_mixer.h"
+
+#else
+
+#include "SDL.h"
 
 #endif  // DISABLE_SDL2MIXER
 
