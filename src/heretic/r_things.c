@@ -764,7 +764,8 @@ void R_AddSprites(sector_t * sec)
         // [crispy] draw base frame and translucent current frame for MT_MUMMYLEADER attack
         if (crispy->translucency & TRANSLUCENCY_MISSILE)
         {
-            if (thing->state->sprite == SPR_MUMM && !(thing->flags & MF_SHADOW) && thing->frame == (24 | FF_FULLBRIGHT))
+            if (thing->state && thing->state->sprite == SPR_MUMM &&
+                !(thing->flags & MF_SHADOW) && thing->frame == (24 | FF_FULLBRIGHT))
             {
                 thing->frame = (thing->frame & FF_FRAMEMASK) - 1; // [crispy] set attack stance without fire
                 R_ProjectSprite(thing);
@@ -773,7 +774,8 @@ void R_AddSprites(sector_t * sec)
             }
         }
         R_ProjectSprite(thing);
-        if (thing->state->sprite == SPR_MUMM && !(thing->flags & MF_SHADOW) && thing->flags & MF_TRANSLUCENT)
+        if (thing->state && thing->state->sprite == SPR_MUMM &&
+            !(thing->flags & MF_SHADOW) && thing->flags & MF_TRANSLUCENT)
         {
             thing->flags &= ~MF_TRANSLUCENT;
         }
