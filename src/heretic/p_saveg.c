@@ -1687,16 +1687,27 @@ void P_UnArchiveWorld(void)
 //
     for (i = 0, sec = sectors; i < numsectors; i++, sec++)
     {
+        // [crispy] add overflow guard for the flattranslation[] array
+        short floorpic, ceilingpic;
         sec->floorheight = SV_ReadWord() << FRACBITS;
         sec->ceilingheight = SV_ReadWord() << FRACBITS;
-        sec->floorpic = SV_ReadWord();
-        sec->ceilingpic = SV_ReadWord();
+        floorpic = SV_ReadWord();
+        ceilingpic = SV_ReadWord();
         sec->lightlevel = SV_ReadWord();
         sec->rlightlevel = sec->lightlevel; // [crispy] A11Y
         sec->special = SV_ReadWord();  // needed?
         sec->tag = SV_ReadWord();      // needed?
         sec->specialdata = 0;
         sec->soundtarget = 0;
+        // [crispy] add overflow guard for the flattranslation[] array
+        if (floorpic >= 0 && floorpic < numflats)
+        {
+            sec->floorpic = floorpic;
+        }
+        if (ceilingpic >= 0 && ceilingpic < numflats)
+        {
+            sec->ceilingpic = ceilingpic;
+        }
     }
 
 //

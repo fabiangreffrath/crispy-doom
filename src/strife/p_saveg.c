@@ -1893,9 +1893,11 @@ void P_UnArchiveWorld (void)
     // do sectors
     for (i=0, sec = sectors ; i<numsectors ; i++,sec++)
     {
+        // [crispy] add overflow guard for the flattranslation[] array
+        short floorpic;
         sec->floorheight = saveg_read16() << FRACBITS;
         sec->ceilingheight = saveg_read16() << FRACBITS;
-        sec->floorpic = saveg_read16();
+        floorpic = saveg_read16();
         //sec->ceilingpic = saveg_read16(); [STRIFE] not saved
         sec->lightlevel = saveg_read16();
         sec->rlightlevel = sec->lightlevel; // [crispy] A11Y
@@ -1903,6 +1905,11 @@ void P_UnArchiveWorld (void)
         //sec->tag = saveg_read16();              // needed? [STRIFE] not saved
         sec->specialdata = 0;
         sec->soundtarget = 0;
+        // [crispy] add overflow guard for the flattranslation[] array
+        if (floorpic >= 0 && floorpic < numflats)
+        {
+            sec->floorpic = floorpic;
+        }
     }
     
     // do lines
