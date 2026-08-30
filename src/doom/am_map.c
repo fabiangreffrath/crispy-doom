@@ -315,7 +315,7 @@ static patch_t *marknums[10]; // numbers used for marking by the automap
 static mpoint_t markpoints[AM_NUMMARKPOINTS]; // where the points are
 static int markpointnum = 0; // next point to be assigned
 
-static int followplayer = 1; // specifies whether to follow the player around
+int followplayer = 1; // specifies whether to follow the player around
 
 cheatseq_t cheat_amap = CHEAT("iddt", 0);
 cheatseq_t cheat_iddst = CHEAT("iddst", 0);

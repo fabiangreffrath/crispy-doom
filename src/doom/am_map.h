@@ -47,5 +47,6 @@ void AM_initVariables (void);
 
 extern cheatseq_t cheat_amap;
 
+extern int followplayer; // [crispy]
 
 #endif

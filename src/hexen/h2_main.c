@@ -1117,7 +1117,9 @@ static void DrawAndBlit(void)
     {
         I_UpdateFracTic();
 
-        if (!automapactive || crispy->automapoverlay)
+        // [crispy] When appropriate, let automap responder have mouse movement
+        // events for mouse panning.
+        if (!(automapactive && !crispy->automapoverlay && !followplayer))
         {
             I_StartDisplay();
             G_FastResponder();

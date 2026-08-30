@@ -124,6 +124,7 @@ extern boolean automapactive;
 extern vertex_t KeyPoints[];
 extern const char *LevelNames[];
 
+extern int followplayer; // [crispy]
 
 void AM_Stop(void);
 

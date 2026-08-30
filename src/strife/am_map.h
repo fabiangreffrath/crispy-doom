@@ -45,6 +45,8 @@ void AM_Stop (void);
 
 extern cheatseq_t cheat_amap;
 
+extern int followplayer; // [crispy]
+
 // [crispy] holding down the "Run" key may trigger special behavior,
 // e.g. quick exit, automap pan/zoom speed
 boolean speedkeydown (void);

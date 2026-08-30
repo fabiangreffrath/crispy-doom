@@ -128,6 +128,7 @@ typedef struct
 extern int cheating;
 extern boolean automapactive;
 
+extern int followplayer; // [crispy]
 
 void AM_Stop(void);
 
