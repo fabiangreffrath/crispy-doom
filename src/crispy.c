@@ -33,6 +33,7 @@ static crispy_t crispy_s = {
 #endif
 	.vsync = 1,
 	.widescreen = 1, // match screen by default
+	.bossleveltally = 1, // mantain consistency with older behavior
 };
 crispy_t *const crispy = &crispy_s;
 
