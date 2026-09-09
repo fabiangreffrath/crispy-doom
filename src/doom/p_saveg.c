@@ -22,6 +22,7 @@
 
 #include "dstrings.h"
 #include "deh_main.h"
+#include "g_umapinfo.h"
 #include "i_system.h"
 #include "p_mapformat.h"
 #include "z_zone.h"
@@ -1478,6 +1479,7 @@ boolean P_ReadSaveGameHeader(void)
     gameskill = saveg_read8();
     gameepisode = saveg_read8();
     gamemap = saveg_read8();
+    gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
 
     for (i=0 ; i<MAXPLAYERS ; i++) 
 	playeringame[i] = saveg_read8();

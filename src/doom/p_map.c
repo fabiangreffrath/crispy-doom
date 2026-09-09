@@ -622,7 +622,7 @@ P_TryMove
 	    if (side != oldside)
 	    {
 		if (ld->special)
-		    P_CrossSpecialLine (ld-lines, oldside, thing);
+		    P_CrossSpecialLine(ld-lines, oldside, thing, false);
 	    }
 	}
     }
@@ -1372,7 +1372,7 @@ boolean	PTR_UseTraverse (intercept_t* in)
     
     //	return false;		// don't use back side
 	
-    P_UseSpecialLine (usething, in->d.line, side);
+    P_UseSpecialLine(usething, in->d.line, side, false);
 
     // can't use for than one special line in a row
     return false;

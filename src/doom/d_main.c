@@ -27,15 +27,16 @@
 #include <time.h> // [crispy] time_t, time(), struct tm, localtime()
 
 #include "config.h"
+#include "d_mode.h"
 #include "deh_main.h"
 #include "doomdef.h"
 #include "doomstat.h"
 
 #include "dstrings.h"
+#include "g_umapinfo.h"
 #include "sounds.h"
 
 #include "d_iwad.h"
-#include "d_pwad.h" // [crispy] D_Load{Sigil,Nerve,Masterlevels}Wad()
 
 #include "z_zone.h"
 #include "w_main.h"
@@ -1045,14 +1046,6 @@ static void D_SetGameDescription(void)
         {
             gamedescription = GetGameName("DOOM 2: TNT - Evilution");
         }
-        else if (logical_gamemission == pack_nerve)
-        {
-            gamedescription = GetGameName("DOOM 2: No Rest For The Living");
-        }
-        else if (logical_gamemission == pack_master)
-        {
-            gamedescription = GetGameName("Master Levels for DOOM 2");
-        }
     }
 
     if (gamedescription == NULL)
@@ -1444,6 +1437,11 @@ static void G_CheckDemoStatusAtExit (void)
 }
 
 static const char *const loadparms[] = {"-file", "-merge", NULL};
+
+static void LoadMapInfo(int lumpnum)
+{
+    G_ParseMapInfo(lumpnum, gamemission, gamemode, MN_AddEpisode, MN_ClearEpisodes);
+}
 
 //
 // D_DoomMain
@@ -1995,32 +1993,6 @@ void D_DoomMain (void)
     // Generate the WAD hash table.  Speed things up a bit.
     W_GenerateHashTable();
 
-    // [crispy] allow overriding of special-casing
-
-    //!
-    // @category mod
-    //
-    // Disable automatic loading of Master Levels, No Rest for the Living and
-    // Sigil.
-    //
-    if (!M_ParmExists("-nosideload") && gamemode != shareware &&
-        !demolumpname[0] && !M_CheckParmWithArgs("-record", 1))
-    {
-	if (gamemode == retail &&
-	    gameversion == exe_ultimate &&
-	    gamevariant != freedoom &&
-	    strncasecmp(M_BaseName(iwadfile), "rekkr", 5))
-	{
-		D_LoadSigilWads();
-	}
-
-	if (gamemission == doom2)
-	{
-		D_LoadNerveWad();
-		D_LoadMasterlevelsWad();
-	}
-    }
-
     // Load DEHACKED lumps from WAD files - but only if we give the right
     // command line parameter.
 
@@ -2109,6 +2081,21 @@ void D_DoomMain (void)
 		    I_Error(DEH_String("\nThis is not the registered version."));
     }
 
+
+    // [crispy]
+    mapinfo_mapxy = (gamemode == commercial);
+
+    //!
+    // @category mod
+    //
+    // Disable UMAPINFO loading.
+    //
+
+    if (!M_ParmExists("-nomapinfo"))
+    {
+        W_ProcessInWads("UMAPINFO", LoadMapInfo, PROCESS_IWAD | PROCESS_PWAD);
+    }
+
 // [crispy] disable meaningless warning, we always use "-merge" anyway
 #if 0
     if (W_CheckNumForName("SS_START") >= 0
@@ -2143,34 +2130,6 @@ void D_DoomMain (void)
             I_GetSfxLumpNum(&S_sfx[sfx_dbcls])  != -1    // [crispy] closing sound
         )
     );
-
-    // [crispy] check for presence of a 5th episode
-    crispy->haved1e5 = (gameversion == exe_ultimate) &&
-                       (W_CheckNumForName("m_epi5") != -1) &&
-                       (W_CheckNumForName("e5m1") != -1) &&
-                       (W_CheckNumForName("wilv40") != -1);
-
-    // [crispy] check for presence of a 6th episode
-    crispy->haved1e6 = (gameversion == exe_ultimate) &&
-                       (W_CheckNumForName("m_epi6") != -1) &&
-                       (W_CheckNumForName("e6m1") != -1) &&
-                       (W_CheckNumForName("wilv50") != -1);
-
-    // [crispy] check for presence of E1M10
-    crispy->havee1m10 = (gamemode == retail) &&
-                       (W_CheckNumForName("e1m10") != -1) &&
-                       (W_CheckNumForName("sewers") != -1);
-
-    // [crispy] check for presence of MAP33
-    crispy->havemap33 = (gamemode == commercial) &&
-                       (W_CheckNumForName("map33") != -1) &&
-                       (W_CheckNumForName("cwilv32") != -1);
-
-    // [crispy] change level name for MAP33 if not already changed
-    if (crispy->havemap33 && !DEH_HasStringReplacement(PHUSTR_1))
-    {
-        DEH_AddStringReplacement(PHUSTR_1, "level 33: betray");
-    }
 
     printf ("NET_Init: Init network subsystem.\n");
     NET_Init ();
@@ -2374,6 +2333,9 @@ void D_DoomMain (void)
 
     DEH_printf("ST_Init: Init status bar.\n");
     ST_Init ();
+
+    // [crispy] UMAPINFO
+    MN_SetHUFontKerning();
 
     // If Doom II without a MAP01 lump, this is a store demo.
     // Moved this here so that MAP01 isn't constantly looked up

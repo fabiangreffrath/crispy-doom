@@ -64,4 +64,12 @@ extern int showMessages;
 extern boolean numeric_enter;
 extern int numeric_entry;
 
+void MN_ClearEpisodes(void);
+void MN_AddEpisode(const char *map, const char *gfx, const char *txt, char key);
+
+int MN_StringWidth(const char *string);
+void MN_SetHUFontKerning(void);
+int MN_GetPixelWidth(const char *ch);
+void MN_DrawString(int cx, int cy, int color, const char *ch);
+
 #endif

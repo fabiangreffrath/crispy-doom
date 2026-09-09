@@ -588,9 +588,10 @@ void
 P_CrossSpecialLine
 ( int		linenum,
   int		side,
-  mobj_t*	thing )
+  mobj_t*	thing,
+  boolean bossaction )
 {
-    return P_CrossSpecialLinePtr(&lines[linenum], side, thing);
+    return P_CrossSpecialLinePtr(&lines[linenum], side, thing, bossaction);
 }
 
 // [crispy] more MBF code pointers
@@ -598,7 +599,8 @@ void
 P_CrossSpecialLinePtr
 ( line_t*	line,
   int		side,
-  mobj_t*	thing )
+  mobj_t*	thing,
+  boolean bossaction )
 {
 //  line_t*	line;
     int		ok;
@@ -633,15 +635,19 @@ P_CrossSpecialLinePtr
         }
     }
 
-    if (!thing->player)
+    if (!thing->player || bossaction)
     {
-	ok = 0;
+	ok = bossaction;
 	switch(line->special)
 	{
 	  case 39:	// TELEPORT TRIGGER
 	  case 97:	// TELEPORT RETRIGGER
 	  case 125:	// TELEPORT MONSTERONLY TRIGGER
 	  case 126:	// TELEPORT MONSTERONLY RETRIGGER
+      if (bossaction)
+      {
+        return;
+      }
 	  case 4:	// RAISE DOOR
 	  case 10:	// PLAT DOWN-WAIT-UP-STAY TRIGGER
 	  case 88:	// PLAT DOWN-WAIT-UP-STAY RETRIGGER

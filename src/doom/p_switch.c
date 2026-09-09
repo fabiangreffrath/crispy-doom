@@ -347,7 +347,8 @@ boolean
 P_UseSpecialLine
 ( mobj_t*	thing,
   line_t*	line,
-  int		side )
+  int		side,
+  boolean bossaction )
 {               
 
     // Err...
@@ -369,7 +370,7 @@ P_UseSpecialLine
 
     
     // Switches that other things can activate.
-    if (!thing->player)
+    if (!thing->player && !bossaction)
     {
 	// never open secret doors
 	if (line->flags & ML_SECRET)
@@ -390,6 +391,28 @@ P_UseSpecialLine
     }
 
     
+    if (bossaction)
+    {
+        switch(line->special)
+        {
+          // 0-tag specials, locked switches and teleporters need to be blocked for boss actions.
+          case 1:         // MANUAL DOOR RAISE
+          case 32:        // MANUAL BLUE
+          case 33:        // MANUAL RED
+          case 34:        // MANUAL YELLOW
+          case 117:       // Blazing door raise
+          case 118:       // Blazing door open
+          case 133:       // BlzOpenDoor BLUE
+          case 135:       // BlzOpenDoor RED
+          case 137:       // BlzOpenDoor YEL
+          case 99:        // BlzOpenDoor BLUE
+          case 134:       // BlzOpenDoor RED
+          case 136:       // BlzOpenDoor YELLOW
+            return false;
+            break;
+        }
+    }
+
     // do something  
     switch (line->special)
     {

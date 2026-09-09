@@ -28,6 +28,7 @@
 #include "deh_main.h"
 #include "deh_misc.h"
 #include "deh_bexpars.h" // [crispy] bex_pars[]
+#include "g_umapinfo.h" // [crispy]
 
 #include "z_zone.h"
 #include "f_finale.h"
@@ -81,7 +82,6 @@
 #include "deh_main.h" // [crispy] for demo footer
 #include "memio.h"
 
-#include "d_pwad.h" // [crispy] kex secret level
 
 #define SAVEGAMESIZE	0x2c000
 
@@ -108,6 +108,7 @@ skill_t         gameskill;
 boolean		respawnmonsters;
 int             gameepisode; 
 int             gamemap; 
+mapentry_t     *gamemapinfo;
 
 // If non-zero, exit the level after this number of minutes.
 
@@ -989,36 +990,6 @@ void G_DoLoadLevel (void)
 { 
     int             i; 
 
-    // [crispy] NRFTL / The Master Levels
-    if (crispy->havenerve || crispy->havemaster)
-    {
-        if (crispy->havemaster && gameepisode == 3)
-        {
-            gamemission = pack_master;
-        }
-        else
-        if (crispy->havenerve && gameepisode == 2)
-        {
-            gamemission = pack_nerve;
-        }
-        else
-        {
-            gamemission = doom2;
-        }
-    }
-    else
-    {
-        if (gamemission == pack_master)
-        {
-            gameepisode = 3;
-        }
-        else
-        if (gamemission == pack_nerve)
-        {
-            gameepisode = 2;
-        }
-    }
-
     // Set the sky map.
     // First thing, we have a dummy sky texture name,
     //  a flat. The data is in the WAD only because
@@ -1027,62 +998,23 @@ void G_DoLoadLevel (void)
 
     skyflatnum = R_FlatNumForName(DEH_String(SKYFLATNAME));
 
-    // The "Sky never changes in Doom II" bug was fixed in
-    // the id Anthology version of doom2.exe for Final Doom.
+    // [crispy] UMAPINFO
+    if (gamemapinfo && gamemapinfo->skytexture[0])
+    {
+        skytexture = R_TextureNumForName(gamemapinfo->skytexture);
+    }
     // [crispy] correct "Sky never changes in Doom II" bug
-    if ((gamemode == commercial)
-     && (gameversion == exe_final2 || gameversion == exe_chex || true))
+    else if (gamemode == commercial)
     {
         const char *skytexturename;
 
-        // nerve skies
-        if (gamemap < 12 && (gameepisode == 2 || gamemission == pack_nerve))
-        {
-            if (gamemap >= 4 && gamemap <= 8)
-                skytexturename = "SKY3";
-            else
-                skytexturename = "SKY1";
-        }
-        // masterlevel skies
-        else if (gamemap < 21 && (gameepisode == 3 || gamemission == pack_master))
-        {
-            if (D_CheckMasterlevelKex())
-            {
-                // masterlevels kex skies
-                if (gamemap == 10)
-                    skytexturename = "SKY3";
-                else
-                if (gamemap <= 9)
-                    skytexturename = "SKYM1";
-                else
-                if (gamemap >= 16)
-                    skytexturename = "SKYM3";
-                else
-                    skytexturename = "SKYM2";
-            }
-            else
-            {
-                // masterlevels psn/unity skies
-                if (gamemap < 12 || gamemap == 14 || gamemap == 15)
-                    skytexturename = "SKY1";
-                else
-                if (gamemap >= 19)
-                    skytexturename = "SKY3";
-                else
-                    skytexturename = "SKY2";
-            }
-        }
         // doom2 skies
+        if (gamemap < 12)
+            skytexturename = "SKY1";
+        else if (gamemap < 21)
+            skytexturename = "SKY2";
         else
-        {
-            if (gamemap < 12)
-                skytexturename = "SKY1";
-            else
-            if (gamemap < 21)
-                skytexturename = "SKY2";
-            else
-                skytexturename = "SKY3";
-        }
+            skytexturename = "SKY3";
 
         skytexturename = DEH_String(skytexturename);
 
@@ -1972,10 +1904,6 @@ static const int pars[7][10] =
     {0,90,45,90,150,90,90,165,30,135} 
     // [crispy] Episode 4 par times from the BFG Edition
    ,{0,165,255,135,150,180,390,135,360,180}
-    // [crispy] Episode 5 par times from Sigil v1.21
-   ,{0,90,150,360,420,780,420,780,300,660}
-    // [crispy] Episode 6 par times from Sigil II v1.0
-   ,{0,480,300,240,420,510,840,960,390,450}
 }; 
 
 // DOOM II Par Times
@@ -1993,12 +1921,6 @@ static const int chexpars[6] =
     0,120,360,480,200,360
 }; 
  
-// [crispy] No Rest For The Living par times from the BFG Edition
-static const int npars[9] =
-{
-    75,105,120,105,210,105,165,105,135
-};
-
 //
 // G_DoCompleted 
 //
@@ -2136,6 +2058,59 @@ void G_DoCompleted (void)
     if (automapactive) 
 	AM_Stop (); 
 	
+    // [crispy] UMAPINFO support
+    wminfo.epsd = gameepisode - 1; 
+    wminfo.last = gamemap - 1;
+    wminfo.lastmapinfo = gamemapinfo;
+    wminfo.nextmapinfo = NULL;
+    mapinfo_partimes = false;
+
+    if (gamemapinfo)
+    {
+      const char *next = NULL;
+      boolean intermission = false;
+
+      if (gamemapinfo->flags & MapInfo_EndGame)
+      {
+        if (gamemapinfo->flags & MapInfo_NoIntermission)
+        {
+          gameaction = ga_victory;
+          return;
+        }
+        else
+        {
+          intermission = true;
+        }
+      }
+
+      if (secretexit && gamemapinfo->nextsecret[0])
+        next = gamemapinfo->nextsecret;
+      else if (gamemapinfo->nextmap[0])
+        next = gamemapinfo->nextmap;
+
+      if (next)
+      {
+        G_ValidateMapName(next, &wminfo.nextep, &wminfo.next);
+        wminfo.nextep--;
+        wminfo.next--;
+        // episode change
+        if (wminfo.nextep != wminfo.epsd)
+        {
+          for (i = 0; i < MAXPLAYERS; i++)
+            players[i].didsecret = false;
+        }
+      }
+
+      if (next || intermission)
+      {
+        wminfo.didsecret = players[consoleplayer].didsecret;
+        wminfo.partime = gamemapinfo->partime * TICRATE;
+        if (wminfo.partime > 0)
+          mapinfo_partimes = true;
+        goto frommapinfo;	// skip past the default setup.
+      }
+    }
+
     if (gamemode != commercial)
     {
         // Chex Quest ends after 5 levels, rather than 8.
@@ -2192,55 +2167,22 @@ void G_DoCompleted (void)
     
 	 
     wminfo.didsecret = players[consoleplayer].didsecret; 
+// [crispy] UMAPINFO support
+/*
     wminfo.epsd = gameepisode -1; 
     wminfo.last = gamemap -1;
+*/
     
     // wminfo.next is 0 biased, unlike gamemap
-    if ( gamemission == pack_nerve && gamemap <= 9 )
-    {
-	if (secretexit)
-	    switch(gamemap)
-	    {
-	      case  4: wminfo.next = 8; break;
-	    }
-	else
-	    switch(gamemap)
-	    {
-	      case  9: wminfo.next = 4; break;
-	      default: wminfo.next = gamemap;
-	    }
-    }
-    else
-    if ( gamemission == pack_master && gamemap <= 21 )
-    {
-        wminfo.next = gamemap;
-        // [crispy] kex masterlevel secret detour?
-        if (D_CheckMasterlevelKex())
-        {
-            // [crispy] bad dream secret exit in TEETH
-            if (gamemap == 18 && secretexit)
-                wminfo.next = 20;
-            // [crispy] bloodsea keep after bad dream secret
-            else if (gamemap == 21)
-                wminfo.next = 18;
-        }
-    }
-    else
     if ( gamemode == commercial)
     {
 	if (secretexit)
-	    if (gamemap == 2 && critical->havemap33)
-	      wminfo.next = 32;
-	    else
 	    switch(gamemap)
 	    {
 	      case 15: wminfo.next = 30; break;
 	      case 31: wminfo.next = 31; break;
 	    }
 	else
-	    if (gamemap == 33 && critical->havemap33)
-	      wminfo.next = 2;
-	    else
 	    switch(gamemap)
 	    {
 	      case 31:
@@ -2252,9 +2194,6 @@ void G_DoCompleted (void)
     {
 	if (secretexit) 
 	{
-	    if (critical->havee1m10 && gameepisode == 1 && gamemap == 1)
-	    wminfo.next = 9; // [crispy] go to secret level E1M10 "Sewers"
-	    else
 	    wminfo.next = 8; 	// go to secret level 
 	}
 	else if (gamemap == 9) 
@@ -2270,7 +2209,6 @@ void G_DoCompleted (void)
 		wminfo.next = 5; 
 		break; 
 	      case 3: 
-	      case 5: // [crispy] Sigil
 		wminfo.next = 6; 
 		break; 
 	      case 4:
@@ -2279,9 +2217,6 @@ void G_DoCompleted (void)
 	    }                
 	} 
 	else
-	if (critical->havee1m10 && gameepisode == 1 && gamemap == 10)
-	    wminfo.next = 1; // [crispy] returning from secret level E1M10 "Sewers"
-	else 
 	    wminfo.next = gamemap;          // go to next level 
     }
 		 
@@ -2294,6 +2229,12 @@ void G_DoCompleted (void)
     // statcheck regression testing.
     if (gamemode == commercial)
     {
+        // [crispy] support [PARS] sections in BEX files
+        if (gamemap >= 1 && gamemap <= 34 && bex_cpars[gamemap - 1])
+        {
+            wminfo.partime = TICRATE * bex_cpars[gamemap - 1];
+        }
+        else
         // map33 reads its par time from beyond the cpars[] array
         if (gamemap == 33)
         {
@@ -2304,17 +2245,7 @@ void G_DoCompleted (void)
 
             wminfo.partime = TICRATE*cpars32;
         }
-        // [crispy] support [PARS] sections in BEX files
-        else if (bex_cpars[gamemap-1])
-        {
-            wminfo.partime = TICRATE*bex_cpars[gamemap-1];
-        }
-        // [crispy] par times for NRFTL
-        else if (gamemission == pack_nerve)
-        {
-            wminfo.partime = TICRATE*npars[gamemap-1];
-        }
-        else
+        else if (gamemap >= 1 && gamemap <= 32)
         {
             wminfo.partime = TICRATE*cpars[gamemap-1];
         }
@@ -2323,14 +2254,11 @@ void G_DoCompleted (void)
     // overflows into the cpars array.
     else if (gameepisode < 4 ||
         // [crispy] single player par times for episode 4
-        (gameepisode == 4 && crispy->singleplayer) ||
-        // [crispy] par times for Sigil
-        gameepisode == 5 ||
-        // [crispy] par times for Sigil II
-        gameepisode == 6)
+        (gameepisode >= 4 && gameepisode <= 6 && crispy->singleplayer))
     {
         // [crispy] support [PARS] sections in BEX files
-        if (bex_pars[gameepisode][gamemap])
+        if (gameepisode >= 1 && gameepisode <= 6 && gamemap >= 1 && gamemap <= 9
+            && bex_pars[gameepisode][gamemap])
         {
             wminfo.partime = TICRATE*bex_pars[gameepisode][gamemap];
         }
@@ -2344,10 +2272,19 @@ void G_DoCompleted (void)
             wminfo.partime = TICRATE*pars[gameepisode][gamemap];
         }
     }
-    else
+    // [crispy]
+    else if (gameepisode == 4 && gamemap >= 1 && gamemap <= 9)
     {
         wminfo.partime = TICRATE*cpars[gamemap];
     }
+
+frommapinfo:
+  wminfo.nextmapinfo = G_LookupMapinfo(wminfo.nextep+1, wminfo.next+1);
+
+  wminfo.maxkills = totalkills;
+  wminfo.maxitems = totalitems;
+  wminfo.maxsecret = totalsecret;
+  wminfo.maxfrags = 0;
 
     wminfo.pnum = consoleplayer; 
  
@@ -2391,42 +2328,49 @@ void G_WorldDone (void)
     gameaction = ga_worlddone; 
 
     if (secretexit) 
-      // [crispy] special-casing for E1M10 "Sewers" support
-      // i.e. avoid drawing the splat for E1M9 already
-      if (!crispy->havee1m10 || gameepisode != 1 || gamemap != 1)
 	players[consoleplayer].didsecret = true; 
 
-    if ( gamemission == pack_nerve )
+    if (gamemapinfo)
     {
-	switch (gamemap)
-	{
-	  case 8:
-	    F_StartFinale ();
-	    break;
-	}
+        if (gamemapinfo->flags & MapInfo_InterTextClear
+            && gamemapinfo->flags & MapInfo_EndGame)
+        {
+            printf("UMAPINFO: 'intertext = clear' with one of the end game keys.\n");
+        }
+
+        if (secretexit)
+        {
+            if (gamemapinfo->flags & MapInfo_InterTextSecretClear)
+            {
+                return;
+            }
+            if (gamemapinfo->intertextsecret)
+            {
+                F_StartFinale();
+                return;
+            }
+        }
+        else
+        {
+            if (gamemapinfo->flags & MapInfo_EndGame)
+            {
+                // game ends without a status screen.
+                gameaction = ga_victory;
+                return;
+            }
+            else if (gamemapinfo->flags & MapInfo_InterTextClear)
+            {
+                return;
+            }
+            else if (gamemapinfo->intertext)
+            {
+                F_StartFinale();
+                return;
+            }
+        }
+        // if nothing applied, use the defaults.
     }
-    else
-    if ( gamemission == pack_master )
-    {
-    if (D_CheckMasterlevelKex())
-    {
-        if (gamemap == 20)
-        F_StartFinale ();
-    }
-    else
-    {
-	switch (gamemap)
-	{
-	  case 20:
-	    if (secretexit)
-		break;
-	  case 21:
-	    F_StartFinale ();
-	    break;
-	}      
-    }
-    }
-    else
+
     if ( gamemode == commercial )
     {
 	switch (gamemap)
@@ -2455,6 +2399,8 @@ void G_DoWorldDone (void)
 {        
     gamestate = GS_LEVEL; 
     gamemap = wminfo.next+1; 
+    gameepisode = wminfo.nextep + 1;
+    gamemapinfo = G_LookupMapinfo(gameepisode, gamemap);
     G_DoLoadLevel (); 
     gameaction = ga_nothing; 
     viewactive = true; 
@@ -2719,6 +2665,7 @@ G_DeferedInitNew
 	// [crispy] update required for recording e. g. when gotonextlevel was used
 	gamemap = d_map;
 	gameepisode = d_episode;
+  gamemapinfo = G_LookupMapinfo(episode, gamemap);
 
 	G_BeginRecording();
     }
@@ -2752,7 +2699,6 @@ G_InitNew
   int		episode,
   int		map )
 {
-    const char *skytexturename;
     int             i;
     // [crispy] make sure "fast" parameters are really only applied once
     static boolean fast_applied;
@@ -2796,18 +2742,10 @@ G_InitNew
     if (skill > sk_nightmare)
 	skill = sk_nightmare;
 
-  // [crispy] if NRFTL is not available, "episode 2" may mean The Master Levels ("episode 3")
-  if (gamemode == commercial)
-  {
-    if (episode < 1)
-      episode = 1;
-    else
-    if (episode == 2 && !crispy->havenerve)
-      episode = crispy->havemaster ? 3 : 1;
-  }
-
-  // [crispy] only fix episode/map if it doesn't exist
-  if (P_GetNumForMap(episode, map, false) < 0)
+  // [crispy]
+  // Disable all sanity checks if there are custom episode definitions.
+  // They do not make sense in this case.
+  if (!mapinfo_episodes && P_GetNumForMap(episode, map, false) < 0)
   {
     if (gameversion >= exe_ultimate)
     {
@@ -2839,23 +2777,11 @@ G_InitNew
     if ( (map > 9)
 	 && ( gamemode != commercial) )
     {
-      // [crispy] support E1M10 "Sewers"
-      if (!crispy->havee1m10 || episode != 1)
       map = 9;
-      else
-      map = 10;
     }
   }
 
     M_ClearRandom ();
-
-    // [crispy] Spider Mastermind gets increased health in Sigil II. Normally
-    // the Sigil II DEH handles this, but we don't load the DEH if the WAD gets
-    // sideloaded.
-    if (crispy->havesigil2 && crispy->havesigil2 != (char *)-1)
-    {
-        mobjinfo[MT_SPIDER].spawnhealth = (episode == 6) ? 9000 : 3000;
-    }
 
     if (skill == sk_nightmare || respawnparm )
 	respawnmonsters = true;
@@ -2898,67 +2824,12 @@ G_InitNew
     gameepisode = episode;
     gamemap = map;
     gameskill = skill;
+    gamemapinfo = G_LookupMapinfo(episode, gamemap);
 
     // [crispy] CPhipps - total time for all completed levels
     totalleveltimes = 0;
     defdemotics = 0;
     demostarttic = gametic; // [crispy] fix revenant internal demo bug
-
-    // Set the sky to use.
-    //
-    // Note: This IS broken, but it is how Vanilla Doom behaves.
-    // See http://doomwiki.org/wiki/Sky_never_changes_in_Doom_II.
-    //
-    // Because we set the sky here at the start of a game, not at the
-    // start of a level, the sky texture never changes unless we
-    // restore from a saved game.  This was fixed before the Doom
-    // source release, but this IS the way Vanilla DOS Doom behaves.
-
-    if (gamemode == commercial)
-    {
-        skytexturename = DEH_String("SKY3");
-        skytexture = R_TextureNumForName(skytexturename);
-        if (gamemap < 21)
-        {
-            skytexturename = DEH_String(gamemap < 12 ? "SKY1" : "SKY2");
-            skytexture = R_TextureNumForName(skytexturename);
-        }
-    }
-    else
-    {
-        switch (gameepisode)
-        {
-          default:
-          case 1:
-            skytexturename = "SKY1";
-            break;
-          case 2:
-            skytexturename = "SKY2";
-            break;
-          case 3:
-            skytexturename = "SKY3";
-            break;
-          case 4:        // Special Edition sky
-            skytexturename = "SKY4";
-            break;
-          case 5:        // [crispy] Sigil
-            skytexturename = "SKY5_ZD";
-            if (R_CheckTextureNumForName(DEH_String(skytexturename)) == -1)
-            {
-                skytexturename = "SKY3";
-            }
-            break;
-          case 6:        // [crispy] Sigil II
-            skytexturename = "SKY6_ZD";
-            if (R_CheckTextureNumForName(DEH_String(skytexturename)) == -1)
-            {
-                skytexturename = "SKY3";
-            }
-            break;
-        }
-        skytexturename = DEH_String(skytexturename);
-        skytexture = R_TextureNumForName(skytexturename);
-    }
 
     G_DoLoadLevel ();
 }

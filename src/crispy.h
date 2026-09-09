@@ -96,10 +96,6 @@ typedef struct
 	boolean flashinghom;
 	boolean fliplevels;
 	boolean flipweapons;
-	boolean haved1e5;
-	boolean haved1e6;
-	boolean havee1m10;
-	boolean havemap33;
 	boolean havessg;
 	boolean singleplayer;
 	boolean stretchsky;
@@ -111,10 +107,6 @@ typedef struct
 	boolean moreammo;
 	boolean pistolstart;
 
-	char *havenerve;
-	char *havemaster;
-	char *havesigil;
-	char *havesigil2;
     char *havedeathkings;
 
 	const char *sdlversion;
