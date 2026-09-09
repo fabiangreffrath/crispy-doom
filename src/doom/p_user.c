@@ -48,7 +48,8 @@
 static const fixed_t crispy_bobfactor[3] = {4, 3, 0};
 
 boolean		onground;
-
+int offgroundtics; // how many tics player has been in air
+#define AIRBOBFADETICS 4 // num tics to scale bobbing to 0 in midair
 
 //
 // P_Thrust
@@ -76,7 +77,7 @@ P_Thrust
 void P_CalcHeight (player_t* player) 
 {
     int		angle;
-    fixed_t	bob;
+    fixed_t	bob, totalviewoffset;
     
     // Regular movement bobbing
     // (needs to be calculated for gun swing
@@ -96,7 +97,9 @@ void P_CalcHeight (player_t* player)
     // [crispy] variable player view bob
     player->bob2 = crispy_bobfactor[crispy->bobfactor] * player->bob / 4;
 
-    if ((player->cheats & CF_NOMOMENTUM) || !onground)
+    offgroundtics = onground ? 0 : offgroundtics + 1;
+
+    if ((player->cheats & CF_NOMOMENTUM) || (!onground && (offgroundtics > AIRBOBFADETICS)))
     {
 	player->viewz = player->mo->z + VIEWHEIGHT;
 
@@ -113,7 +116,7 @@ void P_CalcHeight (player_t* player)
 
     
     // move viewheight
-    if (player->playerstate == PST_LIVE)
+    if (player->playerstate == PST_LIVE && onground)
     {
 	player->viewheight += player->deltaviewheight;
 
@@ -137,7 +140,12 @@ void P_CalcHeight (player_t* player)
 		player->deltaviewheight = 1;
 	}
     }
-    player->viewz = player->mo->z + player->viewheight + bob;
+    totalviewoffset = player->viewheight + bob - VIEWHEIGHT;
+    
+    if (!onground)
+        totalviewoffset = totalviewoffset * (AIRBOBFADETICS + 1 - offgroundtics) / AIRBOBFADETICS;
+    
+    player->viewz = player->mo->z + VIEWHEIGHT + totalviewoffset;
 
     if (player->viewz > player->mo->ceilingz-4*FRACUNIT)
 	player->viewz = player->mo->ceilingz-4*FRACUNIT;
