@@ -828,6 +828,10 @@ void P_MobjThinker(thinker_t *thinker)
             if (!(onmo = P_CheckOnmobj(mobj)))
             {
                 P_ZMovement(mobj);
+                if (mobj->player && crispy->singleplayer)
+                {
+                    mobj->flags2 &= ~MF2_ONMOBJ;
+                }
             }
             else
             {
