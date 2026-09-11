@@ -313,8 +313,8 @@ boolean PIT_CheckThing (mobj_t* thing)
     // check for skulls slamming into things
     if (tmthing->flags & MF_SKULLFLY)
     {
-	// [crispy] check if attacking skull flies over player
-	if (critical->overunder && thing->player)
+	// [crispy] check if attacking skull flies over target
+	if (critical->overunder)
 	{
 	    if (tmthing->z > thing->z + thing->height)
 	    {
@@ -395,65 +395,136 @@ boolean PIT_CheckThing (mobj_t* thing)
 	return !solid;
     }
 
-	if (critical->overunder)
+	if (critical->overunder && !(tmthing->flags & MF_MISSILE) && (thing->flags & MF_SOLID) && !(thing->flags & MF_NOBLOCKMAP))
 	{
-		// [crispy] a solid hanging body will allow sufficiently small things underneath it
-		if (thing->flags & MF_SOLID && thing->flags & MF_SPAWNCEILING)
+		// [crispy] allow the usual 24 units step-up even across monsters' heads,
+		// only if the current height has not been reached by "low" jumping
+		fixed_t step_up = (tmthing->player && tmthing->player->jumpTics > 7) ? 0 : 24*FRACUNIT;
+
+		if (tmthing->z + step_up >= thing->z + thing->height)
 		{
-			if (tmthing->z + tmthing->height <= thing->z)
-			{
-				if (thing->z < tmceilingz)
-				{
-					tmceilingz = thing->z;
-				}
-				return true;
-			}
+			// walk over object
+			tmfloorz = MAX(thing->z + thing->height, tmfloorz);
+			return true;
+		}
+		else if (tmthing->z + tmthing->height <= thing->z)
+		{
+			// walk underneath object
+			tmceilingz = MIN(thing->z, tmceilingz);
+			return true;
 		}
 
-		// [crispy] allow players to walk over/under shootable objects
-		if (tmthing->player && thing->flags & MF_SHOOTABLE)
+		// [crispy] check if things are stuck and allow them to move further apart
+		// taken from doomretro/src/p_map.c:319-332
+		if (tmx == tmthing->x && tmy == tmthing->y)
 		{
-			// [crispy] allow the usual 24 units step-up even across monsters' heads,
-			// only if the current height has not been reached by "low" jumping
-			fixed_t step_up = tmthing->player->jumpTics > 7 ? 0 : 24*FRACUNIT;
+			unblocking = true;
+		}
+		else if (thing->flags & MF_SHOOTABLE)
+		{
+			fixed_t newdist = P_AproxDistance(thing->x - tmx, thing->y - tmy);
+			fixed_t olddist = P_AproxDistance(thing->x - tmthing->x, thing->y - tmthing->y);
 
-			if (tmthing->z + step_up >= thing->z + thing->height)
+			if (newdist > olddist)
 			{
-				// player walks over object
-				tmfloorz = MAX(thing->z + thing->height, tmfloorz);
-				thing->ceilingz = MIN(tmthing->z, thing->ceilingz);
-				return true;
-			}
-			else
-			if (tmthing->z + tmthing->height <= thing->z)
-			{
-				// player walks underneath object
-				tmceilingz = MIN(thing->z, tmceilingz);
-				thing->floorz = MAX(tmthing->z + tmthing->height, thing->floorz);
-				return true;
-			}
-
-			// [crispy] check if things are stuck and allow them to move further apart
-			// taken from doomretro/src/p_map.c:319-332
-			if (tmx == tmthing->x && tmy == tmthing->y)
-			{
-				unblocking = true;
-			}
-			else
-			{
-				fixed_t newdist = P_AproxDistance(thing->x - tmx, thing->y - tmy);
-				fixed_t olddist = P_AproxDistance(thing->x - tmthing->x, thing->y - tmthing->y);
-
-				if (newdist > olddist)
-				{
-					unblocking = (tmthing->z < thing->z + thing->height
-					           && tmthing->z + tmthing->height > thing->z);
-				}
+				unblocking = (tmthing->z < thing->z + thing->height
+							&& tmthing->z + tmthing->height > thing->z);
 			}
 		}
 	}
 	
     return !(thing->flags & MF_SOLID) || unblocking;
+}
+
+mobj_t* resync_supporter; 
+
+//
+// P_UpdateMobjHeights
+//
+void P_UpdateMobjHeights(mobj_t* mo)
+{
+    if (critical->overunder)
+    {
+        P_CheckPosition(mo, mo->x, mo->y);
+        mo->floorz = tmfloorz;
+        mo->ceilingz = tmceilingz;
+    }
+}
+
+//
+// Paf - the atcual reyncer
+// PIT_ResyncThing
+//
+boolean PIT_ResyncThing(mobj_t *thing)
+{
+    if (thing == resync_supporter)
+        return true;
+
+    if (resync_supporter)
+    {
+        // they are overlapping, check if thing is above supporter
+        if (abs(thing->x - resync_supporter->x) < (thing->radius + resync_supporter->radius) &&
+            abs(thing->y - resync_supporter->y) < (thing->radius + resync_supporter->radius))
+        {
+            if (thing->z < resync_supporter->z + resync_supporter->height)
+                return true;
+        }
+    }
+
+    if (critical->overunder && (thing->flags & (MF_SHOOTABLE | MF_SOLID)))
+    {
+        P_UpdateMobjHeights(thing);
+
+        if ((thing->flags & MF_SHOOTABLE) && thing->z < thing->floorz)
+            thing->z = thing->floorz;
+    }
+    return true;
+}
+
+//
+// Paf - resync stacked objects with the sector when their support leaves
+// P_CheckThingsAbove
+//
+void P_CheckThingsAbove(int x, int y, mobj_t *supporter)
+{
+    int z, height, radius;
+    int xl, xh, yl, yh;
+    int bx, by;
+
+    z = supporter->z; 
+    height = supporter->height;
+    radius = supporter->radius;
+
+    resync_supporter = supporter; // can be NULL if we just want to check an area i think
+
+    xl = (x - radius - MAPBLOCKSIZE - bmaporgx) >> MAPBLOCKSHIFT;
+    xh = (x + radius + MAPBLOCKSIZE - bmaporgx) >> MAPBLOCKSHIFT;
+    yl = (y - radius - MAPBLOCKSIZE - bmaporgy) >> MAPBLOCKSHIFT;
+    yh = (y + radius + MAPBLOCKSIZE - bmaporgy) >> MAPBLOCKSHIFT;
+
+    if (xl < 0) xl = 0;
+    if (yl < 0) yl = 0;
+    if (xh >= bmapwidth) xh = bmapwidth - 1;
+    if (yh >= bmapheight) yh = bmapheight - 1;
+
+    for (bx = xl; bx <= xh; bx++)
+        for (by = yl; by <= yh; by++)
+            P_BlockThingsIterator(bx, by, PIT_ResyncThing);
+}
+
+//
+// P_ResyncAboveThings
+//
+void P_ResyncAboveThings(mobj_t *supporter)
+{
+    if (!(supporter->flags & MF_SOLID) ||
+        (supporter->flags &
+         (MF_SPECIAL || MF_PICKUP || MF_CORPSE)) || !critical->overunder) // i believe these are the only cases we shouldn't do this
+    {
+        return;
+    }
+
+    P_CheckThingsAbove(supporter->x, supporter->y, supporter);
 }
 
 
@@ -575,7 +646,7 @@ P_TryMove
 
     floatok = false;
     if (!P_CheckPosition (thing, x, y))
-	return false;		// solid wall or thing
+        return false;		// solid wall or thing
     
     if ( !(thing->flags & MF_NOCLIP) )
     {
@@ -609,7 +680,7 @@ P_TryMove
     thing->y = y;
 
     P_SetThingPosition (thing);
-    
+
     // if any special lines were hit, do the effect
     if (! (thing->flags&(MF_TELEPORT|MF_NOCLIP)) )
     {
@@ -627,10 +698,21 @@ P_TryMove
 	}
     }
 
+    if (critical->overunder)
+    {
+        // resync at old position
+        if (thing->flags & MF_SOLID)
+            P_CheckThingsAbove(oldx, oldy, thing);
+
+        // resync at new position (we might have moved under)
+        P_ResyncAboveThings(thing);
+    }
+
     return true;
 }
 
-
+boolean P_IsZMovementLegal (mobj_t* mo);
+boolean P_IsResyncNeeded(mobj_t* mo);
 //
 // P_ThingHeightClip
 // Takes a valid thing and adjusts the thing->floorz,
@@ -666,8 +748,13 @@ boolean P_ThingHeightClip (mobj_t* thing)
     }
 	
     if (thing->ceilingz - thing->floorz < thing->height)
-	return false;
-		
+    {
+        return false;
+    }
+
+    if (critical->overunder)
+        P_ResyncAboveThings(thing);
+
     return true;
 }
 

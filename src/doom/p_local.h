@@ -228,6 +228,9 @@ extern	line_t*		ceilingline;
 extern	line_t**	spechit; // [crispy] remove SPECHIT limit
 extern	int	numspechit;
 
+void P_ResyncAboveThings(mobj_t* supporter);
+void P_UpdateMobjHeights(mobj_t* mo); // i dont want to redefine this everywhere i use it
+
 boolean P_CheckPosition (mobj_t *thing, fixed_t x, fixed_t y);
 boolean P_TryMove (mobj_t* thing, fixed_t x, fixed_t y);
 boolean P_TeleportMove (mobj_t* thing, fixed_t x, fixed_t y);
