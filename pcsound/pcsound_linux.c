@@ -28,6 +28,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 
+#ifdef CRISPY_HAVE_LINUX_INPUT_H
+#include <linux/input.h>
+#endif
+
 #include "SDL.h"
 #include "SDL_thread.h"
 
@@ -35,12 +39,79 @@
 #include "pcsound_internal.h"
 
 #define CONSOLE_DEVICE "/dev/console"
+#ifdef CRISPY_HAVE_LINUX_INPUT_H
+#define EVDEV_DEVICE "/dev/input/by-path/platform-pcspkr-event-spkr"
+#endif
 
-static int console_handle;
+static int speaker_handle;
+#ifdef CRISPY_HAVE_LINUX_INPUT_H
+static int evdev_enabled;
+#endif
 static pcsound_callback_func callback;
 static int sound_thread_running = 0;
 static SDL_Thread *sound_thread_handle;
 static int sleep_adjust = 0;
+
+static int SetFrequency(int frequency)
+{
+#ifdef CRISPY_HAVE_LINUX_INPUT_H
+    if (evdev_enabled)
+    {
+        struct input_event event;
+        ssize_t written;
+
+        memset(&event, 0, sizeof(event));
+        event.type = EV_SND;
+        event.code = SND_TONE;
+        event.value = frequency;
+
+        do
+        {
+            written = write(speaker_handle, &event, sizeof(event));
+        }
+        while (written < 0 && errno == EINTR);
+
+        if (written != (ssize_t) sizeof(event))
+        {
+            if (written < 0)
+            {
+                fprintf(stderr, "PCSound_Linux: Failed to write PC speaker event: %s\n",
+                        strerror(errno));
+            }
+            else
+            {
+                fprintf(stderr, "PCSound_Linux: Incomplete PC speaker event write\n");
+            }
+
+            return 0;
+        }
+
+        return 1;
+    }
+#endif
+
+    {
+        int cycles;
+
+        if (frequency != 0)
+        {
+            cycles = PCSOUND_8253_FREQUENCY / frequency;
+        }
+        else
+        {
+            cycles = 0;
+        }
+
+        if (ioctl(speaker_handle, KIOCSOUND, cycles) < 0)
+        {
+            fprintf(stderr, "PCSound_Linux: Failed to set PC speaker frequency: %s\n",
+                    strerror(errno));
+            return 0;
+        }
+    }
+
+    return 1;
+}
 
 static void AdjustedSleep(unsigned int ms)
 {
@@ -92,7 +163,6 @@ static int SoundThread(void *unused)
     int current_freq = 0;
     int frequency;
     int duration;
-    int cycles;
     
     while (sound_thread_running)
     {
@@ -101,16 +171,7 @@ static int SoundThread(void *unused)
         if (current_freq != frequency)
         {
             current_freq = frequency;
-            if (frequency != 0)
-            {
-                cycles = PCSOUND_8253_FREQUENCY / frequency;
-            }
-            else
-            {
-                cycles = 0;
-            }
-
-            ioctl(console_handle, KIOCSOUND, cycles);
+            SetFrequency(frequency);
         }
 
         AdjustedSleep(duration);
@@ -121,11 +182,34 @@ static int SoundThread(void *unused)
 
 static int PCSound_Linux_Init(pcsound_callback_func callback_func)
 {
-    // Try to open the console
+#ifdef CRISPY_HAVE_LINUX_INPUT_H
+    evdev_enabled = 0;
+#endif
 
-    console_handle = open(CONSOLE_DEVICE, O_WRONLY);
+    // Prefer the evdev interface.  Unlike the legacy console interface,
+    // access to this device can be granted to unprivileged users by udev.
+#ifdef CRISPY_HAVE_LINUX_INPUT_H
+    speaker_handle = open(EVDEV_DEVICE, O_WRONLY);
 
-    if (console_handle == -1)
+    if (speaker_handle != -1)
+    {
+        evdev_enabled = 1;
+
+        if (SetFrequency(0))
+        {
+            goto start_thread;
+        }
+
+        close(speaker_handle);
+        evdev_enabled = 0;
+    }
+
+    // Fall back to the legacy console interface.
+#endif
+
+    speaker_handle = open(CONSOLE_DEVICE, O_WRONLY);
+
+    if (speaker_handle == -1)
     {
         // Don't have permissions for the console device?
 
@@ -134,14 +218,15 @@ static int PCSound_Linux_Init(pcsound_callback_func callback_func)
         return 0;
     }
 
-    if (ioctl(console_handle, KIOCSOUND, 0) < 0)
+    if (!SetFrequency(0))
     {
         // KIOCSOUND not supported: non-PC linux?
 
-        close(console_handle);
+        close(speaker_handle);
         return 0;
     }
 
+start_thread:
     // Start a thread up to generate PC speaker output
     
     callback = callback_func;
@@ -157,7 +242,11 @@ static void PCSound_Linux_Shutdown(void)
 {
     sound_thread_running = 0;
     SDL_WaitThread(sound_thread_handle, NULL);
-    close(console_handle);
+    SetFrequency(0);
+    close(speaker_handle);
+#ifdef CRISPY_HAVE_LINUX_INPUT_H
+    evdev_enabled = 0;
+#endif
 }
 
 pcsound_driver_t pcsound_linux_driver =
@@ -168,4 +257,3 @@ pcsound_driver_t pcsound_linux_driver =
 };
 
 #endif /* #ifdef HAVE_LINUX_KD_H */
-

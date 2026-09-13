@@ -96,6 +96,7 @@ static const sound_module_t *sound_modules[] =
 
 static const music_module_t *music_modules[] =
 {
+    &music_pcsound_module,
 #ifdef _WIN32
     &music_win_module,
 #endif
@@ -589,4 +590,3 @@ void I_BindSoundVariables(void)
     M_BindIntVariable("use_libsamplerate",       &use_libsamplerate);
     M_BindFloatVariable("libsamplerate_scale",   &libsamplerate_scale);
 }
-
