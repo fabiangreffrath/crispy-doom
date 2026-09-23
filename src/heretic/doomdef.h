@@ -518,6 +518,8 @@ extern gameaction_t gameaction;
 
 extern boolean paused;
 
+extern boolean sendpause;       // send a pause event next tic
+
 extern GameMode_t gamemode;
 
 extern boolean ExtendedWAD;     // true if main WAD is the extended version
