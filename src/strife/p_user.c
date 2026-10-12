@@ -61,6 +61,8 @@ static char useinventorymsg[44];    // villsa [STRIFE]
 static const fixed_t crispy_bobfactor[3] = {4, 3, 0};
 
 boolean		onground;
+int offgroundtics; // how many tics player has been in air
+#define AIRBOBFADETICS 4 // num tics to scale bobbing to 0 in midair
 
 
 //
@@ -113,9 +115,11 @@ void P_CalcHeight (player_t* player)
     // [crispy] variable player view bob
     player->bob2 = crispy_bobfactor[crispy->bobfactor] * player->bob / 4;
 
+    offgroundtics = onground ? 0 : offgroundtics + 1;
+
     // haleyjd 20110205 [STRIFE]: No CF_NOMOMENTUM check, and Rogue also removed
     // the dead code inside.
-    if (!onground)
+    if (!onground && (offgroundtics > AIRBOBFADETICS))
     {
         /*
         player->viewz = player->mo->z + VIEWHEIGHT;
@@ -132,7 +136,7 @@ void P_CalcHeight (player_t* player)
     bob = FixedMul ( player->bob2/2, finesine[angle]); // [crispy] variable player view bob
 
     // move viewheight
-    if (player->playerstate == PST_LIVE)
+    if (player->playerstate == PST_LIVE && onground)
     {
         player->viewheight += player->deltaviewheight;
 
@@ -156,6 +160,10 @@ void P_CalcHeight (player_t* player)
                 player->deltaviewheight = 1;
         }
     }
+
+    if (!onground)
+        bob = bob * (AIRBOBFADETICS + 1 - offgroundtics) / AIRBOBFADETICS;
+
     player->viewz = player->mo->z + player->viewheight + bob;
 
     // villsa [STRIFE] account for terrain lowering the view
