@@ -91,10 +91,21 @@ void W_ReleaseLumpName(const char *name);
 
 const char *W_WadNameForLump(const lumpinfo_t *lump);
 boolean W_IsIWADLump(const lumpinfo_t *lump);
+boolean W_IsPWADLump(const lumpinfo_t *lump);
 
 char **W_GetWADFileNames(void);
 
 boolean W_LumpExistsWithName(int lump, char *name);
 int W_LumpLengthWithName(int lump, char *name);
+
+typedef enum
+{
+    PROCESS_PWAD = 0x01,
+    PROCESS_IWAD = 0x02,
+    PROCESS_ALL  = 0x03
+} process_wad_t;
+
+void W_ProcessInWads(const char *name, void (*process)(int lumpnum),
+                     process_wad_t flags);
 
 #endif

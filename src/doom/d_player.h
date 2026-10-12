@@ -240,6 +240,11 @@ typedef struct
 
     // [crispy] CPhipps - total game time for completed levels so far
     int		totaltimes;
+
+    // [crispy] UMAPINFO support
+    int                nextep;
+    struct mapentry_s *lastmapinfo;
+    struct mapentry_s *nextmapinfo;
 } wbstartstruct_t;
 
 

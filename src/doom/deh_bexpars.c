@@ -23,7 +23,9 @@
 #include "deh_io.h"
 
 int bex_pars[7][10] = {{0}};
-int bex_cpars[32] = {0};
+int bex_cpars[35] = {0};
+
+boolean bex_partimes = false;
 
 static void *DEH_BEXParsStart(deh_context_t *context, char *line)
 {
@@ -44,7 +46,10 @@ static void DEH_BEXParsParseLine(deh_context_t *context, char *line, void *tag)
     if (sscanf(line, "par %32d %32d %32d", &episode, &map, &partime) == 3)
     {
 	if (episode >= 1 && episode <= 6 && map >= 1 && map <= 9)
+	{
 	    bex_pars[episode][map] = partime;
+	    bex_partimes |= true;
+	}
 	else
 	{
 	    DEH_Warning(context, "Invalid episode or map: E%dM%d", episode, map);
@@ -54,8 +59,11 @@ static void DEH_BEXParsParseLine(deh_context_t *context, char *line, void *tag)
     else
     if (sscanf(line, "par %32d %32d", &map, &partime) == 2)
     {
-	if (map >= 1 && map <= 32)
+	if (map >= 1 && map <= 34)
+	{
 	    bex_cpars[map-1] = partime;
+	    bex_partimes |= true;
+	}
 	else
 	{
 	    DEH_Warning(context, "Invalid map: MAP%02d", map);

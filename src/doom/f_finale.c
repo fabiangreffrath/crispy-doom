@@ -22,9 +22,11 @@
 #include <stdlib.h>
 
 // Functions.
-#include "deh_main.h"
-#include "i_system.h"
+#include "crispy.h"
+#include "deh_str.h"
 #include "i_swap.h"
+#include "i_video.h"
+#include "v_patch.h"
 #include "z_zone.h"
 #include "v_video.h"
 #include "w_wad.h"
@@ -32,15 +34,16 @@
 
 // Data.
 #include "d_main.h"
-#include "dstrings.h"
+#include "d_englsh.h"
 #include "sounds.h"
 
 #include "doomstat.h"
 #include "r_state.h"
 #include "m_controls.h" // [crispy] key_*
-#include "m_misc.h" // [crispy] M_StringDuplicate()
 #include "m_random.h" // [crispy] Crispy_Random()
-#include "d_pwad.h" // [crispy] kex secret level
+#include "g_game.h" // [crispy]
+#include "g_umapinfo.h" // [crispy]
+#include "wi_stuff.h" // [crispy]
 
 typedef enum
 {
@@ -61,6 +64,8 @@ unsigned int finalecount;
 
 #define	TEXTSPEED	3
 #define	TEXTWAIT	250
+#define NEWTEXTSPEED 0.01f
+#define NEWTEXTWAIT  1000
 
 typedef struct
 {
@@ -76,8 +81,6 @@ static textscreen_t textscreens[] =
     { doom,      2, 8,  "SFLR6_1",   E2TEXT},
     { doom,      3, 8,  "MFLR8_4",   E3TEXT},
     { doom,      4, 8,  "MFLR8_3",   E4TEXT},
-    { doom,      5, 8,  "FLOOR7_2",  E5TEXT}, // [crispy] Sigil
-    { doom,      6, 8,  "FLOOR7_2",  E6TEXT}, // [crispy] Sigil II
 
     { doom2,     1, 6,  "SLIME16",   C1TEXT},
     { doom2,     1, 11, "RROCK14",   C2TEXT},
@@ -99,43 +102,220 @@ static textscreen_t textscreens[] =
     { pack_plut, 1, 30, "RROCK17",   P4TEXT},
     { pack_plut, 1, 15, "RROCK13",   P5TEXT},
     { pack_plut, 1, 31, "RROCK19",   P6TEXT},
-
-    { pack_nerve, 1, 8, "SLIME16",   N1TEXT},
-    { pack_master, 1, 20, "SLIME16",   M1TEXT},
-    { pack_master, 1, 21, "SLIME16",   M2TEXT},
 };
 
 const char *finaletext;
 const char *finaleflat;
-static char *finaletext_rw;
 
 void	F_StartCast (void);
 void	F_CastTicker (void);
 boolean F_CastResponder (event_t *ev);
 void	F_CastDrawer (void);
+void F_TextWrite (void);
+void F_BunnyScroll(void);
+static float GetTextSpeed(void);
+static int midstage;                 // whether we're in "mid-stage"
 
 extern void A_RandomJump(void *, void *, void *);
+
+
+//
+// UMAPINFO
+//
+
+boolean mapinfo_finale = false;
+
+static boolean MapInfo_StartFinale(void)
+{
+    int lumpnum;
+    mapinfo_finale = false;
+
+    if (!gamemapinfo)
+    {
+        return false;
+    }
+
+    if (secretexit)
+    {
+        if (gamemapinfo->flags & MapInfo_InterTextSecretClear)
+        {
+            finaletext = NULL;
+        }
+        else if (gamemapinfo->intertextsecret)
+        {
+            finaletext = gamemapinfo->intertextsecret;
+        }
+    }
+    else
+    {
+        if (gamemapinfo->flags & MapInfo_InterTextClear)
+        {
+            finaletext = NULL;
+        }
+        else if (gamemapinfo->intertext)
+        {
+            finaletext = gamemapinfo->intertext;
+        }
+    }
+
+    if (gamemapinfo->interbackdrop[0])
+    {
+        finaleflat = gamemapinfo->interbackdrop;
+    }
+
+    if (!finaleflat)
+    {
+        finaleflat = "FLOOR4_8"; // use a single fallback for all maps.
+    }
+
+    lumpnum = W_CheckNumForName(gamemapinfo->intermusic);
+    if (lumpnum >= 0)
+    {
+        S_ChangeMusInfoMusic(lumpnum, true);
+    }
+
+    mapinfo_finale = true;
+
+    return lumpnum >= 0;
+}
+
+static boolean MapInfo_Ticker()
+{
+    boolean  next_level;
+    if (!mapinfo_finale)
+    {
+        return false;
+    }
+
+    next_level = false;
+
+    if (critical->singleplayer)
+    {
+        WI_checkForAccelerate();
+    }
+    else
+    {
+        for (int i = 0; i < MAXPLAYERS; ++i)
+        {
+            gameaction = ga_worlddone;
+            if (players[i].cmd.buttons)
+            {
+                next_level = true;
+            }
+        }
+    }
+
+    if (!next_level)
+    {
+        // advance animation
+        finalecount++;
+
+        if (finalestage == F_STAGE_CAST)
+        {
+            F_CastTicker();
+            return true;
+        }
+        else if (finalestage == F_STAGE_TEXT)
+        {
+            int textcount = 0;
+            if (finaletext)
+            {
+                float speed = !critical->singleplayer ? TEXTSPEED : GetTextSpeed();
+                textcount = strlen(finaletext) * speed + (midstage ? NEWTEXTWAIT : TEXTWAIT);
+            }
+
+            if (!textcount || finalecount > textcount || (midstage && acceleratestage))
+            {
+                next_level = true;
+            }
+        }
+    }
+
+    if (next_level)
+    {
+        if (!secretexit && gamemapinfo->flags & MapInfo_EndGame)
+        {
+            if (gamemapinfo->flags & MapInfo_EndGameCast)
+            {
+                F_StartCast();
+            }
+            else
+            {
+                finalecount = 0;
+                finalestage = F_STAGE_ARTSCREEN;
+                wipegamestate = -1; // force a wipe
+                if (gamemapinfo->flags & MapInfo_EndGameBunny)
+                {
+                    S_StartMusic(mus_bunny);
+                }
+                else if (gamemapinfo->flags & MapInfo_EndGameStandard)
+                {
+                    mapinfo_finale = false;
+                }
+            }
+        }
+        else
+        {
+            gameaction = ga_worlddone; // next level, e.g. MAP07
+        }
+    }
+
+    return true;
+}
+
+static boolean MapInfo_Drawer(void)
+{
+    if (!mapinfo_finale)
+    {
+        return false;
+    }
+
+    switch (finalestage)
+    {
+        case F_STAGE_TEXT:
+            if (finaletext)
+            {
+                F_TextWrite();
+            }
+            break;
+        case F_STAGE_ARTSCREEN:
+            if (gamemapinfo->flags & MapInfo_EndGameBunny)
+            {
+                F_BunnyScroll();
+            }
+            else if (gamemapinfo->endpic[0])
+            {
+                patch_t* endpic = (patch_t*)W_CacheLumpName(gamemapinfo->endpic, PU_CACHE);
+                V_DrawPatchFullScreen(endpic, false);
+            }
+            break;
+        case F_STAGE_CAST:
+            F_CastDrawer();
+            break;
+    }
+
+    return true;
+}
 
 //
 // F_StartFinale
 //
+// [crispy] reformatted to support UMAPINFO
 void F_StartFinale (void)
 {
     size_t i;
+    musicenum_t music_id = mus_None;
 
     gameaction = ga_nothing;
     gamestate = GS_FINALE;
     viewactive = false;
     automapactive = false;
+    music_id = (logical_gamemission == doom) ? mus_victor : mus_read_m;
 
-    if (logical_gamemission == doom)
-    {
-        S_ChangeMusic(mus_victor, true);
-    }
-    else
-    {
-        S_ChangeMusic(mus_read_m, true);
-    }
+    // killough 3/28/98: clear accelerative text flags
+    acceleratestage = midstage = 0;
+    finaletext = NULL;
+    finaleflat = NULL;
 
     // Find the right screen and set the text and background
 
@@ -159,27 +339,19 @@ void F_StartFinale (void)
         }
     }
 
-    // Hack for kex masterlevels finale text
-    if (logical_gamemission == pack_master && D_CheckMasterlevelKex() && players[consoleplayer].didsecret)
-    {
-        finaletext = M2TEXT;
-    }
-
     // Do dehacked substitutions of strings
   
     finaletext = DEH_String(finaletext);
     finaleflat = DEH_String(finaleflat);
-    // [crispy] do the "char* vs. const char*" dance
-    if (finaletext_rw)
+
+    // [crispy] UMAPINFO
+    if (!MapInfo_StartFinale())
     {
-	free(finaletext_rw);
-	finaletext_rw = NULL;
+        S_ChangeMusic(music_id, true);
     }
-    finaletext_rw = M_StringDuplicate(finaletext);
-    
+
     finalestage = F_STAGE_TEXT;
     finalecount = 0;
-	
 }
 
 
@@ -192,62 +364,88 @@ boolean F_Responder (event_t *event)
     return false;
 }
 
+// GetTextSpeed() returns the value of the text display speed  // phares
+// Rewritten to allow user-directed acceleration -- killough 3/28/98
+static float GetTextSpeed(void)
+{
+    if (midstage)
+    {
+        return NEWTEXTSPEED;
+    }
+    else if ((midstage = acceleratestage))
+    {
+        acceleratestage = 0;
+        return NEWTEXTSPEED;
+    }
+    else
+    {
+        return TEXTSPEED;
+    }
+}
 
 //
 // F_Ticker
 //
-void F_Ticker (void)
+// [crispy] reformatted to support UMAPINFO
+void F_Ticker(void)
 {
-    size_t		i;
-    
-    // check for skipping
-    if ( (gamemode == commercial)
-      && ( finalecount > 50) )
+    // int i;
+    if (MapInfo_Ticker())
     {
-      // go on to the next level
-      for (i=0 ; i<MAXPLAYERS ; i++)
-	if (players[i].cmd.buttons)
-	  break;
-				
-      if (i < MAXPLAYERS)
-      {	
-	if (gamemission == pack_nerve && gamemap == 8)
-	  F_StartCast ();
-	else
-    // [crispy] kex lvl 20 (checked in G_WorldDone), psn/unity lvl 20 or 21
-	if (gamemission == pack_master && (gamemap == 20 || gamemap == 21))
-	  F_StartCast ();
-	else
-	if (gamemap == 30)
-	  F_StartCast ();
-	else
-	  gameaction = ga_worlddone;
-      }
+        return;
     }
-    
+
+    if (critical->singleplayer)
+    {
+        WI_checkForAccelerate(); // killough 3/28/98: check for acceleration
+    }
+    else if (gamemode == commercial && finalecount > 50) // check for skipping
+    {
+        for (int i = 0; i < MAXPLAYERS; i++)
+            if (players[i].cmd.buttons)
+                goto next_level; // go on to the next level
+    }
+
     // advance animation
     finalecount++;
-	
+
     if (finalestage == F_STAGE_CAST)
     {
-	F_CastTicker ();
-	return;
+        F_CastTicker();
     }
-	
-    if ( gamemode == commercial)
-	return;
-		
-    if (finalestage == F_STAGE_TEXT
-     && finalecount>strlen (finaletext)*TEXTSPEED + TEXTWAIT)
+
+    if (finalestage == F_STAGE_TEXT)
     {
-	finalecount = 0;
-	finalestage = F_STAGE_ARTSCREEN;
-	wipegamestate = -1;		// force a wipe
-	if (gameepisode == 3)
-	    S_StartMusic (mus_bunny);
+        float speed = !critical->singleplayer ? TEXTSPEED : GetTextSpeed();
+        // phares
+        // killough 2/28/98
+        // changed to allow acceleration
+        if (finalecount > strlen(finaletext) * speed +
+                              (midstage ? NEWTEXTWAIT : TEXTWAIT) ||
+            (midstage && acceleratestage))
+        {
+            // Doom 1 / Ultimate Doom episode end
+            // with enough time, it's automatic
+            if (gamemode != commercial)
+            {
+                finalecount = 0;
+                finalestage = F_STAGE_ARTSCREEN;
+                wipegamestate = -1; // force a wipe
+                if (gameepisode == 3)
+                    S_StartMusic(mus_bunny);
+            }
+            // you must press a button to continue in Doom 2
+            else if (critical->singleplayer && midstage)
+            {
+            next_level:
+                if (gamemap == 30)
+                    F_StartCast(); // cast of Doom 2 characters
+                else
+                    gameaction = ga_worlddone; // next level, e.g. MAP07
+            }
+        }
     }
 }
-
 
 
 //
@@ -256,51 +454,33 @@ void F_Ticker (void)
 
 #include "hu_stuff.h"
 
-// [crispy] add line breaks for lines exceeding screenwidth
-static inline boolean F_AddLineBreak (char *c)
-{
-    while (c-- > finaletext_rw)
-    {
-	if (*c == '\n')
-	{
-	    return false;
-	}
-	else
-	if (*c == ' ')
-	{
-	    *c = '\n';
-	    return true;
-	}
-    }
-
-    return false;
-}
-
 void F_TextWrite (void)
 {
-    byte*	src;
-    pixel_t*	dest;
-    
     int		w;
     signed int	count;
-    char *ch; // [crispy] un-const
+    const char *ch;
     int		c;
     int		cx;
     int		cy;
-    
-    // erase the entire screen to a tiled background
-    src = W_CacheLumpName ( finaleflat , PU_CACHE);
-    dest = I_VideoBuffer;
-	
-    // [crispy] use unified flat filling function
-    V_FillFlat(0, SCREENHEIGHT, 0, SCREENWIDTH, src, dest);
+
+    // [crispy] UMAPINFO support
+    if (gamemapinfo && W_CheckNumForName(finaleflat) != -1 && R_FlatNumForName(finaleflat) == -1)
+    {
+      V_DrawPatchFullScreen(W_CacheLumpName(finaleflat, PU_LEVEL), false);
+    }
+    else if (R_FlatNumForName(finaleflat) != -1)
+    {
+      byte *src = W_CacheLumpName(finaleflat, PU_LEVEL);
+      pixel_t *dest = I_VideoBuffer;
+      V_FillFlat(0, SCREENHEIGHT, 0, SCREENWIDTH, src, dest);
+    }
 
     V_MarkRect (0, 0, SCREENWIDTH, SCREENHEIGHT);
     
     // draw some of the text onto the screen
     cx = 10;
     cy = 10;
-    ch = finaletext_rw;
+    ch = finaletext;
 	
     count = ((signed int) finalecount - 10) / TEXTSPEED;
     if (count < 0)
@@ -325,19 +505,12 @@ void F_TextWrite (void)
 	}
 		
 	w = SHORT (hu_font[c]->width);
-	if (cx+w > ORIGWIDTH)
+	if (cx + w > SCREENWIDTH - WIDESCREENDELTA)
 	{
-	    // [crispy] add line breaks for lines exceeding screenwidth
-	    if (F_AddLineBreak(ch))
-	    {
 		continue;
-	    }
-	    else
-	    break;
 	}
 	// [crispy] prevent text from being drawn off-screen vertically
-	if (cy + SHORT(hu_font[c]->height) - SHORT(hu_font[c]->topoffset) >
-	    ORIGHEIGHT)
+	if (cy + SHORT(hu_font[c]->height) - SHORT(hu_font[c]->topoffset) > ORIGHEIGHT)
 	{
 	    break;
 	}
@@ -1020,27 +1193,6 @@ static void F_ArtScreenDrawer(void)
             case 4:
                 lumpname = "ENDPIC";
                 break;
-            // [crispy] Sigil
-            case 5:
-                lumpname = "SIGILEND";
-                if (W_CheckNumForName(DEH_String(lumpname)) == -1)
-                {
-                    return;
-                }
-                break;
-            // [crispy] Sigil II
-            case 6:
-                lumpname = "SGL2END";
-                if (W_CheckNumForName(DEH_String(lumpname)) == -1)
-                {
-                    lumpname = "SIGILEND";
-
-                    if (W_CheckNumForName(DEH_String(lumpname)) == -1)
-                    {
-                        return;
-                    }
-                }
-                break;
             default:
                 return;
         }
@@ -1056,6 +1208,11 @@ static void F_ArtScreenDrawer(void)
 //
 void F_Drawer (void)
 {
+    if (MapInfo_Drawer())
+    {
+        return;
+    }
+
     switch (finalestage)
     {
         case F_STAGE_CAST:

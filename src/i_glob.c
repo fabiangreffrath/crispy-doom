@@ -192,8 +192,8 @@ static boolean MatchesGlob(const char *name, const char *glob, int flags)
 
         if ((flags & GLOB_FLAG_NOCASE) != 0)
         {
-            n = tolower(n);
-            g = tolower(g);
+            n = M_ToLower(n);
+            g = M_ToLower(g);
         }
 
         if (g == '*')

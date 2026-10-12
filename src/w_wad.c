@@ -645,6 +645,11 @@ boolean W_IsIWADLump(const lumpinfo_t *lump)
 	return lump->wad_file == lumpinfo[0]->wad_file;
 }
 
+boolean W_IsPWADLump(const lumpinfo_t *lump)
+{
+	return lump->wad_file != lumpinfo[0]->wad_file;
+}
+
 // [crispy] dump lump data into a new LMP file
 int W_LumpDump (const char *lumpname)
 {
@@ -697,4 +702,38 @@ int W_LumpLengthWithName(int lump, char *name)
     return 0;
 
   return W_LumpLength(lump);
+}
+
+static void ProcessInWad(int i, const char *name, void (*process)(int lumpnum),
+                         process_wad_t flag)
+{
+    if (i >= 0)
+    {
+        int condition = 0;
+
+        ProcessInWad(lumpinfo[i]->next, name, process, flag);
+
+        if (flag & PROCESS_IWAD)
+        {
+            condition |= W_IsIWADLump(lumpinfo[i]);
+        }
+
+        if (flag & PROCESS_PWAD)
+        {
+            condition |= W_IsPWADLump(lumpinfo[i]);
+        }
+
+        if (condition && !strncasecmp(lumpinfo[i]->name, name, 8))
+        {
+            process(i);
+        }
+    }
+}
+
+void W_ProcessInWads(const char *name, void (*process)(int lumpnum),
+                     process_wad_t flags)
+{
+    unsigned int key = W_LumpNameHash(name) % numlumps;
+    lumpindex_t value = lumphash[key];
+    ProcessInWad(value, name, process, flags);
 }

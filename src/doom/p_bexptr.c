@@ -172,16 +172,16 @@ void A_LineEffect(mobj_t *mo)
       line_t junk = *lines;                          // Fake linedef set to 1st
       if ((junk.special = (short)mo->state->misc1))  // Linedef type
 	{
-	  static player_t player;                    // [crispy] made static
-	  player_t *oldplayer = mo->player;          // Remember player status
-	  mo->player = &player;                      // Fake player
-	  player.health = 100;                       // Alive player
-	  junk.tag = (short)mo->state->misc2;        // Sector tag for linedef
-	  if (!P_UseSpecialLine(mo, &junk, 0))       // Try using it
-	    P_CrossSpecialLinePtr(&junk, 0, mo);     // Try crossing it
-//	  if (!junk.special)                         // If type cleared,
-//	    mo->intflags |= MIF_LINEDONE;            // no more for this thing
-	  mo->player = oldplayer;                    // Restore player status
+	  static player_t player;                       // [crispy] made static
+	  player_t *oldplayer = mo->player;             // Remember player status
+	  mo->player = &player;                         // Fake player
+	  player.health = 100;                          // Alive player
+	  junk.tag = (short)mo->state->misc2;           // Sector tag for linedef
+	  if (!P_UseSpecialLine(mo, &junk, 0, false))   // Try using it
+	    P_CrossSpecialLinePtr(&junk, 0, mo, false); // Try crossing it
+//	  if (!junk.special)                          // If type cleared,
+//	    mo->intflags |= MIF_LINEDONE;             // no more for this thing
+	  mo->player = oldplayer;                       // Restore player status
 	}
     }
 }

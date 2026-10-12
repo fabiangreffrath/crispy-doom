@@ -32,6 +32,8 @@ typedef enum
     ShowNextLoc,
 } stateenum_t;
 
+extern int acceleratestage;
+
 // Called by main loop, animate the intermission.
 void WI_Ticker (void);
 
@@ -44,5 +46,7 @@ void WI_Start(wbstartstruct_t*	 wbstartstruct);
 
 // Shut down the intermission screen
 void WI_End(void);
+
+void WI_checkForAccelerate(void);
 
 #endif

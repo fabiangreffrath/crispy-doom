@@ -72,6 +72,7 @@ set(GAME_SOURCE_FILES
                         d_ticcmd.h
     deh_str.c           deh_str.h
     gusconf.c           gusconf.h
+    g_umapinfo.c        g_umapinfo.h
     i_cdmus.c           i_cdmus.h
     i_endoom.c          i_endoom.h
     i_flmusic.c
@@ -93,11 +94,13 @@ set(GAME_SOURCE_FILES
     midifallback.c      midifallback.h
     midifile.c          midifile.h
     mus2mid.c           mus2mid.h
+    m_array.c           m_array.h
     m_bbox.c            m_bbox.h
     m_cheat.c           m_cheat.h
     m_config.c          m_config.h
     m_controls.c        m_controls.h
     m_fixed.c           m_fixed.h
+    m_scanner.c         m_scanner.h
     net_client.c        net_client.h
     net_common.c        net_common.h
     net_dedicated.c     net_dedicated.h
