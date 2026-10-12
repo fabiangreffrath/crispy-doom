@@ -65,8 +65,8 @@ Many additional less user-visible features have been implemented, e.g. fixed eng
 * Linux: To install on Ubuntu (“Eoan Ermine” 19.10 and later)/Debian (“Buster” 10 and later) based systems: `sudo apt-get install crispy-doom`
 
 
-The most recent list of changes can be found in the [Changelog](https://github.com/fabiangreffrath/crispy-doom/blob/master/CHANGELOG.md).
-A complete history of changes and releases can be found in the [Wiki](https://github.com/fabiangreffrath/crispy-doom/wiki/Changelog-History) or on the [Releases](https://github.com/fabiangreffrath/crispy-doom/releases) page.
+The most recent list of changes can be found in the [Release Notes](https://github.com/fabiangreffrath/crispy-doom/blob/master/RELEASE_NOTES.md).
+A complete history of changes and releases can be found on the [Releases](https://github.com/fabiangreffrath/crispy-doom/releases) page.
 
 Daily builds of Crispy Doom can be found here:
 http://latest.chocolate-doom.org/
