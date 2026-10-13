@@ -8,6 +8,8 @@
 #cmakedefine HAVE_LIBSAMPLERATE
 #cmakedefine HAVE_LIBPNG
 #cmakedefine HAVE_DIRENT_H
+#cmakedefine HAVE_LINUX_KD_H
+#cmakedefine CRISPY_HAVE_LINUX_INPUT_H
 #cmakedefine01 HAVE_DECL_STRCASECMP
 #cmakedefine01 HAVE_DECL_STRNCASECMP
 

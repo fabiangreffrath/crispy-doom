@@ -264,6 +264,8 @@ void ConfigSound(TXT_UNCAST_ARG(widget), void *user_data)
 
         TXT_NewSeparator("Music"),
         TXT_NewRadioButton("Disabled", &snd_musicdevice, SNDDEVICE_NONE),
+        TXT_NewRadioButton("PC speaker", &snd_musicdevice,
+                           SNDDEVICE_PCSPEAKER),
 
         TXT_NewRadioButton("OPL (Adlib/Soundblaster)", &snd_musicdevice,
                            SNDDEVICE_SB),
@@ -410,4 +412,3 @@ void BindSoundVariables(void)
             break;
     }
 }
-
