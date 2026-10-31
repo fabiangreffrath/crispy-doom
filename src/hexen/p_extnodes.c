@@ -549,6 +549,7 @@ void P_LoadNodes_ZDBSP(int lump, mapformat_t format)
 
         subsectors[i].firstline = currSeg;
         subsectors[i].numlines = LONG(mseg->numsegs);
+        subsectors[i].poly = NULL;
         currSeg += LONG(mseg->numsegs);
     }
 
