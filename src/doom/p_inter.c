@@ -723,7 +723,7 @@ P_TouchSpecialThing
 // [crispy]
 static inline boolean CheckDiscountable(mobj_t* target)
 {
-    return target->flags & MF_SPAWNED_BY_ICON && !(gameskill == sk_nightmare || respawnparm);
+    return target->intflags & MIF_SPAWNED_BY_ICON && !(gameskill == sk_nightmare || respawnparm);
 }
 
 //

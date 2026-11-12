@@ -186,9 +186,6 @@ typedef enum
     //  in death match mode (e.g. key cards).
     MF_NOTDMATCH    	= 0x2000000,
 
-    // [crispy] spawned by icon of sin
-    MF_SPAWNED_BY_ICON = 0x4000000,
-
     // Player sprites in multiplayer modes are modified
     //  using an internal color lookup table for re-indexing.
     // If 0x4 0x8 or 0xc,
@@ -208,6 +205,14 @@ typedef enum
     MF_TRANSLUCENT      = 0x80000000
 
 } mobjflag_t;
+
+
+// [crispy] internal flags
+typedef enum
+{
+    // spawned by icon of sin, to discount from kill counter
+    MIF_SPAWNED_BY_ICON = 0x00000020,
+} mobjflag_int_t;
 
 
 // Map Object definition.
@@ -259,6 +264,7 @@ typedef struct mobj_s
     int			tics;	// state tic counter
     state_t*		state;
     int			flags;
+    int             intflags; // [crispy]
     int			health;
 
     // Movement direction, movement generation (zig-zagging).
