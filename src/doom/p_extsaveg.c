@@ -458,6 +458,42 @@ static void P_ReadMusInfo (const char *key)
 	}
 }
 
+static void P_WriteMobjIntFlags (const char *key)
+{
+	thinker_t* th;
+	for (th = thinkercap.next ; th != &thinkercap ; th=th->next)
+	{
+		if (th->function.acp1 == (actionf_p1)P_MobjThinker)
+		{
+			mobj_t *mo = (mobj_t *)th;
+			if (mo->intflags)
+			{
+				M_snprintf(line, MAX_LINE_LEN, "%s %d %d\n",
+				           key,
+				           (uint32_t) P_ThinkerToIndex(th),
+				           (int)mo->intflags);
+				fputs(line, save_stream);
+			}
+		}
+	}
+}
+
+static void P_ReadMobjIntFlags (const char *key)
+{
+	int intflags;
+	uint32_t index;
+
+	if (sscanf(line, "%s %d %d\n",
+	           string,
+	           &index,
+	           &intflags) == 3 &&
+	    !strncmp(string, key, MAX_STRING_LEN))
+	{
+		mobj_t *mo = (mobj_t *) P_IndexToThinker(index);
+		mo->intflags = intflags;
+	}
+}
+
 typedef struct
 {
 	const char *key;
@@ -482,6 +518,7 @@ static const extsavegdata_t extsavegdata[] =
 	{"markpoints", P_WriteMarkPoints, P_ReadMarkPoints, 1},
 	{"playerslookdir", P_WritePlayersLookdir, P_ReadPlayersLookdir, 1},
 	{"musinfo", P_WriteMusInfo, P_ReadMusInfo, 0},
+	{"intflag", P_WriteMobjIntFlags, P_ReadMobjIntFlags, 1},
 };
 
 void P_WriteExtendedSaveGameData (void)
