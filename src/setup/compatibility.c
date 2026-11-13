@@ -53,6 +53,7 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("crispy_automaprotate",   &crispy->automaprotate);
         M_BindIntVariable("crispy_automapstats",    &crispy->automapstats);
         M_BindIntVariable("crispy_bobfactor",       &crispy->bobfactor);
+        M_BindIntVariable("crispy_bossleveltally",  &crispy->bossleveltally);
         M_BindIntVariable("crispy_btusetimer",      &crispy->btusetimer);
         M_BindIntVariable("crispy_brightmaps",      &crispy->brightmaps);
         M_BindIntVariable("crispy_centerweapon",    &crispy->centerweapon);
@@ -101,6 +102,7 @@ void BindCompatibilityVariables(void)
         M_BindIntVariable("vanilla_demo_limit",     &vanilla_demo_limit);
         M_BindIntVariable("crispy_automapstats",    &crispy->automapstats);
         M_BindIntVariable("crispy_bobfactor",       &crispy->bobfactor);
+        M_BindIntVariable("crispy_bossleveltally",  &crispy->bossleveltally);
         M_BindIntVariable("crispy_centerweapon",    &crispy->centerweapon);
         M_BindIntVariable("crispy_crosshair",       &crispy->crosshair);
         M_BindIntVariable("crispy_crosshairtype",   &crispy->crosshairtype);
