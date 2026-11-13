@@ -91,6 +91,7 @@ extern fixed_t sidemove[2];
 
 extern boolean sendpause;
 
+extern boolean secretexit;
 
 #endif
 

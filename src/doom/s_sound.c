@@ -18,6 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "g_umapinfo.h"
 #include "i_sound.h"
 #include "i_system.h"
 
@@ -38,7 +39,6 @@
 #include "w_wad.h"
 #include "z_zone.h"
 #include "g_game.h" // [crispy] demo_gotonextlvl
-#include "d_pwad.h" // [crispy] masterlevel kex music (MLK)
 
 // when to clip out sounds
 // Does not fit the large outdoor areas.
@@ -304,7 +304,7 @@ void S_Init(int sfxVolume, int musicVolume)
     I_AtExit(S_Shutdown, true);
 
     // [crispy] initialize dedicated music tracks for the 4th episode
-    for (i = mus_e4m1; i <= mus_e6m9; i++)
+    for (i = mus_e4m1; i <= mus_e4m9; i++)
     {
         musicinfo_t *const music = &S_music[i];
         char namebuf[9];
@@ -387,72 +387,20 @@ void S_Start(void)
     if (musicVolume) // [crispy] do not reset pause state at zero music volume
     mus_paused = 0;
 
+    if (gamemapinfo && gamemapinfo->music[0])
+    {
+        int muslump = W_CheckNumForName(gamemapinfo->music);
+        if (muslump >= 0)
+        {
+            S_ChangeMusInfoMusic(muslump, true);
+            return;
+        }
+        // If the mapinfo defined music cannot be found, try the default for the
+        // given map.
+    }
+
     if (gamemode == commercial)
     {
-        const int nmus[9][2] =
-        {
-            {mus_nrftl1, mus_messag},
-            {mus_nrftl2, mus_ddtblu},
-            {mus_nrftl3, mus_doom},
-            {mus_nrftl4, mus_shawn},
-            {mus_nrftl5, mus_in_cit},
-            {mus_nrftl6, mus_the_da},
-            {mus_nrftl7, mus_in_cit},
-            {mus_nrftl8, mus_shawn2},
-            {mus_nrftl9, mus_ddtbl2},
-        };
-
-        const int mlkmus[21][2] =
-        {
-            {mus_mlk1, mus_dm2int},
-            {mus_mlk2, mus_e2m2},
-            {mus_mlk3, mus_the_da},
-            {mus_mlk4, mus_e1m6},
-            {mus_mlk5, mus_dead},
-            {mus_mlk6, mus_stalks},
-            {mus_mlk7, mus_in_cit},
-            {mus_mlk8, mus_ddtblu},
-            {mus_mlk9, mus_e3m3},
-            {mus_mlk10, mus_victor},
-            {mus_mlk11, mus_e1m5},
-            {mus_mlk12, mus_e2m6},
-            {mus_mlk13, mus_romero},
-            {mus_mlk14, mus_e2m7},
-            {mus_mlk15, mus_e1m8},
-            {mus_mlk16, mus_messag},
-            {mus_mlk17, mus_e1m7},
-            {mus_mlk18, mus_e3m1},
-            {mus_mlk19, mus_tense},
-            {mus_mlk20, mus_read_m},
-            {mus_mlk21, mus_openin},
-        };
-
-        if ((gameepisode == 2 || gamemission == pack_nerve) &&
-            gamemap <= arrlen(nmus))
-        {
-            char name[9];
-
-            mnum = nmus[gamemap - 1][0];
-            M_snprintf(name, sizeof(name), "d_%s", S_music[mnum].name);
-            if (W_CheckNumForName(name) == -1)
-            {
-                mnum = nmus[gamemap - 1][1];
-            }
-        }
-        else
-        if ((gameepisode == 3 || gamemission == pack_master) && D_CheckMasterlevelKex() &&
-            gamemap <= arrlen(mlkmus))
-        {
-            char name[9];
-
-            mnum = mlkmus[gamemap - 1][0];
-            M_snprintf(name, sizeof(name), "d_%s", S_music[mnum].name);
-            if (W_CheckNumForName(name) == -1)
-            {
-                mnum = mlkmus[gamemap - 1][1];
-            }            
-        }
-        else
         mnum = mus_runnin + gamemap - 1;
     }
     else
@@ -472,7 +420,7 @@ void S_Start(void)
             mus_e1m9,        // Tim          e4m9
         };
 
-        if (gameepisode < 4 || gameepisode == 5 || gameepisode == 6) // [crispy] Sigil
+        if (gameepisode < 4)
         {
             mnum = mus_e1m1 + (gameepisode-1)*9 + gamemap-1;
         }
@@ -1023,14 +971,7 @@ void S_ChangeMusic(int musicnum, int looping)
 
         if (gamemode == commercial)
         {
-            if (logical_gamemission == pack_master && D_CheckMasterlevelKex())
-            {
-                // mlk using Doom 1 tracks - do not correct.
-            }
-            else
-            {
-                musicnum = mus_runnin + (umusicnum % (mus_nrftl1 - mus_runnin));
-            }
+            musicnum = mus_runnin + (umusicnum % (NUMMUSIC - mus_runnin));
         }
         else
         {

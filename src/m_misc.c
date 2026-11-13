@@ -628,13 +628,24 @@ void M_ExtractFileBase(const char *path, char *dest)
 //
 //---------------------------------------------------------------------------
 
+char M_ToUpper(const char c)
+{
+    if (c >= 'a' && c <= 'z')
+    {
+        return c + 'A' - 'a';
+    }
+    else
+    {
+        return c;
+    }
+}
+
 void M_ForceUppercase(char *text)
 {
-    char *p;
-
-    for (p = text; *p != '\0'; ++p)
+    while (*text)
     {
-        *p = toupper(*p);
+        *text = M_ToUpper(*text);
+        ++text;
     }
 }
 
@@ -646,13 +657,24 @@ void M_ForceUppercase(char *text)
 //
 //---------------------------------------------------------------------------
 
+char M_ToLower(const char c)
+{
+    if (c >= 'A' && c <= 'Z')
+    {
+        return c - 'A' + 'a';
+    }
+    else
+    {
+        return c;
+    }
+}
+
 void M_ForceLowercase(char *text)
 {
-    char *p;
-
-    for (p = text; *p != '\0'; ++p)
+    while (*text)
     {
-        *p = tolower(*p);
+        *text = M_ToLower(*text);
+        ++text;
     }
 }
 
@@ -688,6 +710,21 @@ const char *M_StrCaseStr(const char *haystack, const char *needle)
     }
 
     return NULL;
+}
+
+// Copies characters until either 8 characters are copied or a null terminator
+// is found.
+
+void M_CopyLumpName(char *dest, const char *src)
+{
+    for (int i = 0; i < 8; i++)
+    {
+        dest[i] = src[i];
+        if (src[i] == '\0')
+        {
+            break;
+        }
+    }
 }
 
 //

@@ -825,7 +825,7 @@ static const char *ReadHashPrefix(char *line)
 
     for (i = 0; i < len; ++i)
     {
-        result[i] = tolower(line[i]);
+        result[i] = M_ToLower(line[i]);
     }
     result[len] = '\0';
 

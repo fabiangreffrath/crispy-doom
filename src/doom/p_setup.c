@@ -22,6 +22,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "g_umapinfo.h"
 #include "z_zone.h"
 
 #include "deh_main.h"
@@ -1163,41 +1164,7 @@ const char *skilltable[] =
 // [crispy] factor out map lump name and number finding into a separate function
 int P_GetNumForMap (int episode, int map, boolean critical)
 {
-    char lumpname[9];
-
-    // find map name
-    if ( gamemode == commercial)
-    {
-	if (map<10)
-	    DEH_snprintf(lumpname, 9, "map0%i", map);
-	else
-	    DEH_snprintf(lumpname, 9, "map%i", map);
-    }
-    else
-    {
-	lumpname[0] = 'E';
-	lumpname[1] = '0' + episode;
-	lumpname[2] = 'M';
-	lumpname[3] = '0' + map;
-	lumpname[4] = 0;
-    }
-
-    // [crispy] special-casing for E1M10 "Sewers" support
-    if (crispy->havee1m10 && episode == 1 && map == 10)
-    {
-	DEH_snprintf(lumpname, 9, "E1M10");
-    }
-
-    // [crispy] NRFTL / The Master Levels
-    if (crispy->havenerve && episode == 2 && map <= 9)
-    {
-	strcat(lumpname, "N");
-    }
-    if (crispy->havemaster && episode == 3 && map <= 21)
-    {
-	strcat(lumpname, "M");
-    }
-
+    char *lumpname = G_MapName(episode, map);
     return critical ? W_GetNumForName(lumpname) : W_CheckNumForName(lumpname);
 }
 

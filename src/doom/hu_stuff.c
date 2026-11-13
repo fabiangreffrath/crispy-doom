@@ -38,7 +38,6 @@
 #include "m_argv.h" // [crispy] M_ParmExists()
 #include "st_stuff.h" // [crispy] ST_HEIGHT, ST_WIDESCREENDELTA
 #include "p_setup.h" // maplumpinfo
-#include "d_pwad.h" // [crispy] kex masterlevels
 
 #include "s_sound.h"
 
@@ -59,8 +58,6 @@
 #define HU_TITLE2	(mapnames_commercial[gamemap-1])
 #define HU_TITLEP	(mapnames_commercial[gamemap-1 + 32])
 #define HU_TITLET	(mapnames_commercial[gamemap-1 + 64])
-#define HU_TITLEN	(mapnames_commercial[gamemap-1 + 96 + 3])
-#define HU_TITLEM	(mapnames_commercial[gamemap-1 + 105 + 3])
 #define HU_TITLE_CHEX   (mapnames_chex[(gameepisode-1)*9+gamemap-1])
 #define HU_TITLEHEIGHT	1
 #define HU_TITLEX	(0 - WIDESCREENDELTA)
@@ -164,28 +161,6 @@ const char *mapnames[] =	// DOOM shareware/registered/retail (Ultimate) names.
     HUSTR_E4M7,
     HUSTR_E4M8,
     HUSTR_E4M9,
-
-    // [crispy] Sigil
-    HUSTR_E5M1,
-    HUSTR_E5M2,
-    HUSTR_E5M3,
-    HUSTR_E5M4,
-    HUSTR_E5M5,
-    HUSTR_E5M6,
-    HUSTR_E5M7,
-    HUSTR_E5M8,
-    HUSTR_E5M9,
-
-    // [crispy] Sigil II
-    HUSTR_E6M1,
-    HUSTR_E6M2,
-    HUSTR_E6M3,
-    HUSTR_E6M4,
-    HUSTR_E6M5,
-    HUSTR_E6M6,
-    HUSTR_E6M7,
-    HUSTR_E6M8,
-    HUSTR_E6M9,
 
     "NEWLEVEL",
     "NEWLEVEL",
@@ -377,37 +352,6 @@ const char *mapnames_commercial[] =
     "",
     ""
     ,
-    NHUSTR_1,
-    NHUSTR_2,
-    NHUSTR_3,
-    NHUSTR_4,
-    NHUSTR_5,
-    NHUSTR_6,
-    NHUSTR_7,
-    NHUSTR_8,
-    NHUSTR_9,
-
-    MHUSTR_1,
-    MHUSTR_2,
-    MHUSTR_3,
-    MHUSTR_4,
-    MHUSTR_5,
-    MHUSTR_6,
-    MHUSTR_7,
-    MHUSTR_8,
-    MHUSTR_9,
-    MHUSTR_10,
-    MHUSTR_11,
-    MHUSTR_12,
-    MHUSTR_13,
-    MHUSTR_14,
-    MHUSTR_15,
-    MHUSTR_16,
-    MHUSTR_17,
-    MHUSTR_18,
-    MHUSTR_19,
-    MHUSTR_20,
-    MHUSTR_21
 };
 
 static void CrispyReplaceColor (const char *str, const int cr, const char *col)
@@ -524,99 +468,7 @@ void HU_Stop(void)
     headsupactive = false;
 }
 
-// [crispy] display names of single special levels in Automap
-// These are single, non-consecutive, (semi-)official levels
-// without their own music or par times and thus do not need
-// to be handled as distinct pack_* game missions.
-typedef struct
-{
-    GameMission_t mission;
-    int episode;
-    int map;
-    const char *wad;
-    const char *name;
-} speciallevel_t;
-
-static const speciallevel_t speciallevels[] = {
-    // [crispy] ExM0
-    {doom, 1, 0, NULL, NULL},
-    {doom, 2, 0, NULL, NULL},
-    {doom, 3, 0, NULL, NULL},
-    {doom, 4, 0, NULL, NULL},
-    // [crispy] Romero's latest E1 additions
-    {doom, 1, 8, "e1m8b.wad", HUSTR_E1M8B},
-    {doom, 1, 4, "e1m4b.wad", HUSTR_E1M4B},
-    // [crispy] E1M10 "Sewers" (Xbox Doom)
-    {doom, 1, 10, NULL, HUSTR_E1M10},
-    // [crispy] The Master Levels for Doom 2
-    {doom2, 0, 1, "attack.wad", MHUSTR_1},
-    {doom2, 0, 1, "canyon.wad", MHUSTR_2},
-    {doom2, 0, 1, "catwalk.wad", MHUSTR_3},
-    {doom2, 0, 1, "combine.wad", MHUSTR_4},
-    {doom2, 0, 1, "fistula.wad", MHUSTR_5},
-    {doom2, 0, 1, "garrison.wad", MHUSTR_6},
-    {doom2, 0, 1, "manor.wad", MHUSTR_7},
-    {doom2, 0, 1, "paradox.wad", MHUSTR_8},
-    {doom2, 0, 1, "subspace.wad", MHUSTR_9},
-    {doom2, 0, 1, "subterra.wad", MHUSTR_10},
-    {doom2, 0, 1, "ttrap.wad", MHUSTR_11},
-    {doom2, 0, 3, "virgil.wad", MHUSTR_12},
-    {doom2, 0, 5, "minos.wad", MHUSTR_13},
-    {doom2, 0, 7, "bloodsea.wad", MHUSTR_14},
-    {doom2, 0, 7, "mephisto.wad", MHUSTR_15},
-    {doom2, 0, 7, "nessus.wad", MHUSTR_16},
-    {doom2, 0, 8, "geryon.wad", MHUSTR_17},
-    {doom2, 0, 9, "vesperas.wad", MHUSTR_18},
-    {doom2, 0, 25, "blacktwr.wad", MHUSTR_19},
-    {doom2, 0, 31, "teeth.wad", MHUSTR_20},
-    {doom2, 0, 32, "teeth.wad", MHUSTR_21},
-};
-
-static void HU_SetSpecialLevelName (const char *wad, const char **name)
-{
-    int i;
-
-    for (i = 0; i < arrlen(speciallevels); i++)
-    {
-	const speciallevel_t speciallevel = speciallevels[i];
-
-	if (logical_gamemission == speciallevel.mission &&
-	    (!speciallevel.episode || gameepisode == speciallevel.episode) &&
-	    gamemap == speciallevel.map &&
-	    (!speciallevel.wad || !strcasecmp(wad, speciallevel.wad)))
-	{
-	    *name = speciallevel.name ? speciallevel.name : maplumpinfo->name;
-	    break;
-	}
-    }
-}
-
 static int hu_widescreendelta;
-
-static const int kex_masterlevels[] =
-{
-    1,  //  1
-    2,  //  2
-    3,  //  3
-    5,  //  4
-    4,  //  5
-    9,  //  6
-    8,  //  7
-    10, //  8
-    6,  //  9
-    19, // 10
-    12, // 11
-    13, // 12
-    16, // 13
-    17, // 14
-    18, // 15
-    7,  // 16
-    11, // 17
-    20, // 18
-    14, // 19
-    15, // 20
-    21  // 21
-};
 
 void HU_Start(void)
 {
@@ -624,7 +476,7 @@ void HU_Start(void)
     int		i;
     const char *s;
     // [crispy] string buffers for map title, WAD file name and level digits
-    char	buf[8], digitbuf[4];
+    char	buf[8];
     char	*ptr = NULL, *replacement = NULL;
 
     if (headsupactive)
@@ -725,23 +577,6 @@ void HU_Start(void)
       case pack_tnt:
 	s = HU_TITLET;
 	break;
-      case pack_nerve:
-	if (gamemap <= 9)
-	  s = HU_TITLEN;
-	else
-	  s = HU_TITLE2;
-	break;
-      case pack_master:
-	if (gamemap <= 21)
-	{
-	  if (D_CheckMasterlevelKex())
-	    s = mapnames_commercial[(kex_masterlevels[gamemap-1] + 105 + 3) - 1];
-	  else
-	    s = HU_TITLEM;
-	}
-	else
-	  s = HU_TITLE2;
-	break;
       default:
          s = "Unknown level";
          break;
@@ -752,15 +587,9 @@ void HU_Start(void)
         s = HU_TITLE_CHEX;
     }
 
-    // [crispy] display names of single special levels in Automap
-    HU_SetSpecialLevelName(W_WadNameForLump(maplumpinfo), &s);
-
     // [crispy] explicitely display (episode and) map if the
     // map is from a PWAD or if the map title string has been dehacked
-    if (!W_IsIWADLump(maplumpinfo) &&
-        (DEH_HasStringReplacement(s) ||
-        (!(crispy->havenerve && gamemission == pack_nerve) &&
-        !(crispy->havemaster && gamemission == pack_master))))
+    if (!W_IsIWADLump(maplumpinfo) && DEH_HasStringReplacement(s))
     {
 	char *m;
 
@@ -776,22 +605,6 @@ void HU_Start(void)
     // dehacked substitution to get modified level name
 
     s = DEH_String(s);
-    
-    // [crispy] replace map title numbers in kex
-    if (logical_gamemission == pack_master && D_CheckMasterlevelKex())
-    {
-        if (gamemap <= 21)
-        {
-            // store actual kex gamemap digits
-            M_snprintf(digitbuf, sizeof(digitbuf), "%d", gamemap);
-            // lookup psn/unity digits to be replaced 
-            M_snprintf(buf, sizeof(buf), "%d", kex_masterlevels[gamemap-1]);
-            
-            // replace unity digits with actual kex gamemap digits
-            replacement = M_StringReplace(s, buf, digitbuf);
-            s = replacement;
-        }
-    }
 
     // [crispy] print the map title in white from the first colon onward
     M_snprintf(buf, sizeof(buf), "%s%s", ":", crstr[CR_GRAY]);

@@ -37,6 +37,7 @@
 
 enum
 {
+    CR_ORIG = -1,
     CR_NONE,
     CR_DARK,
     CR_GRAY,
