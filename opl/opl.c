@@ -28,7 +28,7 @@
 
 //#define OPL_DEBUG_TRACE
 
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
 
@@ -498,7 +498,7 @@ void OPL_Delay(uint64_t us)
     while (!delay_data.finished)
     {
         SDL_CondWait(delay_data.cond, delay_data.mutex);
-#ifdef EMSCRIPTEN
+#ifdef __EMSCRIPTEN__
         // Use async sleep to avoid locking browser main thread
         emscripten_sleep(us / 1000);
 #endif
