@@ -1315,16 +1315,36 @@ void EV_SlidingDoor(line_t* line, mobj_t* thing)
         door = sec->specialdata;
         if(door->type == sdt_openAndClose)
         {
-            if(door->status == sd_waiting)
+            if(door->status == sd_waiting && sec->thinglist == NULL) // Add check for items in the way
             {
-                door->status = sd_closing;
-                door->timer = SWAITTICS;    // villsa [STRIFE]
-                // [crispy] play sound effect when the door is closed manually
-                if (crispy->soundfix)
+                int cheight = sec->ceilingheight;
+                int speed = cheight - sec->floorheight - (10*FRACUNIT);
+
+                // something blocking it?
+                if(T_MovePlane(sec, speed, sec->floorheight, 0, 1, -1) == crushed)
                 {
-                    S_StartSound(&sec->soundorg,
-                                 slideCloseSounds[door->whichDoorIndex]);
+                    door->timer = SDOORWAIT;
+                    return;
                 }
+                else
+                {
+                    // Instantly move plane
+                    T_MovePlane(sec, (128*FRACUNIT), cheight, 0, 1, 1);
+
+                    // turn line blocking back on
+                    door->line1->flags |= ML_BLOCKING;
+                    door->line2->flags |= ML_BLOCKING;
+
+                    // [crispy] play sound effect when the door is closed manually
+	                if (crispy->soundfix)
+	                {
+	                    S_StartSound(&sec->soundorg,
+	                                 slideCloseSounds[door->whichDoorIndex]);
+	                }
+
+                    door->status = sd_closing;
+                    door->timer = SWAITTICS;
+                }  
             }
         }
         else
