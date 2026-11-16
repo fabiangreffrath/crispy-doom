@@ -49,7 +49,8 @@ boolean
 P_UseSpecialLine
 ( mobj_t*	thing,
   line_t*	line,
-  int		side );
+  int		side,
+  boolean bossaction );
 
 void
 P_ShootSpecialLine
@@ -60,14 +61,16 @@ void
 P_CrossSpecialLine
 ( int		linenum,
   int		side,
-  mobj_t*	thing );
+  mobj_t*	thing,
+  boolean bossaction );
 
 // [crispy] more MBF code pointers
 void
 P_CrossSpecialLinePtr
 ( line_t*	line,
   int		side,
-  mobj_t*	thing );
+  mobj_t*	thing,
+  boolean bossaction );
 
 void    P_PlayerInSpecialSector (player_t* player);
 

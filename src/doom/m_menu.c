@@ -18,11 +18,13 @@
 //
 
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <time.h> // [crispy] strftime, localtime
 
 
+#include "g_umapinfo.h"
 #include "doomdef.h"
 #include "doomkeys.h"
 #include "dstrings.h"
@@ -66,7 +68,6 @@
 
 #include "v_trans.h" // [crispy] colored "invert mouse" message
 
-#include "d_pwad.h" // [crispy] kex secret level
 
 //
 // defaulted values
@@ -161,6 +162,19 @@ static boolean opldev;
 
 extern boolean speedkeydown (void);
 
+#define SPACEWIDTH        4
+
+// [crispy] UMAPINFO support
+typedef struct
+{
+    short x;
+    short y;
+    short w;
+    short h;
+} mrect_t;
+
+int     epi;
+
 //
 // MENU TYPEDEFS
 //
@@ -183,6 +197,7 @@ typedef struct
     // hotkey in menu
     char	alphaKey;			
     const char	*alttext; // [crispy] alternative text for menu items
+    mrect_t rect;
 } menuitem_t;
 
 
@@ -319,30 +334,29 @@ enum
     ep2,
     ep3,
     ep4,
-    ep5, // [crispy] Sigil
-    ep6, // [crispy] Sigil II
     ep_end
 } episodes_e;
 
-menuitem_t EpisodeMenu[]=
+// [crispy] UMAPINFO support
+#define MAX_EPISODES 10
+#define M_Y_EPISODES 63
+#define EPISODES_RECT(n) {0, M_Y_EPISODES + (n) * LINEHEIGHT, ORIGWIDTH, LINEHEIGHT}
+
+static menuitem_t EpisodeMenu[MAX_EPISODES] = // added a few free entries for UMAPINFO
 {
-    {1,"M_EPI1", M_Episode,'k'},
-    {1,"M_EPI2", M_Episode,'t'},
-    {1,"M_EPI3", M_Episode,'i'},
-    {1,"M_EPI4", M_Episode,'t'}
-   ,{1,"M_EPI5", M_Episode,'s'} // [crispy] Sigil
-   ,{1,"M_EPI6", M_Episode,'s'} // [crispy] Sigil II
+    {1, "M_EPI1", M_Episode, 'k', "Knee-Deep in the Dead", EPISODES_RECT(0)},
+    {1, "M_EPI2", M_Episode, 't', "The Shores of Hell",    EPISODES_RECT(1)},
+    {1, "M_EPI3", M_Episode, 'i', "Inferno",               EPISODES_RECT(2)},
+    {1, "M_EPI4", M_Episode, 't', "Thy Flesh Consumed",    EPISODES_RECT(3)},
+    {1, "",       M_Episode, '0', NULL, EPISODES_RECT(4)},
+    {1, "",       M_Episode, '0', NULL, EPISODES_RECT(5)},
+    {1, "",       M_Episode, '0', NULL, EPISODES_RECT(6)},
+    {1, "",       M_Episode, '0', NULL, EPISODES_RECT(7)},
+    {1, "",       M_Episode, '0', NULL, EPISODES_RECT(8)},
+    {1, "",       M_Episode, '0', NULL, EPISODES_RECT(9)}
 };
 
-// [crispy] have Sigil II but not Sigil
-menuitem_t EpisodeMenuSII[]=
-{
-    {1,"M_EPI1", M_Episode,'k'},
-    {1,"M_EPI2", M_Episode,'t'},
-    {1,"M_EPI3", M_Episode,'i'},
-    {1,"M_EPI4", M_Episode,'t'}
-   ,{1,"M_EPI6", M_Episode,'s'} // [crispy] Sigil II
-};
+#undef EPISODES_RECT
 
 menu_t  EpiDef =
 {
@@ -350,7 +364,7 @@ menu_t  EpiDef =
     &MainDef,		// previous menu
     EpisodeMenu,	// menuitem_t ->
     M_DrawEpisode,	// drawing routine ->
-    48,63,              // x,y
+    48, M_Y_EPISODES,	// x,y
     ep1			// lastOn
 };
 
@@ -1325,18 +1339,21 @@ void M_NewGame(int choice)
     }
 	
     // Chex Quest disabled the episode select screen, as did Doom II.
+    // [crispy] UMAPINFO support
 
-    if ((gamemode == commercial && !crispy->havenerve && !crispy->havemaster) || gameversion == exe_chex) // [crispy] NRFTL / The Master Levels
+    if (((gamemode == commercial || gameversion == exe_chex) && !mapinfo_episodes) || EpiDef.numitems <= 1)
 	M_SetupNextMenu(&NewDef);
     else
+    {
+	epi = 0;
 	M_SetupNextMenu(&EpiDef);
+    }
 }
 
 
 //
 //      M_Episode
 //
-int     epi;
 
 void M_DrawEpisode(void)
 {
@@ -1344,10 +1361,11 @@ void M_DrawEpisode(void)
     inhelpscreens = true;
 
     if (W_CheckNumForName(DEH_String("M_EPISOD")) != -1)
-    V_DrawPatchDirect(54, 38, W_CacheLumpName(DEH_String("M_EPISOD"), PU_CACHE));
+    // [crispy] UMAPINFO support
+    V_DrawPatchDirect(54, EpiDef.y - 25, W_CacheLumpName(DEH_String("M_EPISOD"), PU_CACHE));
     else
     {
-      M_WriteText(54, 38, "Which Episode?");
+      M_WriteText(54, EpiDef.y - 25, "Which Episode?");
       EpiDef.lumps_missing = 1;
     }
 }
@@ -1385,13 +1403,66 @@ void M_Episode(int choice)
     }
 
     epi = choice;
-    // [crispy] have Sigil II loaded but not Sigil
-    if (epi == 4 && crispy->haved1e6 && !crispy->haved1e5)
-        epi = 5;
     M_SetupNextMenu(&NewDef);
 }
 
 
+//
+// [cirpsy] UMAPINFO support
+//
+
+boolean mapinfo_episodes = false;
+static short EpiMenuMap[MAX_EPISODES] = {1, 1, 1, 1, -1, -1, -1, -1, -1, -1};
+static short EpiMenuEpi[MAX_EPISODES] = {1, 2, 3, 4, -1, -1, -1, -1, -1, -1};
+
+void MN_ClearEpisodes(void)
+{
+    EpiDef.numitems = 0;
+    NewDef.prevMenu = &MainDef;
+}
+
+void MN_AddEpisode(const char *map, const char *gfx, const char *txt, char key)
+{
+    int epi, mapnum;
+
+    if (!mapinfo_episodes)
+    {
+        mapinfo_episodes = true;
+        NewDef.prevMenu = &EpiDef;
+
+        if (gamemode == commercial)
+        {
+            EpiDef.numitems = 0;
+        }
+    }
+
+    if (EpiDef.numitems == MAX_EPISODES)
+    {
+        printf("MN_AddEpisode: UMAPINFO limit of %d episodes exceeded!\n", MAX_EPISODES);
+    }
+    else if (EpiDef.numitems >= MAX_EPISODES)
+    {
+        return;
+    }
+
+    G_ValidateMapName(map, &epi, &mapnum);
+    EpiMenuEpi[EpiDef.numitems] = epi;
+    EpiMenuMap[EpiDef.numitems] = mapnum;
+    strncpy(EpisodeMenu[EpiDef.numitems].name, gfx, 8);
+    EpisodeMenu[EpiDef.numitems].name[9] = 0;
+    EpisodeMenu[EpiDef.numitems].alttext = txt ? M_StringDuplicate(txt) : NULL;
+    EpisodeMenu[EpiDef.numitems].alphaKey = key;
+    EpiDef.numitems++;
+
+    if (EpiDef.numitems <= 4)
+    {
+        EpiDef.y = M_Y_EPISODES;
+    }
+    else
+    {
+        EpiDef.y = MAX(25, M_Y_EPISODES - (EpiDef.numitems - 4) * (LINEHEIGHT / 2));
+    }
+}
 
 //
 // M_Options
@@ -2192,116 +2263,105 @@ static int G_ReloadLevel(void)
 
 static int G_GotoNextLevel(void)
 {
-  byte doom_next[6][9] = {
+  byte doom_next[4][9] = {
     {12, 13, 19, 15, 16, 17, 18, 21, 14},
     {22, 23, 24, 25, 29, 27, 28, 31, 26},
     {32, 33, 34, 35, 36, 39, 38, 41, 37},
-    {42, 49, 44, 45, 46, 47, 48, 51, 43},
-    {52, 53, 54, 55, 56, 59, 58, 61, 57},
-    {62, 63, 69, 65, 66, 67, 68, 11, 64},
+    {42, 49, 44, 45, 46, 47, 48, -1, 43},
   };
-  byte doom2_next[33] = {
+  byte doom2_next[32] = {
      2,  3,  4,  5,  6,  7,  8,  9, 10, 11,
     12, 13, 14, 15, 31, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30, 1,
-    32, 16, 3
-  };
-  byte nerve_next[9] = {
-    2, 3, 4, 9, 6, 7, 8, 1, 5
+    22, 23, 24, 25, 26, 27, 28, 29, 30, -1,
+    32, 16
   };
 
-  int changed = false;
+  int epsd = -1, map = -1;
 
-    if (gamemode == commercial)
-    {
-      if (crispy->havemap33)
-        doom2_next[1] = 33;
-
-      if (W_CheckNumForName("map31") < 0)
-        doom2_next[14] = 16;
-
-      if (gamemission == pack_hacx)
-      {
-        doom2_next[30] = 16;
-        doom2_next[20] = 1;
-      }
-
-      if (gamemission == pack_master)
-      {
-        doom2_next[1] = 3;
-        doom2_next[14] = 16;
-        doom2_next[20] = 1;
-        if (D_CheckMasterlevelKex())
-        {
-            // [crispy] kex secret detour
-            doom2_next[17] = 21;
-            doom2_next[20] = 19;
-            doom2_next[18] = 20;
-            doom2_next[19] = 1;
-        }
-      }
-    }
-    else
-    {
-      if (gamemode == shareware)
-        doom_next[0][7] = 11;
-
-      if (gamemode == registered)
-        doom_next[2][7] = 11;
-
-      // [crispy] Sigil and Sigil II
-      if (!crispy->haved1e5 && !crispy->haved1e6)
-        doom_next[3][7] = 11;
-      else if (!crispy->haved1e5 && crispy->haved1e6)
-        doom_next[3][7] = 61;
-      else if (crispy->haved1e5 && !crispy->haved1e6)
-        doom_next[4][7] = 11;
-
-      if (gameversion == exe_chex)
-      {
-        doom_next[0][2] = 14;
-        doom_next[0][4] = 11;
-      }
-    }
-
-  if (gamestate == GS_LEVEL)
+  if (gamemapinfo)
   {
-    int epsd, map;
+    const char *next = NULL;
+
+    if (gamemapinfo->nextsecret[0])
+      next = gamemapinfo->nextsecret;
+    else if (gamemapinfo->nextmap[0])
+      next = gamemapinfo->nextmap;
+
+    if (next)
+      G_ValidateMapName(next, &epsd, &map);
+  }
+  else
+  {
+    // secret level
+    doom2_next[14] = (W_CheckNumForName("map31") >= 0) ? 31 : 16;
+
+    if (gamemission == pack_hacx)
+    {
+      doom2_next[30] = 16;
+      doom2_next[20] = 1;
+    }
+
+    // shareware doom has only episode 1
+    doom_next[0][7] = (gamemode == shareware ? -1 : 21);
+
+    doom_next[2][7] = (gamemode == registered ? -1 : 41);
+
+    if (gameversion == exe_chex)
+    {
+      doom_next[0][2] = 14;
+      doom_next[0][4] = 11;
+    }
+
+    //doom2_next and doom_next are 0 based, unlike gameepisode and gamemap
+    epsd = gameepisode - 1;
+    map = gamemap - 1;
 
     if (gamemode == commercial)
     {
-      epsd = gameepisode;
-      if (gamemission == pack_nerve)
-        map = nerve_next[gamemap-1];
+      epsd = 1;
+      if (map >= 0 && map <= 31)
+        map = doom2_next[map];
       else
-        map = doom2_next[gamemap-1];
+        map = gamemap + 1;
     }
     else
     {
-      epsd = doom_next[gameepisode-1][gamemap-1] / 10;
-      map = doom_next[gameepisode-1][gamemap-1] % 10;
+      if (epsd >= 0 && epsd <= 3 && map >= 0 && map <= 8)
+      {
+        int next = doom_next[epsd][map];
+        epsd = next / 10;
+        map = next % 10;
+      }
+      else
+      {
+        epsd = gameepisode;
+        map = gamemap + 1;
+      }
     }
-
-    // [crispy] special-casing for E1M10 "Sewers" support
-    if (crispy->havee1m10 && gameepisode == 1)
-    {
-	if (gamemap == 1)
-	{
-	    map = 10;
-	}
-	else
-	if (gamemap == 10)
-	{
-	    epsd = 1;
-	    map = 2;
-	}
-    }
-
-    G_DeferedInitNew(gameskill, epsd, map);
-    changed = true;
   }
 
-  return changed;
+  if ((gamestate == GS_LEVEL) &&
+            !deathmatch && !netgame &&
+            !demorecording && !demoplayback &&
+            !menuactive)
+  {
+    char *name = G_MapName(epsd, map);
+
+    if (map == -1 || W_CheckNumForName(name) == -1)
+    {
+      char buf[1024];
+      name = G_MapName(gameepisode, gamemap);
+      M_snprintf(buf, 1024, "Next level not found for %s", name);
+      players[displayplayer].message = buf;
+    }
+    else
+    {
+      G_DeferedInitNew(gameskill, epsd, map);
+      return true;
+    }
+  }
+
+  return false;
 }
 
 //
@@ -3357,32 +3417,22 @@ void M_Init (void)
         MainMenu[readthis] = MainMenu[quitdoom];
         MainDef.numitems--;
         MainDef.y += 8;
-        NewDef.prevMenu = &MainDef;
+        // [crispy] UMAPINFO support
+        if (!mapinfo_episodes || EpiDef.numitems <= 1)
+        {
+            NewDef.prevMenu = &MainDef;
+        }
         ReadDef1.routine = M_DrawReadThisCommercial;
         ReadDef1.x = 330;
         ReadDef1.y = 165;
         ReadMenu1[rdthsempty1].routine = M_FinishReadThis;
     }
 
-    // [crispy] Sigil
-    if (!crispy->haved1e5 && !crispy->haved1e6)
-    {
-        EpiDef.numitems = 4;
-    }
-    else if (crispy->haved1e5 != crispy->haved1e6)
-    {
-        EpiDef.numitems = 5;
-        if (crispy->haved1e6)
-        {
-            EpiDef.menuitems = EpisodeMenuSII;
-        }
-    }
-
     // Versions of doom.exe before the Ultimate Doom release only had
     // three episodes; if we're emulating one of those then don't try
     // to show episode four. If we are, then do show episode four
     // (should crash if missing).
-    if (gameversion < exe_ultimate)
+    if (gameversion < exe_ultimate && !mapinfo_episodes) // [crispy]
     {
         EpiDef.numitems--;
     }
@@ -3392,75 +3442,6 @@ void M_Init (void)
         EpiDef.numitems = 1;
         // [crispy] never show the Episode menu
         NewDef.prevMenu = &MainDef;
-    }
-
-    // [crispy] NRFTL / The Master Levels
-    if (crispy->havenerve || crispy->havemaster)
-    {
-        int i, j;
-
-        NewDef.prevMenu = &EpiDef;
-        EpisodeMenu[0].alphaKey = gamevariant == freedm ||
-                                  gamevariant == freedoom ?
-                                 'f' :
-                                 'h';
-        EpisodeMenu[0].alttext = gamevariant == freedm ?
-                                 "FreeDM" :
-                                 gamevariant == freedoom ?
-                                 "Freedoom: Phase 2" :
-                                 "Hell on Earth";
-        EpiDef.numitems = 1;
-
-        if (crispy->havenerve)
-        {
-            EpisodeMenu[EpiDef.numitems].alphaKey = 'n';
-            EpisodeMenu[EpiDef.numitems].alttext = "No Rest for the Living";
-            EpiDef.numitems++;
-
-            i = W_CheckNumForName("M_EPI1");
-            j = W_CheckNumForName("M_EPI2");
-
-            // [crispy] render the episode menu with the HUD font ...
-            // ... if the graphics are not available
-            if (i != -1 && j != -1)
-            {
-                // ... or if the graphics are both from an IWAD
-                if (W_IsIWADLump(lumpinfo[i]) && W_IsIWADLump(lumpinfo[j]))
-                {
-                    const patch_t *pi, *pj;
-
-                    pi = W_CacheLumpNum(i, PU_CACHE);
-                    pj = W_CacheLumpNum(j, PU_CACHE);
-
-                    // ... and if the patch width for "Hell on Earth"
-                    //     is longer than "No Rest for the Living"
-                    if (SHORT(pi->width) > SHORT(pj->width))
-                    {
-                        EpiDef.lumps_missing = 1;
-                    }
-                }
-            }
-            else
-            {
-                EpiDef.lumps_missing = 1;
-            }
-        }
-
-        if (crispy->havemaster)
-        {
-            EpisodeMenu[EpiDef.numitems].alphaKey = 't';
-            EpisodeMenu[EpiDef.numitems].alttext = "The Master Levels";
-            EpiDef.numitems++;
-
-            i = W_CheckNumForName(EpiDef.numitems == 3 ? "M_EPI3" : "M_EPI2");
-
-            // [crispy] render the episode menu with the HUD font
-            // if the graphics are not available or not from a PWAD
-            if (i == -1 || W_IsIWADLump(lumpinfo[i]))
-            {
-                EpiDef.lumps_missing = 1;
-            }
-        }
     }
 
     // [crispy] rearrange Load Game and Save Game menus
@@ -3609,4 +3590,134 @@ void M_LoadGameVerMismatch ()
 	M_StartMessage("Game Version Mismatch\n\n"PRESSKEY, NULL, false);
 	messageToPrint = 2;
 	S_StartSoundOptional(NULL, sfx_mnuopn, sfx_swtchn); // [NS] Optional menu sounds.
+}
+
+// [crispy] UMAPINFO support
+
+static int kerning = 0;
+
+//
+// Find string width from hu_font chars
+//
+
+int MN_StringWidth(const char *string)
+{
+    int c, w = 0;
+
+    while (*string)
+    {
+        c = *string++;
+        if (c == '\x1b') // skip code for color change
+        {
+            if (*string)
+            {
+                string++;
+            }
+            continue;
+        }
+        c = M_ToUpper(c) - HU_FONTSTART;
+        if (c < 0 || c >= HU_FONTSIZE || hu_font[c] == NULL)
+        {
+            w += SPACEWIDTH;
+            continue;
+        }
+        w += SHORT(hu_font[c]->width);
+    }
+
+    return w;
+}
+
+void MN_SetHUFontKerning(void)
+{
+    if (MN_StringWidth("abcdefghijklmnopqrstuvwxyz01234") > 230)
+    {
+        kerning = -1;
+    }
+}
+
+// M_GetPixelWidth() returns the number of pixels in the width of
+// the string, NOT the number of chars in the string.
+
+int MN_GetPixelWidth(const char *ch)
+{
+    int len = 0;
+    int c;
+
+    while (*ch)
+    {
+        c = *ch++; // pick up next char
+
+        if (c == '\x1b') // skip color
+        {
+            if (*ch)
+            {
+                ch++;
+            }
+            continue;
+        }
+
+        c = M_ToUpper(c) - HU_FONTSTART;
+        if (c < 0 || c >= HU_FONTSIZE || hu_font[c] == NULL)
+        {
+            len += SPACEWIDTH; // space
+            continue;
+        }
+
+        len += SHORT(hu_font[c]->width);
+        len += kerning; // adjust so everything fits
+    }
+    len -= kerning; // replace what you took away on the last char only
+    return len;
+}
+
+void MN_DrawStringCR(int cx, int cy, byte *xlat, const char *ch)
+{
+    int w;
+    int c;
+
+    byte *xlat_local = xlat;
+
+    while (*ch)
+    {
+        c = *ch++; // get next char
+
+        if (c == '\x1b' && *ch)
+        {
+            c = *ch++;
+            if (c >= '0' && c <= '0' + CR_NONE)
+            {
+                xlat_local = cr[c - '0'];
+            }
+            else if (c == '0' + CR_ORIG)
+            {
+                xlat_local = xlat;
+            }
+            continue;
+        }
+
+        c = M_ToUpper(c) - HU_FONTSTART;
+        if (c < 0 || c >= HU_FONTSIZE || hu_font[c] == NULL)
+        {
+            cx += SPACEWIDTH; // space
+            continue;
+        }
+
+        w = SHORT(hu_font[c]->width);
+        if (cx + w > ORIGWIDTH)
+        {
+            break;
+        }
+
+        dp_translation = xlat_local;
+        V_DrawPatch(cx, cy, hu_font[c]);
+
+        // The screen is cramped, so trim one unit from each
+        // character so they butt up against each other.
+        cx += w + kerning;
+    }
+}
+
+void MN_DrawString(int cx, int cy, int color, const char *ch)
+{
+    MN_DrawStringCR(cx, cy, cr[color], ch);
 }

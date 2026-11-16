@@ -21,12 +21,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "g_umapinfo.h"
+#include "m_array.h"
 #include "m_random.h"
 #include "i_system.h"
 
 #include "doomdef.h"
 #include "p_local.h"
-#include "d_pwad.h" // [crispy] kex masterlevels
 
 #include "s_sound.h"
 
@@ -324,7 +325,7 @@ boolean P_Move (mobj_t*	actor)
 	    // if the special is not a door
 	    // that can be opened,
 	    // return false
-	    if (P_UseSpecialLine (actor, ld,0))
+	    if (P_UseSpecialLine(actor, ld, 0, false))
 		good = true;
 	}
 	return good;
@@ -1720,47 +1721,9 @@ static boolean CheckBossEnd(mobjtype_t motype)
                 return (gamemap == 6 && motype == MT_CYBORG)
                     || (gamemap == 8 && motype == MT_SPIDER);
 
-            // [crispy] no trigger for auto-loaded Sigil E5
-            case 5:
-                return (gamemap == 8 && !critical->havesigil);
-
-            // [crispy] no trigger for auto-loaded Sigil II E6
-            case 6:
-                return (gamemap == 8 && !critical->havesigil2);
-
             default:
                 return gamemap == 8;
 	}
-    }
-}
-
-// [crispy] check if the there is a Doom 2 / Masterlevel tag 666 present in map
-boolean P_CheckMapTag666 (void)
-{
-    if (gamemode == commercial)
-    {
-        if (gamemission == pack_master)
-        {
-            if (D_CheckMasterlevelKex())
-            {
-                // kex materlevels.wad
-                return (gamemap == 13 || gamemap == 19 || gamemap == 20);
-            }
-            else
-            {
-                // psn/unity masterlevels.wad
-                return (gamemap == 14 || gamemap == 15 || gamemap == 16);
-            }
-        }
-        else
-        {
-            // other Doom2-based gamemissions
-            return (gamemap == 7);
-        }        
-    }
-    else
-    {
-        return false;
     }
 }
 
@@ -1775,10 +1738,77 @@ void A_BossDeath (mobj_t* mo)
     mobj_t*	mo2;
     line_t	junk;
     int		i;
-		
+
+  if (gamemapinfo && gamemapinfo->flags & MapInfo_BossActionClear)
+  {
+      return;
+  }
+
+  if (gamemapinfo && array_size(gamemapinfo->bossactions))
+  {
+      bossaction_t *bossaction;
+
+      // make sure there is a player alive for victory
+      for (i = 0; i < MAXPLAYERS; i++)
+      {
+          if (playeringame[i] && players[i].health > 0)
+          {
+              break;
+          }
+      }
+      if (i == MAXPLAYERS)
+      {
+          return; // no one left alive, so do not end game
+      }
+
+      array_foreach(bossaction, gamemapinfo->bossactions)
+      {
+          if (bossaction->type == mo->type)
+          {
+              break;
+          }
+      }
+      if (bossaction == array_end(gamemapinfo->bossactions))
+      {
+          return; // no matches found
+      }
+
+      // scan the remaining thinkers to see
+      // if all bosses are dead
+      for (th = thinkercap.next; th != &thinkercap; th = th->next)
+      {
+          if (th->function.acv == P_MobjThinker)
+          {
+              mobj_t *mo2 = (mobj_t *)th;
+              if (mo2 != mo && mo2->type == mo->type && mo2->health > 0)
+              {
+                  return; // other boss not dead
+              }
+          }
+      }
+
+      array_foreach(bossaction, gamemapinfo->bossactions)
+      {
+          if (bossaction->type == mo->type)
+          {
+              junk = *lines;
+              junk.special = (short)bossaction->special;
+              junk.tag = (short)bossaction->tag;
+              // use special semantics for line activation to block problem
+              // types.
+              if (!P_UseSpecialLine(mo, &junk, 0, true))
+              {
+                  P_CrossSpecialLinePtr(&junk, 0, mo, true);
+              }
+          }
+      }
+
+      return;
+  }
+
     if ( gamemode == commercial)
     {
-	if (!P_CheckMapTag666())
+	if (gamemap != 7)
 	    return;
 		
 	if ((mo->type != MT_FATSO)
@@ -1821,7 +1851,7 @@ void A_BossDeath (mobj_t* mo)
     // victory!
     if ( gamemode == commercial)
     {
-	if (P_CheckMapTag666())
+	if (gamemap == 7)
 	{
 	    if (mo->type == MT_FATSO)
 	    {
