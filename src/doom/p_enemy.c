@@ -1246,8 +1246,8 @@ void A_VileChase (mobj_t* actor)
 		    corpsehit->target = NULL;
 
 		    // [crispy] inherit spawned flag
-		    if (actor->flags & MF_SPAWNED_BY_ICON)
-			    corpsehit->flags |= MF_SPAWNED_BY_ICON;
+		    if (actor->intflags & MIF_SPAWNED_BY_ICON)
+			    corpsehit->intflags |= MIF_SPAWNED_BY_ICON;
 		    else
 			    maxkilldiscount++;
 
@@ -2139,7 +2139,7 @@ void A_SpawnFly (mobj_t* mo)
     newmobj	= P_SpawnMobj (targ->x, targ->y, targ->z, type);
 
     // [crispy] mark as spawned by icon
-    newmobj->flags |= MF_SPAWNED_BY_ICON;
+    newmobj->intflags |= MIF_SPAWNED_BY_ICON;
 
     if (P_LookForPlayers (newmobj, true) )
 	P_SetMobjState (newmobj, newmobj->info->seestate);

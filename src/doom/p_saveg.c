@@ -427,6 +427,7 @@ static void saveg_read_mobj_t(mobj_t *str)
     str->oldy = 0;
     str->oldz = 0;
     str->oldangle = 0;
+    str->intflags = 0;
 }
 
 // [crispy] enumerate all thinker pointers
