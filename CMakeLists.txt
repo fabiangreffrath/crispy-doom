@@ -82,6 +82,8 @@ include(CheckIncludeFile)
 check_symbol_exists(strcasecmp "strings.h" HAVE_DECL_STRCASECMP)
 check_symbol_exists(strncasecmp "strings.h" HAVE_DECL_STRNCASECMP)
 check_include_file("dirent.h" HAVE_DIRENT_H)
+check_include_file("linux/kd.h" HAVE_LINUX_KD_H)
+check_include_file("linux/input.h" CRISPY_HAVE_LINUX_INPUT_H)
 
 string(CONCAT WINDOWS_RC_VERSION "${PROJECT_VERSION_MAJOR}, "
     "${PROJECT_VERSION_MINOR}, ${PROJECT_VERSION_PATCH}, 0")

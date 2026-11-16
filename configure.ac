@@ -239,6 +239,8 @@ AC_CHECK_LIB(m, log)
 AC_CHECK_FUNCS(qsort)
 
 AC_CHECK_HEADERS([dirent.h linux/kd.h dev/isa/spkrio.h dev/speaker/speaker.h])
+AC_CHECK_HEADER([linux/input.h], [AC_DEFINE([CRISPY_HAVE_LINUX_INPUT_H], [1],
+                                             [Define if the Linux input event API is available])])
 AC_CHECK_FUNCS(mmap ioperm)
 AC_CHECK_DECLS([strcasecmp, strncasecmp], [], [], [[#include <strings.h>]])
 

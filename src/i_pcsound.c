@@ -16,6 +16,9 @@
 //
 
 #include "SDL.h"
+#include <math.h>
+#include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "crispy.h"
@@ -23,7 +26,10 @@
 
 #include "deh_str.h"
 #include "i_sound.h"
+#include "memio.h"
 #include "m_misc.h"
+#include "midifile.h"
+#include "mus2mid.h"
 #include "w_wad.h"
 #include "z_zone.h"
 
@@ -31,7 +37,9 @@
 
 #define TIMER_FREQ 1193181 /* hz */
 
-static boolean pcs_initialized = false;
+static boolean pcs_backend_initialized = false;
+static boolean pcs_sound_initialized = false;
+static boolean pcs_music_initialized = false;
 
 static SDL_mutex *sound_lock;
 static GameMission_t gamemission;
@@ -41,6 +49,31 @@ static uint8_t *current_sound_pos = NULL;
 static unsigned int current_sound_remaining = 0;
 static int current_sound_handle = 0;
 static int current_sound_lump_num = -1;
+
+#define PCSOUND_MUSIC_TICK_US 7000
+#define PCSOUND_MUSIC_DEFAULT_TEMPO 500000
+#define PCSOUND_MUSIC_CHANNELS 16
+#define PCSOUND_MUSIC_NOTES 128
+
+typedef struct
+{
+    midi_track_iter_t *iter;
+    uint64_t delay_us;
+    boolean finished;
+} pcs_music_track_t;
+
+static midi_file_t *current_music_file;
+static pcs_music_track_t *music_tracks;
+static unsigned int music_num_tracks;
+static unsigned int music_ticks_per_beat;
+static unsigned int music_tempo;
+static boolean music_playing;
+static boolean music_looping;
+static boolean music_paused;
+static int music_volume = 127;
+static int music_frequency;
+static uint64_t music_note_order[PCSOUND_MUSIC_CHANNELS][PCSOUND_MUSIC_NOTES];
+static uint64_t music_next_note_order;
 
 static const uint16_t divisors[] = {
     0,
@@ -62,17 +95,269 @@ static const uint16_t divisors[] = {
      213,  207,  201,  195,  190,  184,  179,
 };
 
+static int PCSMusicNoteFrequency(unsigned int note)
+{
+    return (int) (440.0 * pow(2.0, ((double) note - 69.0) / 12.0) + 0.5);
+}
+
+static int PCSMusicCurrentFrequency(void)
+{
+    uint64_t newest_note;
+    unsigned int channel;
+    unsigned int note;
+    unsigned int current_note;
+
+    newest_note = 0;
+    current_note = 0;
+
+    // The PC speaker is monophonic; use the most recently started note.
+    for (channel = 0; channel < PCSOUND_MUSIC_CHANNELS; ++channel)
+    {
+        for (note = 0; note < PCSOUND_MUSIC_NOTES; ++note)
+        {
+            if (music_note_order[channel][note] > newest_note)
+            {
+                newest_note = music_note_order[channel][note];
+                current_note = note;
+            }
+        }
+    }
+
+    if (newest_note == 0)
+    {
+        return 0;
+    }
+
+    return PCSMusicNoteFrequency(current_note);
+}
+
+static uint64_t PCSMusicTicksToMicroseconds(unsigned int ticks)
+{
+    if (music_ticks_per_beat == 0)
+    {
+        return 0;
+    }
+
+    return ((uint64_t) ticks * music_tempo) / music_ticks_per_beat;
+}
+
+static void PCSMusicClearNotes(void)
+{
+    memset(music_note_order, 0, sizeof(music_note_order));
+    music_next_note_order = 0;
+    music_frequency = 0;
+}
+
+static void PCSMusicFreeTracks(void)
+{
+    unsigned int i;
+
+    if (music_tracks == NULL)
+    {
+        return;
+    }
+
+    for (i = 0; i < music_num_tracks; ++i)
+    {
+        MIDI_FreeIterator(music_tracks[i].iter);
+    }
+
+    free(music_tracks);
+    music_tracks = NULL;
+    music_num_tracks = 0;
+}
+
+static void PCSMusicStop(void)
+{
+    PCSMusicFreeTracks();
+    music_playing = false;
+    music_paused = false;
+    PCSMusicClearNotes();
+}
+
+static void PCSMusicProcessEvent(midi_event_t *event)
+{
+    unsigned int channel;
+    unsigned int note;
+
+    switch (event->event_type)
+    {
+        case MIDI_EVENT_NOTE_OFF:
+        case MIDI_EVENT_NOTE_ON:
+            channel = event->data.channel.channel;
+            note = event->data.channel.param1;
+
+            if (channel >= PCSOUND_MUSIC_CHANNELS
+             || note >= PCSOUND_MUSIC_NOTES)
+            {
+                break;
+            }
+
+            if (event->event_type == MIDI_EVENT_NOTE_OFF
+             || event->data.channel.param2 == 0)
+            {
+                music_note_order[channel][note] = 0;
+            }
+            else
+            {
+                ++music_next_note_order;
+                music_note_order[channel][note] = music_next_note_order;
+            }
+            break;
+
+        case MIDI_EVENT_CONTROLLER:
+            channel = event->data.channel.channel;
+
+            if (channel >= PCSOUND_MUSIC_CHANNELS)
+            {
+                break;
+            }
+
+            if (event->data.channel.param1 == MIDI_CONTROLLER_ALL_SOUND_OFF
+             || event->data.channel.param1 == MIDI_CONTROLLER_RESET_ALL_CTRLS
+             || event->data.channel.param1 == MIDI_CONTROLLER_ALL_NOTES_OFF)
+            {
+                for (note = 0; note < PCSOUND_MUSIC_NOTES; ++note)
+                {
+                    music_note_order[channel][note] = 0;
+                }
+            }
+            break;
+
+        case MIDI_EVENT_META:
+            if (event->data.meta.type == MIDI_META_SET_TEMPO
+             && event->data.meta.length == 3)
+            {
+                music_tempo = (event->data.meta.data[0] << 16)
+                            | (event->data.meta.data[1] << 8)
+                            | event->data.meta.data[2];
+            }
+            break;
+
+        default:
+            break;
+    }
+}
+
+static void PCSMusicStartTracks(void)
+{
+    unsigned int i;
+
+    for (i = 0; i < music_num_tracks; ++i)
+    {
+        MIDI_RestartIterator(music_tracks[i].iter);
+        music_tracks[i].delay_us = PCSMusicTicksToMicroseconds(
+            MIDI_GetDeltaTime(music_tracks[i].iter));
+        music_tracks[i].finished = false;
+    }
+
+    PCSMusicClearNotes();
+}
+
+static void PCSMusicAdvance(void)
+{
+    unsigned int i;
+    midi_event_t *event;
+    boolean all_finished;
+
+    if (!pcs_music_initialized || !music_playing || music_paused)
+    {
+        return;
+    }
+
+    all_finished = true;
+
+    for (i = 0; i < music_num_tracks; ++i)
+    {
+        uint64_t elapsed_us;
+
+        if (music_tracks[i].finished)
+        {
+            continue;
+        }
+
+        all_finished = false;
+        elapsed_us = PCSOUND_MUSIC_TICK_US;
+
+        // Process all events due during this callback. This also handles
+        // the zero-delta events commonly found between MIDI notes.
+        while (!music_tracks[i].finished && elapsed_us >= music_tracks[i].delay_us)
+        {
+            elapsed_us -= music_tracks[i].delay_us;
+
+            if (!MIDI_GetNextEvent(music_tracks[i].iter, &event))
+            {
+                music_tracks[i].finished = true;
+                break;
+            }
+
+            PCSMusicProcessEvent(event);
+
+            if (event->event_type == MIDI_EVENT_META
+             && event->data.meta.type == MIDI_META_END_OF_TRACK)
+            {
+                music_tracks[i].finished = true;
+                break;
+            }
+
+            music_tracks[i].delay_us = PCSMusicTicksToMicroseconds(
+                MIDI_GetDeltaTime(music_tracks[i].iter));
+        }
+
+        if (!music_tracks[i].finished && elapsed_us > 0)
+        {
+            if (music_tracks[i].delay_us > elapsed_us)
+            {
+                music_tracks[i].delay_us -= elapsed_us;
+            }
+            else
+            {
+                music_tracks[i].delay_us = 0;
+            }
+        }
+    }
+
+    for (i = 0; i < music_num_tracks; ++i)
+    {
+        if (!music_tracks[i].finished)
+        {
+            all_finished = false;
+            break;
+        }
+    }
+
+    if (all_finished)
+    {
+        if (music_looping)
+        {
+            music_tempo = PCSOUND_MUSIC_DEFAULT_TEMPO;
+            PCSMusicStartTracks();
+        }
+        else
+        {
+            music_playing = false;
+            PCSMusicClearNotes();
+        }
+    }
+    else
+    {
+        music_frequency = PCSMusicCurrentFrequency();
+    }
+}
+
 static void PCSCallbackFunc(int *duration, int *freq)
 {
     unsigned int tone;
 
-    *duration = 1000 / 140;
+    *duration = PCSOUND_MUSIC_TICK_US / 1000;
 
     if (SDL_LockMutex(sound_lock) < 0)
     {
         *freq = 0;
         return;
     }
+
+    PCSMusicAdvance();
 
     if (current_sound_lump != NULL && current_sound_remaining > 0)
     {
@@ -95,6 +380,10 @@ static void PCSCallbackFunc(int *duration, int *freq)
 
         ++current_sound_pos;
         --current_sound_remaining;
+    }
+    else if (music_playing && !music_paused && music_volume > 0)
+    {
+        *freq = music_frequency;
     }
     else
     {
@@ -187,7 +476,7 @@ static int I_PCS_StartSound(sfxinfo_t *sfxinfo,
 {
     int result;
 
-    if (!pcs_initialized)
+    if (!pcs_sound_initialized)
     {
         return -1;
     }
@@ -223,7 +512,7 @@ static int I_PCS_StartSound(sfxinfo_t *sfxinfo,
 
 static void I_PCS_StopSound(int handle)
 {
-    if (!pcs_initialized)
+    if (!pcs_sound_initialized)
     {
         return;
     }
@@ -274,7 +563,7 @@ static int I_PCS_GetSfxLumpNum(sfxinfo_t* sfx)
 
 static boolean I_PCS_SoundIsPlaying(int handle)
 {
-    if (!pcs_initialized)
+    if (!pcs_sound_initialized)
     {
         return false;
     }
@@ -287,33 +576,312 @@ static boolean I_PCS_SoundIsPlaying(int handle)
     return current_sound_lump != NULL && current_sound_remaining > 0;
 }
 
+static boolean PCSound_InitBackend(void)
+{
+    if (pcs_backend_initialized)
+    {
+        return true;
+    }
+
+    sound_lock = SDL_CreateMutex();
+
+    if (sound_lock == NULL)
+    {
+        return false;
+    }
+
+    PCSound_SetSampleRate(snd_samplerate);
+    pcs_backend_initialized = PCSound_Init(PCSCallbackFunc);
+
+    if (!pcs_backend_initialized)
+    {
+        SDL_DestroyMutex(sound_lock);
+        sound_lock = NULL;
+    }
+
+    return pcs_backend_initialized;
+}
+
+static void PCSound_ShutdownBackend(void)
+{
+    if (!pcs_backend_initialized)
+    {
+        return;
+    }
+
+    PCSound_Shutdown();
+    pcs_backend_initialized = false;
+    SDL_DestroyMutex(sound_lock);
+    sound_lock = NULL;
+}
+
 static boolean I_PCS_InitSound(GameMission_t mission)
 {
     gamemission = mission;
 
-    // Use the sample rate from the configuration file
-
-    PCSound_SetSampleRate(snd_samplerate);
-
-    // Initialize the PC speaker subsystem.
-
-    pcs_initialized = PCSound_Init(PCSCallbackFunc);
-
-    if (pcs_initialized)
-    {
-        sound_lock = SDL_CreateMutex();
-    }
-
-    return pcs_initialized;
+    pcs_sound_initialized = PCSound_InitBackend();
+    return pcs_sound_initialized;
 }
 
 static void I_PCS_ShutdownSound(void)
 {
-    if (pcs_initialized)
+    if (pcs_sound_initialized)
     {
-        PCSound_Shutdown();
+        pcs_sound_initialized = false;
+
+        if (!pcs_music_initialized)
+        {
+            PCSound_ShutdownBackend();
+        }
     }
 }
+
+static boolean ConvertPCSMus(byte *musdata, int len, char *filename)
+{
+    MEMFILE *instream;
+    MEMFILE *outstream;
+    void *outbuf;
+    size_t outbuf_len;
+    int result;
+
+    instream = mem_fopen_read(musdata, len);
+    outstream = mem_fopen_write();
+
+    result = mus2mid(instream, outstream);
+
+    if (result == 0)
+    {
+        mem_get_buf(outstream, &outbuf, &outbuf_len);
+        result = M_WriteFile(filename, outbuf, outbuf_len) ? 0 : -1;
+    }
+
+    mem_fclose(instream);
+    mem_fclose(outstream);
+
+    return result == 0;
+}
+
+static void *I_PCS_RegisterSong(void *data, int len)
+{
+    midi_file_t *result;
+    char *filename;
+
+    if (!pcs_music_initialized)
+    {
+        return NULL;
+    }
+
+    filename = M_TempFile("doom.mid");
+
+    if (IsMid(data, len))
+    {
+        if (!M_WriteFile(filename, data, len))
+        {
+            M_remove(filename);
+            free(filename);
+            return NULL;
+        }
+    }
+    else if (!IsMus(data, len) || !ConvertPCSMus(data, len, filename))
+    {
+        M_remove(filename);
+        free(filename);
+        return NULL;
+    }
+
+    result = MIDI_LoadFile(filename);
+    M_remove(filename);
+    free(filename);
+
+    return result;
+}
+
+static void I_PCS_UnRegisterSong(void *handle)
+{
+    if (handle == NULL)
+    {
+        return;
+    }
+
+    if (SDL_LockMutex(sound_lock) < 0)
+    {
+        return;
+    }
+
+    if (handle == current_music_file)
+    {
+        PCSMusicStop();
+        current_music_file = NULL;
+    }
+
+    SDL_UnlockMutex(sound_lock);
+    MIDI_FreeFile(handle);
+}
+
+static void I_PCS_PlaySong(void *handle, boolean looping)
+{
+    unsigned int i;
+
+    if (!pcs_music_initialized || handle == NULL
+     || SDL_LockMutex(sound_lock) < 0)
+    {
+        return;
+    }
+
+    PCSMusicStop();
+    current_music_file = handle;
+    music_num_tracks = MIDI_NumTracks(current_music_file);
+    music_ticks_per_beat = MIDI_GetFileTimeDivision(current_music_file);
+    music_tempo = PCSOUND_MUSIC_DEFAULT_TEMPO;
+    music_looping = looping;
+
+    if (music_num_tracks == 0 || music_ticks_per_beat == 0)
+    {
+        current_music_file = NULL;
+        SDL_UnlockMutex(sound_lock);
+        return;
+    }
+
+    music_tracks = calloc(music_num_tracks, sizeof(*music_tracks));
+
+    if (music_tracks == NULL)
+    {
+        music_num_tracks = 0;
+        current_music_file = NULL;
+        SDL_UnlockMutex(sound_lock);
+        return;
+    }
+
+    for (i = 0; i < music_num_tracks; ++i)
+    {
+        music_tracks[i].iter = MIDI_IterateTrack(current_music_file, i);
+
+        if (music_tracks[i].iter == NULL)
+        {
+            PCSMusicStop();
+            current_music_file = NULL;
+            SDL_UnlockMutex(sound_lock);
+            return;
+        }
+    }
+
+    PCSMusicStartTracks();
+    music_playing = true;
+    music_paused = false;
+
+    SDL_UnlockMutex(sound_lock);
+}
+
+static void I_PCS_StopSong(void)
+{
+    if (!pcs_music_initialized || SDL_LockMutex(sound_lock) < 0)
+    {
+        return;
+    }
+
+    PCSMusicStop();
+    SDL_UnlockMutex(sound_lock);
+}
+
+static void I_PCS_SetMusicVolume(int volume)
+{
+    if (!pcs_music_initialized || SDL_LockMutex(sound_lock) < 0)
+    {
+        return;
+    }
+
+    music_volume = volume;
+    SDL_UnlockMutex(sound_lock);
+}
+
+static void I_PCS_PauseSong(void)
+{
+    if (!pcs_music_initialized || SDL_LockMutex(sound_lock) < 0)
+    {
+        return;
+    }
+
+    music_paused = true;
+    SDL_UnlockMutex(sound_lock);
+}
+
+static void I_PCS_ResumeSong(void)
+{
+    if (!pcs_music_initialized || SDL_LockMutex(sound_lock) < 0)
+    {
+        return;
+    }
+
+    music_paused = false;
+    SDL_UnlockMutex(sound_lock);
+}
+
+static boolean I_PCS_MusicIsPlaying(void)
+{
+    boolean result;
+
+    if (!pcs_music_initialized || SDL_LockMutex(sound_lock) < 0)
+    {
+        return false;
+    }
+
+    result = music_playing;
+    SDL_UnlockMutex(sound_lock);
+
+    return result;
+}
+
+static void I_PCS_ShutdownMusic(void)
+{
+    if (!pcs_music_initialized)
+    {
+        return;
+    }
+
+    if (SDL_LockMutex(sound_lock) < 0)
+    {
+        return;
+    }
+
+    PCSMusicStop();
+    current_music_file = NULL;
+    SDL_UnlockMutex(sound_lock);
+
+    pcs_music_initialized = false;
+
+    if (!pcs_sound_initialized)
+    {
+        PCSound_ShutdownBackend();
+    }
+}
+
+static boolean I_PCS_InitMusic(void)
+{
+    pcs_music_initialized = PCSound_InitBackend();
+    return pcs_music_initialized;
+}
+
+static const snddevice_t music_pcsound_devices[] =
+{
+    SNDDEVICE_PCSPEAKER,
+};
+
+const music_module_t music_pcsound_module =
+{
+    music_pcsound_devices,
+    arrlen(music_pcsound_devices),
+    I_PCS_InitMusic,
+    I_PCS_ShutdownMusic,
+    I_PCS_SetMusicVolume,
+    I_PCS_PauseSong,
+    I_PCS_ResumeSong,
+    I_PCS_RegisterSong,
+    I_PCS_UnRegisterSong,
+    I_PCS_PlaySong,
+    I_PCS_StopSong,
+    I_PCS_MusicIsPlaying,
+    NULL,
+};
 
 static void I_PCS_UpdateSound(void)
 {
@@ -343,4 +911,3 @@ const sound_module_t sound_pcsound_module =
     I_PCS_StopSound,
     I_PCS_SoundIsPlaying,
 };
-
