@@ -171,6 +171,8 @@ static void DrawCrispness1(void);
 static void DrawCrispness2(void);
 static void DrawCrispness3(void);
 void MN_LoadSlotText(void);
+static void MN_SetPaused(void);
+static void MN_SetUnpaused(void);
 
 // External Functions
 
@@ -1241,7 +1243,7 @@ static boolean SCQuitGame(int option)
     typeofask = 1;              //quit game
     if (!netgame && !demoplayback)
     {
-        paused = true;
+        MN_SetPaused();
     }
     return true;
 }
@@ -1263,7 +1265,7 @@ static boolean SCEndGame(int option)
     typeofask = 2;              //endgame
     if (!netgame && !demoplayback)
     {
-        paused = true;
+        MN_SetPaused();
     }
     return true;
 }
@@ -1625,7 +1627,7 @@ static boolean SCInfo(int option)
     S_StartSound(NULL, sfx_dorcls);
     if (!netgame && !demoplayback)
     {
-        paused = true;
+        MN_SetPaused();
     }
     return true;
 }
@@ -2182,7 +2184,7 @@ boolean MN_Responder(event_t * event)
         }
         if (!InfoType)
         {
-            paused = false;
+            MN_SetUnpaused();
             MN_DeactivateMenu();
             SB_state = -1;      //refresh the statbar
             BorderNeedRefresh = true;
@@ -2225,7 +2227,7 @@ boolean MN_Responder(event_t * event)
                     players[consoleplayer].messageTics = 0;
                     //set the msg to be cleared
                     players[consoleplayer].message = NULL;
-                    paused = false;
+                    MN_SetUnpaused();
 #ifndef CRISPY_TRUECOLOR
                     I_SetPalette(W_CacheLumpName
                                  ("PLAYPAL", PU_CACHE));
@@ -2274,7 +2276,7 @@ boolean MN_Responder(event_t * event)
             players[consoleplayer].messageTics = 1;  //set the msg to be cleared
             askforquit = false;
             typeofask = 0;
-            paused = false;
+            MN_SetUnpaused();
             UpdateState |= I_FULLSCRN;
             BorderNeedRefresh = true;
             return true;
@@ -2326,7 +2328,7 @@ boolean MN_Responder(event_t * event)
                 CurrentItPos = CurrentMenu->oldItPos;
                 if (!netgame && !demoplayback)
                 {
-                    paused = true;
+                    MN_SetPaused();
                 }
                 S_StartSound(NULL, sfx_dorcls);
                 slottextloaded = false;     //reload the slot text, when needed
@@ -2344,7 +2346,7 @@ boolean MN_Responder(event_t * event)
                 CurrentItPos = CurrentMenu->oldItPos;
                 if (!netgame && !demoplayback)
                 {
-                    paused = true;
+                    MN_SetPaused();
                 }
                 S_StartSound(NULL, sfx_dorcls);
                 slottextloaded = false;     //reload the slot text, when needed
@@ -2360,7 +2362,7 @@ boolean MN_Responder(event_t * event)
             CurrentItPos = CurrentMenu->oldItPos;
             if (!netgame && !demoplayback)
             {
-                paused = true;
+                MN_SetPaused();
             }
             S_StartSound(NULL, sfx_dorcls);
             slottextloaded = false; //reload the slot text, when needed
@@ -2384,7 +2386,7 @@ boolean MN_Responder(event_t * event)
                     CurrentItPos = CurrentMenu->oldItPos;
                     if (!netgame && !demoplayback)
                     {
-                        paused = true;
+                        MN_SetPaused();
                     }
                     S_StartSound(NULL, sfx_dorcls);
                     slottextloaded = false; //reload the slot text, when needed
@@ -2398,7 +2400,7 @@ boolean MN_Responder(event_t * event)
                     typeofask = 3;
                     if (!netgame && !demoplayback)
                     {
-                        paused = true;
+                        MN_SetPaused();
                     }
                     S_StartSound(NULL, sfx_chat);
                 }
@@ -2430,7 +2432,7 @@ boolean MN_Responder(event_t * event)
                 CurrentItPos = CurrentMenu->oldItPos;
                 if (!netgame && !demoplayback)
                 {
-                    paused = true;
+                    MN_SetPaused();
                 }
                 S_StartSound(NULL, sfx_dorcls);
                 slottextloaded = false;     //reload the slot text, when needed
@@ -2443,7 +2445,7 @@ boolean MN_Responder(event_t * event)
                 askforquit = true;
                 if (!netgame && !demoplayback)
                 {
-                    paused = true;
+                    MN_SetPaused();
                 }
                 typeofask = 4;
                 S_StartSound(NULL, sfx_chat);
@@ -2639,7 +2641,7 @@ boolean MN_Responder(event_t * event)
                     askforquit = true;
                     if (!netgame && !demoplayback)
                     {
-                        paused = true;
+                        MN_SetPaused();
                     }
                     typeofask = 5;
                     S_StartSound(NULL, sfx_chat);
@@ -2853,7 +2855,7 @@ void MN_ActivateMenu(void)
     CurrentItPos = CurrentMenu->oldItPos;
     if (!netgame && !demoplayback)
     {
-        paused = true;
+        MN_SetPaused();
     }
     S_StartSound(NULL, sfx_dorcls);
     slottextloaded = false;     //reload the slot text, when needed
@@ -2878,7 +2880,7 @@ void MN_DeactivateMenu(void)
     }
     if (!netgame)
     {
-        paused = false;
+        MN_SetUnpaused();
     }
     S_StartSound(NULL, sfx_dorcls);
     if (soundchanged)
@@ -3194,4 +3196,22 @@ static void DrawCrispness3(void)
 
     // Crosshair Color
     DrawCrispnessMultiItem(crispy->crosshaircolor+1, 185, 125, multiitem_he_crosshaircolor, !crispy->crosshair);
+}
+
+static void MN_SetPaused()
+{
+	if (paused) return;
+	if (demorecording)
+		sendpause = true;
+	else
+		paused = true;
+}
+
+static void MN_SetUnpaused()
+{
+	if (!paused) return;
+	if (demorecording)
+		sendpause = true;
+	else
+		paused = false;
 }
